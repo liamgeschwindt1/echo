@@ -8,50 +8,45 @@
   </head>
   <body>
     <main>
-      <h1>Echo</h1>
-      <p class="privacy-note">
-        🔒 Audio stays on this device. Only labels, scores and timestamps are logged. Nothing is uploaded.
-      </p>
+      <header class="top-bar">
+        <h1>Echo</h1>
+        <p class="privacy-note">🔒 Audio stays on this device. Only labels are logged.</p>
+      </header>
 
       <section class="controls">
         <button id="startStopBtn">Start listening</button>
+        <button id="pauseBtn" disabled>Pause</button>
+        <select id="modelSelect">
+          <option value="yamnet">YAMNet</option>
+          <option value="clap">CLAP</option>
+          <option value="both">Both</option>
+        </select>
         <span id="status">Stopped</span>
+        <button id="settingsToggleBtn" class="icon-btn" aria-label="Settings">⚙</button>
       </section>
 
-      <section class="panel">
-        <h2>Top 5 labels</h2>
-        <ol id="top5List"></ol>
+      <div id="clapProgress" class="clap-progress hidden">
+        <div id="clapProgressBar" class="clap-progress-bar"></div>
+        <span id="clapProgressLabel">Loading CLAP model…</span>
+      </div>
+
+      <section class="legend" id="legend"></section>
+
+      <section class="graphs">
+        <div class="graph-wrap level-wrap">
+          <canvas id="levelCanvas"></canvas>
+          <div class="axis-label">Relative level (uncalibrated)</div>
+        </div>
+        <div class="graph-wrap score-wrap">
+          <canvas id="scoreCanvas"></canvas>
+        </div>
+        <p class="uncalibrated-note">Phone microphones are not calibrated; use for comparison only.</p>
       </section>
 
-      <section class="panel">
-        <h2>Timeline (last 60s, top label per window)</h2>
-        <div id="timeline" class="timeline"></div>
-      </section>
-
-      <section class="panel">
-        <h2>Watchlist</h2>
-        <div id="watchlist"></div>
-      </section>
-
-      <section class="panel">
-        <h2>All classes</h2>
-        <label><input type="checkbox" id="allClassesToggle" /> Show all 521 classes with current scores</label>
-        <div id="allClasses" class="all-classes hidden"></div>
-      </section>
-
-      <section class="panel">
-        <h2>Settings</h2>
-        <label>Score threshold (below = "Unknown"):
-          <input type="number" id="thresholdInput" min="0" max="1" step="0.05" value="0.3" />
-        </label>
-        <label><input type="checkbox" id="smoothingToggle" /> Smoothing (majority of last 3 windows)</label>
-        <label>Window length (s):
-          <input type="number" id="windowInput" min="0.2" max="3" step="0.025" value="0.975" />
-        </label>
-        <label>Hop (s):
-          <input type="number" id="hopInput" min="0.1" max="2" step="0.05" value="0.5" />
-        </label>
-        <button id="applySettingsBtn">Apply (restart required)</button>
+      <section class="scrub-readout hidden" id="scrubReadout">
+        <h3 id="scrubTime"></h3>
+        <div id="scrubModels"></div>
+        <button id="resumeBtn">Resume live</button>
       </section>
 
       <section class="panel">
@@ -63,26 +58,44 @@
         <div id="presetNotes" class="presets"></div>
       </section>
 
+      <aside id="settingsDrawer" class="settings-drawer hidden">
+        <h2>Settings</h2>
+        <label>Visible window:
+          <select id="windowSelect">
+            <option value="30">30 s</option>
+            <option value="60" selected>60 s</option>
+            <option value="120">2 min</option>
+            <option value="300">5 min</option>
+          </select>
+        </label>
+        <label>YAMNet window (s): <input type="number" id="windowInput" min="0.2" max="3" step="0.025" value="0.975" /></label>
+        <label>YAMNet hop (s): <input type="number" id="hopInput" min="0.1" max="2" step="0.05" value="0.5" /></label>
+        <label>CLAP cadence (s): <input type="number" id="clapCadenceInput" min="1" max="10" step="0.5" value="2.5" /></label>
+        <label>CLAP prompt template:
+          <select id="promptTemplateSelect">
+            <option value="This is a sound of {}.">This is a sound of {phrase}</option>
+            <option value="{}">bare phrase</option>
+          </select>
+        </label>
+        <label>Wind-shading threshold: <input type="number" id="windThresholdInput" min="0" max="1" step="0.05" value="0.4" /></label>
+        <label>Theme:
+          <select id="themeSelect">
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="logAllClassesToggle" /> Log all 521 YAMNet classes (~10x bigger export)</label>
+        <button id="applySettingsBtn">Apply (restart required)</button>
+        <button id="closeSettingsBtn">Close</button>
+      </aside>
+
       <section class="panel">
-        <h2>Event log (<span id="logCount">0</span> rows)</h2>
+        <h2>Log (<span id="logCount">0</span> rows)</h2>
         <div class="export-buttons">
           <button id="exportCsvBtn">Export CSV</button>
           <button id="exportJsonBtn">Export JSON</button>
           <button id="clearLogBtn">Clear log</button>
-        </div>
-        <div class="log-table-wrap">
-          <table id="logTable">
-            <thead>
-              <tr>
-                <th>time</th>
-                <th>top1</th>
-                <th>score</th>
-                <th>rms dBFS</th>
-                <th>note</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
         </div>
       </section>
     </main>
@@ -90,3 +103,4 @@
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
+

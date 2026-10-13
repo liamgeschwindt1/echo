@@ -1,195 +1,317 @@
 import { FilesetResolver, AudioClassifier } from '@mediapipe/tasks-audio';
-import { WATCHLIST, QUICK_NOTE_PRESETS } from './watchlist.js';
+import {
+  YAMNET_WATCHLIST,
+  YAMNET_WATCHLIST_BY_NAME,
+  CLAP_PROMPTS,
+  FAMILY_COLORS,
+  QUICK_NOTE_PRESETS,
+  familyColor
+} from './watchlist.js';
+import { Grapher } from './graph.js';
+import { SessionStore } from './db.js';
 
 const $ = (id) => document.getElementById(id);
 
 const startStopBtn = $('startStopBtn');
+const pauseBtn = $('pauseBtn');
+const modelSelect = $('modelSelect');
 const statusEl = $('status');
-const top5List = $('top5List');
-const timelineEl = $('timeline');
-const watchlistEl = $('watchlist');
-const allClassesToggle = $('allClassesToggle');
-const allClassesEl = $('allClasses');
-const thresholdInput = $('thresholdInput');
-const smoothingToggle = $('smoothingToggle');
-const windowInput = $('windowInput');
-const hopInput = $('hopInput');
+const settingsToggleBtn = $('settingsToggleBtn');
+const settingsDrawer = $('settingsDrawer');
+const closeSettingsBtn = $('closeSettingsBtn');
 const applySettingsBtn = $('applySettingsBtn');
+const clapProgress = $('clapProgress');
+const clapProgressBar = $('clapProgressBar');
+const clapProgressLabel = $('clapProgressLabel');
+const legendEl = $('legend');
+const levelCanvas = $('levelCanvas');
+const scoreCanvas = $('scoreCanvas');
+const scrubReadout = $('scrubReadout');
+const scrubTimeEl = $('scrubTime');
+const scrubModelsEl = $('scrubModels');
+const resumeBtn = $('resumeBtn');
 const noteInput = $('noteInput');
 const markEventBtn = $('markEventBtn');
 const presetNotesEl = $('presetNotes');
 const logCountEl = $('logCount');
-const logTableBody = document.querySelector('#logTable tbody');
 const exportCsvBtn = $('exportCsvBtn');
 const exportJsonBtn = $('exportJsonBtn');
 const clearLogBtn = $('clearLogBtn');
 
-const SAMPLE_RATE = 16000;
+const windowSelect = $('windowSelect');
+const windowInput = $('windowInput');
+const hopInput = $('hopInput');
+const clapCadenceInput = $('clapCadenceInput');
+const promptTemplateSelect = $('promptTemplateSelect');
+const windThresholdInput = $('windThresholdInput');
+const themeSelect = $('themeSelect');
+const logAllClassesToggle = $('logAllClassesToggle');
+
+const YAMNET_RATE = 16000;
+const CLAP_WINDOW_SEC = 10;
 const sessionId = crypto.randomUUID();
 const device = navigator.userAgent;
+const sessionStore = new SessionStore();
 
 let classMap = []; // index -> displayName
-let classifier = null;
+let yamnetClassifier = null;
+let clapWorker = null;
+let clapReady = false;
+let clapBusy = false;
+let clapRequestSeq = 0;
+
 let audioContext = null;
 let mediaStream = null;
 let workletNode = null;
 let sourceNode = null;
 let running = false;
-let recentTop1 = []; // for smoothing
-const log = []; // { timestamp, top1_label, top1_score, ..., rms_dbfs, session_id, device, note }
+
+let latestRmsDbfs = NaN;
+let latestPeakDbfs = NaN;
+let latestWindScore = 0;
+
+const log = []; // in-memory mirror of logged rows
+const notes = [];
+
+const grapher = new Grapher(levelCanvas, scoreCanvas, {
+  onScrub: (t) => showScrubReadout(t)
+});
 
 function settings() {
   return {
-    threshold: parseFloat(thresholdInput.value) || 0.3,
-    smoothing: smoothingToggle.checked,
-    windowSec: parseFloat(windowInput.value) || 0.975,
-    hopSec: parseFloat(hopInput.value) || 0.5
+    modelMode: modelSelect.value, // 'yamnet' | 'clap' | 'both'
+    windowSec: parseFloat(windowSelect.value) || 60,
+    yamnetWindowSec: parseFloat(windowInput.value) || 0.975,
+    yamnetHopSec: parseFloat(hopInput.value) || 0.5,
+    clapCadenceSec: parseFloat(clapCadenceInput.value) || 2.5,
+    promptTemplate: promptTemplateSelect.value,
+    windThreshold: parseFloat(windThresholdInput.value) || 0.4,
+    logAllClasses: logAllClassesToggle.checked
   };
 }
 
 async function loadClassMap() {
   const res = await fetch('/model/yamnet_class_map.csv');
   const text = await res.text();
-  const lines = text.trim().split('\n').slice(1); // skip header
+  const lines = text.trim().split('\n').slice(1);
   const map = [];
   for (const line of lines) {
     const match = line.match(/^(\d+),([^,]*),(.*)$/);
     if (!match) continue;
     const [, index, , rest] = match;
-    const displayName = rest.replace(/^"|"$/g, '');
-    map[Number(index)] = displayName;
+    map[Number(index)] = rest.replace(/^"|"$/g, '');
   }
   return map;
 }
 
-async function loadClassifier() {
+async function loadYamnetClassifier() {
   const fileset = await FilesetResolver.forAudioTasks('/wasm');
   return AudioClassifier.createFromOptions(fileset, {
     baseOptions: { modelAssetPath: '/model/yamnet.tflite' },
-    maxResults: 5
+    maxResults: -1
   });
 }
 
-function renderWatchlist(groupScores) {
-  watchlistEl.innerHTML = '';
-  for (const [group, indices] of Object.entries(WATCHLIST)) {
-    const groupTitle = document.createElement('div');
-    groupTitle.className = 'watch-group';
-    groupTitle.textContent = group;
-    watchlistEl.appendChild(groupTitle);
-    for (const index of indices) {
-      const name = classMap[index] || `#${index}`;
-      const score = groupScores.get(index) || 0;
-      const item = document.createElement('div');
-      item.className = 'watch-item' + (score >= settings().threshold ? ' active' : '');
-      item.innerHTML = `<span>${name}</span><span>${score.toFixed(2)}</span>`;
-      watchlistEl.appendChild(item);
+function ensureClapWorker() {
+  if (clapWorker) return clapWorker;
+  clapWorker = new Worker(new URL('./clapWorker.js', import.meta.url), { type: 'module' });
+  clapWorker.onmessage = (event) => {
+    const msg = event.data;
+    if (msg.type === 'progress') {
+      const p = msg.progress;
+      if (p && p.status === 'progress' && p.total) {
+        const pct = Math.round((p.loaded / p.total) * 100);
+        clapProgressBar.style.width = `${pct}%`;
+        clapProgressLabel.textContent = `Loading CLAP model: ${p.file || ''} ${pct}%`;
+      }
+    } else if (msg.type === 'ready') {
+      clapReady = true;
+      clapProgress.classList.add('hidden');
+    } else if (msg.type === 'error') {
+      clapProgress.classList.add('hidden');
+      statusEl.textContent = `CLAP error: ${msg.message}`;
+    } else if (msg.type === 'result') {
+      clapBusy = false;
+      handleClapResult(msg);
     }
-  }
+  };
+  return clapWorker;
 }
 
-function renderAllClasses(categories) {
-  if (allClassesEl.classList.contains('hidden')) return;
-  allClassesEl.innerHTML = '';
-  for (const c of categories) {
-    const row = document.createElement('div');
-    row.innerHTML = `<span>${c.categoryName}</span><span>${c.score.toFixed(3)}</span>`;
-    allClassesEl.appendChild(row);
-  }
+function initClapWorker() {
+  return new Promise((resolve, reject) => {
+    const worker = ensureClapWorker();
+    if (clapReady) return resolve();
+    clapProgress.classList.remove('hidden');
+    clapProgressBar.style.width = '0%';
+    clapProgressLabel.textContent = 'Loading CLAP model…';
+    const onMsg = (event) => {
+      if (event.data.type === 'ready') {
+        worker.removeEventListener('message', onMsg);
+        resolve();
+      } else if (event.data.type === 'error') {
+        worker.removeEventListener('message', onMsg);
+        reject(new Error(event.data.message));
+      }
+    };
+    worker.addEventListener('message', onMsg);
+    worker.postMessage({ type: 'init', prompts: CLAP_PROMPTS, promptTemplate: settings().promptTemplate });
+  });
 }
 
-function renderTop5(categories, top1Label) {
-  top5List.innerHTML = '';
-  for (const c of categories.slice(0, 5)) {
-    const li = document.createElement('li');
-    li.textContent = `${c.categoryName} — ${c.score.toFixed(3)}`;
-    top5List.appendChild(li);
+function buildLegend() {
+  legendEl.innerHTML = '';
+  for (const [family, color] of Object.entries(FAMILY_COLORS)) {
+    const chip = document.createElement('div');
+    chip.className = 'legend-chip';
+    chip.innerHTML = `<span class="legend-swatch" style="background:${color}"></span>${family}`;
+    chip.addEventListener('click', () => {
+      grapher.toggleFamily(family);
+      chip.classList.toggle('off');
+    });
+    legendEl.appendChild(chip);
   }
-  const chip = document.createElement('div');
-  chip.className = 'timeline-item';
-  chip.textContent = `${new Date().toLocaleTimeString()} ${top1Label}`;
-  timelineEl.appendChild(chip);
-  if (timelineEl.children.length > 120) {
-    timelineEl.removeChild(timelineEl.firstChild);
-  }
-}
-
-function computeRmsDbfs(samples) {
-  let sumSquares = 0;
-  for (let i = 0; i < samples.length; i++) sumSquares += samples[i] * samples[i];
-  const rms = Math.sqrt(sumSquares / samples.length);
-  if (rms <= 0) return -Infinity;
-  return 20 * Math.log10(rms);
-}
-
-function majorityLabel(labels) {
-  const counts = new Map();
-  for (const l of labels) counts.set(l, (counts.get(l) || 0) + 1);
-  let best = labels[labels.length - 1];
-  let bestCount = 0;
-  for (const [label, count] of counts) {
-    if (count > bestCount) {
-      best = label;
-      bestCount = count;
-    }
-  }
-  return best;
 }
 
 function addLogRow(row) {
   log.push(row);
   logCountEl.textContent = String(log.length);
-  const tr = document.createElement('tr');
-  tr.innerHTML = `<td>${row.timestamp}</td><td>${row.top1_label}</td><td>${row.top1_score.toFixed(
-    3
-  )}</td><td>${Number.isFinite(row.rms_dbfs) ? row.rms_dbfs.toFixed(1) : '—'}</td><td>${row.note || ''}</td>`;
-  logTableBody.appendChild(tr);
-  logTableBody.parentElement.parentElement.scrollTop = logTableBody.parentElement.scrollHeight;
+  sessionStore.addRow(row).catch((err) => console.error('log persist failed', err));
 }
 
-function handleWindow(samples) {
-  const { threshold, smoothing } = settings();
-  const results = classifier.classify(samples, SAMPLE_RATE);
+function handleLevel(rmsDbfs, peakDbfs) {
+  latestRmsDbfs = rmsDbfs;
+  latestPeakDbfs = peakDbfs;
+  grapher.addLevelPoint({ t: Date.now(), rms: rmsDbfs, peak: peakDbfs, wind: latestWindScore });
+}
+
+function handleYamnetWindow(samples) {
+  if (!yamnetClassifier) return;
+  const { windowSec, logAllClasses } = settings();
+  const results = yamnetClassifier.classify(samples, YAMNET_RATE);
   const categories = results[0]?.classifications?.[0]?.categories || [];
   const sorted = [...categories].sort((a, b) => b.score - a.score);
+  const byName = new Map(sorted.map((c) => [c.categoryName, c.score]));
+  const now = Date.now();
 
-  const groupScores = new Map();
-  for (const indices of Object.values(WATCHLIST)) {
-    for (const index of indices) {
-      const cat = sorted.find((c) => c.index === index);
-      if (cat) groupScores.set(index, cat.score);
+  const watchlistScores = {};
+  let windScore = 0;
+  for (const entry of YAMNET_WATCHLIST) {
+    const score = byName.get(entry.name) || 0;
+    watchlistScores[entry.name] = score;
+    grapher.addScorePoint(`yamnet:${entry.name}`, {
+      t: now,
+      score,
+      family: entry.family,
+      relevant: true,
+      model: 'yamnet'
+    });
+    if (entry.family === 'Context' && /wind/i.test(entry.name)) {
+      windScore = Math.max(windScore, score);
+    }
+  }
+  latestWindScore = windScore;
+
+  const top5 = sorted.slice(0, 5);
+  for (const c of top5) {
+    if (!YAMNET_WATCHLIST_BY_NAME.has(c.categoryName)) {
+      grapher.addScorePoint(`yamnet:${c.categoryName}`, {
+        t: now,
+        score: c.score,
+        family: 'Non-relevant',
+        relevant: false,
+        model: 'yamnet'
+      });
     }
   }
 
-  const rawTop = sorted[0];
-  let top1Label = rawTop && rawTop.score >= threshold ? rawTop.categoryName : 'Unknown';
-
-  if (smoothing) {
-    recentTop1.push(top1Label);
-    if (recentTop1.length > 3) recentTop1.shift();
-    top1Label = majorityLabel(recentTop1);
-  }
-
-  renderTop5(sorted, top1Label);
-  renderWatchlist(groupScores);
-  renderAllClasses(sorted);
-
-  const rmsDbfs = computeRmsDbfs(samples);
   const row = {
-    timestamp: new Date().toISOString(),
-    top1_label: top1Label,
-    top1_score: rawTop ? rawTop.score : 0,
-    top2_label: sorted[1]?.categoryName || '',
-    top2_score: sorted[1]?.score || 0,
-    top3_label: sorted[2]?.categoryName || '',
-    top3_score: sorted[2]?.score || 0,
-    top4_label: sorted[3]?.categoryName || '',
-    top4_score: sorted[3]?.score || 0,
-    top5_label: sorted[4]?.categoryName || '',
-    top5_score: sorted[4]?.score || 0,
-    rms_dbfs: rmsDbfs,
+    timestamp: new Date(now).toISOString(),
     session_id: sessionId,
     device,
+    model: 'yamnet',
+    window_s: windowSec,
+    rms_dbfs: latestRmsDbfs,
+    peak_dbfs: latestPeakDbfs,
+    top1_label: top5[0]?.categoryName || '',
+    top1_score: top5[0]?.score || 0,
+    top2_label: top5[1]?.categoryName || '',
+    top2_score: top5[1]?.score || 0,
+    top3_label: top5[2]?.categoryName || '',
+    top3_score: top5[2]?.score || 0,
+    top4_label: top5[3]?.categoryName || '',
+    top4_score: top5[3]?.score || 0,
+    top5_label: top5[4]?.categoryName || '',
+    top5_score: top5[4]?.score || 0,
+    scores_json: JSON.stringify(watchlistScores),
+    all_classes_json: logAllClasses ? JSON.stringify(Object.fromEntries(byName)) : undefined,
+    note: ''
+  };
+  addLogRow(row);
+}
+
+function handleClapWindow(samples, nativeRate) {
+  if (!clapReady || clapBusy) return;
+  clapBusy = true;
+  const requestId = ++clapRequestSeq;
+  const copy = samples.slice();
+  ensureClapWorker().postMessage(
+    { type: 'classify', requestId, audio: copy.buffer, nativeRate, timestamp: Date.now() },
+    [copy.buffer]
+  );
+}
+
+function handleClapResult(msg) {
+  const { logAllClasses } = settings();
+  const now = msg.timestamp || Date.now();
+  const sorted = [...msg.scores].sort((a, b) => b.softmax - a.softmax);
+  const allScores = {};
+  for (const s of sorted) {
+    allScores[s.id] = { softmax: s.softmax, cosine: s.cosine };
+    if (s.relevant) {
+      grapher.addScorePoint(`clap:${s.id}`, {
+        t: now,
+        score: s.softmax,
+        family: s.family,
+        relevant: true,
+        model: 'clap',
+        dashed: true
+      });
+    }
+  }
+  const top5 = sorted.slice(0, 5);
+  for (const s of top5) {
+    if (!s.relevant) {
+      grapher.addScorePoint(`clap:${s.id}`, {
+        t: now,
+        score: s.softmax,
+        family: 'Non-relevant',
+        relevant: false,
+        model: 'clap',
+        dashed: true
+      });
+    }
+  }
+
+  const row = {
+    timestamp: new Date(now).toISOString(),
+    session_id: sessionId,
+    device,
+    model: 'clap',
+    window_s: CLAP_WINDOW_SEC,
+    rms_dbfs: latestRmsDbfs,
+    peak_dbfs: latestPeakDbfs,
+    top1_label: top5[0]?.id || '',
+    top1_score: top5[0]?.softmax || 0,
+    top2_label: top5[1]?.id || '',
+    top2_score: top5[1]?.softmax || 0,
+    top3_label: top5[2]?.id || '',
+    top3_score: top5[2]?.softmax || 0,
+    top4_label: top5[3]?.id || '',
+    top4_score: top5[3]?.softmax || 0,
+    top5_label: top5[4]?.id || '',
+    top5_score: top5[4]?.softmax || 0,
+    scores_json: logAllClasses ? JSON.stringify(allScores) : JSON.stringify(allScores),
     note: ''
   };
   addLogRow(row);
@@ -199,36 +321,63 @@ async function start() {
   startStopBtn.disabled = true;
   statusEl.textContent = 'Loading model…';
 
-  if (!classMap.length) classMap = await loadClassMap();
-  if (!classifier) classifier = await loadClassifier();
+  const { modelMode, yamnetWindowSec, yamnetHopSec, clapCadenceSec } = settings();
+  const needsYamnet = modelMode === 'yamnet' || modelMode === 'both';
+  const needsClap = modelMode === 'clap' || modelMode === 'both';
 
-  const { windowSec, hopSec } = settings();
-  const windowSamples = Math.round(windowSec * SAMPLE_RATE);
-  const hopSamples = Math.round(hopSec * SAMPLE_RATE);
+  if (needsYamnet) {
+    if (!classMap.length) classMap = await loadClassMap();
+    if (!yamnetClassifier) yamnetClassifier = await loadYamnetClassifier();
+  }
+  if (needsClap) {
+    await initClapWorker();
+  }
 
   mediaStream = await navigator.mediaDevices.getUserMedia({
-    audio: {
-      echoCancellation: false,
-      noiseSuppression: false,
-      autoGainControl: false,
-      channelCount: 1
-    }
+    audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1 }
   });
 
-  audioContext = new AudioContext({ sampleRate: SAMPLE_RATE });
+  audioContext = new AudioContext();
+  const nativeRate = audioContext.sampleRate;
   await audioContext.audioWorklet.addModule('/worklet/capture-processor.js');
+
+  const yamnetWindowSamples = Math.round(yamnetWindowSec * nativeRate);
+  const yamnetHopSamples = Math.round(yamnetHopSec * nativeRate);
+  const yamnetTargetLength = Math.round(yamnetWindowSec * YAMNET_RATE);
+  const clapWindowSamples = Math.round(CLAP_WINDOW_SEC * nativeRate);
+  const clapHopSamples = Math.round(clapCadenceSec * nativeRate);
+  const levelBlockSamples = Math.round(0.25 * nativeRate);
 
   sourceNode = audioContext.createMediaStreamSource(mediaStream);
   workletNode = new AudioWorkletNode(audioContext, 'capture-processor', {
-    processorOptions: { windowSamples, hopSamples }
+    processorOptions: {
+      nativeRate,
+      yamnetWindowSamples,
+      yamnetHopSamples,
+      yamnetTargetRate: YAMNET_RATE,
+      yamnetTargetLength,
+      clapWindowSamples,
+      clapHopSamples,
+      levelBlockSamples
+    }
   });
-  workletNode.port.onmessage = (event) => handleWindow(event.data);
+  workletNode.port.onmessage = (event) => {
+    const msg = event.data;
+    if (msg.type === 'level') {
+      handleLevel(msg.rmsDbfs, msg.peakDbfs);
+    } else if (msg.type === 'yamnet' && needsYamnet) {
+      handleYamnetWindow(msg.samples);
+    } else if (msg.type === 'clap' && needsClap) {
+      handleClapWindow(msg.samples, msg.nativeRate);
+    }
+  };
   sourceNode.connect(workletNode);
 
   running = true;
   startStopBtn.textContent = 'Stop listening';
   startStopBtn.disabled = false;
-  statusEl.textContent = `Listening (window ${windowSec}s, hop ${hopSec}s, ${audioContext.sampleRate} Hz)`;
+  pauseBtn.disabled = false;
+  statusEl.textContent = `Listening (${modelMode}, ${nativeRate} Hz native)`;
 }
 
 function stop() {
@@ -243,6 +392,7 @@ function stop() {
   workletNode = null;
   sourceNode = null;
   startStopBtn.textContent = 'Start listening';
+  pauseBtn.disabled = true;
   statusEl.textContent = 'Stopped';
 }
 
@@ -261,32 +411,70 @@ startStopBtn.addEventListener('click', async () => {
   }
 });
 
-applySettingsBtn.addEventListener('click', () => {
-  if (running) stop();
+pauseBtn.addEventListener('click', () => {
+  const nowPaused = !grapher.paused;
+  grapher.setPaused(nowPaused);
+  pauseBtn.textContent = nowPaused ? 'Resume' : 'Pause';
+  if (!nowPaused) scrubReadout.classList.add('hidden');
 });
 
-allClassesToggle.addEventListener('change', () => {
-  allClassesEl.classList.toggle('hidden', !allClassesToggle.checked);
+resumeBtn.addEventListener('click', () => {
+  grapher.setPaused(false);
+  pauseBtn.textContent = 'Pause';
+  scrubReadout.classList.add('hidden');
 });
+
+settingsToggleBtn.addEventListener('click', () => settingsDrawer.classList.toggle('hidden'));
+closeSettingsBtn.addEventListener('click', () => settingsDrawer.classList.add('hidden'));
+
+applySettingsBtn.addEventListener('click', () => {
+  if (running) stop();
+  settingsDrawer.classList.add('hidden');
+});
+
+windowSelect.addEventListener('change', () => grapher.setWindowSec(parseFloat(windowSelect.value)));
+windThresholdInput.addEventListener('change', () => {
+  grapher.windThreshold = parseFloat(windThresholdInput.value) || 0.4;
+});
+promptTemplateSelect.addEventListener('change', () => {
+  if (clapWorker) clapWorker.postMessage({ type: 'setPromptTemplate', promptTemplate: promptTemplateSelect.value });
+});
+themeSelect.addEventListener('change', () => {
+  document.body.classList.remove('theme-light', 'theme-dark');
+  if (themeSelect.value !== 'system') document.body.classList.add(`theme-${themeSelect.value}`);
+});
+
+function showScrubReadout(t) {
+  scrubReadout.classList.remove('hidden');
+  pauseBtn.textContent = 'Resume';
+  scrubTimeEl.textContent = new Date(t).toLocaleTimeString();
+  const yamnetTop = grapher.topAt(t, 'yamnet');
+  const clapTop = grapher.topAt(t, 'clap');
+  scrubModelsEl.innerHTML = '';
+  for (const [label, rows] of [
+    ['YAMNet', yamnetTop],
+    ['CLAP', clapTop]
+  ]) {
+    const col = document.createElement('div');
+    col.className = 'scrub-col';
+    const name = (key) => key.split(':').slice(1).join(':');
+    col.innerHTML = `<strong>${label}</strong><ol>${rows
+      .map(
+        (r) =>
+          `<li style="color:${r.relevant ? familyColor(r.family) : '#9ca3af'}">${name(r.key)} — ${r.score.toFixed(3)}</li>`
+      )
+      .join('')}</ol>`;
+    scrubModelsEl.appendChild(col);
+  }
+}
 
 function markEvent(note) {
   if (!note) return;
-  if (log.length === 0) {
-    addLogRow({
-      timestamp: new Date().toISOString(),
-      top1_label: '',
-      top1_score: 0,
-      rms_dbfs: NaN,
-      session_id: sessionId,
-      device,
-      note
-    });
-    return;
-  }
-  const last = log[log.length - 1];
-  last.note = last.note ? `${last.note}; ${note}` : note;
-  const lastRow = logTableBody.lastElementChild;
-  if (lastRow) lastRow.children[4].textContent = last.note;
+  const t = Date.now();
+  grapher.addMarker(t, note);
+  const entry = { timestamp: new Date(t).toISOString(), note };
+  notes.push(entry);
+  sessionStore.addNote(entry).catch((err) => console.error('note persist failed', err));
 }
 
 markEventBtn.addEventListener('click', () => {
@@ -307,7 +495,9 @@ for (const preset of QUICK_NOTE_PRESETS) {
 
 function toCsv(rows) {
   if (rows.length === 0) return '';
-  const headers = Object.keys(rows[0]);
+  const headerSet = new Set();
+  for (const row of rows) Object.keys(row).forEach((k) => headerSet.add(k));
+  const headers = Array.from(headerSet);
   const lines = [headers.join(',')];
   for (const row of rows) {
     lines.push(
@@ -335,19 +525,33 @@ function download(filename, content, mime) {
 
 exportCsvBtn.addEventListener('click', () => {
   download(`echo-log-${sessionId}.csv`, toCsv(log), 'text/csv');
+  if (notes.length) download(`echo-notes-${sessionId}.csv`, toCsv(notes), 'text/csv');
 });
 
 exportJsonBtn.addEventListener('click', () => {
-  download(`echo-log-${sessionId}.json`, JSON.stringify(log, null, 2), 'application/json');
+  download(`echo-log-${sessionId}.json`, JSON.stringify({ rows: log, notes }, null, 2), 'application/json');
 });
 
-clearLogBtn.addEventListener('click', () => {
+clearLogBtn.addEventListener('click', async () => {
   log.length = 0;
+  notes.length = 0;
   logCountEl.textContent = '0';
-  logTableBody.innerHTML = '';
+  await sessionStore.clear();
 });
 
+async function restoreSession() {
+  try {
+    const [rows, savedNotes] = await Promise.all([sessionStore.allRows(), sessionStore.allNotes()]);
+    for (const row of rows) log.push(row);
+    for (const n of savedNotes) notes.push(n);
+    logCountEl.textContent = String(log.length);
+  } catch (err) {
+    console.error('failed to restore session', err);
+  }
+}
+
+buildLegend();
+restoreSession();
 loadClassMap().then((map) => {
   classMap = map;
-  renderWatchlist(new Map());
 });
