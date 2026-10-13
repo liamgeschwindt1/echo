@@ -1,0 +1,179 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 1rem;
+}
+
+main {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+h1 {
+  margin-bottom: 0.25rem;
+}
+
+.privacy-note {
+  background: #1f6f3c22;
+  border: 1px solid #1f6f3c;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+#startStopBtn {
+  font-size: 1.1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+#startStopBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.panel {
+  border: 1px solid #8884;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.panel h2 {
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+#top5List {
+  padding-left: 1.25rem;
+}
+
+.timeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  min-height: 2rem;
+}
+
+.timeline-item {
+  font-size: 0.7rem;
+  padding: 2px 4px;
+  background: #8884;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+#watchlist {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.4rem;
+}
+
+.watch-group {
+  grid-column: 1 / -1;
+  font-weight: 600;
+  margin-top: 0.4rem;
+}
+
+.watch-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  background: #8882;
+  font-size: 0.85rem;
+}
+
+.watch-item.active {
+  background: #dc2626;
+  color: white;
+  font-weight: 600;
+}
+
+.all-classes {
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 0.8rem;
+}
+
+.all-classes.hidden {
+  display: none;
+}
+
+.all-classes div {
+  display: flex;
+  justify-content: space-between;
+  padding: 1px 0;
+}
+
+label {
+  display: block;
+  margin: 0.4rem 0;
+  font-size: 0.9rem;
+}
+
+input[type='number'],
+input[type='text'] {
+  padding: 0.3rem;
+  margin-left: 0.4rem;
+}
+
+.mark-event {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#noteInput {
+  flex: 1;
+}
+
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+
+.presets button {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.log-table-wrap {
+  max-height: 300px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.25rem 0.4rem;
+  border-bottom: 1px solid #8883;
+}

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Echo — Phone Sound Labeller</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Echo</h1>
+      <p class="privacy-note">
+        🔒 Audio stays on this device. Only labels, scores and timestamps are logged. Nothing is uploaded.
+      </p>
+
+      <section class="controls">
+        <button id="startStopBtn">Start listening</button>
+        <span id="status">Stopped</span>
+      </section>
+
+      <section class="panel">
+        <h2>Top 5 labels</h2>
+        <ol id="top5List"></ol>
+      </section>
+
+      <section class="panel">
+        <h2>Timeline (last 60s, top label per window)</h2>
+        <div id="timeline" class="timeline"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Watchlist</h2>
+        <div id="watchlist"></div>
+      </section>
+
+      <section class="panel">
+        <h2>All classes</h2>
+        <label><input type="checkbox" id="allClassesToggle" /> Show all 521 classes with current scores</label>
+        <div id="allClasses" class="all-classes hidden"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Settings</h2>
+        <label>Score threshold (below = "Unknown"):
+          <input type="number" id="thresholdInput" min="0" max="1" step="0.05" value="0.3" />
+        </label>
+        <label><input type="checkbox" id="smoothingToggle" /> Smoothing (majority of last 3 windows)</label>
+        <label>Window length (s):
+          <input type="number" id="windowInput" min="0.2" max="3" step="0.025" value="0.975" />
+        </label>
+        <label>Hop (s):
+          <input type="number" id="hopInput" min="0.1" max="2" step="0.05" value="0.5" />
+        </label>
+        <button id="applySettingsBtn">Apply (restart required)</button>
+      </section>
+
+      <section class="panel">
+        <h2>Mark event</h2>
+        <div class="mark-event">
+          <input type="text" id="noteInput" placeholder="What actually happened? e.g. played siren from laptop, 5 m" />
+          <button id="markEventBtn">Mark event</button>
+        </div>
+        <div id="presetNotes" class="presets"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Event log (<span id="logCount">0</span> rows)</h2>
+        <div class="export-buttons">
+          <button id="exportCsvBtn">Export CSV</button>
+          <button id="exportJsonBtn">Export JSON</button>
+          <button id="clearLogBtn">Clear log</button>
+        </div>
+        <div class="log-table-wrap">
+          <table id="logTable">
+            <thead>
+              <tr>
+                <th>time</th>
+                <th>top1</th>
+                <th>score</th>
+                <th>rms dBFS</th>
+                <th>note</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
