@@ -19,6 +19,7 @@ export class Grapher {
     this.markers = []; // { t, note }
     this.hiddenFamilies = new Set();
     this.windThreshold = 0.4;
+    this.clapYScaleMode = 'fixed'; // 'fixed' (0..1) | 'auto' (§4)
 
     this._resize();
     this._ro = new ResizeObserver(() => this._resize());
@@ -41,6 +42,10 @@ export class Grapher {
   setWindowSec(sec) {
     this.windowSec = sec;
     this._prune();
+  }
+
+  setClapYScaleMode(mode) {
+    this.clapYScaleMode = mode === 'auto' ? 'auto' : 'fixed';
   }
 
   setPaused(paused) {
@@ -276,7 +281,22 @@ export class Grapher {
     ctx.clearRect(0, 0, width, height);
     this._drawBackground(ctx, width, height, nowMs);
 
-    const toY = (score) => height - Math.max(0, Math.min(1, score)) * height;
+    // §4: CLAP series get their own scale (fixed 0..1, or auto-rescaled to
+    // the largest currently-visible CLAP score) so the graph is usable
+    // before/while prompts are tuned. YAMNet is left untouched (always 0..1).
+    let clapMax = 1;
+    if (this.clapYScaleMode === 'auto') {
+      let max = 0;
+      for (const s of this.series.values()) {
+        if (s.model !== 'clap') continue;
+        for (const p of s.points) if (p.score > max) max = p.score;
+      }
+      clapMax = max > 0 ? max : 1;
+    }
+    const toY = (score, model) => {
+      const scale = model === 'clap' ? clapMax : 1;
+      return height - Math.max(0, Math.min(1, score / scale)) * height;
+    };
     const greyKeys = this._visibleGreyKeys(nowMs, width);
 
     for (const [key, s] of this.series) {
@@ -295,20 +315,28 @@ export class Grapher {
       let started = false;
       for (const p of s.points) {
         const x = this._xFor(p.t, width, nowMs);
-        const y = toY(p.score);
+        const y = toY(p.score, s.model);
         if (!started) {
           ctx.moveTo(x, y);
           started = true;
         } else if (s.model === 'clap') {
           // stepped line for the slower CLAP cadence
           const prevX = this._xFor(s.points[s.points.indexOf(p) - 1]?.t ?? p.t, width, nowMs);
-          ctx.lineTo(x, toY(s.points[s.points.indexOf(p) - 1]?.score ?? p.score));
+          ctx.lineTo(x, toY(s.points[s.points.indexOf(p) - 1]?.score ?? p.score, s.model));
           ctx.lineTo(x, y);
         } else {
           ctx.lineTo(x, y);
         }
       }
       ctx.stroke();
+      ctx.restore();
+    }
+
+    if (this.clapYScaleMode === 'auto') {
+      ctx.save();
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = `${11 * (window.devicePixelRatio || 1)}px sans-serif`;
+      ctx.fillText(`CLAP auto-scale: 0–${clapMax.toFixed(2)}`, 6, height - 6);
       ctx.restore();
     }
 

@@ -29,6 +29,7 @@
         <div id="clapProgressBar" class="clap-progress-bar"></div>
         <span id="clapProgressLabel">Loading CLAP model…</span>
       </div>
+      <p id="clapStatus" class="clap-status">CLAP last run: —</p>
 
       <section class="legend" id="legend"></section>
 
@@ -39,6 +40,12 @@
         </div>
         <div class="graph-wrap score-wrap">
           <canvas id="scoreCanvas"></canvas>
+          <label class="clap-yscale-toggle">CLAP y-axis:
+            <select id="clapYScaleSelect">
+              <option value="fixed" selected>0–1 (fixed)</option>
+              <option value="auto">Auto</option>
+            </select>
+          </label>
         </div>
         <p class="uncalibrated-note">Phone microphones are not calibrated; use for comparison only.</p>
       </section>

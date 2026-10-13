@@ -46,6 +46,8 @@ const promptTemplateSelect = $('promptTemplateSelect');
 const windThresholdInput = $('windThresholdInput');
 const themeSelect = $('themeSelect');
 const logAllClassesToggle = $('logAllClassesToggle');
+const clapStatusEl = $('clapStatus');
+const clapYScaleSelect = $('clapYScaleSelect');
 
 const YAMNET_RATE = 16000;
 const CLAP_WINDOW_SEC = 10;
@@ -59,6 +61,9 @@ let clapWorker = null;
 let clapReady = false;
 let clapBusy = false;
 let clapRequestSeq = 0;
+let clapLastRunAt = null; // ms epoch of the last completed CLAP run
+let clapLastInferMs = null;
+let clapStallTimer = null;
 
 let audioContext = null;
 let mediaStream = null;
@@ -128,14 +133,50 @@ function ensureClapWorker() {
       clapReady = true;
       clapProgress.classList.add('hidden');
     } else if (msg.type === 'error') {
+      // §2/§3.1: never leave the UI showing a frozen last result — surface
+      // the failure and un-gate `clapBusy` so the worker can recover on the
+      // next tick rather than silently stalling forever.
+      clapBusy = false;
       clapProgress.classList.add('hidden');
-      statusEl.textContent = `CLAP error: ${msg.message}`;
+      clapStatusEl.textContent = `CLAP stopped: ${msg.message}`;
     } else if (msg.type === 'result') {
       clapBusy = false;
+      clapLastRunAt = Date.now();
+      clapLastInferMs = msg.inferMs ?? null;
+      updateClapStatus();
       handleClapResult(msg);
     }
   };
+  // Catches worker-thread crashes (e.g. an uncaught WASM OOM) that never
+  // make it to onmessage at all, so the UI doesn't just go quiet.
+  clapWorker.onerror = (event) => {
+    clapBusy = false;
+    clapProgress.classList.add('hidden');
+    clapStatusEl.textContent = `CLAP stopped: ${event.message || 'worker crashed'}`;
+  };
   return clapWorker;
+}
+
+// §3.1 + §2 "do not leave the last result frozen": shows last-run time and
+// infer_ms on screen, and flags a stall if no run has completed recently.
+function updateClapStatus() {
+  if (!clapLastRunAt) return;
+  const ago = ((Date.now() - clapLastRunAt) / 1000).toFixed(1);
+  const inferPart = clapLastInferMs != null ? `, ${clapLastInferMs} ms` : '';
+  clapStatusEl.textContent = `CLAP last run: ${new Date(clapLastRunAt).toLocaleTimeString()} (${ago}s ago${inferPart})`;
+}
+
+function startClapWatchdog() {
+  if (clapStallTimer) clearInterval(clapStallTimer);
+  clapStallTimer = setInterval(() => {
+    if (!running || !clapReady) return;
+    const { clapCadenceSec } = settings();
+    if (clapLastRunAt && Date.now() - clapLastRunAt > Math.max(10, clapCadenceSec * 5) * 1000) {
+      clapStatusEl.textContent = `CLAP stopped: stalled (no run in ${Math.round((Date.now() - clapLastRunAt) / 1000)}s)`;
+    } else if (clapLastRunAt) {
+      updateClapStatus();
+    }
+  }, 1000);
 }
 
 function initClapWorker() {
@@ -187,8 +228,10 @@ function handleLevel(rmsDbfs, peakDbfs) {
 
 function handleYamnetWindow(samples) {
   if (!yamnetClassifier) return;
-  const { windowSec, logAllClasses } = settings();
+  const { yamnetWindowSec, logAllClasses } = settings();
+  const inferStart = performance.now();
   const results = yamnetClassifier.classify(samples, YAMNET_RATE);
+  const inferMs = Math.round(performance.now() - inferStart);
   const categories = results[0]?.classifications?.[0]?.categories || [];
   const sorted = [...categories].sort((a, b) => b.score - a.score);
   const byName = new Map(sorted.map((c) => [c.categoryName, c.score]));
@@ -230,7 +273,8 @@ function handleYamnetWindow(samples) {
     session_id: sessionId,
     device,
     model: 'yamnet',
-    window_s: windowSec,
+    window_s: yamnetWindowSec,
+    infer_ms: inferMs,
     rms_dbfs: latestRmsDbfs,
     peak_dbfs: latestPeakDbfs,
     top1_label: top5[0]?.categoryName || '',
@@ -299,6 +343,7 @@ function handleClapResult(msg) {
     device,
     model: 'clap',
     window_s: CLAP_WINDOW_SEC,
+    infer_ms: msg.inferMs ?? null,
     rms_dbfs: latestRmsDbfs,
     peak_dbfs: latestPeakDbfs,
     top1_label: top5[0]?.id || '',
@@ -331,6 +376,10 @@ async function start() {
   }
   if (needsClap) {
     await initClapWorker();
+    clapLastRunAt = null;
+    clapLastInferMs = null;
+    clapStatusEl.textContent = 'CLAP last run: —';
+    startClapWatchdog();
   }
 
   mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -382,6 +431,10 @@ async function start() {
 
 function stop() {
   running = false;
+  if (clapStallTimer) {
+    clearInterval(clapStallTimer);
+    clapStallTimer = null;
+  }
   if (workletNode) workletNode.port.onmessage = null;
   if (sourceNode) sourceNode.disconnect();
   if (workletNode) workletNode.disconnect();
@@ -435,6 +488,9 @@ applySettingsBtn.addEventListener('click', () => {
 windowSelect.addEventListener('change', () => grapher.setWindowSec(parseFloat(windowSelect.value)));
 windThresholdInput.addEventListener('change', () => {
   grapher.windThreshold = parseFloat(windThresholdInput.value) || 0.4;
+});
+clapYScaleSelect.addEventListener('change', () => {
+  grapher.setClapYScaleMode(clapYScaleSelect.value);
 });
 promptTemplateSelect.addEventListener('change', () => {
   if (clapWorker) clapWorker.postMessage({ type: 'setPromptTemplate', promptTemplate: promptTemplateSelect.value });

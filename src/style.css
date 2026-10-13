@@ -106,6 +106,23 @@ select {
   padding-left: 0.5rem;
 }
 
+.clap-status {
+  font-size: 0.75rem;
+  opacity: 0.75;
+  margin: 0 0 0.5rem;
+}
+
+.clap-yscale-toggle {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  font-size: 0.7rem;
+  background: #0b0f1aaa;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  z-index: 2;
+}
+
 .legend {
   display: flex;
   flex-wrap: wrap;
