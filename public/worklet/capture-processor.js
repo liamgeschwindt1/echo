@@ -1,5 +1,5 @@
 // Captures raw mic samples at the device's native rate into rolling circular
-// buffers and emits: (1) ~0.25s relative-level blocks, (2) overlapping YAMNet
+// buffers and emits: (1) 100 ms relative-level blocks, (2) overlapping YAMNet
 // windows resampled to 16 kHz, and (3) a rolling CLAP buffer at native rate
 // every `clapHopSamples`. No audio is stored beyond these in-memory buffers.
 function resampleLinear(input, srcRate, dstRate, dstLength) {
@@ -110,7 +110,7 @@ class CaptureProcessor extends AudioWorkletProcessor {
       this.clapWriteIndex = (this.clapWriteIndex + 1) % this.clapWindowSamples;
       this.clapFilled = Math.min(this.clapFilled + 1, this.clapWindowSamples);
       this.clapSinceHop++;
-      if (this.clapSinceHop >= this.clapHopSamples) {
+      if (this.clapSinceHop >= this.clapHopSamples && this.clapFilled >= this.clapWindowSamples) {
         this.clapSinceHop = 0;
         this._emitClapWindow();
       }

@@ -2,112 +2,108 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Echo — Phone Sound Labeller</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Phone Sound Labeller</title>
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <main>
-      <header class="top-bar">
-        <h1>Echo</h1>
-        <p class="privacy-note">🔒 Audio stays on this device. Only labels are logged.</p>
+    <main id="mainScreen">
+      <header>
+        <h1>Phone Sound Labeller</h1>
+        <p class="privacy">Audio stays on this device. Only labels and levels are used.</p>
       </header>
 
-      <section class="controls">
-        <button id="startStopBtn">Start listening</button>
-        <button id="pauseBtn" disabled>Pause</button>
-        <select id="modelSelect">
+      <div class="start-row">
+        <button id="startBtn" class="big">Start</button>
+        <div id="elapsed" class="elapsed">00:00:00</div>
+      </div>
+
+      <div class="chips">
+        <span id="chipYamnet" class="status-chip off">YAMNet off</span>
+        <span id="chipClap" class="status-chip off">CLAP off</span>
+      </div>
+      <div id="loadStatus" class="muted small"></div>
+
+      <div class="meter" aria-label="Relative level">
+        <div id="meterFill" class="meter-fill"></div>
+      </div>
+      <div class="muted small"><span id="meterText">-- dBFS</span> (relative, uncalibrated)</div>
+
+      <section class="tag">
+        <button id="tagBtn" class="secondary">Clip tag</button>
+        <div id="tagPanel" class="tag-panel hidden">
+          <div id="tagPresets" class="preset-row"></div>
+          <div class="tag-input-row">
+            <input id="tagText" type="text" maxlength="200" placeholder="Describe what is playing" />
+            <button id="tagSave">Save</button>
+          </div>
+        </div>
+        <div id="tagToast" class="muted small"></div>
+      </section>
+
+      <nav class="actions">
+        <button id="graphBtn" class="secondary">Live graph</button>
+        <button id="resultsBtn" disabled>View results</button>
+        <button id="jsonBtn" class="secondary">Download JSON</button>
+        <button id="settingsBtn" class="secondary icon" aria-label="Settings">&#9881;</button>
+      </nav>
+      <div class="muted small" id="counts"></div>
+    </main>
+
+    <div id="graphOverlay" class="overlay hidden" role="dialog" aria-label="Live graph">
+      <div class="overlay-bar">
+        <strong>Live graph</strong>
+        <select id="graphModel" aria-label="Model">
+          <option value="both">Both</option>
           <option value="yamnet">YAMNet</option>
           <option value="clap">CLAP</option>
-          <option value="both">Both</option>
         </select>
-        <span id="status">Stopped</span>
-        <button id="settingsToggleBtn" class="icon-btn" aria-label="Settings">⚙</button>
-      </section>
-
-      <div id="clapProgress" class="clap-progress hidden">
-        <div id="clapProgressBar" class="clap-progress-bar"></div>
-        <span id="clapProgressLabel">Loading CLAP model…</span>
+        <select id="graphWindow" aria-label="Window">
+          <option value="30">30 s</option>
+          <option value="60">60 s</option>
+          <option value="120">2 min</option>
+          <option value="300">5 min</option>
+        </select>
+        <select id="graphYAxis" aria-label="Score axis">
+          <option value="fixed">Fixed 0-1</option>
+          <option value="auto">Auto</option>
+        </select>
+        <button id="graphClose" class="secondary">Close</button>
       </div>
-      <p id="clapStatus" class="clap-status">CLAP last run: —</p>
+      <canvas id="levelCanvas" class="graph level"></canvas>
+      <canvas id="scoreCanvas" class="graph score"></canvas>
+    </div>
 
-      <section class="legend" id="legend"></section>
+    <div id="settingsOverlay" class="overlay hidden" role="dialog" aria-label="Settings">
+      <div class="overlay-bar">
+        <strong>Settings</strong>
+        <button id="settingsClose" class="secondary">Close</button>
+      </div>
+      <div class="settings-body">
+        <div id="settingsNote" class="muted small"></div>
+        <form id="settingsForm" autocomplete="off"></form>
+        <fieldset>
+          <legend>Advanced</legend>
+          <p class="muted small">Shows the exact JSON that "View results" will post to our server, and its size.</p>
+          <button id="previewBtn" type="button" class="secondary">Preview what will be sent</button>
+          <button id="resetBtn" type="button" class="secondary">Reset to defaults</button>
+          <button id="newSessionBtn" type="button" class="secondary danger">New session (clear data)</button>
+          <div id="previewSize" class="muted small"></div>
+          <pre id="previewOut" class="hidden"></pre>
+        </fieldset>
+      </div>
+    </div>
 
-      <section class="graphs">
-        <div class="graph-wrap level-wrap">
-          <canvas id="levelCanvas"></canvas>
-          <div class="axis-label">Relative level (uncalibrated)</div>
-        </div>
-        <div class="graph-wrap score-wrap">
-          <canvas id="scoreCanvas"></canvas>
-          <label class="clap-yscale-toggle">CLAP y-axis:
-            <select id="clapYScaleSelect">
-              <option value="fixed" selected>0–1 (fixed)</option>
-              <option value="auto">Auto</option>
-            </select>
-          </label>
-        </div>
-        <p class="uncalibrated-note">Phone microphones are not calibrated; use for comparison only.</p>
-      </section>
-
-      <section class="scrub-readout hidden" id="scrubReadout">
-        <h3 id="scrubTime"></h3>
-        <div id="scrubModels"></div>
-        <button id="resumeBtn">Resume live</button>
-      </section>
-
-      <section class="panel">
-        <h2>Mark event</h2>
-        <div class="mark-event">
-          <input type="text" id="noteInput" placeholder="What actually happened? e.g. played siren from laptop, 5 m" />
-          <button id="markEventBtn">Mark event</button>
-        </div>
-        <div id="presetNotes" class="presets"></div>
-      </section>
-
-      <aside id="settingsDrawer" class="settings-drawer hidden">
-        <h2>Settings</h2>
-        <label>Visible window:
-          <select id="windowSelect">
-            <option value="30">30 s</option>
-            <option value="60" selected>60 s</option>
-            <option value="120">2 min</option>
-            <option value="300">5 min</option>
-          </select>
-        </label>
-        <label>YAMNet window (s): <input type="number" id="windowInput" min="0.2" max="3" step="0.025" value="0.975" /></label>
-        <label>YAMNet hop (s): <input type="number" id="hopInput" min="0.1" max="2" step="0.05" value="0.5" /></label>
-        <label>CLAP cadence (s): <input type="number" id="clapCadenceInput" min="1" max="10" step="0.5" value="2.5" /></label>
-        <label>CLAP prompt template:
-          <select id="promptTemplateSelect">
-            <option value="This is a sound of {}.">This is a sound of {phrase}</option>
-            <option value="{}">bare phrase</option>
-          </select>
-        </label>
-        <label>Wind-shading threshold: <input type="number" id="windThresholdInput" min="0" max="1" step="0.05" value="0.4" /></label>
-        <label>Theme:
-          <select id="themeSelect">
-            <option value="system">System</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
-        </label>
-        <label><input type="checkbox" id="logAllClassesToggle" /> Log all 521 YAMNet classes (~10x bigger export)</label>
-        <button id="applySettingsBtn">Apply (restart required)</button>
-        <button id="closeSettingsBtn">Close</button>
-      </aside>
-
-      <section class="panel">
-        <h2>Log (<span id="logCount">0</span> rows)</h2>
-        <div class="export-buttons">
-          <button id="exportCsvBtn">Export CSV</button>
-          <button id="exportJsonBtn">Export JSON</button>
-          <button id="clearLogBtn">Clear log</button>
-        </div>
-      </section>
-    </main>
+    <div id="reportOverlay" class="overlay hidden report-overlay" role="dialog" aria-label="Results">
+      <div class="overlay-bar">
+        <strong>Results</strong>
+        <button id="reportClose" class="secondary">Close</button>
+      </div>
+      <div id="reportLoading" class="muted hidden">Building report...</div>
+      <div id="reportRoot"></div>
+    </div>
 
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
-

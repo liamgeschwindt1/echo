@@ -1,0 +1,96 @@
+{
+  "version": "2.2",
+  "levels": ["ignore", "log", "flag", "alert"],
+  "sustained_labels": ["hvac_hum", "generator", "traffic_steady", "vehicle_idling", "music_loud", "music_bass", "party_noise", "crowd_chatter", "pressure_washer", "leaf_blower"],
+  "sustained_min_priority": "flag",
+  "table": {
+    "gunshot": { "day": "alert", "evening": "alert", "night": "alert" },
+    "explosion": { "day": "alert", "evening": "alert", "night": "alert" },
+    "glass_break": { "day": "alert", "evening": "alert", "night": "alert" },
+    "scream": { "day": "alert", "evening": "alert", "night": "alert" },
+    "fire_alarm": { "day": "alert", "evening": "alert", "night": "alert" },
+    "intruder_alarm": { "day": "alert", "evening": "alert", "night": "alert" },
+    "car_alarm": { "day": "alert", "evening": "alert", "night": "alert" },
+
+    "fireworks_bang": { "day": "flag", "evening": "flag", "night": "flag" },
+    "fireworks_crackle": { "day": "flag", "evening": "flag", "night": "flag" },
+    "vehicle_backfire": { "day": "flag", "evening": "flag", "night": "flag" },
+    "thunder": { "day": "flag", "evening": "flag", "night": "flag" },
+    "fox_scream": { "day": "flag", "evening": "flag", "night": "flag" },
+    "train_on_bridge": { "day": "flag", "evening": "flag", "night": "flag" },
+
+    "bottle_bank": { "day": "log", "evening": "flag", "night": "flag" },
+
+    "door_slam": { "day": "log", "evening": "flag", "night": "alert" },
+    "metal_bang": { "day": "log", "evening": "flag", "night": "alert" },
+    "heavy_thud": { "day": "log", "evening": "flag", "night": "alert" },
+    "crash": { "day": "log", "evening": "flag", "night": "alert" },
+    "unexplained_impact": { "day": "log", "evening": "flag", "night": "alert" },
+
+    "shouting": { "day": "log", "evening": "flag", "night": "alert" },
+    "argument": { "day": "log", "evening": "flag", "night": "alert" },
+    "chanting_singing": { "day": "log", "evening": "flag", "night": "alert" },
+    "crowd_rowdy": { "day": "flag", "evening": "flag", "night": "alert" },
+    "crowd_chatter": { "day": "log", "evening": "log", "night": "flag" },
+    "laughter": { "day": "log", "evening": "log", "night": "flag" },
+
+    "reversing_beeps": { "day": "log", "evening": "flag", "night": "alert" },
+    "car_horn": { "day": "log", "evening": "log", "night": "flag" },
+    "pa_announcement": { "day": "log", "evening": "log", "night": "flag" },
+
+    "siren_police": { "day": "flag", "evening": "flag", "night": "flag" },
+    "siren_ambulance": { "day": "flag", "evening": "flag", "night": "flag" },
+    "siren_fire": { "day": "flag", "evening": "flag", "night": "flag" },
+    "siren_generic": { "day": "flag", "evening": "flag", "night": "flag" },
+
+    "engine_revving": { "day": "log", "evening": "flag", "night": "alert" },
+    "exhaust_crackle": { "day": "log", "evening": "flag", "night": "alert" },
+    "motorcycle": { "day": "log", "evening": "flag", "night": "alert" },
+    "scooter_ebike": { "day": "log", "evening": "flag", "night": "alert" },
+    "tyre_screech": { "day": "flag", "evening": "flag", "night": "alert" },
+    "car_passing": { "day": "log", "evening": "log", "night": "log" },
+    "traffic_steady": { "day": "log", "evening": "log", "night": "log" },
+    "vehicle_idling": { "day": "log", "evening": "flag", "night": "flag" },
+
+    "plane_flyover": { "day": "log", "evening": "log", "night": "log" },
+    "plane_landing_takeoff": { "day": "log", "evening": "log", "night": "log" },
+    "helicopter": { "day": "log", "evening": "log", "night": "flag" },
+    "drone": { "day": "flag", "evening": "flag", "night": "alert" },
+
+    "train_passing": { "day": "log", "evening": "log", "night": "log" },
+    "light_rail": { "day": "log", "evening": "log", "night": "log" },
+    "boat_horn": { "day": "log", "evening": "flag", "night": "flag" },
+
+    "music_loud": { "day": "log", "evening": "flag", "night": "alert" },
+    "music_bass": { "day": "log", "evening": "flag", "night": "alert" },
+    "car_stereo": { "day": "log", "evening": "flag", "night": "alert" },
+    "party_noise": { "day": "log", "evening": "flag", "night": "alert" },
+    "music_street": { "day": "log", "evening": "log", "night": "flag" },
+
+    "jackhammer": { "day": "log", "evening": "flag", "night": "alert" },
+    "drill_saw": { "day": "log", "evening": "flag", "night": "alert" },
+    "angle_grinder": { "day": "log", "evening": "flag", "night": "alert" },
+    "hammering_piling": { "day": "log", "evening": "flag", "night": "alert" },
+    "pressure_washer": { "day": "log", "evening": "flag", "night": "alert" },
+    "leaf_blower": { "day": "log", "evening": "flag", "night": "alert" },
+    "scaffold_clatter": { "day": "log", "evening": "flag", "night": "alert" },
+
+    "hvac_hum": { "day": "log", "evening": "flag", "night": "flag" },
+    "generator": { "day": "log", "evening": "flag", "night": "flag" },
+    "bin_lorry": { "day": "log", "evening": "flag", "night": "alert" },
+    "roller_shutter": { "day": "log", "evening": "flag", "night": "alert" },
+    "delivery_trolley": { "day": "log", "evening": "log", "night": "flag" },
+
+    "dog_barking": { "day": "log", "evening": "flag", "night": "flag" },
+
+    "wind_on_mic": { "day": "ignore", "evening": "ignore", "night": "ignore" },
+    "wind": { "day": "ignore", "evening": "ignore", "night": "ignore" },
+    "rain": { "day": "ignore", "evening": "ignore", "night": "ignore" },
+    "speech_normal": { "day": "ignore", "evening": "ignore", "night": "ignore" },
+    "footsteps": { "day": "ignore", "evening": "ignore", "night": "ignore" },
+    "handling_noise": { "day": "ignore", "evening": "ignore", "night": "ignore" },
+    "quiet_room": { "day": "ignore", "evening": "ignore", "night": "ignore" },
+    "birds": { "day": "ignore", "evening": "ignore", "night": "ignore" },
+    "street_background": { "day": "ignore", "evening": "ignore", "night": "ignore" }
+  }
+}
