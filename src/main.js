@@ -634,24 +634,10 @@ function reportData(exp) {
 }
 
 async function fetchReport(request) {
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 90_000);
-  try {
-    const res = await fetch('/api/report', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(request),
-      signal: ctrl.signal,
-      credentials: 'same-origin'
-    });
-    const body = await res.json().catch(() => null);
-    if (!res.ok || !body || body.error) return fallbackReport(request, body?.reason || body?.error || `server returned HTTP ${res.status}`);
-    return body;
-  } catch (e) {
-    return fallbackReport(request, e.name === 'AbortError' ? 'request timed out' : 'server not reachable');
-  } finally {
-    clearTimeout(timer);
-  }
+  // AI server is intentionally paused. Keep the view deterministic and offline-safe by
+  // rendering the labels directly from the local model periods instead of relying on a
+  // remote /api/report response.
+  return fallbackReport(request, 'AI server paused; showing local model labels only.');
 }
 
 async function showResults(regenerate = false) {

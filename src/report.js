@@ -22,7 +22,7 @@ export const REPORT_CSS = `
 .rep .chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .rep .grid{display:block}
 .rep .timeline{display:none}
-.rep .cards{position:relative;padding-left:22px}
+.rep .cards{position:relative;padding-left:22px;max-height:calc(100vh - 220px);overflow-y:auto}
 .rep .cards::before{content:"";position:absolute;left:7px;top:0;bottom:0;width:2px;background:var(--line)}
 .rep .card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px;scroll-margin-top:12px}
 .rep .card.hl{outline:2px solid var(--accent)}
@@ -243,8 +243,8 @@ export function reportApp(root, data, opts) {
     h += `<h1>${esc(meta.session_label || 'Sound labelling session')}</h1>`;
     h += `<div class="muted">${isFinite(startMs) ? esc(fmtT(startMs, true)) : ''}${isFinite(endMs) ? ` - ${esc(fmtT(endMs))} · ${esc(fmtDur((endMs - startMs) / 1000))}` : ''}${meta.location_text ? ` · ${esc(meta.location_text)}` : ''}</div>`;
     h += `<div class="muted">Device: ${esc(data.device || meta.device || 'not recorded')} · Models: ${esc(models || 'none')}</div>`;
-    h += `<div class="muted">${report.source === 'gemini' ? `Report by ${esc(report.model)} at ${esc(fmtT(Date.parse(report.generated_at), true))}` : 'Report: basic (deterministic)'}</div>`;
-    if (report.source !== 'gemini') h += `<div class="banner">Basic report: Gemini was not used (${esc(report.fallback_reason || 'unknown reason')}).</div>`;
+    h += `<div class="muted">${report.source === 'gemini' ? `Report by ${esc(report.model)} at ${esc(fmtT(Date.parse(report.generated_at), true))}` : 'Offline model timeline'}</div>`;
+    if (report.source !== 'gemini') h += `<div class="banner">AI server paused: showing the sound labels produced directly by the enabled models in a scrollable timeline (${esc(report.fallback_reason || 'local-only mode')}).</div>`;
     if (report.summary && report.summary.headline) h += `<div class="headline">${esc(report.summary.headline)}</div>`;
     h += `<div class="strip"><span class="stat"><b>${counts.alert}</b>alert</span><span class="stat"><b>${counts.flag}</b>flag</span><span class="stat"><b>${counts.log}</b>log</span><span class="stat"><b>${disagreements}</b>model disagreements</span><span class="stat"><b>${quiet}</b>quiet-hours events</span></div>`;
     if (report.summary && report.summary.quiet_hours_summary) h += `<div><b>Quiet hours:</b> ${esc(report.summary.quiet_hours_summary)}</div>`;
