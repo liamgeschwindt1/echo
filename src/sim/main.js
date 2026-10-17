@@ -3,7 +3,7 @@ import { speedOfSound, dbToPa } from './core/physics.js';
 import { clipGainPa } from './core/render.js';
 import { analyseClip, wavefrontRings } from './core/wavefront.js';
 import { micPositions } from './core/mics.js';
-import { loadManifest, fetchClip, decodeToMono } from './clips.js';
+import { loadManifest, fetchClip } from './clips.js';
 import { classify } from './core/label.js';
 import { attachDetections } from './core/match.js';
 import { loadRunners } from './models.js';
@@ -71,19 +71,6 @@ async function init() {
 function refreshClipSelect() {
   $('clipSelect').innerHTML = library.map((c) => `<option value="${c.id}">${c.name}</option>`).join('');
 }
-
-$('clipUpload').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const id = `upload_${counter++}`;
-  const samples = await decodeToMono(await file.arrayBuffer(), FS);
-  clips.set(id, samples);
-  analyses.set(id, analyseClip(samples, FS));
-  library.push({ id, name: file.name, file: null, level_1m_db: 90, confirmed: false });
-  refreshClipSelect();
-  $('clipSelect').value = id;
-  e.target.value = '';
-});
 
 // ---------- settings and top bar ----------
 

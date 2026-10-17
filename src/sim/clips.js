@@ -1,13 +1,14 @@
 // Placeholder levels at 1 m (dB SPL); confirmed: false until measured.
 export const PLACEHOLDER_LEVELS = {
-  gunshot: 140, glass_breaking: 100, scream: 110, car_horn: 105, dog: 100, door_wood_knock: 85, chainsaw: 110, engine: 95,
-  airplane: 120, rain: 70, footsteps: 75, fireworks: 130, thunderstorm: 120, crying_baby: 100, laughing: 90
+  glass_breaking: 100, car_horn: 105, dog: 100, chainsaw: 110, fireworks: 130, thunderstorm: 120, crying_baby: 100, engine: 95, airplane: 120, footsteps: 75,
+  gunshot: 140, scream: 110
 };
 
+// Only clips flagged "sim" in the manifest form the built-in library.
 export async function loadManifest() {
   const res = await fetch('/test-audio/manifest.json');
   const m = await res.json();
-  return m.clips.map((c) => ({ id: c.id, name: c.name, file: c.file, level_1m_db: PLACEHOLDER_LEVELS[c.id] ?? 90, confirmed: false, labels: c.labels }));
+  return m.clips.filter((c) => c.sim).map((c) => ({ id: c.id, name: c.name, file: c.file, level_1m_db: PLACEHOLDER_LEVELS[c.id] ?? 90, confirmed: false, labels: c.labels }));
 }
 
 // OfflineAudioContext decodes straight to the render rate.
