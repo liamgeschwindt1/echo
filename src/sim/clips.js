@@ -28,3 +28,13 @@ export async function fetchClip(entry, rate) {
   if (!res.ok) throw new Error(`clip ${entry.id} missing (${res.status}); run "npm run fetch-test-audio"`);
   return decodeToMono(await res.arrayBuffer(), rate);
 }
+
+// A missing file can come back as the SPA's index.html with status 200, so check the type too.
+export async function clipAvailable(entry) {
+  try {
+    const res = await fetch(`/test-audio/${entry.file}`, { method: 'HEAD' });
+    return res.ok && !(res.headers.get('content-type') || '').includes('text/html');
+  } catch {
+    return false;
+  }
+}

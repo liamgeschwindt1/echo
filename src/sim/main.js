@@ -3,7 +3,7 @@ import { speedOfSound, dbToPa } from './core/physics.js';
 import { clipGainPa } from './core/render.js';
 import { analyseClip, wavefrontRings } from './core/wavefront.js';
 import { micPositions } from './core/mics.js';
-import { loadManifest, fetchClip } from './clips.js';
+import { loadManifest, fetchClip, decodeToMono, clipAvailable } from './clips.js';
 import { classify } from './core/label.js';
 import { attachDetections } from './core/match.js';
 import { loadRunners } from './models.js';
@@ -53,13 +53,28 @@ async function ensureClip(id) {
   analyses.set(id, analyseClip(samples, FS));
 }
 
+let libraryError = '';
+
+function loadDemo() {
+  scenario.nodes = [newNode('n1', 0, 0), newNode('n2', 60, 0), newNode('n3', 30, 50)];
+  const entry = ['gunshot', 'glass_breaking'].map((id) => library.find((c) => c.id === id && c.available)).find(Boolean) || library.find((c) => c.available);
+  if (entry) {
+    scenario.sources = [newSource('s1', entry.id, 25, 20, entry.level_1m_db)];
+    ensureClip(entry.id).catch((err) => console.error(err));
+  }
+  counter = 4;
+  view = { cx: 30, cy: 25, scale: 5 };
+}
+
 async function init() {
   try {
-    library.push(...(await loadManifest()).filter((c) => c.file));
-  } catch {
-    // Manifest is optional; uploads still work.
+    const entries = (await loadManifest()).filter((c) => c.file);
+    await Promise.all(entries.map(async (c) => (c.available = await clipAvailable(c))));
+    library.push(...entries);
+  } catch (err) {
+    libraryError = String(err?.message || err);
   }
-  refreshClipSelect();
+  loadDemo();
   for (const [k, v] of Object.entries(scenario.settings)) {
     const el = $(`s_${k}`);
     if (el && typeof v === 'number') el.value = v;
@@ -68,9 +83,81 @@ async function init() {
   requestAnimationFrame(frame);
 }
 
-function refreshClipSelect() {
-  $('clipSelect').innerHTML = library.map((c) => `<option value="${c.id}">${c.name}</option>`).join('');
+// ---------- clip picker ----------
+
+let pendingPos = null;
+
+function openClipPicker(x, y) {
+  pendingPos = [x, y];
+  const list = $('clipList');
+  list.replaceChildren();
+  const note = (text) => list.append(Object.assign(document.createElement('div'), { className: 'empty', textContent: text }));
+  if (!library.length) note(`No sounds could be loaded${libraryError ? `: ${libraryError}` : ''}. Upload a WAV below.`);
+  for (const c of library) {
+    const b = document.createElement('button');
+    b.textContent = c.name;
+    b.disabled = c.available === false;
+    b.addEventListener('click', () => addSource(c));
+    list.append(b);
+  }
+  const missing = library.filter((c) => c.available === false).length;
+  if (missing) note(`${missing} sound file(s) are missing on the server. Build with SIM_ENABLED=1 so the clips are downloaded, or run npm run fetch-test-audio locally.`);
+  $('clipDlg').showModal();
 }
+
+async function addSource(entry) {
+  $('clipDlg').close();
+  const [x, y] = pendingPos;
+  scenario.sources.push(newSource(`s${counter++}`, entry.id, x, y, entry.level_1m_db));
+  selected = { type: 'source', id: scenario.sources.at(-1).id };
+  markEdited();
+  try {
+    await ensureClip(entry.id);
+  } catch (err) {
+    $('statusLabel').textContent = err.message;
+  }
+  renderInspector();
+}
+
+$('clipUpload').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  try {
+    const id = `upload_${counter++}`;
+    const samples = await decodeToMono(await file.arrayBuffer(), FS);
+    clips.set(id, samples);
+    analyses.set(id, analyseClip(samples, FS));
+    const entry = { id, name: file.name, file: null, available: true, level_1m_db: 90, confirmed: false };
+    library.push(entry);
+    await addSource(entry);
+  } catch (err) {
+    $('statusLabel').textContent = `Could not read that file: ${err.message}`;
+  }
+});
+$('clipCancel').addEventListener('click', () => $('clipDlg').close());
+
+// ---------- menus and dialogs ----------
+
+document.addEventListener('click', (e) => {
+  for (const m of document.querySelectorAll('details.menu[open]')) if (!m.contains(e.target)) m.open = false;
+});
+for (const b of document.querySelectorAll('.menu-body button')) b.addEventListener('click', () => (b.closest('details').open = false));
+$('settingsBtn').addEventListener('click', () => $('settingsDlg').showModal());
+$('settingsClose').addEventListener('click', () => $('settingsDlg').close());
+$('infoBtn').addEventListener('click', () => $('infoDlg').showModal());
+$('infoClose').addEventListener('click', () => $('infoDlg').close());
+
+function removeSelected() {
+  if (!selected) return;
+  if (selected.type === 'node') scenario.nodes = scenario.nodes.filter((n) => n.id !== selected.id);
+  else scenario.sources = scenario.sources.filter((s) => s.id !== selected.id);
+  selected = null;
+  markEdited();
+}
+document.addEventListener('keydown', (e) => {
+  if ((e.key === 'Delete' || e.key === 'Backspace') && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName || '')) removeSelected();
+});
 
 // ---------- settings and top bar ----------
 
@@ -179,7 +266,8 @@ async function classifyAll() {
       readings.set(node.id, out);
     }
     summary = attachDetections(snapshot.scenario, snapshot.results, detections, snapshot.dur);
-    $('statusLabel').textContent = '';
+    const fa = Object.values(summary.false_alerts).reduce((a, b) => a + b, 0);
+    $('statusLabel').textContent = `Missed ${summary.missed.length}, false detections ${fa}`;
   } catch (err) {
     $('statusLabel').textContent = `Classification failed: ${err.message}`;
   }
@@ -393,21 +481,8 @@ map.addEventListener('pointerdown', async (e) => {
     return markEdited();
   }
   if (tool === 'source') {
-    const clip = $('clipSelect').value;
-    if (!clip) return;
-    const entry = library.find((c) => c.id === clip);
-    scenario.sources.push(newSource(`s${counter++}`, clip, Math.round(wx * 10) / 10, Math.round(wy * 10) / 10, entry?.level_1m_db));
-    selected = { type: 'source', id: scenario.sources.at(-1).id };
-    markEdited();
-    try { await ensureClip(clip); } catch (err) { console.error(err); }
-    return renderInspector();
-  }
-  if (tool === 'delete') {
-    if (!hit) return;
-    if (hit.type === 'node') scenario.nodes = scenario.nodes.filter((n) => n.id !== hit.id);
-    else scenario.sources = scenario.sources.filter((s) => s.id !== hit.id);
-    selected = null;
-    return markEdited();
+    openClipPicker(Math.round(wx * 10) / 10, Math.round(wy * 10) / 10);
+    return;
   }
   selected = hit;
   drag = hit ? { kind: 'obj' } : { kind: 'pan', sx, sy, cx: view.cx, cy: view.cy };
@@ -452,43 +527,62 @@ function numField(label, value, onSet, step = 0.1) {
   return l;
 }
 
+function updateHint() {
+  $('hint').textContent = !scenario.nodes.length ? 'Add a node, then add a sound' : !scenario.sources.length ? 'Now add a sound with Add source' : '';
+}
+
+function advanced(...children) {
+  const d = document.createElement('details');
+  d.append(Object.assign(document.createElement('summary'), { textContent: 'Advanced' }), ...children);
+  return d;
+}
+
+function removeButton() {
+  const b = Object.assign(document.createElement('button'), { className: 'remove', textContent: 'Delete' });
+  b.addEventListener('click', removeSelected);
+  return b;
+}
+
 function renderInspector() {
   const el = $('inspector');
   el.replaceChildren();
+  const o = selected && find(selected);
+  $('app').classList.toggle('has-inspector', !!o);
+  updateHint();
+  if (!o) return;
   const h = (text) => Object.assign(document.createElement('h3'), { textContent: text });
-  if (!selected || !find(selected)) {
-    el.append(h(`Status: ${status}`));
-    el.append(Object.assign(document.createElement('div'), { className: 'muted', textContent: 'Select, add or drag objects. Create renders every mic and localises each source.' }));
-    if (summary) {
-      const fa = Object.values(summary.false_alerts).reduce((a, b) => a + b, 0);
-      el.append(Object.assign(document.createElement('p'), { textContent: `Missed events: ${summary.missed.length}. False detections (all nodes): ${fa}.` }));
-    }
-    return;
-  }
-  const o = find(selected);
   if (selected.type === 'node') {
     el.append(h(`Node ${o.id}`));
-    ['x', 'y', 'z'].forEach((a, i) => el.append(numField(a, o.position[i], (v) => (o.position[i] = v))));
-    el.append(numField('rotation °', o.rotation_deg, (v) => (o.rotation_deg = v), 1));
-    el.append(numField('spacing m', o.mic_spacing_m, (v) => (o.mic_spacing_m = v), 0.01));
-    const l = document.createElement('label');
-    l.textContent = 'layout';
+    el.append(numField('x (m)', o.position[0], (v) => (o.position[0] = v)), numField('y (m)', o.position[1], (v) => (o.position[1] = v)));
+    const layout = document.createElement('label');
+    layout.textContent = 'Layout';
     const sel = document.createElement('select');
     sel.innerHTML = '<option value="flat_square">flat square</option><option value="tetrahedron">tetrahedron</option>';
     sel.value = o.mic_layout;
     sel.addEventListener('change', () => { o.mic_layout = sel.value; markEdited(); });
-    l.append(sel);
-    el.append(l);
+    layout.append(sel);
+    el.append(advanced(
+      numField('height z (m)', o.position[2], (v) => (o.position[2] = v)),
+      numField('rotation (\u00b0)', o.rotation_deg, (v) => (o.rotation_deg = v), 1),
+      numField('mic spacing (m)', o.mic_spacing_m, (v) => (o.mic_spacing_m = v), 0.01),
+      layout
+    ));
+    el.append(removeButton());
     const rn = rendered?.nodes.find((n) => n.id === o.id);
     if (rn) el.append(nodeResultPanel(rn, readings.get(o.id)));
   } else {
-    el.append(h(`Source ${o.id} (${o.clip})`));
-    const p = sourcePosition(o);
-    ['x', 'y', 'z'].forEach((a, i) => el.append(numField(a, p[i], (v) => (p[i] = v))));
-    el.append(numField('level @1m dB', o.level_1m_db, (v) => (o.level_1m_db = v), 1));
-    el.append(numField('start s', o.start_s, (v) => (o.start_s = Math.max(0, v))));
     const entry = library.find((c) => c.id === o.clip);
+    el.append(h(`${entry?.name ?? o.clip} (${o.id})`));
+    const p = sourcePosition(o);
+    el.append(
+      numField('x (m)', p[0], (v) => (p[0] = v)),
+      numField('y (m)', p[1], (v) => (p[1] = v)),
+      numField('level at 1 m (dB)', o.level_1m_db, (v) => (o.level_1m_db = v), 1),
+      numField('start (s)', o.start_s, (v) => (o.start_s = Math.max(0, v)))
+    );
     if (entry && !entry.confirmed) el.append(Object.assign(document.createElement('div'), { className: 'muted', textContent: 'Level is a placeholder (unconfirmed).' }));
+    el.append(advanced(numField('height z (m)', p[2], (v) => (p[2] = v))));
+    el.append(removeButton());
     const r = results?.find((x) => x.source_id === o.id);
     if (r) el.append(resultPanel(r));
   }
@@ -586,6 +680,11 @@ function drawTimeline() {
   const H = tlc.height;
   tctx.fillStyle = '#000';
   tctx.fillRect(0, 0, W, H);
+  if (!scenario.sources.length) {
+    tctx.fillStyle = '#8a8a8a';
+    tctx.font = `${14 * dpr}px system-ui, sans-serif`;
+    tctx.fillText('Sounds appear here as blocks once you add a source. Drag a block to change when it starts.', 18 * dpr, 60 * dpr);
+  }
   const px = tl.pxPerS * dpr;
   tctx.font = `${10 * dpr}px monospace`;
   tctx.strokeStyle = '#444';

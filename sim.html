@@ -13,44 +13,83 @@
       <header id="top">
         <button id="createBtn" class="primary">Create</button>
         <button id="playBtn">Play</button>
-        <label>Speed <input id="speed" type="range" min="-4.32" max="2" step="0.01" value="0" /> <span id="speedLabel">1x</span></label>
-        <span id="timeLabel">0.00 s</span>
-        <label>CLAP <select id="mode"><option value="clap5">5 s / 1.25 s</option><option value="clap10">10 s / 2.5 s</option></select></label>
-        <span id="statusLabel"></span>
-        <label>Listen <select id="listen"><option value="">off</option></select></label>
-        <span class="sep"></span>
-        <label>Temp °C <input id="s_temperature_c" type="number" step="1" /></label>
-        <label>RH % <input id="s_humidity_pct" type="number" step="1" /></label>
-        <label>Noise dB <input id="s_noise_floor_db_spl" type="number" step="1" /></label>
-        <label>Ground <input id="s_ground_reflectivity" type="number" step="0.1" min="0" max="1" /></label>
-        <label>Seed <input id="s_seed" type="number" step="1" /></label>
-        <span class="sep"></span>
-        <button id="saveBtn">Save</button>
-        <button id="loadBtn">Load</button>
-        <button id="exportBtn">Export results</button>
-        <button id="sweepBtn">Repeats / sweep</button>
-        <input id="loadFile" type="file" accept="application/json" hidden />
+        <label class="inline">Speed <input id="speed" type="range" min="-4.32" max="2" step="0.01" value="0" /> <span id="speedLabel" class="mono">1x</span></label>
+        <span id="timeLabel" class="mono">0.00 s</span>
+        <span id="statusLabel" class="muted"></span>
         <progress id="progress" value="0" max="1" hidden></progress>
+        <span class="grow"></span>
+        <details class="menu" id="fileMenu">
+          <summary>File</summary>
+          <div class="menu-body">
+            <button id="saveBtn">Save scenario</button>
+            <button id="loadBtn">Load scenario</button>
+            <button id="exportBtn">Export results</button>
+            <button id="sweepBtn">Repeats / sweep</button>
+          </div>
+        </details>
+        <button id="settingsBtn" class="icon" title="Settings" aria-label="Settings">&#9881;</button>
+        <button id="infoBtn" class="icon" title="Limits of this simulation" aria-label="Limits">i</button>
+        <input id="loadFile" type="file" accept="application/json" hidden />
       </header>
       <div id="banner" hidden>Out of date, press Create</div>
       <aside id="tools">
-        <button data-tool="select" class="active">Select</button>
+        <button data-tool="select" class="active">Move</button>
         <button data-tool="node">Add node</button>
         <button data-tool="source">Add source</button>
-        <button data-tool="delete">Delete</button>
-        <label>Clip <select id="clipSelect"></select></label>
-        <label><input id="grain" type="checkbox" checked /> Tone and grain</label>
-        <label>Slice height m <input id="s_slice_height_m" type="number" step="0.5" /></label>
+        <span class="grow"></span>
+        <details class="menu up" id="displayMenu">
+          <summary>Display</summary>
+          <div class="menu-body">
+            <label class="check"><input id="grain" type="checkbox" checked /> Tone and grain</label>
+            <label>Slice height (m) <input id="s_slice_height_m" class="mono" type="number" step="0.5" /></label>
+          </div>
+        </details>
       </aside>
-      <main id="mapWrap"><canvas id="map"></canvas></main>
+      <main id="mapWrap">
+        <canvas id="map"></canvas>
+        <div id="hint"></div>
+      </main>
       <aside id="inspector"></aside>
       <footer id="timelineWrap"><canvas id="timeline"></canvas></footer>
-      <div id="notes">
-        Free field plus ground only; street canyons will be worse. Uniform air, no wind, static sources. Levels, ground reflectivity and the SPL-to-dBFS constant are placeholders.
-        Ambient noise is independent per mic, which is pessimistic for localisation. A flat-square node cannot tell above from below and assumes the source is below it.
-        Rings show loudness over time, not true wavelength.
-      </div>
     </div>
+
+    <dialog id="settingsDlg">
+      <h3>Settings</h3>
+      <label>Temperature (&deg;C) <input id="s_temperature_c" class="mono" type="number" step="1" /></label>
+      <label>Humidity (%) <input id="s_humidity_pct" class="mono" type="number" step="1" /></label>
+      <label>Noise floor (dB SPL) <input id="s_noise_floor_db_spl" class="mono" type="number" step="1" /></label>
+      <label>Ground reflectivity (0-1) <input id="s_ground_reflectivity" class="mono" type="number" step="0.1" min="0" max="1" /></label>
+      <label>Random seed <input id="s_seed" class="mono" type="number" step="1" /></label>
+      <label>CLAP window
+        <select id="mode"><option value="clap5">5 s window, 1.25 s hop</option><option value="clap10">10 s window, 2.5 s hop</option></select>
+      </label>
+      <label>Listen at mic (1x speed only) <select id="listen"><option value="">off</option></select></label>
+      <div class="actions"><button id="settingsClose">Done</button></div>
+    </dialog>
+
+    <dialog id="clipDlg">
+      <h3>Choose a sound</h3>
+      <div id="clipList"></div>
+      <div class="actions">
+        <label class="upload">Upload WAV&hellip; <input id="clipUpload" type="file" accept="audio/wav,audio/*" hidden /></label>
+        <button id="clipCancel">Cancel</button>
+      </div>
+    </dialog>
+
+    <dialog id="infoDlg">
+      <h3>Limits of this simulation</h3>
+      <ul>
+        <li>Free field plus ground only. Street canyons will be worse, so results are optimistic.</li>
+        <li>Uniform air, no wind, static sources.</li>
+        <li>Source levels, ground reflectivity and the SPL-to-dBFS constant are placeholders until confirmed.</li>
+        <li>Ambient noise is independent per mic, which is pessimistic for localisation.</li>
+        <li>Mic timing has no hardware jitter, clock drift or mismatch.</li>
+        <li>A flat-square node cannot tell above from below and assumes the source is below it.</li>
+        <li>Rings show loudness over time, not true wavelength.</li>
+      </ul>
+      <div class="actions"><button id="infoClose">Close</button></div>
+    </dialog>
+
     <dialog id="sweepDlg">
       <h3>Repeats and sweeps (localisation only, no models)</h3>
       <label>Vary
@@ -62,8 +101,8 @@
         </select>
       </label>
       <label>Values <input id="sweepValues" value="0.5, 1, 2, 4" /></label>
-      <label>Seeds <input id="sweepSeeds" type="number" value="50" min="1" /></label>
-      <div><button id="sweepRun" class="primary">Run</button> <button id="sweepClose">Close</button> <progress id="sweepProgress" value="0" max="1" hidden></progress></div>
+      <label>Seeds <input id="sweepSeeds" class="mono" type="number" value="50" min="1" /></label>
+      <div class="actions"><button id="sweepRun" class="primary">Run</button> <button id="sweepClose">Close</button> <progress id="sweepProgress" value="0" max="1" hidden></progress></div>
       <div id="sweepOut"></div>
       <canvas id="sweepPlot" width="520" height="200" hidden></canvas>
       <p class="note">Each seed re-renders every mic, so large runs take minutes. Detection rate by model is not included; fix rate is the share of sources localised.</p>
