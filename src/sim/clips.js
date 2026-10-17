@@ -6,9 +6,13 @@ export const PLACEHOLDER_LEVELS = {
 
 // Only clips flagged "sim" in the manifest form the built-in library.
 export async function loadManifest() {
-  const res = await fetch('/test-audio/manifest.json');
+  // The static server caches for an hour, so a stale manifest from the phone app would hide the sim flags.
+  const res = await fetch('/test-audio/manifest.json', { cache: 'no-store' });
+  if (!res.ok) throw new Error(`manifest request failed (${res.status})`);
   const m = await res.json();
-  return m.clips.filter((c) => c.sim).map((c) => ({ id: c.id, name: c.name, file: c.file, level_1m_db: PLACEHOLDER_LEVELS[c.id] ?? 90, confirmed: false, labels: c.labels }));
+  const flagged = m.clips.filter((c) => c.sim);
+  if (!flagged.length) throw new Error(`manifest lists ${m.clips.length} clips but none are flagged for the simulator`);
+  return flagged.map((c) => ({ id: c.id, name: c.name, file: c.file, level_1m_db: PLACEHOLDER_LEVELS[c.id] ?? 90, confirmed: false, labels: c.labels }));
 }
 
 // OfflineAudioContext decodes straight to the render rate.
