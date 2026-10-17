@@ -111,7 +111,7 @@ export function reportApp(root, data, opts) {
     h += `<tr><td colspan="3"><b>YAMNet</b> <span class="muted">(${(p.yamnet && p.yamnet.n) || 0} readings)</span></td></tr>`;
     if (!y.length) h += '<tr><td colspan="3" class="muted">No readings</td></tr>';
     for (const l of y) h += `<tr><td>${esc(l.raw_label)}</td><td class="muted">${esc(l.label || famName(l.family))}</td><td class="n">${num(l.mean, 2)} / max ${num(l.max, 2)}</td></tr>`;
-    h += `<tr><td colspan="3"><b>CLAP</b> <span class="muted">(${(p.clap && p.clap.n) || 0} readings, ${esc(p.clap && p.clap.window_s)} s window${p.clap && p.clap.clap_unreliable ? ', unreliable for this period' : ''})</span></td></tr>`;
+    h += `<tr><td colspan="3"><b>CLAP</b> <span class="muted">(${(p.clap && p.clap.n) || 0} readings, ${esc(p.clap && p.clap.window_s)} s window${p.clap && p.clap.clap_unreliable ? ', unreliable for this period' : ''}${p.clap && p.clap.short_event ? ', short event' : ''})</span></td></tr>`;
     if (!c.length) h += '<tr><td colspan="3" class="muted">No readings</td></tr>';
     for (const l of c) h += `<tr><td>${esc(l.class)}</td><td class="muted">${esc(famName(l.family))}</td><td class="n">${num(l.mean, 2)}</td></tr>`;
     h += '</table>';
@@ -244,7 +244,7 @@ export function reportApp(root, data, opts) {
     h += `<div class="muted">${isFinite(startMs) ? esc(fmtT(startMs, true)) : ''}${isFinite(endMs) ? ` - ${esc(fmtT(endMs))} · ${esc(fmtDur((endMs - startMs) / 1000))}` : ''}${meta.location_text ? ` · ${esc(meta.location_text)}` : ''}</div>`;
     h += `<div class="muted">Device: ${esc(data.device || meta.device || 'not recorded')} · Models: ${esc(models || 'none')}</div>`;
     h += `<div class="muted">${report.source === 'gemini' ? `Report by ${esc(report.model)} at ${esc(fmtT(Date.parse(report.generated_at), true))}` : 'Offline model timeline'}</div>`;
-    if (report.source !== 'gemini') h += `<div class="banner">AI server paused: showing the sound labels produced directly by the enabled models in a scrollable timeline (${esc(report.fallback_reason || 'local-only mode')}).</div>`;
+    if (report.source !== 'gemini') h += `<div class="banner">AI report unavailable: showing the sound labels produced directly by the enabled models in a scrollable timeline (${esc(report.fallback_reason || 'local-only mode')}).</div>`;
     if (report.summary && report.summary.headline) h += `<div class="headline">${esc(report.summary.headline)}</div>`;
     h += `<div class="strip"><span class="stat"><b>${counts.alert}</b>alert</span><span class="stat"><b>${counts.flag}</b>flag</span><span class="stat"><b>${counts.log}</b>log</span><span class="stat"><b>${disagreements}</b>model disagreements</span><span class="stat"><b>${quiet}</b>quiet-hours events</span></div>`;
     if (report.summary && report.summary.quiet_hours_summary) h += `<div><b>Quiet hours:</b> ${esc(report.summary.quiet_hours_summary)}</div>`;

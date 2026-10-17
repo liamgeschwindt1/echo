@@ -10,6 +10,10 @@ export const DEFAULTS = Object.freeze({
   yamnet_hop_s: 0.5,
   yamnet_min: 0.2,
   clap_min: 0.3,
+  target_share_min: 0.25,
+  target_share_corroboration_drop: 0.1,
+  glass_max_alert_s: 6,
+  glass_max_alert_impacts: 3,
   clap_logit_scale: 18.66,
   on_threshold_db: 8,
   off_threshold_db: 4,
@@ -37,14 +41,18 @@ export const GROUPS = [
     title: 'Models',
     fields: [
       { key: 'yamnet_enabled', type: 'bool', label: 'YAMNet', help: 'Fast general sound classifier (521 classes).' },
-      { key: 'clap_enabled', type: 'bool', label: 'CLAP', help: 'Zero-shot model scored against our 73 label prompts.' },
-      { key: 'clap_window_s', type: 'select', label: 'CLAP window', options: [[10, '10 s'], [5, '5 s']], help: 'Audio per CLAP run. 5 s is tiled to fill the 10 s input.' },
-      { key: 'clap_hop_s', type: 'number', label: 'CLAP hop (s)', min: 1, max: 10, step: 0.5, help: 'Time between CLAP runs. A run is skipped if the last is still going.' },
+      { key: 'clap_enabled', type: 'bool', label: 'CLAP', help: 'Zero-shot model scored against our label prompts.' },
+      { key: 'clap_window_s', type: 'select', label: 'CLAP window', options: [[10, '10 s'], [5, '5 s']], help: 'Audio per CLAP run. 5 s is tiled to fill the 10 s input and runs every 1.25 s; periods under 4 s use only 5 s readings.' },
+      { key: 'clap_hop_s', type: 'number', label: 'CLAP hop (s)', min: 1, max: 10, step: 0.5, help: 'Time between CLAP runs (10 s window only; 5 s always uses 1.25 s). A run is skipped if the last is still going.' },
       { key: 'yamnet_window_s', type: 'number', label: 'YAMNet window (s)', min: 0.975, max: 0.975, step: 0.001, help: 'Fixed by the model.', readonly: true },
       { key: 'yamnet_hop_s', type: 'number', label: 'YAMNet hop (s)', min: 0.25, max: 2, step: 0.05, help: 'Time between YAMNet runs.' },
       { key: 'yamnet_min', type: 'number', label: 'YAMNet minimum', min: 0, max: 1, step: 0.05, help: 'Pooled family score needed to count as a YAMNet opinion.' },
       { key: 'clap_min', type: 'number', label: 'CLAP minimum', min: 0, max: 1, step: 0.05, help: 'Pooled family probability needed to count as a CLAP opinion.' },
-      { key: 'clap_logit_scale', type: 'number', label: 'CLAP logit scale', min: 1, max: 200, step: 0.01, help: 'Multiplier on cosine before softmax. Higher gives more peaked scores. Tune on real clips.' }
+      { key: 'clap_logit_scale', type: 'number', label: 'CLAP logit scale', min: 1, max: 200, step: 0.01, help: 'Multiplier on cosine before softmax. Higher gives more peaked scores. Tune on real clips.' },
+      { key: 'target_share_min', type: 'number', label: 'Decoy target share', min: 0, max: 1, step: 0.05, help: 'When a decoy leads a group, the target members need at least this share of the group score to take the label and alert level.' },
+      { key: 'target_share_corroboration_drop', type: 'number', label: 'YAMNet corroboration drop', min: 0, max: 1, step: 0.05, help: 'Subtracted from the target share threshold when YAMNet also hears the target (for example Screaming, Glass, Gunshot).' },
+      { key: 'glass_max_alert_s', type: 'number', label: 'Glass alert max duration (s)', min: 1, max: 60, step: 0.5, help: 'A glass break lasting longer than this is capped at flag (likely a bottle bank).' },
+      { key: 'glass_max_alert_impacts', type: 'number', label: 'Glass alert max impacts', min: 1, max: 20, step: 1, help: 'A glass break with this many separate impacts or more is capped at flag.' }
     ]
   },
   {
@@ -83,6 +91,9 @@ export const GROUPS = [
     ]
   }
 ];
+
+// The 5 s window always hops 1.25 s; the 10 s window uses the clap_hop_s setting.
+export const clapHopS = (s) => (s.clap_window_s === 5 ? 1.25 : s.clap_hop_s);
 
 export function loadSettings() {
   try {

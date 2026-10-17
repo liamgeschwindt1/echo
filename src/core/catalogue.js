@@ -3,10 +3,17 @@ export const PRIORITY_RANK = { ignore: 0, log: 1, flag: 2, alert: 3 };
 export const UNEXPLAINED_IMPACT = 'unexplained_impact';
 
 export function buildCatalogue(labels, priorities) {
+  // Pool key: risk group when set, otherwise family. Scores are pooled and compared per pool.
+  const classPool = new Map(labels.classes.map((c) => [c.id, c.group || c.family]));
+  const yamnetPool = new Map(labels.yamnet.map((y) => [y.name, y.group || (y.label && classPool.get(y.label)) || y.family]));
   return {
     version: labels.version,
     template: labels.clap_template,
     families: labels.families,
+    groups: labels.groups || {},
+    pools: { ...labels.families, ...(labels.groups || {}) },
+    classPool,
+    yamnetPool,
     classes: labels.classes,
     yamnet: labels.yamnet,
     classById: new Map(labels.classes.map((c) => [c.id, c])),

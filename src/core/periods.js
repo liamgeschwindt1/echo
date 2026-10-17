@@ -1,6 +1,6 @@
 // Deterministic period detection (section 6.1) and labelling (6.2-6.5).
 // No AI here: the 10 Hz level series finds the periods, model readings label them.
-import { isContextFamily, priorityFor, timeOfDay, UNEXPLAINED_IMPACT } from './catalogue.js';
+import { PRIORITY_RANK, isContextFamily, maxPriority, priorityFor, timeOfDay, UNEXPLAINED_IMPACT } from './catalogue.js';
 
 const FLOOR_WINDOW_MS = 120_000;
 const FLOOR_MIN_HISTORY_MS = 2_000;
@@ -39,6 +39,23 @@ function longestRunMs(samples, threshold) {
     }
   }
   return best;
+}
+
+// Sharp level rises (separate bangs) inside the period, at least 300 ms apart.
+function countImpacts(samples, floor, s) {
+  let count = 0;
+  let lastAt = -Infinity;
+  for (let i = 0; i < samples.length; i++) {
+    const x = samples[i];
+    if (x.rms <= floor + s.on_threshold_db || x.t - lastAt < 300) continue;
+    let minPrev = x.rms;
+    for (let j = i - 1; j >= 0 && x.t - samples[j].t <= IMPULSE_RISE_WINDOW_MS; j--) minPrev = Math.min(minPrev, samples[j].rms);
+    if (x.rms - minPrev >= s.impulse_rise_db) {
+      count++;
+      lastAt = x.t;
+    }
+  }
+  return count;
 }
 
 export class PeriodDetector {
@@ -159,7 +176,8 @@ export class PeriodDetector {
       level_peak_dbfs: round(peak),
       floor_dbfs: round(floor),
       delta_over_floor_db: round(avg - floor),
-      sustained
+      sustained,
+      impacts: countImpacts(samples, floor, s)
     };
   }
 
@@ -204,8 +222,9 @@ function poolYamnet(rows, a, b, cat) {
     for (const [name, score] of Object.entries(scores)) {
       labelSum.set(name, (labelSum.get(name) || 0) + score);
       labelMax.set(name, Math.max(labelMax.get(name) || 0, score));
-      const fam = cat.yamnetByName.get(name)?.family;
-      if (fam) famWin.set(fam, Math.max(famWin.get(fam) || 0, score));
+      const m = cat.yamnetByName.get(name);
+      const fam = cat.yamnetPool.get(name);
+      if (fam) famWin.set(fam, Math.max(famWin.get(fam) || 0, score * (m?.weight ?? 1)));
     }
     for (const [fam, v] of famWin) {
       famSum.set(fam, (famSum.get(fam) || 0) + v);
@@ -216,7 +235,7 @@ function poolYamnet(rows, a, b, cat) {
   const labels = [...labelSum.entries()]
     .map(([name, sum]) => {
       const m = cat.yamnetByName.get(name);
-      return { raw_label: name, label: m?.label ?? null, family: m?.family ?? 'other', mean: round(sum / n, 4), max: round(labelMax.get(name), 4) };
+      return { raw_label: name, label: m?.label ?? null, family: m?.family ?? 'other', pool: cat.yamnetPool.get(name) ?? 'other', weight: m?.weight ?? 1, mean: round(sum / n, 4), max: round(labelMax.get(name), 4) };
     })
     .sort((x, y) => y.mean - x.mean);
   const family_scores = {};
@@ -247,10 +266,10 @@ function poolClap(rows, a, b, cat) {
   }
   const n = hits.length;
   const classes = [...sum.entries()]
-    .map(([cls, s]) => ({ class: cls, family: cat.classById.get(cls)?.family ?? 'other', mean: round(s / n, 4), max: round(max.get(cls), 4) }))
+    .map(([cls, s]) => ({ class: cls, family: cat.classById.get(cls)?.family ?? 'other', pool: cat.classPool.get(cls) ?? 'other', mean: round(s / n, 4), max: round(max.get(cls), 4) }))
     .sort((x, y) => y.mean - x.mean);
   const family_scores = {};
-  for (const c of classes) family_scores[c.family] = round((family_scores[c.family] || 0) + c.mean, 4);
+  for (const c of classes) family_scores[c.pool] = round((family_scores[c.pool] || 0) + c.mean, 4);
   const windows = [...new Set(hits.map((r) => r.window_s))];
   return { n, classes, family_scores, window_s: windows.length === 1 ? windows[0] : windows.length ? windows : null };
 }
@@ -265,12 +284,12 @@ function topFamily(familyScores, includeContext = false) {
 }
 
 function pickLabel(family, y, c, clapOk, s, cat) {
-  const yInFam = y.labels.filter((l) => l.family === family && l.label);
-  if (yInFam[0] && yInFam[0].mean >= s.yamnet_min) return { label: yInFam[0].label, source: 'yamnet' };
-  const cInFam = c.classes.filter((x) => x.family === family);
+  const yInFam = y.labels.filter((l) => l.pool === family && l.label).sort((a, b) => b.mean * b.weight - a.mean * a.weight);
+  if (yInFam[0] && yInFam[0].mean * yInFam[0].weight >= s.yamnet_min) return { label: yInFam[0].label, source: 'yamnet' };
+  const cInFam = c.classes.filter((x) => x.pool === family);
   if (cInFam[0] && (clapOk || !yInFam[0])) return { label: cInFam[0].class, source: 'clap' };
   if (yInFam[0]) return { label: yInFam[0].label, source: 'yamnet' };
-  return { label: cat.families[family]?.default_label ?? null, source: 'family_default' };
+  return { label: cat.pools[family]?.default_label ?? null, source: 'family_default' };
 }
 
 function confidenceFor(agreement, yScore, cScore, s) {
@@ -286,8 +305,18 @@ function confidenceFor(agreement, yScore, cScore, s) {
 
 function labelInterval(a, b, yRows, cRows, s, cat) {
   const y = poolYamnet(yRows, a, b, cat);
-  const c = poolClap(cRows, a, b, cat);
-  const clapUnreliable = (b - a) / 1000 < 3 || c.n === 0;
+  const durS = (b - a) / 1000;
+  let c = poolClap(cRows, a, b, cat);
+  // Short periods use only 5 s readings when any exist for them.
+  let shortEvent = false;
+  if (durS < SHORT_EVENT_S) {
+    const c5 = poolClap(cRows.filter((r) => r.window_s === 5), a, b, cat);
+    if (c5.n > 0) {
+      c = c5;
+      shortEvent = true;
+    }
+  }
+  const clapUnreliable = shortEvent ? false : durS < 3 || c.n === 0;
   const yTop = y.n ? topFamily(y.family_scores) : null;
   const cTop = !clapUnreliable ? topFamily(c.family_scores) : null;
   const yAbove = !!yTop && yTop.score >= s.yamnet_min;
@@ -314,7 +343,41 @@ function labelInterval(a, b, yRows, cRows, s, cat) {
   const contextOnly = [yAny, cAny].filter(Boolean).every((t) => isContextFamily(t.family));
 
   const picked = family ? pickLabel(family, y, c, !clapUnreliable, s, cat) : { label: null, source: null };
-  return { y, c, clapUnreliable, yTop, cTop, agreement, family, picked, contextOnly };
+  // Context labels (e.g. crowd_chatter) are only candidates when no target family won.
+  let contextLabel = null;
+  if (!family) {
+    const yc = y.labels.find((l) => l.label && l.pool === 'context' && l.mean * l.weight >= s.yamnet_min);
+    const cc = !clapUnreliable ? c.classes.find((x) => x.pool === 'context' && x.mean >= s.clap_min) : null;
+    contextLabel = cc?.class ?? yc?.label ?? null;
+  }
+  return { y, c, clapUnreliable, shortEvent, yTop, cTop, agreement, family, picked, contextOnly, contextLabel };
+}
+
+const SHORT_EVENT_S = 4;
+
+// Target members' share of the pooled CLAP score inside one group. Null when CLAP is not usable.
+function targetShare(L, members) {
+  const mean = new Map(L.c.classes.map((x) => [x.class, x.mean]));
+  let total = 0;
+  let target = 0;
+  let topTarget = null;
+  let topDecoy = null;
+  for (const m of members) {
+    const v = mean.get(m.id) || 0;
+    total += v;
+    if (m.role === 'target') {
+      target += v;
+      if (!topTarget || v > topTarget.v) topTarget = { id: m.id, v };
+    } else if (!topDecoy || v > topDecoy.v) topDecoy = { id: m.id, v };
+  }
+  const usable = !L.clapUnreliable && L.c.n > 0 && total > 0;
+  return { value: usable ? round(target / total, 4) : null, target_sum: round(target, 4), group_total: round(total, 4), top_target: topTarget?.id ?? null, top_decoy: topDecoy?.id ?? null };
+}
+
+// YAMNet labels that corroborate a group (peak score in the period), from labels.json groups.
+function corroboratedBy(y, group, cat) {
+  const rules = cat.groups[group]?.corroboration || [];
+  return rules.filter((r) => (y.labels.find((l) => l.raw_label === r.name)?.max ?? 0) >= r.min).map((r) => r.name);
 }
 
 // Builds the full period objects (section 9) from raw detector periods and model rows.
@@ -325,6 +388,11 @@ export function labelPeriods(rawPeriods, rows, notes, s, cat) {
     const a = Date.parse(p.start);
     const b = Date.parse(p.end);
     const L = labelInterval(a, b, yRows, cRows, s, cat);
+    const group_shares = {};
+    for (const g of Object.keys(cat.groups)) {
+      const members = cat.classes.filter((k) => k.group === g);
+      if (members.some((k) => k.role === 'target') && members.some((k) => k.role === 'confuser')) group_shares[g] = targetShare(L, members);
+    }
     const rule_flags = [];
     let label = L.picked.label;
     let family = label ? cat.classById.get(label)?.family ?? L.family : null;
@@ -338,11 +406,59 @@ export function labelPeriods(rawPeriods, rows, notes, s, cat) {
     }
     if (p.sustained) rule_flags.push('sustained');
 
-    const default_priority = label
+    if (!label && L.contextLabel && priorityFor(cat, L.contextLabel, p.time_of_day, p.sustained) !== 'ignore') {
+      label = L.contextLabel;
+      family = cat.classById.get(label)?.family ?? null;
+      source = `${L.agreement}:context`;
+    }
+
+    let default_priority;
+    let label_text = null;
+    let target_share = null;
+    const decoyCls = label ? cat.classById.get(label) : null;
+    const isDecoy = decoyCls?.role === 'confuser' && decoyCls.group && group_shares[decoyCls.group];
+    if (isDecoy) {
+      const gs = group_shares[decoyCls.group];
+      const hit = corroboratedBy(L.y, decoyCls.group, cat);
+      const base = s.target_share_min ?? 0.25;
+      const drop = hit.length ? s.target_share_corroboration_drop ?? 0.1 : 0;
+      const threshold = Math.max(0, base - drop);
+      const promoted = gs.value != null && gs.value >= threshold && !!gs.top_target;
+      target_share = { group: decoyCls.group, value: gs.value, threshold: round(threshold, 4), corroborated_by: hit, decoy: label, promoted };
+      rule_flags.push(`target_share:${gs.value ?? 'n/a'}`);
+      if (promoted) {
+        label_text = `possible ${gs.top_target}, decoy ${label} close`;
+        label = gs.top_target;
+        family = cat.classById.get(label)?.family ?? family;
+        source = 'target_share';
+      }
+    }
+
+    default_priority = label
       ? priorityFor(cat, label, p.time_of_day, p.sustained)
       : p.sustained
         ? cat.priorities.sustained_min_priority || 'flag'
         : 'ignore';
+
+    // A decoy that still leads a group containing targets never drops below flag.
+    if (isDecoy && !target_share.promoted) {
+      const raised = maxPriority(default_priority, 'flag');
+      if (raised !== default_priority) {
+        default_priority = raised;
+        rule_flags.push('decoy_floor');
+      }
+    }
+    if (L.shortEvent) rule_flags.push('short_event');
+
+    // A long or repeated glass event is more likely a bottle bank than a window.
+    if (label === 'glass_break' && PRIORITY_RANK[default_priority] > PRIORITY_RANK.flag) {
+      const maxS = s.glass_max_alert_s ?? 6;
+      const maxImpacts = s.glass_max_alert_impacts ?? 3;
+      if (p.duration_s > maxS || (p.impacts ?? 0) >= maxImpacts) {
+        default_priority = 'flag';
+        rule_flags.push('glass_duration_cap');
+      }
+    }
 
     const segments = [];
     if (p.duration_s > 60) {
@@ -353,7 +469,7 @@ export function labelPeriods(rawPeriods, rows, notes, s, cat) {
           start: new Date(t).toISOString(),
           end: new Date(e).toISOString(),
           label: S.picked.label,
-          family: S.family,
+          family: S.picked.label ? cat.classById.get(S.picked.label)?.family ?? S.family : null,
           agreement: S.agreement,
           yamnet_top: S.y.labels[0]?.raw_label ?? null,
           clap_top: S.c.classes[0]?.class ?? null
@@ -373,11 +489,16 @@ export function labelPeriods(rawPeriods, rows, notes, s, cat) {
         n: L.c.n,
         window_s: L.c.window_s ?? s.clap_window_s,
         clap_unreliable: L.clapUnreliable,
+        short_event: L.shortEvent,
         top: L.c.classes.slice(0, 3).map((x) => ({ class: x.class, raw_label: x.class, label: x.class, family: x.family, mean: x.mean, max: x.max })),
         family_scores: L.c.family_scores
       },
       agreement: L.agreement,
       label,
+      label_text,
+      group_scores: { yamnet: L.y.family_scores, clap: L.c.family_scores },
+      group_shares,
+      target_share,
       family,
       label_source: source,
       confidence: label ? confidenceFor(L.agreement, L.yTop?.score, L.cTop?.score, s) : 0,

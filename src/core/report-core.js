@@ -35,7 +35,7 @@ export function buildReportRequest(session, cat) {
     catalogue: {
       version: cat.version,
       families: Object.fromEntries(Object.entries(cat.families).map(([id, f]) => [id, f.name])),
-      classes: cat.classes.map((c) => ({ id: c.id, family: c.family, role: c.role })),
+      classes: cat.classes.map((c) => ({ id: c.id, family: c.family, group: c.group ?? null, role: c.role })),
       extra_labels: [{ id: 'unexplained_impact', family: 'impacts_breakage', role: 'rule' }],
       priorities: cat.priorities.table,
       sustained_labels: cat.priorities.sustained_labels
@@ -64,6 +64,7 @@ export function fallbackReport(request, reason) {
     if (p.default_priority === 'ignore') continue;
     const flags = [...(p.rule_flags || [])];
     if (p.clap?.clap_unreliable) flags.push('clap_unreliable');
+    if (p.clap?.short_event && !flags.includes('short_event')) flags.push('short_event');
     events.push({
       period_ids: [p.id],
       final_label: p.label,
@@ -74,7 +75,7 @@ export function fallbackReport(request, reason) {
       confidence: p.confidence ?? 0,
       agreement: p.agreement,
       matches_note: null,
-      explanation: '',
+      explanation: p.label_text || '',
       flags
     });
   }

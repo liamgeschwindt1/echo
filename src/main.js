@@ -5,7 +5,7 @@ import { buildReportRequest, fallbackReport } from './core/report-core.js';
 import { SessionStore } from './db.js';
 import { LiveGraph } from './graph.js';
 import { REPORT_CSS, reportApp, buildStandaloneHtml } from './report.js';
-import { DEFAULTS, GROUPS, loadSettings, saveSettings } from './settings.js';
+import { DEFAULTS, GROUPS, clapHopS, loadSettings, saveSettings } from './settings.js';
 
 const APP_VERSION = '2.2.0';
 const YAMNET_RATE = 16000;
@@ -383,7 +383,7 @@ async function start() {
         yamnetTargetRate: YAMNET_RATE,
         yamnetTargetLength: Math.round(settings.yamnet_window_s * YAMNET_RATE),
         clapWindowSamples: Math.round(settings.clap_window_s * rate),
-        clapHopSamples: Math.round(settings.clap_hop_s * rate),
+        clapHopSamples: Math.round(clapHopS(settings) * rate),
         levelBlockSamples: Math.round(LEVEL_BLOCK_S * rate)
       }
     });
@@ -476,7 +476,7 @@ function updateStatus() {
     logError('yamnet', yamnetState.reason);
   }
   if (running && activeModels.clap && clapState.status === 'ok') {
-    const stallMs = Math.max(30_000, settings.clap_hop_s * 8000);
+    const stallMs = Math.max(30_000, clapHopS(settings) * 8000);
     const since = clapState.lastRun || runStartedAt + settings.clap_window_s * 1000;
     if (Date.now() - since > stallMs) setClapError(`stalled (no run in ${Math.round((Date.now() - since) / 1000)} s)`);
   }
@@ -634,10 +634,18 @@ function reportData(exp) {
 }
 
 async function fetchReport(request) {
-  // AI server is intentionally paused. Keep the view deterministic and offline-safe by
-  // rendering the labels directly from the local model periods instead of relying on a
-  // remote /api/report response.
-  return fallbackReport(request, 'AI server paused; showing local model labels only.');
+  try {
+    const res = await fetch('/api/report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(request)
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) return fallbackReport(request, body.reason || body.error || `Server returned HTTP ${res.status}`);
+    return body;
+  } catch {
+    return fallbackReport(request, 'Could not reach the report server');
+  }
 }
 
 async function showResults(regenerate = false) {
