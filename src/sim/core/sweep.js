@@ -1,6 +1,6 @@
 import { renderScenario } from './render.js';
 import { analyseScenario } from './analyse.js';
-import { scenarioLengthS } from './scenario.js';
+import { renderLengthS } from './scenario.js';
 import { angleBetweenDeg } from './localise.js';
 
 const rad = (d) => (d * Math.PI) / 180;
@@ -30,7 +30,7 @@ export const SWEEP_PARAMS = {
 
 /** Renders the scenario once per seed and collects localisation outcomes per source. */
 export function runTrials(scenario, clips, durations, { seeds, onTrial } = {}) {
-  const lengthS = scenarioLengthS(scenario, durations);
+  const lengthS = renderLengthS(scenario, durations);
   const trials = [];
   for (let i = 0; i < seeds; i++) {
     const scn = { ...scenario, settings: { ...scenario.settings, seed: scenario.settings.seed + i } };

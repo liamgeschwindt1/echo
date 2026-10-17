@@ -40,8 +40,12 @@
         <details class="menu up" id="displayMenu">
           <summary>Display</summary>
           <div class="menu-body">
+            <label class="check"><input id="showCones" type="checkbox" checked /> Direction cones</label>
+            <label class="check"><input id="showMics" type="checkbox" checked /> Mic arrays</label>
             <label class="check"><input id="grain" type="checkbox" checked /> Tone and grain</label>
             <label>Slice height (m) <input id="s_slice_height_m" class="mono" type="number" step="0.5" /></label>
+            <div class="menu-head">Nodes shown <span class="grow"></span><button id="nodesAll">all</button><button id="nodesNone">none</button></div>
+            <div id="nodeToggles"></div>
           </div>
         </details>
       </aside>
@@ -60,10 +64,8 @@
       <label>Noise floor (dB SPL) <input id="s_noise_floor_db_spl" class="mono" type="number" step="1" /></label>
       <label>Ground reflectivity (0-1) <input id="s_ground_reflectivity" class="mono" type="number" step="0.1" min="0" max="1" /></label>
       <label>Random seed <input id="s_seed" class="mono" type="number" step="1" /></label>
-      <label>CLAP window
-        <select id="mode"><option value="clap5">5 s window, 1.25 s hop</option><option value="clap10">10 s window, 2.5 s hop</option></select>
-      </label>
-      <label>Listen at mic (1x speed only) <select id="listen"><option value="">off</option></select></label>
+      <label>Minimum SNR to use a node (dB) <input id="s_min_snr_db" class="mono" type="number" step="1" /></label>
+      <label>Sound during playback (1x speed only) <select id="listen"><option value="dry">Sources, as recorded</option><option value="off">Off</option></select></label>
       <div class="actions"><button id="settingsClose">Done</button></div>
     </dialog>
 
@@ -91,7 +93,7 @@
     </dialog>
 
     <dialog id="sweepDlg">
-      <h3>Repeats and sweeps (localisation only, no models)</h3>
+      <h3>Repeats and sweeps</h3>
       <label>Vary
         <select id="sweepParam">
           <option value="">Nothing (repeat only)</option>
@@ -105,7 +107,7 @@
       <div class="actions"><button id="sweepRun" class="primary">Run</button> <button id="sweepClose">Close</button> <progress id="sweepProgress" value="0" max="1" hidden></progress></div>
       <div id="sweepOut"></div>
       <canvas id="sweepPlot" width="520" height="200" hidden></canvas>
-      <p class="note">Each seed re-renders every mic, so large runs take minutes. Detection rate by model is not included; fix rate is the share of sources localised.</p>
+      <p class="note">Each seed re-renders every mic, so large runs take minutes. Fix rate is the share of sounds that got a position.</p>
     </dialog>
     <script type="module" src="/src/sim/main.js"></script>
   </body>

@@ -42,6 +42,9 @@ progress { accent-color: var(--accent); }
 .menu-body label.check { justify-content: flex-start; }
 .menu-body button { text-align: left; border-color: transparent; }
 .menu-body button:hover { border-color: #555; }
+.menu-head { display: flex; align-items: center; gap: 6px; margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--edge); color: var(--dim); font-size: 12px; }
+.menu-head button { padding: 2px 8px; font-size: 12px; border-color: #555; }
+#nodeToggles { max-height: 180px; overflow: auto; display: flex; flex-direction: column; gap: 6px; }
 
 #inspector h3 { margin: 0 0 14px; font-size: 15px; font-weight: 600; }
 #inspector h4 { margin: 20px 0 8px; font-size: 13px; font-weight: 600; color: var(--dim); }

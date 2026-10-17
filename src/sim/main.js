@@ -1,12 +1,9 @@
-import { defaultScenario, newNode, newSource, validateScenario, scenarioLengthS, sourcePosition } from './core/scenario.js';
+import { defaultScenario, newNode, newSource, validateScenario, scenarioLengthS, renderLengthS, sourcePosition } from './core/scenario.js';
 import { speedOfSound, dbToPa } from './core/physics.js';
 import { clipGainPa } from './core/render.js';
 import { analyseClip, wavefrontRings } from './core/wavefront.js';
 import { micPositions } from './core/mics.js';
 import { loadManifest, fetchClip, decodeToMono, clipAvailable } from './clips.js';
-import { classify } from './core/label.js';
-import { attachDetections } from './core/match.js';
-import { loadRunners } from './models.js';
 import { spectrogram } from './core/spectro.js';
 
 const $ = (id) => document.getElementById(id);
@@ -20,9 +17,7 @@ const library = []; // manifest entries plus uploads
 let status = 'edit'; // edit | rendering | ready | stale
 let rendered = null;
 let results = null;
-let summary = null;
-let readings = new Map(); // nodeId -> { yamnet, clap, periods }
-let catalogue = null;
+const hiddenNodes = new Set(); // nodes hidden from the map only; they still take part in the simulation
 let tool = 'select';
 let selected = null; // { type: 'node'|'source', id }
 let view = { cx: 0, cy: 0, scale: 4 };
@@ -34,7 +29,7 @@ let counter = 1;
 let worker = null;
 
 const durations = () => new Map([...clips].map(([id, s]) => [id, s.length / FS]));
-const lengthS = () => scenarioLengthS(scenario, durations());
+const lengthS = () => Math.max(1, scenarioLengthS(scenario, durations()));
 
 function markEdited() {
   if (status === 'ready') status = 'stale';
@@ -142,7 +137,41 @@ $('clipCancel').addEventListener('click', () => $('clipDlg').close());
 document.addEventListener('click', (e) => {
   for (const m of document.querySelectorAll('details.menu[open]')) if (!m.contains(e.target)) m.open = false;
 });
-for (const b of document.querySelectorAll('.menu-body button')) b.addEventListener('click', () => (b.closest('details').open = false));
+for (const b of document.querySelectorAll('.menu-body button')) {
+  if (!b.closest('.menu-head')) b.addEventListener('click', () => (b.closest('details').open = false));
+}
+
+let toggleSig = '';
+function renderNodeToggles() {
+  const sig = `${scenario.nodes.map((n) => n.id).join(',')}|${[...hiddenNodes].join(',')}`;
+  if (sig === toggleSig) return;
+  toggleSig = sig;
+  const box = $('nodeToggles');
+  box.replaceChildren();
+  if (!scenario.nodes.length) box.append(Object.assign(document.createElement('span'), { className: 'muted', textContent: 'No nodes yet' }));
+  for (const n of scenario.nodes) {
+    const l = document.createElement('label');
+    l.className = 'check';
+    const cb = Object.assign(document.createElement('input'), { type: 'checkbox', checked: !hiddenNodes.has(n.id) });
+    cb.addEventListener('change', () => {
+      if (cb.checked) hiddenNodes.delete(n.id);
+      else hiddenNodes.add(n.id);
+      toggleSig = '';
+    });
+    l.append(cb, ` ${n.id}`);
+    box.append(l);
+  }
+}
+$('nodesAll').addEventListener('click', () => {
+  hiddenNodes.clear();
+  toggleSig = '';
+  renderNodeToggles();
+});
+$('nodesNone').addEventListener('click', () => {
+  for (const n of scenario.nodes) hiddenNodes.add(n.id);
+  toggleSig = '';
+  renderNodeToggles();
+});
 $('settingsBtn').addEventListener('click', () => $('settingsDlg').showModal());
 $('settingsClose').addEventListener('click', () => $('settingsDlg').close());
 $('infoBtn').addEventListener('click', () => $('infoDlg').showModal());
@@ -170,8 +199,13 @@ for (const el of document.querySelectorAll('[id^="s_"]')) {
 
 $('speed').addEventListener('input', (e) => {
   speed = 2 ** Number(e.target.value);
-  $('speedLabel').textContent = `${speed.toFixed(2)}x`;
+  if (Math.abs(speed - 1) < 0.04) speed = 1; // snap so 1x is easy to hit
+  updateSpeedLabel();
 });
+function updateSpeedLabel() {
+  const muted = speed !== 1 && $('listen').value !== 'off';
+  $('speedLabel').textContent = `${speed.toFixed(2)}x${muted ? ' (muted)' : ''}`;
+}
 $('playBtn').addEventListener('click', () => {
   playing = !playing;
   if (playing && t >= lengthS()) t = 0;
@@ -185,6 +219,7 @@ $('loadFile').addEventListener('change', async (e) => {
   try {
     scenario = validateScenario(JSON.parse(await file.text()));
     rendered = results = null;
+    hiddenNodes.clear();
     status = 'edit';
     selected = null;
     for (const [k, v] of Object.entries(scenario.settings)) if ($(`s_${k}`)) $(`s_${k}`).value = v;
@@ -197,7 +232,7 @@ $('loadFile').addEventListener('change', async (e) => {
 });
 $('exportBtn').addEventListener('click', () => {
   if (!results) return;
-  download('results.json', JSON.stringify({ app: 'echo-sim', catalogue: catalogue?.version ?? null, scenario, summary, results, readings: Object.fromEntries(readings) }, null, 2));
+  download('results.json', JSON.stringify({ app: 'echo-sim', scenario, results }, null, 2));
 });
 
 function download(name, text) {
@@ -234,49 +269,22 @@ $('createBtn').addEventListener('click', async () => {
     else if (m.type === 'done') {
       rendered = m.rendered;
       results = m.results;
-      summary = null;
-      readings = new Map();
       t = 0;
-      classifyAll();
+      status = 'ready';
+      const located = results.filter((r) => r.error_3d_m != null).length;
+      $('statusLabel').textContent = `Located ${located} of ${results.length} sound${results.length === 1 ? '' : 's'}`;
+      $('progress').hidden = true;
+      $('banner').hidden = true;
+      refreshListen();
+      renderInspector();
     } else if (m.type === 'error') {
       status = 'edit';
       $('progress').hidden = true;
       alert(`Render failed: ${m.message}`);
     }
   };
-  worker.postMessage({ scenario, clips: [...clips].filter(([id]) => scenario.sources.some((s) => s.clip === id)), lengthS: lengthS(), durations: [...durations()] });
+  worker.postMessage({ scenario, clips: [...clips].filter(([id]) => scenario.sources.some((s) => s.clip === id)), lengthS: renderLengthS(scenario, durations()), durations: [...durations()] });
 });
-
-// ---------- map ----------
-
-async function classifyAll() {
-  const snapshot = { scenario, rendered, results, dur: durations() };
-  try {
-    const { cat, runners } = await loadRunners((s) => ($('statusLabel').textContent = s));
-    catalogue = cat;
-    const detections = new Map();
-    for (let i = 0; i < snapshot.scenario.nodes.length; i++) {
-      const node = snapshot.scenario.nodes[i];
-      const out = await classify(snapshot.rendered.nodes[i].mics[0].slice(), FS, $('mode').value, {
-        cat,
-        runners,
-        onProgress: (p) => ($('statusLabel').textContent = `Classifying ${node.id} ${Math.round(p * 100)}%`)
-      });
-      detections.set(node.id, out.periods);
-      readings.set(node.id, out);
-    }
-    summary = attachDetections(snapshot.scenario, snapshot.results, detections, snapshot.dur);
-    const fa = Object.values(summary.false_alerts).reduce((a, b) => a + b, 0);
-    $('statusLabel').textContent = `Missed ${summary.missed.length}, false detections ${fa}`;
-  } catch (err) {
-    $('statusLabel').textContent = `Classification failed: ${err.message}`;
-  }
-  status = status === 'stale' ? 'stale' : 'ready';
-  refreshListen();
-  $('progress').hidden = true;
-  $('banner').hidden = status !== 'stale';
-  renderInspector();
-}
 
 // ---------- map ----------
 
@@ -321,10 +329,11 @@ function drawMap() {
   const stale = status === 'stale';
   mctx.font = `${11 * dpr}px monospace`;
   for (const n of scenario.nodes) {
+    if (hiddenNodes.has(n.id)) continue;
     const [sx, sy] = toScreen(n.position[0], n.position[1]);
     mctx.strokeStyle = selected?.id === n.id ? ACCENT : '#fff';
     mctx.strokeRect(sx - 5 * dpr, sy - 5 * dpr, 10 * dpr, 10 * dpr);
-    drawMicGlyph(n, sx, sy, dpr);
+    if ($('showMics').checked) drawMicGlyph(n, sx, sy, dpr);
     mctx.fillStyle = '#888';
     mctx.fillText(n.id, sx + 8 * dpr, sy - 8 * dpr);
   }
@@ -341,6 +350,9 @@ function drawMap() {
 
   if (results) {
     mctx.globalAlpha = stale ? 0.3 : 1;
+    if ($('showCones').checked) {
+      for (const r of results) for (const n of r.nodes) if (!hiddenNodes.has(n.node_id)) drawCone(scenario.nodes.find((x) => x.id === n.node_id), n, dpr);
+    }
     for (const r of results) {
       mctx.strokeStyle = mctx.fillStyle = ACCENT;
       if (r.fix?.position) {
@@ -353,22 +365,6 @@ function drawMap() {
         mctx.beginPath();
         mctx.arc(ex, ey, 4 * dpr, 0, 7);
         mctx.stroke();
-      } else {
-        for (const n of r.nodes) {
-          if (!n.bearing) continue;
-          const node = scenario.nodes.find((x) => x.id === n.node_id);
-          if (!node) continue;
-          const [ox, oy] = toScreen(node.position[0], node.position[1]);
-          const d = n.bearing.direction;
-          const len = (n.range_m * 1.2) * view.scale;
-          const h = Math.hypot(d[0], d[1]) || 1;
-          mctx.setLineDash([4 * dpr, 4 * dpr]);
-          mctx.beginPath();
-          mctx.moveTo(ox, oy);
-          mctx.lineTo(ox + (d[0] / h) * len, oy - (d[1] / h) * len);
-          mctx.stroke();
-          mctx.setLineDash([]);
-        }
       }
     }
     mctx.globalAlpha = 1;
@@ -382,6 +378,30 @@ function drawMap() {
   mctx.lineTo(16 * dpr + barM * view.scale, H - 16 * dpr);
   mctx.stroke();
   mctx.fillText(`${barM} m`, 16 * dpr, H - 22 * dpr);
+}
+
+// A cone from the node along the heard direction. It ends where the ray reaches the slice plane (or runs off-screen if the sound is above the horizon).
+function drawCone(node, n, dpr) {
+  const b = n.bearing;
+  if (!node || !b || !n.heard) return;
+  const d = b.direction;
+  const h = Math.hypot(d[0], d[1]);
+  const dz = node.position[2] - scenario.settings.slice_height_m;
+  let lenM = (700 * dpr) / view.scale;
+  if (d[2] < -0.02 && dz > 0) lenM = Math.min(lenM, Math.max(3, (dz / -d[2]) * h));
+  const az = Math.atan2(d[1], d[0]);
+  const half = (b.uncertainty_deg * Math.PI) / 180;
+  const [ox, oy] = toScreen(node.position[0], node.position[1]);
+  const len = lenM * view.scale;
+  mctx.beginPath();
+  mctx.moveTo(ox, oy);
+  mctx.arc(ox, oy, len, -az - half, -az + half);
+  mctx.closePath();
+  mctx.fillStyle = 'rgba(255,176,0,0.16)';
+  mctx.fill();
+  mctx.strokeStyle = 'rgba(255,176,0,0.6)';
+  mctx.lineWidth = dpr;
+  mctx.stroke();
 }
 
 // Mics are ~10 cm apart, far below one pixel at map scale, so a magnified top-down inset is drawn beside the node.
@@ -461,7 +481,7 @@ function pick(sx, sy) {
   const dpr = window.devicePixelRatio || 1;
   const near = (p) => Math.hypot(toScreen(p[0], p[1])[0] - sx, toScreen(p[0], p[1])[1] - sy) < 12 * dpr;
   for (const s of scenario.sources) if (near(sourcePosition(s))) return { type: 'source', id: s.id };
-  for (const n of scenario.nodes) if (near(n.position)) return { type: 'node', id: n.id };
+  for (const n of scenario.nodes) if (!hiddenNodes.has(n.id) && near(n.position)) return { type: 'node', id: n.id };
   return null;
 }
 
@@ -549,6 +569,7 @@ function renderInspector() {
   const o = selected && find(selected);
   $('app').classList.toggle('has-inspector', !!o);
   updateHint();
+  renderNodeToggles();
   if (!o) return;
   const h = (text) => Object.assign(document.createElement('h3'), { textContent: text });
   if (selected.type === 'node') {
@@ -569,7 +590,7 @@ function renderInspector() {
     ));
     el.append(removeButton());
     const rn = rendered?.nodes.find((n) => n.id === o.id);
-    if (rn) el.append(nodeResultPanel(rn, readings.get(o.id)));
+    if (rn) el.append(nodeResultPanel(rn));
   } else {
     const entry = library.find((c) => c.id === o.clip);
     el.append(h(`${entry?.name ?? o.clip} (${o.id})`));
@@ -588,7 +609,7 @@ function renderInspector() {
   }
 }
 
-function nodeResultPanel(rn, rd) {
+function nodeResultPanel(rn) {
   const box = document.createElement('div');
   if (status === 'stale') box.className = 'stale';
   box.append(Object.assign(document.createElement('h3'), { textContent: 'Mic waveforms' }));
@@ -632,19 +653,6 @@ function nodeResultPanel(rn, rd) {
     }
   });
   box.append(sc);
-  if (rd) {
-    const top = (o) => Object.entries(o).sort((a, b) => (b[1].softmax ?? b[1]) - (a[1].softmax ?? a[1]))[0];
-    const line = (r, name) => {
-      const [k, v] = top(r.scores);
-      return `<tr><td>${r.t.toFixed(1)}</td><td>${name}</td><td>${k}</td><td>${(v.softmax ?? v).toFixed(2)}</td></tr>`;
-    };
-    const rows = [...rd.yamnet.map((r) => line(r, 'Y')), ...rd.clap.map((r) => line(r, 'C'))].sort((a, b) => parseFloat(a.slice(8)) - parseFloat(b.slice(8)));
-    const det = rd.periods.map((p) => `<tr><td>${p.start_s.toFixed(1)}-${p.end_s.toFixed(1)}</td><td>${p.label ?? '-'}</td><td>${p.agreement}</td></tr>`).join('');
-    const t2 = document.createElement('div');
-    t2.innerHTML = `<h3>Detections</h3><table><tr><th>s</th><th>label</th><th>agree</th></tr>${det || '<tr><td colspan="3">none</td></tr>'}</table>
-      <h3>Readings (top label)</h3><table><tr><th>t</th><th></th><th>label</th><th>score</th></tr>${rows.join('')}</table>`;
-    box.append(t2);
-  }
   return box;
 }
 
@@ -655,14 +663,20 @@ function resultPanel(r) {
   const rows = r.nodes.map((n) => {
     const b = n.bearing;
     const azErr = b ? Math.abs(((b.azimuth_deg - n.true_azimuth_deg + 540) % 360) - 180) : null;
-    return `<tr><td>${n.node_id}</td><td>${f(n.range_m, 0)}</td><td>${f(n.snr_db)}</td><td>${f(azErr)}</td><td>${n.detected ? `${n.label ?? 'none'} +${f(n.lag_s, 1)}s` : n.detected === false ? 'missed' : ''}</td></tr>`;
+    return `<tr><td>${n.node_id}</td><td>${f(n.range_m, 0)}</td><td>${f(n.snr_db)}</td><td>${n.heard ? 'yes' : 'no'}</td><td>${f(azErr)}</td></tr>`;
   });
+  const positionText = r.fix?.position
+    ? r.fix.position.map((v) => v.toFixed(1)).join(', ')
+    : r.heard_nodes === 0
+      ? 'not heard by any node'
+      : r.heard_nodes === 1
+        ? 'heard by one node: direction only'
+        : 'poorly conditioned (directions nearly parallel)';
   box.innerHTML = `<h3>Result</h3>
-    <table><tr><th>node</th><th>m</th><th>SNR dB</th><th>az err °</th><th>label, lag</th></tr>${rows.join('')}</table>
-    <p>Final: <span class="accent">${r.final ? `${r.final.label_text || r.final.label || 'unlabelled'} (${f(r.final.confidence, 2)})` : 'not detected'}</span><br>
-    Position: <span class="accent">${r.fix?.position ? r.fix.position.map((v) => v.toFixed(1)).join(', ') : r.fix?.poorly_conditioned ? 'poorly conditioned' : 'one node: ray only'}</span><br>
+    <table><tr><th>node</th><th>m</th><th>SNR dB</th><th>used</th><th>az err \u00b0</th></tr>${rows.join('')}</table>
+    <p>Position: <span class="accent">${positionText}</span><br>
     Error: ${f(r.error_horizontal_m, 2)} m horizontal, ${f(r.error_3d_m, 2)} m 3D<br>
-    Ray angle: ${f(r.fix?.max_angle_deg, 0)}°</p>`;
+    Ray angle: ${f(r.fix?.max_angle_deg, 0)}\u00b0</p>`;
   return box;
 }
 
@@ -711,7 +725,7 @@ function drawTimeline() {
     tctx.globalAlpha = status === 'stale' ? 0.3 : 1;
     tctx.fillStyle = ACCENT;
     results.forEach((r) => r.nodes.forEach((n, k) => {
-      tctx.fillRect((n.first_detection_s ?? n.first_arrival_s) * px - 1, y0 + k * 8 * dpr, 3, 6 * dpr);
+      tctx.fillRect(n.first_arrival_s * px - 1, y0 + k * 8 * dpr, 3, 6 * dpr);
     }));
     tctx.globalAlpha = 1;
   }
@@ -856,47 +870,92 @@ function showSweep(param, rows) {
   g.fillText(String(x1), cv.width - 40, cv.height - 5);
 }
 
-// ---------- listen at mic ----------
+// ---------- sound during playback ----------
 
-let audio = null; // { src, key, t0, c0 }
+// 'dry' plays each source's clip as recorded (works before Create); a mic id plays that rendered mic signal.
+let audio = null; // { srcs, key, t0, c0 }
 let listenCtx = null;
 const bufferCache = new Map();
 
 function stopListen() {
-  try { audio?.src.stop(); } catch { /* already stopped */ }
+  for (const s of audio?.srcs || []) {
+    try { s.stop(); } catch { /* already stopped */ }
+  }
   audio = null;
 }
 
-function syncListen() {
-  const key = $('listen').value;
-  if (!(playing && speed === 1 && rendered && key && status !== 'rendering')) return stopListen();
-  if (audio && audio.key === key && Math.abs(t - (audio.t0 + listenCtx.currentTime - audio.c0)) < 0.15) return;
-  stopListen();
-  const [nodeId, mic] = key.split(':');
-  const sig = rendered.nodes.find((n) => n.id === nodeId)?.mics[Number(mic)];
-  if (!sig) return;
-  const ctx = (listenCtx ??= new AudioContext());
+function listenKey() {
+  const mode = $('listen').value;
+  if (mode === 'off') return '';
+  if (mode === 'dry') return `dry|${scenario.sources.map((s) => `${s.id}:${s.clip}:${s.start_s}:${s.level_1m_db}`).join(',')}`;
+  return rendered && status !== 'rendering' ? mode : '';
+}
+
+function bufferFor(ctx, key, samples, rate) {
   let buf = bufferCache.get(key);
   if (!buf) {
-    buf = ctx.createBuffer(1, sig.length, rendered.sample_rate);
-    buf.copyToChannel(sig, 0);
+    buf = ctx.createBuffer(1, samples.length, rate);
+    buf.copyToChannel(samples, 0);
     bufferCache.set(key, buf);
   }
-  const src = ctx.createBufferSource();
-  src.buffer = buf;
-  const gain = ctx.createGain();
-  gain.gain.value = 8; // rendered level is well below full scale
-  src.connect(gain).connect(ctx.createDynamicsCompressor()).connect(ctx.destination);
-  src.start(0, t);
-  audio = { src, key, t0: t, c0: ctx.currentTime };
+  return buf;
+}
+
+function peakOf(samples) {
+  let p = 0;
+  for (let i = 0; i < samples.length; i++) p = Math.max(p, Math.abs(samples[i]));
+  return p || 1;
+}
+
+function syncListen() {
+  const key = listenKey();
+  if (!(playing && speed === 1 && key)) return stopListen();
+  if (audio && audio.key === key && Math.abs(t - (audio.t0 + listenCtx.currentTime - audio.c0)) < 0.15) return;
+  stopListen();
+  const ctx = (listenCtx ??= new AudioContext());
+  ctx.resume();
+  const out = ctx.createDynamicsCompressor();
+  out.connect(ctx.destination);
+  const srcs = [];
+  if (key.startsWith('dry|')) {
+    const maxLevel = Math.max(...scenario.sources.map((s) => s.level_1m_db));
+    for (const s of scenario.sources) {
+      const samples = clips.get(s.clip);
+      if (!samples || t >= s.start_s + samples.length / FS) continue;
+      const node = ctx.createBufferSource();
+      node.buffer = bufferFor(ctx, `dry:${s.clip}`, samples, FS);
+      const gain = ctx.createGain();
+      // Peak-normalise, then keep louder sources louder (floor of -20 dB so quiet ones stay audible).
+      gain.gain.value = (0.6 / peakOf(samples)) * Math.min(1, Math.max(0.1, 10 ** ((s.level_1m_db - maxLevel) / 20)));
+      node.connect(gain).connect(out);
+      node.start(ctx.currentTime + Math.max(0, s.start_s - t), Math.max(0, t - s.start_s));
+      srcs.push(node);
+    }
+  } else {
+    const [nodeId, mic] = key.split(':');
+    const sig = rendered.nodes.find((n) => n.id === nodeId)?.mics[Number(mic)];
+    if (!sig) return;
+    const node = ctx.createBufferSource();
+    node.buffer = bufferFor(ctx, key, sig, rendered.sample_rate);
+    const gain = ctx.createGain();
+    gain.gain.value = 8; // rendered level is well below full scale
+    node.connect(gain).connect(out);
+    node.start(0, t);
+    srcs.push(node);
+  }
+  audio = { srcs, key, t0: t, c0: ctx.currentTime };
 }
 
 function refreshListen() {
+  const prev = $('listen').value || 'dry';
+  const opts = ['<option value="dry">Sources, as recorded</option>'];
+  for (const n of rendered?.nodes || []) for (let m = 0; m < 4; m++) opts.push(`<option value="${n.id}:${m}">${n.id} mic ${m + 1} (rendered)</option>`);
+  opts.push('<option value="off">Off</option>');
   bufferCache.clear();
-  const opts = ['<option value="">off</option>'];
-  for (const n of rendered?.nodes || []) for (let m = 0; m < 4; m++) opts.push(`<option value="${n.id}:${m}">${n.id} mic ${m + 1}</option>`);
   $('listen').innerHTML = opts.join('');
+  $('listen').value = [...$('listen').options].some((o) => o.value === prev) ? prev : 'dry';
 }
+$('listen').addEventListener('change', updateSpeedLabel);
 
 // ---------- loop ----------
 

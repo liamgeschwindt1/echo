@@ -194,3 +194,19 @@ test('spectrogram puts a 1 kHz tone in the right bin', async () => {
   for (let k = 0; k < col.length; k++) if (col[k] > col[best]) best = k;
   assert.ok(Math.abs((best * FS) / 1024 - 1000) < 100);
 });
+
+test('nodes below the minimum SNR are not heard and give no position', async () => {
+  const { analyseScenario } = await import('../src/sim/core/analyse.js');
+  const nodes = [newNode('a', 0, 0), newNode('b', 60, 0)];
+  const src = newSource('s1', 'c', 25, 20, 40);
+  const scn = scenario({ nodes, sources: [src], settings: { noise_floor_db_spl: 45, mic_self_noise_db_spl: 30 } });
+  const out = renderScenario(scn, new Map([['c', click()]]), { lengthS: 10.3 });
+  const [r] = analyseScenario(scn, out, new Map([['c', 0.3]]));
+  assert.equal(r.heard_nodes, 0);
+  assert.equal(r.fix, null);
+  const loud = { ...scn, sources: [newSource('s1', 'c', 25, 20, 120)] };
+  const [r2] = analyseScenario(loud, renderScenario(loud, new Map([['c', click()]]), { lengthS: 10.3 }), new Map([['c', 0.3]]));
+  assert.equal(r2.heard_nodes, 2);
+  const u = r2.nodes[0].bearing.uncertainty_deg;
+  assert.ok(u >= 1.5 && u <= 30, String(u));
+});

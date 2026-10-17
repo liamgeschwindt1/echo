@@ -34,15 +34,18 @@ export function analyseScenario(scenario, rendered, clipDurations) {
         node_id: node.id,
         range_m: r,
         snr_db: snrDb(rn.mics[0], a, b, settings),
+        heard: false,
         bearing,
         true_azimuth_deg: toDeg(Math.atan2(truth[1] - node.position[1], truth[0] - node.position[0])),
         true_elevation_deg: toDeg(Math.asin((truth[2] - node.position[2]) / r)),
         first_arrival_s: src.start_s + r / c
       };
     });
+    // Localisation-only gate: a node too far below the noise to hear the sound is left out of the fix.
+    for (const n of perNode) n.heard = n.snr_db >= settings.min_snr_db;
     const rays = perNode
-      .map((n, i) => ({ origin: scenario.nodes[i].position, bearing: n.bearing, weight: 10 ** (n.snr_db / 10) }))
-      .filter((n) => n.bearing)
+      .map((n, i) => ({ origin: scenario.nodes[i].position, bearing: n.bearing, weight: 10 ** (n.snr_db / 10), heard: n.heard }))
+      .filter((n) => n.bearing && n.heard)
       .map((n) => ({ origin: n.origin, direction: n.bearing.direction, weight: n.weight }));
     const fix = intersectRays(rays);
     const est = fix && !fix.poorly_conditioned ? fix.position : null;
@@ -50,6 +53,7 @@ export function analyseScenario(scenario, rendered, clipDurations) {
       source_id: src.id,
       true_position: truth,
       nodes: perNode,
+      heard_nodes: rays.length,
       fix: fix && { ...fix, position: est },
       error_horizontal_m: est ? Math.hypot(est[0] - truth[0], est[1] - truth[1]) : null,
       error_3d_m: est ? distance(est, truth) : null

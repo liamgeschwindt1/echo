@@ -1,3 +1,5 @@
+import { distance, speedOfSound } from './physics.js';
+
 export const SCENARIO_VERSION = '0.1';
 
 export const DEFAULT_SETTINGS = Object.freeze({
@@ -11,6 +13,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   seed: 1,
   render_sample_rate: 48000,
   localisation_band_hz: [200, 1600],
+  min_snr_db: 6,
   air_absorption: true,
   spl_ref_db: 94,
   dbfs_ref_db: -26
@@ -44,9 +47,17 @@ export function validateScenario(s) {
   return { version: s.version, settings, nodes: s.nodes || [], sources: s.sources || [] };
 }
 
-// End of the last clip plus 10 s so CLAP lag is visible.
+// Playback and the timeline end exactly when the last clip ends.
 export function scenarioLengthS(scenario, clipDurations) {
   let end = 0;
   for (const src of scenario.sources) end = Math.max(end, src.start_s + (clipDurations.get(src.clip) || 0));
-  return end + 10;
+  return end;
+}
+
+// The render runs longer than playback so sound still travelling to the farthest mic is not cut off.
+export function renderLengthS(scenario, clipDurations, minS = 0) {
+  const c = speedOfSound(scenario.settings.temperature_c);
+  let travel = 0;
+  for (const src of scenario.sources) for (const n of scenario.nodes) travel = Math.max(travel, distance(sourcePosition(src), n.position) / c);
+  return Math.max(scenarioLengthS(scenario, clipDurations) + travel + 0.5, minS);
 }

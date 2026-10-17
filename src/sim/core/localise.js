@@ -126,6 +126,8 @@ export function estimateBearing({ mics, positions, startSample, endSample, fs, c
     azimuth_deg: (Math.atan2(d[1], d[0]) * 180) / Math.PI,
     elevation_deg: (Math.asin(Math.max(-1, Math.min(1, d[2]))) * 180) / Math.PI,
     residual_s: Math.sqrt(sq / rows.length),
+    // Indicative cone half-angle: timing scatter across the array, floored at the interpolation step.
+    uncertainty_deg: Math.min(30, Math.max(1.5, (((c * Math.max(Math.sqrt(sq / rows.length), 1 / (fs * UPSAMPLE))) / spacing) * 180) / Math.PI)),
     assumed_below: planar
   };
 }
