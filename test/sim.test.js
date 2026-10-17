@@ -210,3 +210,17 @@ test('nodes below the minimum SNR are not heard and give no position', async () 
   const u = r2.nodes[0].bearing.uncertainty_deg;
   assert.ok(u >= 1.5 && u <= 30, String(u));
 });
+
+test('overlapping sounds at a node are flagged and azimuth error is reported', async () => {
+  const { analyseScenario } = await import('../src/sim/core/analyse.js');
+  const nodes = [newNode('a', 0, 0), newNode('b', 60, 0)];
+  const s1 = { ...newSource('s1', 'c', 25, 20, 120), start_s: 1 };
+  const s2 = { ...newSource('s2', 'c', 40, 10, 120), start_s: 1.1 };
+  const s3 = { ...newSource('s3', 'c', 10, 30, 120), start_s: 6 };
+  const scn = scenario({ nodes, sources: [s1, s2, s3] });
+  const out = renderScenario(scn, new Map([['c', click()]]), { lengthS: 8 });
+  const [r1, , r3] = analyseScenario(scn, out, new Map([['c', 0.3]]));
+  assert.deepEqual(r1.nodes[0].overlaps, ['s2']);
+  assert.deepEqual(r3.nodes[0].overlaps, []);
+  assert.ok(Number.isFinite(r3.nodes[0].azimuth_error_deg));
+});

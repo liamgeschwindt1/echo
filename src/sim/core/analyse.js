@@ -21,22 +21,37 @@ export function analyseScenario(scenario, rendered, clipDurations) {
   const { settings } = scenario;
   const fs = rendered.sample_rate;
   const c = speedOfSound(settings.temperature_c);
+  // Analysis window of a source at a node, in samples.
+  const windowAt = (s, node) => {
+    const r = distance(sourcePosition(s), node.position);
+    const d = clipDurations.get(s.clip) || 0;
+    return [Math.max(0, Math.round((s.start_s + r / c - 0.02) * fs)), Math.min(rendered.length, Math.round((s.start_s + d + r / c + 0.05) * fs))];
+  };
   return scenario.sources.map((src) => {
     const truth = sourcePosition(src);
-    const dur = clipDurations.get(src.clip) || 0;
     const perNode = scenario.nodes.map((node, ni) => {
       const rn = rendered.nodes[ni];
       const r = distance(truth, node.position);
-      const a = Math.max(0, Math.round((src.start_s + r / c - 0.02) * fs));
-      const b = Math.min(rendered.length, Math.round((src.start_s + dur + r / c + 0.05) * fs));
+      const [a, b] = windowAt(src, node);
+      // Another sound inside this window contaminates the bearing.
+      const overlaps = scenario.sources
+        .filter((o) => {
+          if (o === src) return false;
+          const [oa, ob] = windowAt(o, node);
+          return oa < b && ob > a;
+        })
+        .map((o) => o.id);
       const bearing = estimateBearing({ mics: rn.mics, positions: rn.mic_positions, startSample: a, endSample: b, fs, c, band: settings.localisation_band_hz });
+      const trueAz = toDeg(Math.atan2(truth[1] - node.position[1], truth[0] - node.position[0]));
       return {
         node_id: node.id,
         range_m: r,
         snr_db: snrDb(rn.mics[0], a, b, settings),
         heard: false,
         bearing,
-        true_azimuth_deg: toDeg(Math.atan2(truth[1] - node.position[1], truth[0] - node.position[0])),
+        overlaps,
+        azimuth_error_deg: bearing ? Math.abs(((bearing.azimuth_deg - trueAz + 540) % 360) - 180) : null,
+        true_azimuth_deg: trueAz,
         true_elevation_deg: toDeg(Math.asin((truth[2] - node.position[2]) / r)),
         first_arrival_s: src.start_s + r / c
       };

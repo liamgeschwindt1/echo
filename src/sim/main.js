@@ -380,28 +380,56 @@ function drawMap() {
   mctx.fillText(`${barM} m`, 16 * dpr, H - 22 * dpr);
 }
 
-// A cone from the node along the heard direction. It ends where the ray reaches the slice plane (or runs off-screen if the sound is above the horizon).
+// Every wedge has the same on-screen length and no end cap, so its length never implies range. Truth stays on the source dot.
+// Label: stated uncertainty and actual azimuth error; "!" when the error exceeds the stated uncertainty.
 function drawCone(node, n, dpr) {
   const b = n.bearing;
   if (!node || !b || !n.heard) return;
   const d = b.direction;
-  const h = Math.hypot(d[0], d[1]);
-  const dz = node.position[2] - scenario.settings.slice_height_m;
-  let lenM = (700 * dpr) / view.scale;
-  if (d[2] < -0.02 && dz > 0) lenM = Math.min(lenM, Math.max(3, (dz / -d[2]) * h));
   const az = Math.atan2(d[1], d[0]);
-  const half = (b.uncertainty_deg * Math.PI) / 180;
+  const u = b.uncertainty_deg;
+  const half = (u * Math.PI) / 180;
   const [ox, oy] = toScreen(node.position[0], node.position[1]);
-  const len = lenM * view.scale;
+  const len = 170 * dpr;
+  const wrong = n.azimuth_error_deg > u;
+  const overlapped = n.overlaps?.length > 0;
+  const tip = [ox + Math.cos(-az) * len, oy + Math.sin(-az) * len];
+  const grad = (a0, a1) => {
+    const g = mctx.createLinearGradient(ox, oy, tip[0], tip[1]);
+    g.addColorStop(0, `rgba(255,176,0,${a0})`);
+    g.addColorStop(1, `rgba(255,176,0,${a1})`);
+    return g;
+  };
   mctx.beginPath();
   mctx.moveTo(ox, oy);
   mctx.arc(ox, oy, len, -az - half, -az + half);
   mctx.closePath();
-  mctx.fillStyle = 'rgba(255,176,0,0.16)';
+  mctx.fillStyle = grad(0.28, 0.02);
   mctx.fill();
-  mctx.strokeStyle = 'rgba(255,176,0,0.6)';
-  mctx.lineWidth = dpr;
-  mctx.stroke();
+  // Edges only: the far end stays open.
+  mctx.strokeStyle = grad(0.9, 0.15);
+  mctx.lineWidth = (wrong ? 2.5 : 1) * dpr;
+  mctx.setLineDash(overlapped ? [6 * dpr, 4 * dpr] : []);
+  for (const s of [-1, 1]) {
+    mctx.beginPath();
+    mctx.moveTo(ox, oy);
+    mctx.lineTo(ox + Math.cos(-az - s * half) * len, oy + Math.sin(-az - s * half) * len);
+    mctx.stroke();
+  }
+  mctx.setLineDash([]);
+  mctx.lineWidth = 1;
+
+  const text = `\u00b1${u.toFixed(0)}\u00b0  err ${n.azimuth_error_deg.toFixed(0)}\u00b0${wrong ? ' !' : ''}${overlapped ? '  \u26a0 overlap' : ''}`;
+  const lx = ox + Math.cos(-az) * len * 0.62;
+  const ly = oy + Math.sin(-az) * len * 0.62;
+  mctx.font = `${11 * dpr}px monospace`;
+  const w = mctx.measureText(text).width + 8 * dpr;
+  const x = lx - w / 2;
+  const y = ly - 8 * dpr;
+  mctx.fillStyle = wrong ? ACCENT : 'rgba(0,0,0,0.75)';
+  mctx.fillRect(x, y, w, 16 * dpr);
+  mctx.fillStyle = wrong ? '#000' : ACCENT;
+  mctx.fillText(text, x + 4 * dpr, y + 12 * dpr);
 }
 
 // Mics are ~10 cm apart, far below one pixel at map scale, so a magnified top-down inset is drawn beside the node.
@@ -662,8 +690,8 @@ function resultPanel(r) {
   const f = (v, d = 1) => (v == null ? 'n/a' : v.toFixed(d));
   const rows = r.nodes.map((n) => {
     const b = n.bearing;
-    const azErr = b ? Math.abs(((b.azimuth_deg - n.true_azimuth_deg + 540) % 360) - 180) : null;
-    return `<tr><td>${n.node_id}</td><td>${f(n.range_m, 0)}</td><td>${f(n.snr_db)}</td><td>${n.heard ? 'yes' : 'no'}</td><td>${f(azErr)}</td></tr>`;
+    const flags = [n.azimuth_error_deg > b?.uncertainty_deg ? 'wrong' : '', n.overlaps?.length ? `overlap ${n.overlaps.join(',')}` : ''].filter(Boolean).join(', ');
+    return `<tr><td>${n.node_id}</td><td>${f(n.range_m, 0)}</td><td>${f(n.snr_db)}</td><td>${n.heard ? 'yes' : 'no'}</td><td>${f(b?.uncertainty_deg, 0)}</td><td>${f(n.azimuth_error_deg)}</td><td>${flags}</td></tr>`;
   });
   const positionText = r.fix?.position
     ? r.fix.position.map((v) => v.toFixed(1)).join(', ')
@@ -673,7 +701,7 @@ function resultPanel(r) {
         ? 'heard by one node: direction only'
         : 'poorly conditioned (directions nearly parallel)';
   box.innerHTML = `<h3>Result</h3>
-    <table><tr><th>node</th><th>m</th><th>SNR dB</th><th>used</th><th>az err \u00b0</th></tr>${rows.join('')}</table>
+    <table><tr><th>node</th><th>m</th><th>SNR dB</th><th>used</th><th>\u00b1\u00b0</th><th>az err \u00b0</th><th></th></tr>${rows.join('')}</table>
     <p>Position: <span class="accent">${positionText}</span><br>
     Error: ${f(r.error_horizontal_m, 2)} m horizontal, ${f(r.error_3d_m, 2)} m 3D<br>
     Ray angle: ${f(r.fix?.max_angle_deg, 0)}\u00b0</p>`;

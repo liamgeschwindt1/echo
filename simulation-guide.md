@@ -57,7 +57,7 @@ On first open you see a **demo scenario**: three nodes at (0, 0), (60, 0) and (3
 - **Node:** a small square. Beside it is a **magnified inset** showing the four mics, numbered 1 to 4 (the mics are only 10 cm apart, which is under one pixel at map scale, so the inset enlarges them and labels it "mics xN"). At high zoom the mics are drawn at their true positions instead. Filled dots are at or above the node's plane, hollow dots below it (only matters for the tetrahedron layout).
 - **Source:** a dot with its id and sound name.
 - **White** = ground truth (where things really are). **Amber** = what the simulator worked out.
-- **Direction cones** (amber, after Create): one cone per node that heard the sound, pointing the way the node thinks the sound came from. The cone's width is an indicative uncertainty (wider = the mics disagreed more). A cone stops where its direction reaches the ring slice height (the "Slice height" in the Display menu); if the sound seems to come from above the horizon it runs off the edge of the map. Where cones from different nodes cross is where the sound probably is.
+- **Direction wedges** (amber, after Create): one wedge per node that heard the sound, pointing the way that node thinks the sound came from. Every wedge is drawn the same length with an open end and fading out, so its length means nothing about distance. The true position is only ever the white source dot. Each wedge is labelled `±U°  err E°`: **U** is the stated uncertainty (half-width, indicative, from how much the four mics disagreed) and **E** is the actual azimuth error against the truth. When E is bigger than U the node was confidently wrong: the wedge edges are drawn thicker, the label is a solid amber block and ends in `!`. If another sound overlaps this one in time at that node, the wedge edges are dashed and the label ends in `⚠ overlap`, because the direction is contaminated. Where wedges from different nodes cross is where the sound probably is.
 - **Amber ring + amber line:** the estimated position, with a line back to the true (white) position showing the error. It appears when at least two nodes heard the sound.
 - **Rings** spreading from each source are the sound wave (section 7).
 
@@ -79,11 +79,11 @@ There is no Delete tool. To delete: select the object, then press the **Delete k
 
 **Display** menu (bottom of the strip):
 
-- **Direction cones:** show or hide the amber cones.
+- **Direction cones:** show or hide the amber wedges.
 - **Mic arrays:** show or hide the magnified mic insets beside each node.
 - **Tone and grain:** on = rings are drawn with thickness and dashes that reflect the sound's pitch and noisiness. Off = plain loudness pulses.
-- **Slice height (m):** which horizontal plane the rings are drawn on (default 1.5 m, roughly head height). Cones also end where they reach this height.
-- **Nodes shown:** a tick box per node, plus **all** and **none**. Hiding a node removes it, its mic inset and its cones from the map so overlapping nodes are easier to read. It is a view setting only: the node still takes part in Create and in the position estimate, and you cannot select or move a hidden node. Loading a scenario shows all nodes again.
+- **Slice height (m):** which horizontal plane the rings are drawn on (default 1.5 m, roughly head height).
+- **Nodes shown:** a tick box per node, plus **all** and **none**. Hiding a node removes it, its mic inset and its wedges from the map so overlapping nodes are easier to read. It is a view setting only: the node still takes part in Create and in the position estimate, and you cannot select or move a hidden node. Loading a scenario shows all nodes again.
 
 ---
 
@@ -198,7 +198,9 @@ After Create, select a **source** to see its Result table.
 | m | Distance from that node to the source |
 | SNR dB | How far the sound is above the background noise at that node |
 | used | "yes" if the SNR reached the minimum, so the node counts towards the position |
-| az err ° | Error in the direction that node worked out (azimuth = compass direction) |
+| ±° | The stated uncertainty of that node's direction |
+| az err ° | Actual error in the direction that node worked out (azimuth = compass direction) |
+| (last column) | `wrong` = the error exceeded the stated uncertainty; `overlap s2` = sound s2 overlapped in time at this node |
 
 Below the table:
 
@@ -209,7 +211,7 @@ Below the table:
 - **Error:** distance between the estimate and the truth, horizontal and 3D.
 - **Ray angle:** the widest angle between two nodes' directions. Wider is better.
 
-On the map, once there are results, you see the cones and the estimate described in section 3.
+On the map, once there are results, you see the wedges and the estimate described in section 3.
 
 On the timeline:
 
@@ -262,8 +264,8 @@ Direction finding then compares arrival-time differences between the six mic pai
 ## 13. Things that surprise people
 
 - **No rings?** Press Play or drag the playhead past the source's start time, and make sure the sound file loaded.
-- **No position, just cones?** Fewer than two nodes heard the sound (SNR below the minimum). Make the sound louder, move it closer, or lower the minimum SNR in Settings.
-- **Cones overlap and clutter the map?** Hide nodes you are not looking at with Display > Nodes shown, or turn off Direction cones or Mic arrays.
+- **No position, just wedges?** Fewer than two nodes heard the sound (SNR below the minimum). Make the sound louder, move it closer, or lower the minimum SNR in Settings.
+- **Wedges overlap and clutter the map?** Hide nodes you are not looking at with Display > Nodes shown, or turn off Direction cones or Mic arrays.
 - **"Poorly conditioned"?** The nodes see the sound from almost the same direction. Move a node so the angle between them is wider.
 - **A close sound is not used by a node?** Check its level at 1 m and the noise floor; the node must reach the minimum SNR.
 - **High-pitched sounds locate badly.** That is expected: the direction finder only uses 200 to 1600 Hz.
@@ -278,7 +280,7 @@ Direction finding then compares arrival-time differences between the six mic pai
 
 1. Open `/sim`. Look at the demo.
 2. Press **Create**. Wait for "Located 1 of 1 sound" in the top bar.
-3. Press **Play** and watch the rings reach each node. Select the source and read the Result table. Look at the amber cones: they should cross near the true position.
+3. Press **Play** and watch the rings reach each node. Select the source and read the Result table. Look at the amber wedges and their labels: they should cross near the true position.
 4. Select a node to see its waveforms and spectrogram. Use Display > Nodes shown to hide nodes and see one node's cone at a time.
 5. Drag the source further away and press **Create** again. Compare the SNR, label and error.
 6. Open **File > Repeats / sweep**, vary distance scale, and read the fix rate to see where it stops working.
