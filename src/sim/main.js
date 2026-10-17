@@ -236,11 +236,7 @@ function drawMap() {
     const [sx, sy] = toScreen(n.position[0], n.position[1]);
     mctx.strokeStyle = selected?.id === n.id ? ACCENT : '#fff';
     mctx.strokeRect(sx - 5 * dpr, sy - 5 * dpr, 10 * dpr, 10 * dpr);
-    mctx.fillStyle = '#fff';
-    for (const m of micPositions(n)) {
-      const [mx, my] = toScreen(m[0], m[1]);
-      mctx.fillRect(mx - 1, my - 1, 2, 2);
-    }
+    drawMicGlyph(n, sx, sy, dpr);
     mctx.fillStyle = '#888';
     mctx.fillText(n.id, sx + 8 * dpr, sy - 8 * dpr);
   }
@@ -298,6 +294,43 @@ function drawMap() {
   mctx.lineTo(16 * dpr + barM * view.scale, H - 16 * dpr);
   mctx.stroke();
   mctx.fillText(`${barM} m`, 16 * dpr, H - 22 * dpr);
+}
+
+// Mics are ~10 cm apart, far below one pixel at map scale, so a magnified top-down inset is drawn beside the node.
+function drawMicGlyph(n, sx, sy, dpr) {
+  const offs = micPositions(n).map((m) => [m[0] - n.position[0], m[1] - n.position[1], m[2] - n.position[2]]);
+  const extent = Math.max(...offs.map((o) => Math.hypot(o[0], o[1]))) || 1e-6;
+  const trueHalfPx = extent * view.scale;
+  const magnified = trueHalfPx < 10 * dpr;
+  const k = magnified ? (13 * dpr) / extent : view.scale;
+  const cx = magnified ? sx + 24 * dpr : sx;
+  const cy = magnified ? sy + 20 * dpr : sy;
+  if (magnified) {
+    mctx.strokeStyle = '#555';
+    mctx.strokeRect(cx - 18 * dpr, cy - 18 * dpr, 36 * dpr, 36 * dpr);
+    mctx.beginPath();
+    mctx.moveTo(sx + 5 * dpr, sy + 5 * dpr);
+    mctx.lineTo(cx - 18 * dpr, cy - 18 * dpr);
+    mctx.stroke();
+  }
+  mctx.font = `${9 * dpr}px monospace`;
+  offs.forEach((o, i) => {
+    const x = cx + o[0] * k;
+    const y = cy - o[1] * k;
+    mctx.strokeStyle = mctx.fillStyle = '#fff';
+    mctx.beginPath();
+    mctx.arc(x, y, 2.5 * dpr, 0, 7);
+    // Filled: at or above the node plane. Hollow: below it (tetrahedron only).
+    if (o[2] >= -1e-9) mctx.fill();
+    else mctx.stroke();
+    mctx.fillStyle = '#888';
+    mctx.fillText(String(i + 1), x + 4 * dpr, y - 3 * dpr);
+  });
+  if (magnified) {
+    mctx.fillStyle = '#555';
+    mctx.fillText(`mics x${Math.round(k / view.scale)}`, cx - 18 * dpr, cy + 28 * dpr);
+  }
+  mctx.font = `${11 * dpr}px monospace`;
 }
 
 function drawRings(dpr) {
