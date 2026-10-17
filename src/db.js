@@ -4,9 +4,9 @@ const DB_VERSION = 2;
 const ROWS = 'rows';
 const STATE = 'state';
 
-function openDb() {
+function openDb(name) {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    const req = indexedDB.open(name, DB_VERSION);
     req.onupgradeneeded = () => {
       const db = req.result;
       for (const name of Array.from(db.objectStoreNames)) db.deleteObjectStore(name);
@@ -26,8 +26,8 @@ function done(tx) {
 }
 
 export class SessionStore {
-  constructor() {
-    this.dbPromise = openDb();
+  constructor(name = DB_NAME) {
+    this.dbPromise = openDb(name);
   }
 
   async addRow(row) {

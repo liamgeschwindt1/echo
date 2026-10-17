@@ -112,7 +112,7 @@ self.onmessage = async (event) => {
       const { scores, inferMs, logitScale } = await classify(msg);
       self.postMessage({ type: 'result', requestId: msg.requestId, scores, timestamp: msg.timestamp, windowS: msg.windowS, inferMs, logitScale });
     } catch (err) {
-      self.postMessage({ type: 'error', message: String(err?.message || err) });
+      self.postMessage({ type: 'error', requestId: msg.requestId, message: String(err?.message || err) });
     } finally {
       busy = false;
     }

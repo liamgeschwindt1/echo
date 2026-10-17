@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' blob:" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="referrer" content="no-referrer" />
     <title>Phone Sound Labeller</title>
@@ -24,6 +25,17 @@
         <span id="chipClap" class="status-chip off">CLAP off</span>
       </div>
       <div id="loadStatus" class="muted small"></div>
+      <section class="sample-panel">
+        <button id="sampleBtn" class="secondary">Run sample test</button>
+        <p class="muted small">Internal, non-commercial ESC-50 smoke test. Plays through the real models and detection graph, without the microphone. Separate from live data.</p>
+        <details>
+          <summary>Optional missing samples (licensed files, not AudioSet)</summary>
+          <label>Gunshot <input id="gunshotFile" type="file" accept="audio/*" /></label>
+          <label>Human scream <input id="screamFile" type="file" accept="audio/*" /></label>
+          <p class="small muted">Files are decoded locally in memory only, never uploaded or saved.</p>
+        </details>
+        <p class="small"><a href="/test-audio/LICENSE.esc50" target="_blank" rel="noopener">ESC-50 licence and clip credits</a></p>
+      </section>
 
       <div class="meter" aria-label="Relative level">
         <div id="meterFill" class="meter-fill"></div>
@@ -71,6 +83,18 @@
         </select>
         <button id="graphClose" class="secondary">Close</button>
       </div>
+      <section id="sampleProgress" class="sample-progress hidden">
+        <div id="sampleStatus" role="status" aria-live="polite"></div>
+        <progress id="samplePlayback" max="1" value="0" aria-label="Sample test progress"></progress>
+        <div id="samplePredictions" class="small"></div>
+        <div id="sampleDetection" class="small"></div>
+        <button id="sampleStop" class="secondary">Stop test</button>
+        <button id="sampleExport" class="secondary">Download test JSON</button>
+        <details>
+          <summary>Sample outcomes (night priorities; recognition is not an alert)</summary>
+          <div id="sampleOutcomes" class="small"></div>
+        </details>
+      </section>
       <canvas id="levelCanvas" class="graph level"></canvas>
       <canvas id="scoreCanvas" class="graph score"></canvas>
     </div>

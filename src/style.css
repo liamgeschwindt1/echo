@@ -194,6 +194,38 @@ select {
   margin: 12px 0 6px;
 }
 
+.sample-panel, .sample-progress {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin-top: 12px;
+}
+.sample-panel label {
+  display: block;
+  margin: 10px 0;
+}
+.sample-panel input {
+  max-width: 100%;
+}
+.sample-progress {
+  margin: 8px 16px;
+}
+.sample-progress progress {
+  width: 100%;
+}
+#sampleOutcomes {
+  overflow-x: auto;
+}
+#sampleOutcomes table {
+  border-collapse: collapse;
+  width: 100%;
+}
+#sampleOutcomes th, #sampleOutcomes td {
+  padding: 6px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+
 .overlay {
   position: fixed;
   inset: 0;

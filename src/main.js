@@ -6,6 +6,7 @@ import { SessionStore } from './db.js';
 import { LiveGraph } from './graph.js';
 import { REPORT_CSS, reportApp, buildStandaloneHtml } from './report.js';
 import { DEFAULTS, GROUPS, clapHopS, loadSettings, saveSettings } from './settings.js';
+import { prepareSamples, scoreSamples, expectedNight } from './sample-test.js';
 
 const APP_VERSION = '2.2.0';
 const YAMNET_RATE = 16000;
@@ -13,7 +14,14 @@ const LEVEL_BLOCK_S = 0.1;
 const TAG_PRESETS = ['siren', 'train', 'plane', 'car revving', 'bang', 'music', 'other'];
 
 const $ = (id) => document.getElementById(id);
-const store = new SessionStore();
+const liveStore = new SessionStore();
+let store = liveStore;
+let sampleStore = null;
+let sourceMode = 'microphone';
+let starting = false;
+let sampleFinishTimer = null;
+let clapSessionId = null;
+let sampleUiAt = 0;
 
 let cat = null;
 let labelsRaw = null;
@@ -97,7 +105,10 @@ function currentElapsed() {
 }
 
 function labelledPeriods() {
-  return labelPeriods(session.raw_periods, rows, session.notes, settings, cat);
+  const periods = session.sample_test
+    ? session.raw_periods.map((p) => ({ ...p, time_of_day: 'night' }))
+    : session.raw_periods;
+  return labelPeriods(periods, rows, session.notes, session.sample_test?.settings || settings, cat);
 }
 
 function buildExport() {
@@ -113,14 +124,18 @@ function buildExport() {
   return {
     schema_version: '2.2',
     meta,
-    settings: { ...settings },
+    settings: { ...(session.sample_test?.settings || settings) },
     label_catalogue_version: cat.version,
     rows,
     level_series: session.level_series,
     periods: labelledPeriods(),
     notes: session.notes,
     report: session.report,
-    errors: session.errors
+    errors: session.errors,
+    ...(session.sample_test ? {
+      sample_test: session.sample_test,
+      sample_scores: scoreSamples(session.sample_test, rows, labelledPeriods(), cat)
+    } : {})
   };
 }
 
@@ -240,16 +255,25 @@ function initClap() {
     }
     const onInit = (e) => {
       if (e.data.type === 'ready') {
-        clapWorker.removeEventListener('message', onInit);
+        cleanup();
         clapReady = true;
         session.meta.clap_short_window = e.data.padMode;
         resolve();
       } else if (e.data.type === 'error') {
-        clapWorker.removeEventListener('message', onInit);
+        cleanup();
         reject(new Error(e.data.message));
       }
     };
+    const onError = (e) => {
+      cleanup();
+      reject(new Error(e.message || 'CLAP worker crashed during loading'));
+    };
+    const cleanup = () => {
+      clapWorker.removeEventListener('message', onInit);
+      clapWorker.removeEventListener('error', onError);
+    };
     clapWorker.addEventListener('message', onInit);
+    clapWorker.addEventListener('error', onError);
     clapWorker.postMessage({
       type: 'init',
       classMeta: cat.classes.map((c) => ({ id: c.id, family: c.family })),
@@ -264,6 +288,7 @@ function onClapWindow(samples, nativeRate) {
   // Never queue: skip the tick while a run is in progress.
   if (clapBusy) return;
   clapBusy = true;
+  clapSessionId = session.meta.session_id;
   clapState.sentAt = Date.now();
   clapWorker.postMessage(
     { type: 'classify', requestId: ++clapSeq, audio: samples.buffer, nativeRate, timestamp: Date.now(), windowS: settings.clap_window_s, logitScale: settings.clap_logit_scale },
@@ -278,10 +303,14 @@ function onClapMessage(msg) {
   } else if (msg.type === 'skipped') {
     clapBusy = false;
   } else if (msg.type === 'error') {
+    if (msg.requestId && clapSessionId !== session.meta.session_id) {
+      clapBusy = false;
+      return;
+    }
     if (clapReady) setClapError(msg.message);
   } else if (msg.type === 'result') {
     clapBusy = false;
-    if (!running) return;
+    if (!running || clapSessionId !== session.meta.session_id) return;
     const sum = msg.scores.reduce((a, s) => a + s.softmax, 0);
     if (Math.abs(sum - 1) > 0.001) logError('clap', `softmax sums to ${sum.toFixed(4)}`);
     const sorted = [...msg.scores].sort((a, b) => b.softmax - a.softmax);
@@ -340,19 +369,64 @@ function flushSecond() {
 
 // ---------- start / stop ----------
 
-async function start() {
+async function activateSource(mode) {
+  clearTimeout(saveTimer);
+  if (sourceMode === mode && mode === 'microphone') return;
+  await store.saveState({ ...session, elapsed_ms: currentElapsed() });
+  let nextStore;
+  let nextSession;
+  let nextRows;
+  if (mode === 'sample') {
+    sampleStore ||= new SessionStore('echo-sample-tests');
+    nextStore = sampleStore;
+    await nextStore.clear();
+    nextSession = newSession();
+    nextSession.meta.source = 'sample';
+    nextRows = [];
+  } else {
+    nextStore = liveStore;
+    const saved = await nextStore.loadState();
+    nextSession = saved || newSession();
+    nextRows = await nextStore.allRows();
+  }
+  store = nextStore;
+  session = nextSession;
+  rows = nextRows;
+  sourceMode = mode;
+  elapsedBeforeMs = session.elapsed_ms || 0;
+  secondBucket = null;
+  lastLevel = { rms: -Infinity, peak: -Infinity };
+  graph.clear();
+  graph.windowS = settings.graph_window_s;
+  $('graphWindow').value = String(settings.graph_window_s);
+  makeDetector();
+  $('sampleProgress').classList.toggle('hidden', mode !== 'sample');
+  updateCounts();
+}
+
+async function start(mode = 'microphone') {
+  if (starting || running) return;
+  starting = true;
   const btn = $('startBtn');
   btn.disabled = true;
+  $('sampleBtn').disabled = true;
+  $('newSessionBtn').disabled = true;
+  $('sampleStop').disabled = true;
+  $('settingsBtn').disabled = true;
   activeModels = { yamnet: settings.yamnet_enabled, clap: settings.clap_enabled };
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1 }
-    });
+    if (!activeModels.yamnet && !activeModels.clap) throw new Error('Enable at least one model in Settings.');
     // Native rate (usually 48 kHz) keeps full bandwidth for CLAP; YAMNet is resampled to 16 kHz in the worklet.
     const ctx = new AudioContext();
+    audio = { ctx, stream: null, source: null, node: null };
     await ctx.resume();
+    await activateSource(mode);
+    if (mode === 'microphone') {
+      audio.stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1 }
+      });
+    }
     await ctx.audioWorklet.addModule('/worklet/capture-processor.js');
-    audio = { ctx, stream, source: null, node: null };
 
     $('loadStatus').textContent = 'Loading models...';
     const loads = [];
@@ -373,6 +447,26 @@ async function start() {
     $('loadStatus').textContent = '';
     if (yamnetState.status === 'loading') yamnetState.status = 'ok';
     if (clapState.status === 'loading') clapState.status = 'ok';
+    if (mode === 'sample' && ((activeModels.yamnet && yamnetState.status === 'err') || (activeModels.clap && clapState.status === 'err'))) {
+      throw new Error('A selected model failed to load. Check the model status above, or disable it in Settings.');
+    }
+
+    let prepared = null;
+    if (mode === 'sample') {
+      const response = await fetch('/test-audio/manifest.json');
+      if (!response.ok) throw new Error(`Sample manifest: HTTP ${response.status}`);
+      const files = new Map();
+      for (const id of ['gunshot', 'scream']) {
+        const file = $(`${id}File`).files[0];
+        if (file) files.set(id, file);
+      }
+      prepared = await prepareSamples(ctx, await response.json(), files,
+        Math.max(settings.yamnet_window_s, activeModels.clap ? settings.clap_window_s : 0),
+        (text) => { $('loadStatus').textContent = text; });
+      session.sample_test = prepared.test;
+      session.sample_test.models = { ...activeModels };
+      session.sample_test.settings = { ...settings };
+    }
 
     const rate = ctx.sampleRate;
     const node = new AudioWorkletNode(ctx, 'capture-processor', {
@@ -393,25 +487,62 @@ async function start() {
       else if (m.type === 'yamnet' && activeModels.yamnet) onYamnetWindow(m.samples);
       else if (m.type === 'clap' && activeModels.clap) onClapWindow(m.samples, m.nativeRate);
     };
-    const source = ctx.createMediaStreamSource(stream);
+    const source = mode === 'sample' ? ctx.createBufferSource() : ctx.createMediaStreamSource(audio.stream);
+    if (prepared) source.buffer = prepared.buffer;
     source.connect(node);
+    const mute = ctx.createGain();
+    mute.gain.value = 0;
+    node.connect(mute).connect(ctx.destination);
     audio.source = source;
     audio.node = node;
+    audio.mute = mute;
 
     if (!session.meta.started_at) session.meta.started_at = new Date().toISOString();
     session.meta.sample_rate_hz = rate;
     detector.reset();
     running = true;
     runStartedAt = Date.now();
+    if (prepared) {
+      session.sample_test.started_ms = runStartedAt;
+      source.connect(ctx.destination);
+      source.onended = () => {
+        if (!running || sourceMode !== 'sample') return;
+        audio.node.port.onmessage = null;
+        const deadline = Date.now() + 60_000;
+        const finish = () => {
+          if (!running || sourceMode !== 'sample') return;
+          if (clapBusy && Date.now() < deadline) {
+            sampleFinishTimer = setTimeout(finish, 100);
+            return;
+          }
+          if (clapBusy) logError('sample', 'Timed out waiting for the final CLAP result');
+          stop();
+        };
+        sampleFinishTimer = setTimeout(finish, 200);
+      };
+      source.start();
+      graph.windowS = 300;
+      $('graphWindow').value = '300';
+      $('graphOverlay').classList.remove('hidden');
+      if (!graph.visible) graph.show();
+      updateSampleUi(true);
+    }
+    $('loadStatus').textContent = '';
     btn.textContent = 'Stop';
     btn.classList.add('running');
     scheduleSave();
   } catch (e) {
     logError('capture', e.message || e);
     $('loadStatus').textContent = `Could not start: ${e.message || e}`;
-    teardownAudio();
+    if (running) stop();
+    else teardownAudio();
   } finally {
+    starting = false;
     btn.disabled = false;
+    $('sampleBtn').disabled = running;
+    $('newSessionBtn').disabled = false;
+    $('sampleStop').disabled = !running || sourceMode !== 'sample';
+    $('settingsBtn').disabled = running && sourceMode === 'sample';
     updateStatus();
   }
 }
@@ -419,14 +550,21 @@ async function start() {
 function teardownAudio() {
   if (!audio) return;
   if (audio.node) audio.node.port.onmessage = null;
+  if (sourceMode === 'sample' && audio.source) {
+    audio.source.onended = null;
+    audio.source.stop();
+    audio.source.buffer = null;
+  }
   audio.source?.disconnect();
   audio.node?.disconnect();
+  audio.mute?.disconnect();
   audio.stream?.getTracks().forEach((t) => t.stop());
   audio.ctx?.close();
   audio = null;
 }
 
 function stop() {
+  if (!running) return;
   const now = Date.now();
   elapsedBeforeMs += now - runStartedAt;
   running = false;
@@ -434,10 +572,15 @@ function stop() {
   detector.flush(now);
   if (secondBucket) flushSecond();
   secondBucket = null;
-  clapBusy = false;
+  clearTimeout(sampleFinishTimer);
+  if (session.sample_test) session.sample_test.finished_ms = now;
   session.meta.ended_at = new Date(now).toISOString();
   $('startBtn').textContent = 'Start';
   $('startBtn').classList.remove('running');
+  $('sampleBtn').disabled = false;
+  $('sampleStop').disabled = true;
+  $('settingsBtn').disabled = false;
+  updateSampleUi(true);
   scheduleSave();
   updateStatus();
 }
@@ -484,6 +627,55 @@ function updateStatus() {
   chip($('chipClap'), 'CLAP', clapState, clapState.lastInferMs ? ` (${clapState.lastInferMs} ms)` : '');
   const e = Math.floor(currentElapsed() / 1000);
   $('elapsed').textContent = [Math.floor(e / 3600), Math.floor((e % 3600) / 60), e % 60].map((v) => String(v).padStart(2, '0')).join(':');
+  updateSampleUi();
+}
+
+function updateSampleUi(force = false) {
+  const test = session.sample_test;
+  if (!test) return;
+  const elapsed = ((test.finished_ms ?? Date.now()) - test.started_ms) / 1000;
+  const current = test.clips.find((c) => elapsed >= c.start_s && elapsed < c.end_s);
+  const next = test.clips.find((c) => c.start_s > elapsed);
+  $('samplePlayback').value = Math.min(1, elapsed / test.duration_s);
+  const phase = running ? current ? `Playing: ${current.name}` : next ? `Silence / window clearance. Next: ${next.name}` : 'Finishing / waiting for final model result'
+    : elapsed >= test.duration_s ? 'Test complete' : 'Test stopped early';
+  const expected = current ? expectedNight(current, cat) : null;
+  $('sampleStatus').textContent = `${phase}${current ? ` · Night expectation: ${expected || 'unmapped (inspect manually)'}` : ''}. ${test.clips.length}/15 clips loaded. Missing: ${test.missing.join(', ') || 'none'}.`;
+  $('samplePredictions').textContent = ['yamnet', 'clap'].map((model) => {
+    const last = rows.findLast((r) => r.model === model);
+    return `${model === 'yamnet' ? 'YAMNet' : 'CLAP'}: ${last ? Array.from({ length: 5 }, (_, i) => `${last[`top${i + 1}_label`]} ${(last[`top${i + 1}_score`] * 100).toFixed(1)}%`).join(' · ') : 'waiting for a full window'}`;
+  }).join(' | ');
+  if (!force && Date.now() - sampleUiAt < 2000) return;
+  sampleUiAt = Date.now();
+  const periods = labelledPeriods();
+  const latest = periods.at(-1);
+  $('sampleDetection').textContent = `${detector.current(Date.now()) ? 'Event in progress. ' : ''}Latest closed detection: ${latest ? `${latest.label_text || latest.label || 'unlabelled'} · ${latest.default_priority}` : 'none yet'}`;
+  const results = scoreSamples(test, rows, periods, cat);
+  const table = document.createElement('table');
+  const head = table.createTHead().insertRow();
+  for (const text of ['Sample', 'Expected night', 'YAMNet', 'CLAP', 'Detected priority / labels', 'Check']) {
+    const cell = document.createElement('th');
+    cell.textContent = text;
+    head.appendChild(cell);
+  }
+  for (const result of results) {
+    const row = table.insertRow();
+    const check = !result.complete ? running ? 'pending' : 'not completed'
+      : !result.has_readings ? 'no model readings'
+      : result.excessive_priority ? 'EXCESS PRIORITY'
+      : result.priority_match === false ? 'expected label/priority missed'
+      : result.priority_match ? 'match' : 'inspect manually';
+    for (const text of [
+      result.name, result.expected_night || 'unmapped / cap only',
+      `${result.models.yamnet.recognition} (${result.models.yamnet.windows} windows)`,
+      `${result.models.clap.recognition} (${result.models.clap.windows} windows)`,
+      `${result.observed_priority}: ${result.detected.map((p) => p.label || 'unlabelled').join(', ') || 'no period'}`, check
+    ]) {
+      const cell = row.insertCell();
+      cell.textContent = text;
+    }
+  }
+  $('sampleOutcomes').replaceChildren(table);
 }
 
 function updateCounts() {
@@ -606,6 +798,7 @@ async function clearSession() {
   rows = [];
   elapsedBeforeMs = 0;
   graph.clear();
+  $('sampleProgress').classList.add('hidden');
   makeDetector();
   updateCounts();
   updateStatus();
@@ -657,7 +850,10 @@ async function showResults(regenerate = false) {
   if (!session.report || session.report_key !== key || regenerate) {
     root.textContent = '';
     $('reportLoading').classList.remove('hidden');
-    session.report = await fetchReport(buildReportRequest(exp, cat));
+    const request = buildReportRequest(exp, cat);
+    session.report = session.sample_test
+      ? fallbackReport(request, 'Sample test: local report only; no data sent to the server')
+      : await fetchReport(request);
     session.report_key = key;
     $('reportLoading').classList.add('hidden');
     scheduleSave();
@@ -676,6 +872,9 @@ async function showResults(regenerate = false) {
 
 function wire() {
   $('startBtn').addEventListener('click', () => (running ? stop() : start()));
+  $('sampleBtn').addEventListener('click', () => start('sample'));
+  $('sampleStop').addEventListener('click', stop);
+  $('sampleExport').addEventListener('click', downloadJson);
   $('jsonBtn').addEventListener('click', downloadJson);
   $('resultsBtn').addEventListener('click', () => showResults(false));
   $('reportClose').addEventListener('click', () => $('reportOverlay').classList.add('hidden'));
@@ -717,6 +916,12 @@ function wire() {
     if (cur) out.push(cur);
     return out;
   };
+  graph.clock = () => session.sample_test?.finished_ms ?? Date.now();
+  graph.markers = () => session.sample_test?.clips.map((clip) => ({
+    start: session.sample_test.started_ms + clip.start_s * 1000,
+    end: session.sample_test.started_ms + clip.end_s * 1000,
+    name: clip.name
+  })) || [];
   $('graphBtn').addEventListener('click', () => {
     $('graphOverlay').classList.remove('hidden');
     graph.show();
@@ -740,6 +945,7 @@ async function init() {
   } catch (e) {
     $('loadStatus').textContent = `Could not load label config: ${e.message}`;
     $('startBtn').disabled = true;
+    $('sampleBtn').disabled = true;
     return;
   }
   const saved = await store.loadState().catch(() => null);

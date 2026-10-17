@@ -14,6 +14,8 @@ export class LiveGraph {
     this.series = new Map(); // key -> { model, label, family, points: [{t, v}] }
     this.latestTop = { yamnet: new Set(), clap: new Set() };
     this.bands = () => [];
+    this.markers = () => [];
+    this.clock = () => Date.now();
     this.windowS = 60;
     this.model = 'both';
     this.yAxis = 'fixed';
@@ -43,6 +45,7 @@ export class LiveGraph {
   clear() {
     this.level = [];
     this.series.clear();
+    this.latestTop = { yamnet: new Set(), clap: new Set() };
   }
 
   _trim(arr, now) {
@@ -80,7 +83,7 @@ export class LiveGraph {
   }
 
   draw() {
-    const now = Date.now();
+    const now = this.clock();
     const span = this.windowS * 1000;
     const t0 = now - span;
     const t1 = now + span;
@@ -119,6 +122,20 @@ export class LiveGraph {
       ctx.fillStyle = muted;
       ctx.font = '11px system-ui, sans-serif';
       ctx.fillText('Relative level (uncalibrated, dBFS)', 6, 12);
+      for (const marker of this.markers()) {
+        if (marker.end < t0 || marker.start > now) continue;
+        const x = Math.max(0, xOf(marker.start, w));
+        ctx.fillStyle = fg;
+        ctx.font = '11px system-ui, sans-serif';
+        ctx.fillText(marker.name, x + 4, h - 8);
+        ctx.strokeStyle = muted;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(x, 16);
+        ctx.lineTo(x, h - 22);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
     }
 
     // Bottom: scores.

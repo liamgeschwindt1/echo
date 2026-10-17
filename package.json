@@ -9,6 +9,8 @@
     "dev:server": "node server/index.js",
     "fetch-models": "node scripts/fetch-models.mjs",
     "clap:embed": "node scripts/clap-embed.mjs",
+    "fetch-test-audio": "node scripts/fetch-test-audio.mjs",
+    "test": "node --test test/*.test.js",
     "build": "node scripts/fetch-models.mjs && vite build",
     "start": "node server/index.js"
   },
