@@ -117,6 +117,7 @@ app.use((err, req, res, next) => {
 });
 
 if (existsSync(distDir)) {
+  if (process.env.SIM_ENABLED === '1') app.get('/sim', (req, res) => res.sendFile(join(distDir, 'sim.html')));
   app.use(express.static(distDir, { index: 'index.html', maxAge: '1h' }));
   app.get('*', (req, res) => res.sendFile(join(distDir, 'index.html')));
 }

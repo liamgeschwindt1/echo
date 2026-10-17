@@ -1,0 +1,35 @@
+:root { --accent: #ffb000; --line: #fff; --dim: #777; --bg: #000; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--line); font: 13px/1.4 ui-monospace, Menlo, monospace; }
+#app { display: grid; height: 100vh; grid-template-columns: 170px 1fr 270px; grid-template-rows: auto auto 1fr 190px auto; grid-template-areas: "top top top" "banner banner banner" "tools map inspector" "tl tl tl" "notes notes notes"; }
+#top { grid-area: top; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; padding: 6px 10px; border-bottom: 1px solid var(--dim); }
+#banner { grid-area: banner; padding: 4px 10px; background: var(--accent); color: #000; font-weight: bold; }
+#tools { grid-area: tools; display: flex; flex-direction: column; gap: 6px; padding: 8px; border-right: 1px solid var(--dim); }
+#inspector { grid-area: inspector; padding: 8px; border-left: 1px solid var(--dim); overflow: auto; }
+#mapWrap { grid-area: map; position: relative; min-height: 0; }
+#timelineWrap { grid-area: tl; border-top: 1px solid var(--dim); min-height: 0; }
+#notes { grid-area: notes; padding: 4px 10px; color: var(--dim); font-size: 11px; border-top: 1px solid var(--dim); }
+canvas { width: 100%; height: 100%; display: block; }
+button, input, select { background: #000; color: var(--line); border: 1px solid var(--dim); padding: 3px 6px; font: inherit; }
+button { cursor: pointer; }
+button.active { background: var(--line); color: #000; }
+button.primary { border-color: var(--line); font-weight: bold; }
+input[type="number"] { width: 70px; }
+#inspector label { display: flex; justify-content: space-between; gap: 6px; margin: 4px 0; }
+#inspector input, #inspector select { width: 120px; }
+#inspector h3 { margin: 8px 0 4px; font-size: 13px; }
+#inspector table { width: 100%; border-collapse: collapse; font-size: 11px; }
+#inspector td, #inspector th { border-bottom: 1px solid #333; padding: 2px 3px; text-align: left; }
+.accent { color: var(--accent); }
+.stale { opacity: 0.4; }
+.sep { width: 1px; height: 18px; background: var(--dim); }
+#tools label { display: flex; flex-direction: column; gap: 2px; font-size: 11px; }
+progress { accent-color: var(--accent); }
+
+dialog { background: #000; color: #fff; border: 1px solid #fff; max-width: 580px; }
+dialog::backdrop { background: rgba(0,0,0,.7); }
+dialog label { display: flex; justify-content: space-between; margin: 6px 0; }
+dialog table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
+dialog td, dialog th { border-bottom: 1px solid #333; padding: 2px 4px; text-align: left; }
+dialog .note { color: #777; font-size: 11px; }
+dialog canvas { width: 100%; height: auto; }
