@@ -148,7 +148,7 @@ export function createMicView(host) {
           level_db_re_direct: p.level_db_re_direct,
           level_above_noise_db: (n.snr_direct_db ?? n.snr_db ?? 0) + p.level_db_re_direct,
           arrival_azimuth_deg: p.arrival_azimuth_deg,
-          overlapped: n.overlaps?.length ? n.overlaps.join(',') : '',
+          overlapped: n.overlapped_with?.length ? n.overlapped_with.join(',') : '',
           label: `${src.id} ${pathLabel(p)}${p.type === 'direct' ? '' : ` ${p.level_db_re_direct.toFixed(0)} dB`}`,
           picked: i === n.picked_path_index
         });
@@ -266,7 +266,7 @@ export function createMicView(host) {
       // Expected direct arrival at this mic, drawn when zoomed in far enough to see inter-mic delays.
       if (span <= 0.04) {
         tctx.setLineDash([4 * dpr, 3 * dpr]);
-        tctx.strokeStyle = '#ffb000';
+        tctx.strokeStyle = host.accent;
         info.scn.sources.forEach((src) => {
           const t = src.start_s + distance(src.keyframes[0].position, info.node.mic_positions_true[mi]) / info.c;
           const x = ((t - view.t0) / span) * W;
@@ -436,7 +436,11 @@ export function createMicView(host) {
       gctx.lineTo(x(lag), H - 18 * dpr);
       gctx.stroke();
       gctx.setLineDash([]);
-      gctx.fillText(label, x(lag) + 3 * dpr, 24 * dpr + row * 11 * dpr);
+      gctx.fillStyle = gctx.strokeStyle;
+      const right = x(lag) > W * 0.6;
+      gctx.textAlign = right ? 'right' : 'left';
+      gctx.fillText(label, x(lag) + (right ? -4 : 3) * dpr, 24 * dpr + row * 11 * dpr);
+      gctx.textAlign = 'left';
     };
     gctx.fillStyle = '#777';
     for (const p of curve.peaks.slice(1)) {

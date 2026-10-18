@@ -126,12 +126,13 @@ export function estimateBearing({ mics, positions, startSample, endSample, fs, c
     }
   });
   let d;
+  let horizMag = null; // flat arrays only: length of the fitted horizontal direction before any clamping
   if (planar) {
     const h = solve3([[ata[0][0], ata[0][1], 0], [ata[1][0], ata[1][1], 0], [0, 0, 1]], [atb[0], atb[1], 0]);
     if (!h) return null;
-    const horiz = Math.hypot(h[0], h[1]);
-    const scale = horiz > 1 ? 1 / horiz : 1;
-    d = [h[0] * scale, h[1] * scale, -Math.sqrt(Math.max(0, 1 - (horiz * scale) ** 2))];
+    horizMag = Math.hypot(h[0], h[1]);
+    const scale = horizMag > 1 ? 1 / horizMag : 1;
+    d = [h[0] * scale, h[1] * scale, -Math.sqrt(Math.max(0, 1 - (horizMag * scale) ** 2))];
   } else {
     d = solve3(ata, atb);
     if (!d) return null;
@@ -143,13 +144,18 @@ export function estimateBearing({ mics, positions, startSample, endSample, fs, c
     const e = (r[0] * d[0] + r[1] * d[1] + r[2] * d[2] - rhs[k]) / c;
     sq += e * e;
   });
+  const elevation = (Math.asin(Math.max(-1, Math.min(1, d[2]))) * 180) / Math.PI;
+  // Flat array: elevation magnitude is acos(|h|), its sign is an assumption (below), and |h| > 1 is impossible and was clamped.
+  const elevationRaw = planar ? (horizMag <= 1 ? (Math.acos(horizMag) * 180) / Math.PI : null) : elevation;
+  const elevationConfidence = planar ? (horizMag > 1 || Math.abs(elevation) < 15 ? 'low' : 'ok') : Math.abs(elevation) > 80 ? 'low' : 'ok';
   return {
     direction: d,
     azimuth_deg: (Math.atan2(d[1], d[0]) * 180) / Math.PI,
-    elevation_deg: (Math.asin(Math.max(-1, Math.min(1, d[2]))) * 180) / Math.PI,
+    elevation_deg: elevation,
+    elevation_raw_deg: elevationRaw,
+    elevation_sign_assumed: planar,
+    elevation_confidence: elevationConfidence,
     residual_s: Math.sqrt(sq / rows.length),
-    // Indicative cone half-angle: timing scatter across the array, floored at the interpolation step.
-    uncertainty_deg: Math.min(30, Math.max(1.5, (((c * Math.max(Math.sqrt(sq / rows.length), 1 / (fs * UPSAMPLE))) / spacing) * 180) / Math.PI)),
     assumed_below: planar
   };
 }

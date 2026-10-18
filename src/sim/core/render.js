@@ -3,6 +3,7 @@ import { irfft, nextPow2, rfft } from './dsp.js';
 import { micPositions } from './mics.js';
 import { gaussian, pinkNoise, streamFor, whiteNoise } from './rng.js';
 import { computePathTable, findPaths } from './geometry.js';
+import { computeActivity } from './activity.js';
 
 const LEVEL_WINDOW_S = 0.125;
 
@@ -144,6 +145,7 @@ export function renderScenario(scenario, clips, { lengthS, onProgress } = {}) {
   const ctx = prepareRender(scenario, clips, lengthS);
   const { total, n, bins } = ctx;
   const nodes = [];
+  const activity = [];
   const jobs = scenario.nodes.length * 4;
   let done = 0;
   scenario.nodes.forEach((node, ni) => {
@@ -162,6 +164,7 @@ export function renderScenario(scenario, clips, { lengthS, onProgress } = {}) {
       return out;
     });
     nodes.push({ id: node.id, mic_positions: micPositions(node), mic_positions_true: ctx.truePositions[ni], mics });
+    activity.push(computeActivity(ctx, ni));
   });
-  return { sample_rate: ctx.fs, length: total, nodes, paths: ctx.table };
+  return { sample_rate: ctx.fs, length: total, nodes, paths: ctx.table, activity };
 }

@@ -14,7 +14,7 @@ self.onmessage = (e) => {
     }
     const clipMap = new Map(clips);
     const rendered = renderScenario(scenario, clipMap, { lengthS, onProgress: (p) => self.postMessage({ type: 'progress', value: p * 0.9 }) });
-    const results = analyseScenario(scenario, rendered, new Map(durations));
+    const results = analyseScenario(scenario, rendered, new Map(durations), { progressive: true });
     self.postMessage({ type: 'progress', value: 1 });
     const transfer = rendered.nodes.flatMap((n) => n.mics.map((m) => m.buffer));
     self.postMessage({ type: 'done', rendered, results }, transfer);

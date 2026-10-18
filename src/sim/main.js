@@ -390,7 +390,7 @@ function drawMap() {
     }
     for (const r of results) {
       mctx.strokeStyle = mctx.fillStyle = ACCENT;
-      if (r.fix?.position) {
+      if (r.fix?.position && t >= r.fix.ready_s) {
         const [ex, ey] = toScreen(r.fix.position[0], r.fix.position[1]);
         const [tx, ty] = toScreen(r.true_position[0], r.true_position[1]);
         mctx.beginPath();
@@ -499,17 +499,28 @@ function drawPaths(dpr) {
 
 // Every wedge has the same on-screen length and no end cap, so its length never implies range. Truth stays on the source dot.
 // Label: stated uncertainty and actual azimuth error; "!" when the error exceeds the stated uncertainty.
+// The wedge is generated over time: it appears once the sound has been at the node for the first analysis step, then tightens.
+function currentStep(n) {
+  if (!n.bearing) return null;
+  if (!n.progressive) return { direction: n.bearing.direction, uncertainty_deg: n.bearing.uncertainty_deg, azimuth_error_deg: n.azimuth_error_deg, snr_db: n.snr_db };
+  let step = null;
+  for (const s of n.progressive) if (s.t_end_s <= t) step = s;
+  return step;
+}
+
 function drawCone(node, n, dpr) {
-  const b = n.bearing;
-  if (!node || !b || !n.heard) return;
-  const d = b.direction;
+  const step = currentStep(n);
+  if (!node || !step || step.snr_db < scenario.settings.min_snr_db) return;
+  const d = step.direction;
   const az = Math.atan2(d[1], d[0]);
-  const u = b.uncertainty_deg;
-  const half = (u * Math.PI) / 180;
+  const u = step.uncertainty_deg;
+  // Drawn at least 1.5 degrees wide so a very confident wedge is still visible; the label always shows the real value.
+  const half = (Math.max(u, 1.5) * Math.PI) / 180;
   const [ox, oy] = toScreen(node.position[0], node.position[1]);
   const len = 170 * dpr;
-  const wrong = n.azimuth_error_deg > u;
-  const overlapped = n.overlaps?.length > 0;
+  const wrong = step.azimuth_error_deg > u;
+  const overlapped = n.overlapped_with?.length > 0;
+  const invalid = !n.uncertainty_valid;
   const tip = [ox + Math.cos(-az) * len, oy + Math.sin(-az) * len];
   const grad = (a0, a1) => {
     const g = mctx.createLinearGradient(ox, oy, tip[0], tip[1]);
@@ -526,7 +537,7 @@ function drawCone(node, n, dpr) {
   // Edges only: the far end stays open.
   mctx.strokeStyle = grad(0.9, 0.15);
   mctx.lineWidth = (wrong ? 2.5 : 1) * dpr;
-  mctx.setLineDash(overlapped ? [6 * dpr, 4 * dpr] : []);
+  mctx.setLineDash(overlapped || invalid ? [6 * dpr, 4 * dpr] : []);
   for (const s of [-1, 1]) {
     mctx.beginPath();
     mctx.moveTo(ox, oy);
@@ -536,7 +547,8 @@ function drawCone(node, n, dpr) {
   mctx.setLineDash([]);
   mctx.lineWidth = 1;
 
-  const text = `\u00b1${u.toFixed(0)}\u00b0  err ${n.azimuth_error_deg.toFixed(0)}\u00b0${wrong ? ' !' : ''}${overlapped ? '  \u26a0 overlap' : ''}`;
+  const deg = (v) => (v < 10 ? v.toFixed(1) : v.toFixed(0));
+  const text = `\u00b1${deg(u)}\u00b0  err ${deg(step.azimuth_error_deg)}\u00b0${wrong ? ' !' : ''}${overlapped ? '  \u26a0 overlap' : invalid ? '  (\u00b1 not valid)' : ''}`;
   const lx = ox + Math.cos(-az) * len * 0.62;
   const ly = oy + Math.sin(-az) * len * 0.62;
   mctx.font = `${11 * dpr}px monospace`;
@@ -931,7 +943,9 @@ function resultPanel(r) {
     const b = n.bearing;
     const flags = [
       n.azimuth_error_deg > b?.uncertainty_deg ? 'wrong' : '',
-      n.overlaps?.length ? `overlap ${n.overlaps.join(',')}` : '',
+      n.overlapped_with?.length ? `overlap ${n.overlapped_with.join(',')}` : '',
+      n.uncertainty_valid === false ? '\u00b1 invalid' : '',
+      n.reliable === false ? n.localisation_status : '',
       n.direct_blocked ? 'direct blocked' : ''
     ].filter(Boolean).join(', ');
     const focus = pathFocus?.nodeId === n.node_id && pathFocus?.sourceId === r.source_id ? ' class="focus"' : '';
