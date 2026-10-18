@@ -1,7 +1,8 @@
 import { spectrogram } from '../core/spectro.js';
 import { gccCurve } from '../core/localise.js';
 import { MIC_PAIRS } from '../core/mics.js';
-import { distance, speedOfSound } from '../core/physics.js';
+import { airAbsorptionDbPerM, distance, speedOfSound } from '../core/physics.js';
+import { diffractionLossDb, findPaths } from '../core/geometry.js';
 import { arrivalsCsv, encodeWavFloat32 } from '../core/wav.js';
 
 const SHADES = ['#ffffff', '#cfcfcf', '#a0a0a0', '#7a7a7a', '#5a5a5a'];
@@ -160,6 +161,12 @@ export function createMicView(host) {
   function setSeriesForMode() {
     const info = ctxInfo();
     if (!info) return;
+    $('mvAudit').hidden = mode !== 'audit';
+    if (mode === 'audit') {
+      renderAudit();
+      $('mvStatus').textContent = '';
+      return;
+    }
     if (mode === 'total') {
       series = [{ id: 'total', label: 'Total', mics: info.node.mics }];
       $('mvStatus').textContent = '';
@@ -454,6 +461,59 @@ export function createMicView(host) {
     gctx.fillText(`${(baseline * 1000).toFixed(2)} ms  (lag, mic ${gccState.pair[0] + 1} vs ${gccState.pair[1] + 1})`, W - 220 * dpr, H - 4 * dpr);
   }
 
+  // ----- audit: applied values read back from the render stage vs recomputed from geometry -----
+
+  function renderAudit() {
+    const info = ctxInfo();
+    const box = $('mvAudit');
+    if (!info) return (box.innerHTML = '');
+    const { rendered, scn, ni, fs, c } = info;
+    const applied = rendered.audit?.[ni];
+    if (!applied) return (box.innerHTML = '<p class="muted">No audit data; press Create again.</p>');
+    const st = scn.settings;
+    const a1k = st.air_absorption ? airAbsorptionDbPerM(1000, st.temperature_c, st.humidity_pct, st.pressure_kpa) : 0;
+    let rows = '';
+    let worstD = 0;
+    let worstG = 0;
+    let droppedCount = 0;
+    const dropReasons = {};
+    scn.sources.forEach((src, si) => {
+      const srcPos = src.keyframes[0].position;
+      info.node.mic_positions_true.forEach((mp, mi) => {
+        // Independent recomputation straight from the geometry, not from the render.
+        const re = findPaths(srcPos, mp, { settings: st, buildings: scn.buildings || [], c });
+        const recomputed = re.paths.map((p) => ({
+          type: p.type,
+          surfaces: p.surfaces,
+          delay_samples: (src.start_s + p.length / c) * fs,
+          gain_db_1khz: 20 * Math.log10(p.gain / Math.max(p.length, 1)) - a1k * p.length - (p.type === 'diffracted' ? diffractionLossDb(p.length - p.direct_distance, 1000, c) : 0)
+        }));
+        for (const d of re.dropped || []) {
+          droppedCount++;
+          dropReasons[d.reason] = (dropReasons[d.reason] || 0) + 1;
+        }
+        applied[mi][si].forEach((a, i) => {
+          const r = recomputed[i];
+          const dd = r ? a.delay_samples - r.delay_samples : NaN;
+          const dg = r ? a.gain_db_1khz - r.gain_db_1khz : NaN;
+          const bad = !r || Math.abs(dd) > 0.05 || Math.abs(dg) > 0.05 || a.type !== r.type || a.surfaces.join('+') !== r.surfaces.join('+');
+          if (r) {
+            worstD = Math.max(worstD, Math.abs(dd));
+            worstG = Math.max(worstG, Math.abs(dg));
+          }
+          rows += `<tr${bad ? ' class="bad"' : ''}><td>${src.id}</td><td>mic ${mi + 1}</td><td>${a.type}${a.surfaces.length ? ` ${a.surfaces.join('+')}` : ''}</td>` +
+            `<td>${a.delay_samples.toFixed(2)}</td><td>${r ? r.delay_samples.toFixed(2) : 'missing'}</td><td>${r ? dd.toFixed(4) : '-'}</td>` +
+            `<td>${a.gain_db_1khz.toFixed(2)}</td><td>${r ? r.gain_db_1khz.toFixed(2) : 'missing'}</td><td>${r ? dg.toFixed(4) : '-'}</td></tr>`;
+        });
+      });
+    });
+    const ok = worstD <= 0.05 && worstG <= 0.05;
+    box.innerHTML =
+      `<h4>Render audit (applied vs recomputed)</h4>` +
+      `<p class="${ok ? 'ok' : ''}" style="${ok ? '' : 'color:#ff5555'}">worst |delay| diff ${worstD.toFixed(4)} samples (flag &gt; 0.05), worst |gain| diff ${worstG.toFixed(4)} dB (flag &gt; 0.05), at 1 kHz. ${droppedCount} path(s) dropped (${Object.entries(dropReasons).map(([k, v]) => `${k}: ${v}`).join(', ') || 'none'}).</p>` +
+      `<table><tr><th>src</th><th>mic</th><th>path</th><th>delay smp</th><th>geom</th><th>&Delta;</th><th>gain dB</th><th>geom</th><th>&Delta;</th></tr>${rows}</table>`;
+  }
+
   function renderArrivalsTable() {
     const rows = arrivals();
     const f = (v, d = 1) => (v == null ? '' : v.toFixed(d));
@@ -479,7 +539,7 @@ export function createMicView(host) {
     const info = ctxInfo();
     if (!info) return;
     root.hidden = false;
-    $('mvTitle').textContent = `Mic's-eye view: node ${id}`;
+    $('mvTitle').textContent = `Mic's-eye view: node ${id} (${(info.fs / 1000).toFixed(1)} kHz render; traces and analysis use this rate)`;
     view = { t0: 0, t1: info.rendered.length / info.fs };
     specKey = '';
     fillSelectors();

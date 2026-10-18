@@ -3,6 +3,7 @@ import { insideBuilding, buildingBox, simConstants, segmentBlocked, traceReflect
 import { speedOfSound, dbToPa } from './core/physics.js';
 import { clipGainPa } from './core/render.js';
 import { analyseClip, wavefrontRings } from './core/wavefront.js';
+import { sourceBandLevels } from './core/reach.js';
 import { micPositions } from './core/mics.js';
 import { loadManifest, fetchClip, decodeToMono, clipAvailable } from './clips.js';
 import { spectrogram } from './core/spectro.js';
@@ -53,6 +54,7 @@ const lengthS = () => Math.max(1, scenarioLengthS(scenario, durations()));
 function markEdited() {
   if (status === 'ready') status = 'stale';
   $('banner').hidden = status !== 'stale';
+  reachStale();
   renderInspector();
 }
 
@@ -357,6 +359,7 @@ function drawMap() {
   for (let y = Math.ceil(y0 / step) * step; y <= y1; y += step) { const [, sy] = toScreen(0, y); mctx.moveTo(0, sy); mctx.lineTo(W, sy); }
   mctx.stroke();
 
+  drawReach(dpr);
   drawRings(dpr);
   drawBuildings(dpr);
 
@@ -383,6 +386,22 @@ function drawMap() {
   }
 
   if ($('showPaths').checked) drawPaths(dpr);
+
+  if (sectionLine) {
+    const [ax, ay] = toScreen(sectionLine.a[0], sectionLine.a[1]);
+    const [bx, by] = toScreen(sectionLine.b[0], sectionLine.b[1]);
+    mctx.strokeStyle = ACCENT;
+    mctx.lineWidth = 2 * dpr;
+    mctx.setLineDash([10 * dpr, 5 * dpr]);
+    mctx.beginPath();
+    mctx.moveTo(ax, ay);
+    mctx.lineTo(bx, by);
+    mctx.stroke();
+    mctx.setLineDash([]);
+    mctx.lineWidth = 1;
+    mctx.fillStyle = ACCENT;
+    mctx.fillText('side view', (ax + bx) / 2 + 6 * dpr, (ay + by) / 2 - 6 * dpr);
+  }
 
   if (results) {
     mctx.globalAlpha = stale ? 0.3 : 1;
@@ -608,12 +627,12 @@ function drawMicGlyph(n, sx, sy, dpr) {
 }
 
 const reflCache = new Map();
+// Image sources from the same enumeration the render uses (ground included when enabled).
 function reflectionsFor(s) {
-  const order = scenario.settings.reflection_order;
-  const key = `${s.id}|${sourcePosition(s)}|${order}|${JSON.stringify(scenario.buildings)}`;
+  const key = `${s.id}|${sourcePosition(s)}|${JSON.stringify(scenario.settings)}|${JSON.stringify(scenario.buildings)}`;
   if (!reflCache.has(key)) {
     if (reflCache.size > 40) reflCache.clear();
-    reflCache.set(key, reflectionImages(sourcePosition(s), scenario.buildings, order));
+    reflCache.set(key, reflectionImages(sourcePosition(s), scenario.settings, scenario.buildings));
   }
   return reflCache.get(key);
 }
@@ -655,7 +674,7 @@ function drawRings(dpr) {
   const floorPa = dbToPa(scenario.settings.noise_floor_db_spl);
   const slice = scenario.settings.slice_height_m;
   const boxes = scenario.buildings.map(buildingBox);
-  const showRefl = $('showReflWaves').checked && boxes.length;
+  const showRefl = $('showReflWaves').checked;
   for (const s of scenario.sources) {
     const a = analyses.get(s.clip);
     const samples = clips.get(s.clip);
@@ -678,9 +697,13 @@ function drawRings(dpr) {
     for (const r of direct) if (style(r, '255,255,255', 1)) strokeRing(p[0], p[1], r.radius, visible, dpr);
     if (showRefl) {
       for (const img of reflectionsFor(s)) {
+        // dz uses the image height: the ground image sits at -z_source, wall images at their mirrored heights.
         const rings = wavefrontRings({ ...base, gainPa: gainPa * img.gain, dz: img.image[2] - slice, maxRings: Math.round(maxRings / 2) });
+        const ground = img.seq.length === 1 && img.seq[0].kind === 'ground';
+        // An arc exists only where the specular reflection point lies on the finite face, height range included.
         const valid = (P) => !!traceReflection(p, [P[0], P[1], slice], img.seq, img.images, boxes);
-        for (const r of rings) if (style(r, '200,200,200', 0.85)) strokeRing(img.image[0], img.image[1], r.radius, valid, dpr);
+        const tint = ground ? '150,150,150' : '200,200,200';
+        for (const r of rings) if (style(r, tint, ground ? 0.7 : 0.85)) strokeRing(img.image[0], img.image[1], r.radius, valid, dpr);
       }
     }
     mctx.setLineDash([]);
@@ -689,6 +712,360 @@ function drawRings(dpr) {
 
 const snap = (v, q = 0.5) => Math.round(v / q) * q;
 const note = (msg) => ($('statusLabel').textContent = msg);
+
+// ---------- reach map and side view (same path finder as the render, energetic sum) ----------
+
+let reachWorker = null;
+let reach = null; // { key, grid, nx, ny, levelDb, snrDb, mask, maxLevel }
+let reachStaleFlag = false;
+let reachTimer = null;
+const reachImages = new Map(); // key|mode -> canvas
+
+let sectionLine = null; // { a: [x, y], b: [x, y] }
+let sectionResult = null; // { key, grid, nx, ny, levelDb, snrDb, mask }
+const sectionImages = new Map();
+
+function reachExtent() {
+  const xs = [];
+  const ys = [];
+  for (const n of scenario.nodes) {
+    xs.push(n.position[0]);
+    ys.push(n.position[1]);
+  }
+  for (const s of scenario.sources) {
+    const p = sourcePosition(s);
+    xs.push(p[0]);
+    ys.push(p[1]);
+  }
+  for (const b of scenario.buildings) {
+    const { min, max } = buildingBox(b);
+    xs.push(min[0], max[0]);
+    ys.push(min[1], max[1]);
+  }
+  if (!xs.length) return null;
+  const pad = 15;
+  return { x0: Math.min(...xs) - pad, y0: Math.min(...ys) - pad, x1: Math.max(...xs) + pad, y1: Math.max(...ys) + pad };
+}
+
+function reachGridSpec() {
+  const ext = reachExtent();
+  if (!ext) return null;
+  let cell = Math.max(0.5, scenario.settings.reach_cell_m || 2);
+  let nx = Math.ceil((ext.x1 - ext.x0) / cell);
+  let ny = Math.ceil((ext.y1 - ext.y0) / cell);
+  while (nx * ny > 250000) {
+    cell *= 1.5;
+    nx = Math.ceil((ext.x1 - ext.x0) / cell);
+    ny = Math.ceil((ext.y1 - ext.y0) / cell);
+  }
+  return { kind: 'plan', x0: ext.x0, y0: ext.y0, cell, nx, ny, z: scenario.settings.slice_height_m };
+}
+
+async function reachSourceLevels() {
+  for (const s of scenario.sources) await ensureClip(s.clip);
+  const sel = selected?.type === 'source' ? selected.id : null;
+  return scenario.sources
+    .filter((s) => !sel || s.id === sel)
+    .map((s) => ({ id: s.id, position: sourcePosition(s), bandPa2: [...sourceBandLevels(clips.get(s.clip), FS, s.level_1m_db, scenario.settings.localisation_band_hz)] }));
+}
+
+function reachWorkerInit() {
+  if (reachWorker) return;
+  reachWorker = new Worker(new URL('./renderWorker.js', import.meta.url), { type: 'module' });
+  reachWorker.onmessage = (e) => {
+    const m = e.data;
+    if (m.type === 'reach_progress') {
+      if (status !== 'rendering') {
+        $('progress').hidden = false;
+        $('progress').value = m.value;
+      }
+      return;
+    }
+    if (m.type === 'reach_done') {
+      if (status !== 'rendering') $('progress').hidden = true;
+      const rec = { key: m.key, grid: m.grid, nx: m.nx, ny: m.ny, levelDb: m.levelDb, snrDb: m.snrDb, mask: m.mask };
+      if (m.grid.kind === 'section') {
+        sectionResult = rec;
+        sectionImages.clear();
+      } else {
+        reach = { ...rec, maxLevel: Math.max(...[...m.levelDb].filter(Number.isFinite), -119) };
+        reachStaleFlag = false;
+        reachImages.clear();
+      }
+      updateReachLabel();
+    } else if (m.type === 'error') {
+      if (status !== 'rendering') $('progress').hidden = true;
+      note(`Reach map failed: ${m.message}`);
+    }
+  };
+}
+
+async function requestReach() {
+  if (!$('showReach').checked || !scenario.sources.length || !scenario.nodes.length) return;
+  const grid = reachGridSpec();
+  if (!grid) return;
+  let sourceLevels;
+  try {
+    sourceLevels = await reachSourceLevels();
+  } catch (err) {
+    return note(err.message);
+  }
+  const key = JSON.stringify({ grid, sourceLevels, settings: scenario.settings, buildings: scenario.buildings });
+  if (reach && reach.key === key && !reachStaleFlag) return; // cache hit
+  reachWorkerInit();
+  reachStaleFlag = true;
+  updateReachLabel('computing...');
+  reachWorker.postMessage({ type: 'reach', scenario, grid, sourceLevels, key });
+}
+
+async function requestSection() {
+  if (!sectionLine || !scenario.sources.length) return;
+  const [ax, ay] = sectionLine.a;
+  const [bx, by] = sectionLine.b;
+  const L = Math.hypot(bx - ax, by - ay);
+  if (L < 2) return;
+  let sourceLevels;
+  try {
+    sourceLevels = await reachSourceLevels();
+  } catch (err) {
+    return note(err.message);
+  }
+  const top = Math.max(10, ...scenario.buildings.map((b) => b.size[2]), ...scenario.nodes.map((n) => n.position[2]), ...scenario.sources.map((s) => sourcePosition(s)[2])) * 1.3;
+  const grid = { kind: 'section', a: [ax, ay], b: [bx, by], ns: Math.min(400, Math.max(20, Math.round(L / 1))), nz: Math.min(300, Math.max(20, Math.round(top / 0.5))), zmax: top };
+  const key = JSON.stringify({ grid, sourceLevels, settings: scenario.settings, buildings: scenario.buildings });
+  if (sectionResult && sectionResult.key === key) return;
+  reachWorkerInit();
+  $('sectionStatus').textContent = 'computing...';
+  reachWorker.postMessage({ type: 'reach', scenario, grid, sourceLevels, key });
+}
+
+function reachStale() {
+  if (reach) reachStaleFlag = true;
+  if (sectionResult) sectionResult = { ...sectionResult, stale: true };
+  clearTimeout(reachTimer);
+  reachTimer = setTimeout(() => {
+    requestReach();
+    if (!$('sectionView').hidden) requestSection();
+  }, 400);
+}
+
+function updateReachLabel(extra = '') {
+  const el = $('reachLabel');
+  const on = $('showReach').checked && reach;
+  el.hidden = !on;
+  if (!on) return;
+  const order = scenario.settings.reach_reflection_order ?? 2;
+  const dif = (scenario.settings.diffraction_order ?? 0) >= 1 ? 'diffraction order 1' : 'no diffraction (pessimistic)';
+  const mode = $('reachMode').value === 'snr' ? 'SNR over noise' : 'level dB SPL';
+  el.textContent = `Reach map: ${mode}, cell ${reach.grid.cell.toFixed(1)} m, order ${order}, ${dif}${reachStaleFlag ? ' — out of date' : ''}${extra ? ` ${extra}` : ''}`;
+  if (reachStaleFlag) el.textContent += ' ';
+}
+
+// Greyscale image for a field grid, cached per key+mode. SNR: -10..30 dB. Level: (max-50)..max dB.
+function fieldImage(rec, mode) {
+  const key = `${rec.key}|${mode}`;
+  let cv = reachImages.get(key) || sectionImages.get(key);
+  if (cv) return cv;
+  cv = document.createElement('canvas');
+  cv.width = rec.nx;
+  cv.height = rec.ny;
+  const g = cv.getContext('2d');
+  const img = g.createImageData(rec.nx, rec.ny);
+  const data = mode === 'snr' ? rec.snrDb : rec.levelDb;
+  const lo = mode === 'snr' ? -10 : rec.maxLevel - 50;
+  const span = mode === 'snr' ? 40 : 50;
+  for (let iy = 0; iy < rec.ny; iy++) {
+    for (let ix = 0; ix < rec.nx; ix++) {
+      const i = iy * rec.nx + ix;
+      if (rec.mask[i]) continue;
+      const v = data[i];
+      const g8 = Math.round(255 * Math.min(1, Math.max(0, (v - lo) / span)));
+      // Plan grids run y-up; flip rows so north is up.
+      const o = ((rec.ny - 1 - iy) * rec.nx + ix) * 4;
+      img.data[o] = img.data[o + 1] = img.data[o + 2] = g8;
+      img.data[o + 3] = 255;
+    }
+  }
+  g.putImageData(img, 0, 0);
+  reachImages.set(key, cv);
+  return cv;
+}
+
+// One accent contour at min_snr_db on the SNR grid (marching squares, linear crossing points).
+function strokeContour(rec, toXY, threshold, ctx, dpr) {
+  const { nx, ny, snrDb, mask } = rec;
+  ctx.strokeStyle = ACCENT;
+  ctx.lineWidth = 1.5 * dpr;
+  ctx.beginPath();
+  const val = (ix, iy) => (mask[iy * nx + ix] ? NaN : snrDb[iy * nx + ix]);
+  for (let iy = 0; iy < ny - 1; iy++) {
+    for (let ix = 0; ix < nx - 1; ix++) {
+      const v = [val(ix, iy), val(ix + 1, iy), val(ix + 1, iy + 1), val(ix, iy + 1)];
+      if (v.some(Number.isNaN)) continue;
+      const inside = v.map((x) => x >= threshold);
+      if (inside.every(Boolean) || inside.every((b) => !b)) continue;
+      // Corner order: sw, se, ne, nw. Edges: 0 bottom, 1 right, 2 top, 3 left.
+      const cross = [];
+      const lerp = (a, b, va, vb) => a + ((threshold - va) / (vb - va)) * (b - a);
+      if (inside[0] !== inside[1]) cross.push([lerp(ix, ix + 1, v[0], v[1]), iy]);
+      if (inside[1] !== inside[2]) cross.push([ix + 1, lerp(iy, iy + 1, v[1], v[2])]);
+      if (inside[2] !== inside[3]) cross.push([lerp(ix, ix + 1, v[3], v[2]), iy + 1]);
+      if (inside[3] !== inside[0]) cross.push([ix, lerp(iy, iy + 1, v[0], v[3])]);
+      for (let k = 0; k + 1 < cross.length; k += 2) {
+        const [x0, y0] = toXY(cross[k][0], cross[k][1]);
+        const [x1, y1] = toXY(cross[k + 1][0], cross[k + 1][1]);
+        ctx.moveTo(x0, y0);
+        ctx.lineTo(x1, y1);
+      }
+    }
+  }
+  ctx.stroke();
+}
+
+function drawReach(dpr) {
+  if (!$('showReach').checked) {
+    $('reachLabel').hidden = true;
+    return;
+  }
+  if (!reach || !reach.levelDb) {
+    updateReachLabel('computing...');
+    return;
+  }
+  const g = reach.grid;
+  const mode = $('reachMode').value;
+  const img = fieldImage(reach, mode);
+  const [sx0, sy0] = toScreen(g.x0, g.y0);
+  const [sx1, sy1] = toScreen(g.x0 + g.nx * g.cell, g.y0 + g.ny * g.cell);
+  mctx.globalAlpha = reachStaleFlag ? 0.2 : 0.55;
+  mctx.imageSmoothingEnabled = true;
+  mctx.drawImage(img, sx0, sy1, sx1 - sx0, sy0 - sy1);
+  mctx.globalAlpha = 1;
+  mctx.imageSmoothingEnabled = false;
+  strokeContour(reach, (ix, iy) => toScreen(g.x0 + (ix + 0.5) * g.cell, g.y0 + (iy + 0.5) * g.cell), scenario.settings.min_snr_db, mctx, dpr);
+  updateReachLabel();
+}
+
+// ---------- side view ----------
+
+function openSection() {
+  $('sectionView').hidden = false;
+  requestSection();
+}
+$('sectionClose').addEventListener('click', () => ($('sectionView').hidden = true));
+
+// Segment vs building rectangle (plan): [u0, u1] along the line, or null.
+function lineBoxRange(a, b, box) {
+  let t0 = 0;
+  let t1 = 1;
+  for (let i = 0; i < 2; i++) {
+    const d = b[i] - a[i];
+    if (Math.abs(d) < 1e-12) {
+      if (a[i] < box.min[i] || a[i] > box.max[i]) return null;
+      continue;
+    }
+    let ta = (box.min[i] - a[i]) / d;
+    let tb = (box.max[i] - a[i]) / d;
+    if (ta > tb) [ta, tb] = [tb, ta];
+    t0 = Math.max(t0, ta);
+    t1 = Math.min(t1, tb);
+    if (t0 > t1) return null;
+  }
+  return t0 < t1 ? [t0, t1] : null;
+}
+
+function drawSection() {
+  const root = $('sectionView');
+  if (root.hidden) return;
+  const cv = $('sectionCanvas');
+  const dpr = fit(cv);
+  const W = cv.width;
+  const H = cv.height;
+  const g = cv.getContext('2d');
+  g.fillStyle = '#000';
+  g.fillRect(0, 0, W, H);
+  g.font = `${10 * dpr}px monospace`;
+  if (!sectionLine) return;
+  const [ax, ay] = sectionLine.a;
+  const [bx, by] = sectionLine.b;
+  const L = Math.hypot(bx - ax, by - ay);
+  if (!sectionResult || !sectionResult.levelDb) {
+    g.fillStyle = '#8a8a8a';
+    g.fillText('Computing cross-section...', 16 * dpr, 30 * dpr);
+    return;
+  }
+  const rec = sectionResult;
+  const padL = 44 * dpr;
+  const padB = 22 * dpr;
+  const padT = 8 * dpr;
+  const pw = W - padL - 10 * dpr;
+  const ph = H - padT - padB;
+  const X = (s) => padL + (s / L) * pw;
+  const Y = (z) => padT + ph - (z / rec.grid.zmax) * ph;
+  if (!rec.maxLevel) rec.maxLevel = Math.max(...[...rec.levelDb].filter(Number.isFinite), -119);
+  const img = fieldImage(rec, 'level');
+  g.globalAlpha = rec.stale ? 0.25 : 0.85;
+  g.drawImage(img, padL, padT, pw, ph);
+  g.globalAlpha = 1;
+  strokeContour(rec, (ix, iy) => [X(((ix + 0.5) / rec.nx) * L), Y(((iy + 0.5) / rec.ny) * rec.grid.zmax)], scenario.settings.min_snr_db, g, dpr);
+  // Buildings as rectangles where the line crosses them.
+  g.fillStyle = 'rgba(60,60,60,0.95)';
+  g.strokeStyle = '#fff';
+  for (const b of scenario.buildings) {
+    const r = lineBoxRange(sectionLine.a, sectionLine.b, buildingBox(b));
+    if (!r) continue;
+    g.fillRect(X(r[0] * L), Y(b.size[2]), (r[1] - r[0]) * L * (pw / L), Y(0) - Y(b.size[2]));
+    g.strokeRect(X(r[0] * L), Y(b.size[2]), (r[1] - r[0]) * L * (pw / L), Y(0) - Y(b.size[2]));
+  }
+  // Node and source heights, projected when within 5 m of the line.
+  const dir = [(bx - ax) / L, (by - ay) / L];
+  const project = (p) => {
+    const s = (p[0] - ax) * dir[0] + (p[1] - ay) * dir[1];
+    const perp = Math.abs((p[0] - ax) * dir[1] - (p[1] - ay) * dir[0]);
+    return s >= 0 && s <= L && perp <= 5 ? s : null;
+  };
+  g.strokeStyle = g.fillStyle = '#fff';
+  for (const n of scenario.nodes) {
+    const s = project(n.position);
+    if (s === null) continue;
+    g.strokeRect(X(s) - 3 * dpr, Y(n.position[2]) - 3 * dpr, 6 * dpr, 6 * dpr);
+    g.fillText(n.id, X(s) + 5 * dpr, Y(n.position[2]));
+  }
+  g.fillStyle = ACCENT;
+  for (const src of scenario.sources) {
+    const p = sourcePosition(src);
+    const s = project(p);
+    if (s === null) continue;
+    g.beginPath();
+    g.arc(X(s), Y(p[2]), 3.5 * dpr, 0, 7);
+    g.fill();
+    g.fillText(src.id, X(s) + 6 * dpr, Y(p[2]));
+  }
+  // Axes.
+  g.strokeStyle = '#444';
+  g.strokeRect(padL, padT, pw, ph);
+  g.fillStyle = '#888';
+  const stepM = niceStep(L / 6);
+  for (let s = 0; s <= L; s += stepM) {
+    g.fillText(`${Math.round(s)}`, X(s) - 6 * dpr, H - 8 * dpr);
+    g.strokeStyle = '#222';
+    g.beginPath();
+    g.moveTo(X(s), padT);
+    g.lineTo(X(s), padT + ph);
+    g.stroke();
+  }
+  const stepZ = niceStep(rec.grid.zmax / 4);
+  for (let z = 0; z <= rec.grid.zmax; z += stepZ) g.fillText(`${Math.round(z)} m`, 4 * dpr, Y(z) + 3 * dpr);
+  g.fillText('distance (m) / height (m)', padL + 4 * dpr, padT + 12 * dpr);
+  $('sectionStatus').textContent = `${L.toFixed(0)} m line, levels are an energy sum (no interference)${rec.stale ? ' — out of date, recomputing...' : ''}`;
+}
+
+$('showReach').addEventListener('change', () => {
+  reachImages.clear();
+  if ($('showReach').checked) requestReach();
+  else $('reachLabel').hidden = true;
+});
+$('reachMode').addEventListener('change', () => updateReachLabel());
+
 
 const buildingCorners = (b) => {
   const { min, max } = buildingBox(b);
@@ -761,6 +1138,12 @@ map.addEventListener('pointerdown', (e) => {
     map.setPointerCapture(e.pointerId);
     return;
   }
+  if (tool === 'section') {
+    drag = { kind: 'section', x0: wx, y0: wy };
+    sectionLine = { a: [wx, wy], b: [wx, wy] };
+    map.setPointerCapture(e.pointerId);
+    return;
+  }
   const hit = pick(sx, sy);
   if (e.shiftKey && hit && hit.type !== 'building' && selected && selected.type !== 'building' && selected.type !== hit.type) {
     selected2 = hit;
@@ -787,6 +1170,8 @@ map.addEventListener('pointermove', (e) => {
   if (drag.kind === 'bnew') {
     drag.x1 = snap(wx);
     drag.y1 = snap(wy);
+  } else if (drag.kind === 'section') {
+    sectionLine = { a: [drag.x0, drag.y0], b: [wx, wy] };
   } else if (drag.kind === 'pan') {
     view.cx = drag.cx - (sx - drag.sx) / view.scale;
     view.cy = drag.cy + (sy - drag.sy) / view.scale;
@@ -813,6 +1198,12 @@ map.addEventListener('pointermove', (e) => {
   }
 });
 map.addEventListener('pointerup', () => {
+  if (drag?.kind === 'section') {
+    const [ax, ay] = sectionLine.a;
+    const [bx, by] = sectionLine.b;
+    if (Math.hypot(bx - ax, by - ay) >= 3) openSection();
+    else sectionLine = null;
+  }
   if (drag?.kind === 'bnew') {
     const w = Math.abs(drag.x1 - drag.x0);
     const d = Math.abs(drag.y1 - drag.y0);
@@ -1322,6 +1713,7 @@ function frame(now) {
   micView.draw();
   drawMap();
   drawTimeline();
+  drawSection();
   requestAnimationFrame(frame);
 }
 

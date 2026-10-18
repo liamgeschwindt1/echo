@@ -82,11 +82,14 @@ export function prepareRender(scenario, clips, lengthS) {
 /**
  * Adds one source's spectrum, through the chosen paths, into the accumulators.
  * pathFilter(path) selects which paths count (all, direct only, one type...). kMax limits the highest bin.
+ * When record is given, every applied path is pushed as the render stage actually applies it:
+ * { type, surfaces, delay_samples, gain_db_1khz, filter } — the audit reads these back, never geometry.
  */
-export function addSourceSpectrum(ctx, si, pathList, accRe, accIm, pathFilter = null, kMax = ctx.bins - 2) {
+export function addSourceSpectrum(ctx, si, pathList, accRe, accIm, pathFilter = null, kMax = ctx.bins - 2, record = null) {
   const { fs, n, absorb } = ctx;
   const src = ctx.scenario.sources[si];
   const X = ctx.spectra[si];
+  const k1k = Math.round((1000 * n) / fs);
   for (const path of pathList) {
     if (pathFilter && !pathFilter(path)) continue;
     const g0 = path.gain / Math.max(path.length, 1);
@@ -99,6 +102,7 @@ export function addSourceSpectrum(ctx, si, pathList, accRe, accIm, pathFilter = 
     const di = Math.sin(step);
     let cr = 1;
     let ci = 0;
+    let g1k = null;
     const top = Math.min(kMax, ctx.bins - 2);
     for (let k = 1; k <= top; k++) {
       // Rotate incrementally, re-anchoring often enough to keep rounding drift negligible.
@@ -112,18 +116,32 @@ export function addSourceSpectrum(ctx, si, pathList, accRe, accIm, pathFilter = 
       }
       let g = g0 * Math.exp(-absorb[k] * lnAtt);
       if (diffracted) g *= 10 ** (-diffractionLossDb(delta, (k * fs) / n, ctx.c) / 20);
+      if (k === k1k) g1k = g;
       const c = cr * g;
       const s = ci * g;
       accRe[k] += X.re[k] * c + X.im[k] * s;
       accIm[k] += X.im[k] * c - X.re[k] * s;
     }
-    accRe[0] += X.re[0] * g0;
+    // DC goes through the same filter chain: skipping the losses here would put a single-bin step
+    // in the magnitude response, which spreads as a constant pedestal across the whole impulse
+    // response (measured: -32 dB IR tail, which broke the reference-renderer comparison).
+    let gDC = g0 * Math.exp(-absorb[0] * lnAtt);
+    if (diffracted) gDC *= 10 ** (-diffractionLossDb(delta, 0, ctx.c) / 20);
+    accRe[0] += X.re[0] * gDC;
+    record?.push({
+      type: path.type,
+      surfaces: path.surfaces,
+      delay_samples: tau * fs,
+      gain_db_1khz: 20 * Math.log10(g1k ?? g0),
+      filter: `spreading 1/max(r,1), r=${path.length.toFixed(3)} m; bounce gain ${path.gain}; air absorption ${ctx.settings.air_absorption ? 'ISO 9613-1' : 'off'}${diffracted ? `; diffraction 10log10(3+20N) cap 20 dB, delta=${delta.toFixed(3)} m` : ''}`
+    });
   }
 }
 
 /** Ambient and self noise for one mic, in Pascals, kept separate so sums keep the original order. */
 export function noiseForMic(ctx, ni, mi, common = null) {
   const { settings, total } = ctx;
+  if (settings.noise_enabled === false) return { amb: new Float32Array(total), self: new Float32Array(total) };
   const amb = pinkNoise(streamFor(settings.seed, ni, mi, 1), total, dbToPa(settings.noise_floor_db_spl));
   const rho = settings.noise_correlation || 0;
   if (rho > 0 && common) {
@@ -136,7 +154,7 @@ export function noiseForMic(ctx, ni, mi, common = null) {
 }
 
 export const commonNoise = (ctx, ni) =>
-  ctx.settings.noise_correlation > 0 ? pinkNoise(streamFor(ctx.settings.seed, ni, 0, 14), ctx.total, dbToPa(ctx.settings.noise_floor_db_spl)) : null;
+  ctx.settings.noise_enabled !== false && ctx.settings.noise_correlation > 0 ? pinkNoise(streamFor(ctx.settings.seed, ni, 0, 14), ctx.total, dbToPa(ctx.settings.noise_floor_db_spl)) : null;
 
 export const micGainFor = (ctx, ni, mi) => ctx.toDigital * micGain(ctx.settings, ni, mi);
 
@@ -149,14 +167,18 @@ export function renderScenario(scenario, clips, { lengthS, onProgress } = {}) {
   const { total, n, bins } = ctx;
   const nodes = [];
   const activity = [];
+  const audit = [];
   const jobs = scenario.nodes.length * 4;
   let done = 0;
   scenario.nodes.forEach((node, ni) => {
     const common = commonNoise(ctx, ni);
+    const auditNode = [];
     const mics = ctx.truePositions[ni].map((_, mi) => {
       const accRe = new Float64Array(bins);
       const accIm = new Float64Array(bins);
-      scenario.sources.forEach((_, si) => addSourceSpectrum(ctx, si, ctx.table[ni].perMic[mi][si].paths, accRe, accIm));
+      const auditMic = scenario.sources.map(() => []);
+      scenario.sources.forEach((_, si) => addSourceSpectrum(ctx, si, ctx.table[ni].perMic[mi][si].paths, accRe, accIm, null, ctx.bins - 2, auditMic[si]));
+      auditNode.push(auditMic);
       const full = irfft(accRe, accIm, n);
       const out = new Float32Array(total);
       for (let i = 0; i < total; i++) out[i] = full[i];
@@ -168,6 +190,7 @@ export function renderScenario(scenario, clips, { lengthS, onProgress } = {}) {
     });
     nodes.push({ id: node.id, mic_positions: micPositions(node), mic_positions_true: ctx.truePositions[ni], mics });
     activity.push(computeActivity(ctx, ni));
+    audit.push(auditNode);
   });
-  return { sample_rate: ctx.fs, length: total, nodes, paths: ctx.table, activity };
+  return { sample_rate: ctx.fs, length: total, nodes, paths: ctx.table, activity, audit };
 }

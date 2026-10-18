@@ -71,3 +71,53 @@ Path model: delay = length / c, spreading 1 / length (1 m floor), air absorption
 **ISO 9613-2 check**: I could not open the standard here (no copy in the repo, no network use), so this is from memory of ISO 9613-2:1996 section 7.4: single diffraction attenuation `Dz = 10 lg(3 + (C2 / lambda) C3 z Kmet)`, `C3 = 1` for single diffraction, `Kmet = 1` (no meteorology here), `C2 = 20` when ground reflections are treated separately and `C2 = 40` when they are not, and the result capped at 20 dB for single diffraction (25 dB for double). The brief's `3 + 20 N` with `N = 2 delta / lambda` equals `3 + 40 delta / lambda`, i.e. `C2 = 40`, which fits because diffracted paths get no separate ground bounce here. The 20 dB cap matches. Please check these numbers against the standard text before relying on them; this is an engineering approximation, the formula is for thin screens, and applying it only to blocked paths makes the level step at the shadow boundary.
 
 Checks: loss is 4.77 dB at N = 0 (about 5 dB) and hits the 20 dB cap for large N; a node behind a 100 m tall building (source off to one side) reports a bearing at a corner (error against the true source more than 10 degrees) and the picked path is `diffracted`; on a thin screen the 200 Hz tone is 5.8 dB quieter-loss than 3 kHz, less than the 9 dB a single path would give because several edge paths add up. Wave rings still do not diffract.
+
+# Reach map, 3D rings and microphone signal fidelity (second brief)
+
+## 1. One source of truth — what was duplicated before
+
+- The **mic render** already used `findPaths` / `computePathTable` (geometry.js). Not duplicated.
+- The **map rings** had their own image-source enumeration: `reflectionImages(src, buildings, order)` mirrored surfaces independently of the sequence list `findPaths` used, carried **no ground image** and no shared per-surface gains, and the on-face check for reflected arcs was a separate inline test. Now `reflectionSequences` + `surfaceGain` in geometry.js are the single enumeration for both, `reflectionImages` includes the ground image at `-z_source` with the real gain, and ring validity calls `traceReflection` — the same finite-face test (height range included) that `findPaths` uses. Blocking for rings uses the same 3D `segmentBlocked` as the finder.
+- The **reach map** and **side view** are new and call `findPaths` per grid point (per-source image cache, so the mirroring is not recomputed per cell).
+- **Dropped paths are now audited**: `findPaths` returns `dropped: [{type, surfaces, reason}]` with reasons `blocked`, `off_face`, `path_cap`. Before, drops were silent.
+- The **level chain** (`spl_ref_db`, `dbfs_ref_db` via `digitalPerPa` / `dbToPa`) and the absorption (ISO 9613-1) and diffraction (`10 log10(3 + 20 N)`, 20 dB cap) formulas were and remain single implementations in physics.js / geometry.js, shared by the render, the reach field and the tests.
+
+## 2. Production fix found by the reference renderer (disclosed, not a tolerance change)
+
+`addSourceSpectrum` applied **no path losses at the DC bin** (`accRe[0] += X.re[0] * g0`). Against a diffracted path's loss at bin 1 that is a single-bin step of ~5 dB, which spreads a constant pedestal (~-32 dB) across the whole impulse response — a real artifact, found because the independent time-domain reference could not match it. DC now goes through the same filter chain in production and reference. Golden signals were unaffected (real clips have ~no DC); the diffraction-scene agreement went from -42 dB to -68 dB, the rest is below.
+
+## 3. Measured numbers (node --test, 90 tests, all passing)
+
+**Independent reference renderer** (windowed-sinc delay + explicit per-path magnitude FIR, time-domain convolution; test/reference-render.js, test/sim-reference.test.js). Worst-mic relative difference, band-limited noise burst:
+- free field **-89.9 dB**, ground only **-89.5 dB**, one wall **-90.8 dB**, blocked direct with reflections **-139.8 dB**, blocked direct with diffraction **-68.4 dB** (requirement: below -60 dB).
+- The comparison clip must be band-limited (the reference sinc rolls off above ~0.9 Nyquist by design); with a full-band white clip the direct-path scenes showed -42 dB from the clip's top octave alone. That was a test-signal problem, not a render bug.
+
+**Reach map checks** (test/sim-reach.test.js):
+- Open field, order 0, ground off: **6.02 dB per doubling of the 3D distance** at slice heights 1.5, 5 and 10 m; plan contours circular within 0.1 dB. (The invariant is in 3D distance: on a raised slice, doubling the plan radius does not double the 3D distance.)
+- Slice height: shadow behind a 15 m box is at the numerical floor at z = 2 and z = 20 and gone (0.00 dB) at z = 24 — the edge is the line from the source over the **near top corner** (z = 22.5 at that receiver), so "above the roof" is not enough by itself. Wall reflections with both endpoints above the tops are all dropped `off_face`.
+- Shadow edges are straight lines through the building corners: measured edges (6-8, 10-12, 14-16 m) bracket the corner lines (7.8, 11.1, 14.4 m) at x = 70, 100, 130, within one 2 m cell.
+- **One-wall mirror: 58.5 ms and -4.53 dB** (absorption and ground off).
+- Diffraction on the reach map: edge drop **3.8 dB** (several diffracted paths sum energetically, so slightly less than the single-path 4.77 dB), rising to 10.9 then 11.2 dB with depth (multi-path floor below the 20 dB single-path cap). Band loss on a mid-depth path: **16.4 dB at 250 Hz vs 20.0 dB at 4 kHz**. Formula-level checks (4.77 dB at delta = 0, 20 dB cap, 200 Hz vs 3 kHz) are in test/sim-diffraction.test.js.
+- **Consistency: reach-map SNR at the node position matches the node's snr_db within 0.09 dB** (requirement 1 dB).
+
+**Microphone signal fidelity** (test/sim-fidelity.test.js):
+- Composition: by-source components + noise equal the total render, relative error **< 1e-6** per mic.
+- Render audit: 16 applied paths per mic; worst delay difference **0.0 samples**, worst gain difference **0.0 dB** vs independent recomputation; 82 dropped paths, all with reasons; the blocked direct path is listed `blocked`.
+- Impulse (noise off): exactly one spike per path — direct/ground/wall spikes at the path delays within 2 samples, digital silence before the source starts.
+- Noise switch: `noise_enabled: false` renders exact digital zeros without sources.
+- Level chain: noise-only render **45.14 dB vs 45.14 dB** expected (broadband), in-band **0.00 dB** vs the reach noise reference; free-field noise burst reads **96.00 dB at 1 m** (configured 96) and falls **6.00 / 6.03 / 6.03 dB** per doubling (requirement 6.0 +/- 0.1).
+- Spreading: impulse amplitude ratio 2 m vs 4 m = **2.003**. Delay within **1 sample** (band-limited peak).
+- Air absorption over 80 m: **0.09 / 0.33 / 2.13 dB** at 250 / 1000 / 4000 Hz vs ISO 9613-1 predictions 0.09 / 0.33 / 2.13 dB.
+- Ground: reflected delay and gain match the mirrored source to 1e-9.
+- Blocked direct: no spike at the direct time (< 5 % of max); first spike sample-exact at the earliest valid (diffracted) path.
+- Padding: a path arriving at 94 % of the buffer length renders at the right sample, no wrap-around energy at the start.
+- Interpolator: reference-vs-production delay **0.0000 samples** on the impulse and on a 500 Hz tone (requirement < 0.05 sample). Production uses exact phase-ramp delays; the only interpolator in the system is the reference's sinc.
+- **Reach map vs microphone**: broadband noise burst **0.16 dB** (requirement ~1.5 dB); 300 Hz tone **-9.62 dB** — expected: the map sums energies and ignores interference, and with ground plus a wall reflection the coherent sum of two paths can cancel most of a tone's band energy. Both numbers are printed by the test.
+
+## 4. Statements the brief asked for
+
+- **Sample rate**: localisation runs at the render rate (48 kHz default); there is no downsampling stage, so no anti-aliasing filter check is needed. The Mic's-eye view title states the rate it shows.
+- **Speed of sound**: one `speedOfSound(temperature_c)` used by path delays, rings, markers and the solver; tested at 0 and 25 C (test/sim.test.js, ~4.4 % scaling).
+- **Rings are a loudness display, not true wavelengths; the reach map is an energy sum that ignores interference; no wind or temperature gradients; flat concrete boxes with one placeholder coefficient** — all stated in the simulator's info panel (sim.html, "Limits of this simulation").
+- With `diffraction_order` 0 the reach map is labelled **"no diffraction (pessimistic)"** in the UI.
+- Failure policy: no tolerances were loosened to pass. The one production defect found (DC bin) is described in section 2; test-side fixes (band-limited comparison clip, longer reference FIR, peak picking robust to the click's ringing) are documented in the test files.

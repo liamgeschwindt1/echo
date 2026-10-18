@@ -29,7 +29,10 @@ export const DEFAULT_SETTINGS = Object.freeze({
   noise_correlation: 0,
   air_absorption: true,
   spl_ref_db: 94,
-  dbfs_ref_db: -26
+  dbfs_ref_db: -26,
+  noise_enabled: true, // test switch: false renders silence apart from the sources
+  reach_cell_m: 2,
+  reach_reflection_order: 2
 });
 
 export function defaultScenario() {
