@@ -156,6 +156,17 @@ $('clipCancel').addEventListener('click', () => $('clipDlg').close());
 document.addEventListener('click', (e) => {
   for (const m of document.querySelectorAll('details.menu[open]')) if (!m.contains(e.target)) m.open = false;
 });
+// Cap each open menu to the room between its button and the window edge, so long menus scroll instead of running off screen.
+function fitMenu(m) {
+  const body = m.querySelector('.menu-body');
+  if (!body) return;
+  const r = m.querySelector('summary').getBoundingClientRect();
+  const up = !!m.closest('#tools');
+  const room = up ? r.top : window.innerHeight - r.bottom;
+  body.style.maxHeight = `${Math.max(120, room - 20)}px`;
+}
+for (const m of document.querySelectorAll('details.menu')) m.addEventListener('toggle', () => m.open && fitMenu(m));
+window.addEventListener('resize', () => document.querySelectorAll('details.menu[open]').forEach(fitMenu));
 for (const b of document.querySelectorAll('.menu-body button')) {
   if (!b.closest('.menu-head')) b.addEventListener('click', () => (b.closest('details').open = false));
 }
