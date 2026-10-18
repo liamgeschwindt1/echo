@@ -1,5 +1,6 @@
 import { dbToPa, digitalPerPa, distance, speedOfSound } from './physics.js';
 import { estimateBearing, intersectRays } from './localise.js';
+import { backtraceCandidates, scoreAgainstTruth } from './backtrace.js';
 import { pathReport } from './pathreport.js';
 import { azimuthUncertaintyDeg } from './uncertainty.js';
 import { FRAME_S } from './activity.js';
@@ -206,6 +207,12 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
     const rays = used.map((n) => ({ origin: scenario.nodes.find((x) => x.id === n.node_id).position, direction: n.bearing.direction, weight: 10 ** (n.snr_db / 10) }));
     const fix = intersectRays(rays);
     const est = fix && !fix.poorly_conditioned ? fix.position : null;
+    const bt = backtraceCandidates(
+      used.map((n) => ({ node_id: n.node_id, position: scenario.nodes.find((x) => x.id === n.node_id).position, azimuth_deg: n.bearing.azimuth_deg, uncertainty_deg: n.bearing.uncertainty_deg })),
+      scenario.buildings || [],
+      { reflection_order: settings.backtrace_reflection_order ?? 2 }
+    );
+    const btTruth = scoreAgainstTruth(bt.candidates, truth);
     const suspect = used.some((n) => n.direct_blocked || n.picked_path_type !== 'direct');
     return {
       source_id: src.id,
@@ -213,6 +220,13 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
       nodes: perNode,
       heard_nodes: rays.length,
       excluded_unreliable: perNode.filter((n) => n.heard && !n.reliable).map((n) => n.node_id),
+      backtrace: {
+        traces: bt.traces,
+        candidates: bt.candidates.slice(0, 10),
+        top: bt.candidates.slice(0, 3),
+        ...btTruth,
+        intersection_error_m: est ? Math.hypot(est[0] - truth[0], est[1] - truth[1]) : null
+      },
       fix: fix && { ...fix, position: est, fix_suspect: suspect, ready_s: used.length ? Math.max(...used.map((n) => n.window_s[1])) : null },
       error_horizontal_m: est ? Math.hypot(est[0] - truth[0], est[1] - truth[1]) : null,
       error_3d_m: est ? distance(est, truth) : null

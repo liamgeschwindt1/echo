@@ -343,6 +343,42 @@ function niceStep(minWorld) {
   return 1e6;
 }
 
+// Back-traced bearings of the selected nodes (solid: first stretch, dashed: after a reflection) and the top 3 candidates as hollow rings.
+function drawBacktrace(dpr) {
+  const selNodes = new Set([selected, selected2].filter((x) => x?.type === 'node').map((x) => x.id));
+  const selSource = [selected, selected2].find((x) => x?.type === 'source')?.id;
+  mctx.save();
+  mctx.font = `${11 * dpr}px sans-serif`;
+  mctx.lineWidth = 1;
+  for (const r of results) {
+    const bt = r.backtrace;
+    if (!bt || (selSource && r.source_id !== selSource)) continue;
+    mctx.strokeStyle = mctx.fillStyle = '#7fd4ff';
+    for (const id of selNodes) {
+      for (const leg of bt.traces[id] || []) {
+        const [ax, ay] = toScreen(leg.from[0], leg.from[1]);
+        const [bx, by] = toScreen(leg.to[0], leg.to[1]);
+        mctx.setLineDash(leg.kind === 'dashed' ? [6 * dpr, 4 * dpr] : []);
+        mctx.beginPath();
+        mctx.moveTo(ax, ay);
+        mctx.lineTo(bx, by);
+        mctx.stroke();
+      }
+    }
+    mctx.setLineDash([]);
+    mctx.strokeStyle = mctx.fillStyle = '#ffd166';
+    mctx.lineWidth = 2 * dpr;
+    for (const c of bt.top) {
+      const [cx, cy] = toScreen(c.position[0], c.position[1]);
+      mctx.beginPath();
+      mctx.arc(cx, cy, 8 * dpr, 0, 7);
+      mctx.stroke();
+      mctx.fillText(`${c.rank}: ${c.score.toFixed(2)}`, cx + 11 * dpr, cy - 9 * dpr);
+    }
+  }
+  mctx.restore();
+}
+
 function drawMap() {
   const dpr = fit(map);
   const W = map.width;
@@ -422,6 +458,7 @@ function drawMap() {
         mctx.stroke();
       }
     }
+    if ($('showBacktrace').checked) drawBacktrace(dpr);
     mctx.globalAlpha = 1;
   }
 

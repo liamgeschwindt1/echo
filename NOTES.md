@@ -121,3 +121,32 @@ Checks: loss is 4.77 dB at N = 0 (about 5 dB) and hits the 20 dB cap for large N
 - **Rings are a loudness display, not true wavelengths; the reach map is an energy sum that ignores interference; no wind or temperature gradients; flat concrete boxes with one placeholder coefficient** — all stated in the simulator's info panel (sim.html, "Limits of this simulation").
 - With `diffraction_order` 0 the reach map is labelled **"no diffraction (pessimistic)"** in the UI.
 - Failure policy: no tolerances were loosened to pass. The one production defect found (DC bin) is described in section 2; test-side fixes (band-limited comparison clip, longer reference FIR, peak picking robust to the click's ringing) are documented in the test files.
+
+## Back-tracing of position candidates
+
+Code: `src/sim/core/backtrace.js`, wired into `analyseScenario` as `result.backtrace`. The audio render is untouched (`reflection_order` for rendering is not read or changed; the trace uses `settings.backtrace_reflection_order`, default 2).
+
+**Trace.** Each node's bearing is traced in the horizontal plane at the node's height. At the first wall face hit from outside (hit point inside the face rectangle and its height range, so a node above the roofline passes over), the trace branches: the stretch before the hit is a candidate stretch ("stop"), and a specular reflection continues from the hit. This repeats up to the reflection order; the last leg ends at the first face it meets or at the map edge (nodes and buildings padded by 100 m). Drawing: first leg solid, legs after a reflection dashed. Roofs and the ground are not used, and elevation is ignored (the elevation sign is only assumed for flat arrays).
+
+**Candidates.** Crossings of legs from different nodes. Rejected: a crossing outside either leg (so negative range along either ray), inside a building. Score = `n_nodes * angle_factor / (1 + mean_path_m / 100)`. `n_nodes` counts nodes with any leg passing within 1 sigma of the bearing uncertainty (lateral miss <= tan(sigma) * path length so far, positive range only). `angle_factor` is 1 at 20 degrees or more and `(angle/20)^2` below. The path-length term is a weak placeholder scale (100 m). Candidates within 1 m are merged. The weights are my choice, not calibrated.
+
+**Display.** Top 3 candidates are hollow yellow rings with `rank: score`. Traces are drawn for the selected node(s) (shift-click for two). The existing fix stays as its own marker. Toggle: Display > Back-trace candidates.
+
+### Changes to the existing intersection fix (`intersectRays`)
+1. **Positive range required.** The least-squares point is rejected (`position: null`, `negative_range: true`, `ranges_m` reported) if its range along any ray is not positive. Before, a point behind a node was accepted.
+2. **Conditioning from the angle between the lines**, computed as `acos(|d1 . d2|)` (0 to 90 degrees). Note: the old code took `min(angle, 180 - angle)` of the direction vectors, which gives the same number for the pair maximum; so this is a clearer definition, not a change in values. The real behavioural change is item 1.
+
+### Results (`node scripts/backtrace-report.mjs`)
+Rank is that of the candidate nearest the true source (horizontal distance); "-" means none exists or no fix.
+
+| scene | source | candidates | true rank | candidate error (m) | intersection error (m) |
+|---|---|---|---|---|---|
+| one_node_one_source | s1 | 0 | - | - | - |
+| three_nodes_three_sources | s1 | 1 | 1 | 0.04 | 0.01 |
+| three_nodes_three_sources | s2 | 3 | 2 | 17.19 | 22.31 |
+| three_nodes_three_sources | s3 | 1 | 1 | 0.13 | 0.34 |
+| two_nodes_tetra | s1 | 1 | 1 | 0.03 | 0.27 |
+| two_nodes_tetra | s2 | 0 | - | - | - |
+| corner_b4_b5_b6 | s1 | 2 | 2 | 0.01 | - |
+
+Corner scene (`test/backtrace-scene.js`): source at b4's north-east corner, n1 on b6's north edge west of b5, n2 just south-east of b5. As expected n1 unfolds via `b5:west` and n2 via `b6:north`, both landing on the source (0.01 m). It ranks 2, not 1: a shorter-path crossing (n1 direct stretch with n2's reflected stretch) scores higher under the formula above. The plain intersection has a negative range along n2 and is now rejected, so it gives no fix. The old code would have returned a point behind the node.

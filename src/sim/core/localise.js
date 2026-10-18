@@ -179,14 +179,21 @@ export function intersectRays(rays, { minAngleDeg = 10 } = {}) {
       }
     }
   }
+  // Angle between the lines (0..90), so antiparallel directions count as parallel.
   let maxAngle = 0;
   for (let i = 0; i < rays.length; i++) {
     for (let j = i + 1; j < rays.length; j++) {
-      const ang = angleBetweenDeg(rays[i].direction, rays[j].direction);
-      maxAngle = Math.max(maxAngle, Math.min(ang, 180 - ang));
+      const d1 = rays[i].direction;
+      const d2 = rays[j].direction;
+      const c = Math.abs(d1[0] * d2[0] + d1[1] * d2[1] + d1[2] * d2[2]);
+      maxAngle = Math.max(maxAngle, (Math.acos(Math.min(1, c)) * 180) / Math.PI);
     }
   }
-  const position = solve3(m, v);
+  const solved = solve3(m, v);
+  // Range along each ray must be positive, otherwise the point lies behind a node.
+  const ranges = solved ? rays.map((r) => (solved[0] - r.origin[0]) * r.direction[0] + (solved[1] - r.origin[1]) * r.direction[1] + (solved[2] - r.origin[2]) * r.direction[2]) : [];
+  const negative_range = ranges.some((t) => !(t > 0));
+  const position = negative_range ? null : solved;
   const poorly_conditioned = !position || maxAngle < minAngleDeg;
-  return { position, max_angle_deg: maxAngle, poorly_conditioned };
+  return { position, max_angle_deg: maxAngle, poorly_conditioned, negative_range, ranges_m: ranges };
 }
