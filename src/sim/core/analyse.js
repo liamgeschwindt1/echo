@@ -52,6 +52,7 @@ export function analyseScenario(scenario, rendered, clipDurations) {
         heard: false,
         bearing,
         overlaps,
+        window_s: [a / fs, b / fs],
         ...report,
         azimuth_error_deg: bearing ? Math.abs(((bearing.azimuth_deg - trueAz + 540) % 360) - 180) : null,
         true_azimuth_deg: trueAz,

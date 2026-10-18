@@ -73,3 +73,20 @@ dialog canvas { width: 100%; height: auto; }
 #clipList button { text-align: left; }
 #clipList .empty { grid-column: 1 / -1; color: var(--dim); }
 label.upload { margin: 0 auto 0 0; cursor: pointer; color: var(--dim); text-decoration: underline; }
+
+#micView { position: fixed; left: 96px; right: 0; bottom: 0; height: 52vh; background: #000; border-top: 1px solid #fff; display: flex; flex-direction: column; z-index: 20; }
+#micView[hidden] { display: none; }
+#micView.expanded { left: 0; height: 92vh; }
+#micView.stale #mvBody { opacity: 0.4; }
+#micView > header { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 8px 14px; border-bottom: 1px solid var(--edge); }
+#mvBody { flex: 1; display: grid; grid-template-columns: 1fr 360px; min-height: 0; }
+#mvLeft { display: grid; grid-template-rows: 1fr 150px; min-height: 0; }
+#mvLeft canvas { width: 100%; height: 100%; display: block; border-bottom: 1px solid var(--edge); }
+#mvRight { overflow: auto; padding: 10px 12px; border-left: 1px solid var(--edge); font-size: 12px; }
+#mvRight h4 { margin: 14px 0 6px; font-size: 12px; color: var(--dim); }
+#mvArrivals table { width: 100%; border-collapse: collapse; }
+#mvArrivals td, #mvArrivals th { border-bottom: 1px solid var(--edge); padding: 2px 4px; text-align: left; font-family: var(--mono); }
+#mvArrivals tr[data-i] { cursor: pointer; }
+#mvArrivals tr.picked td { color: var(--accent); }
+#mvGcc { width: 100%; height: 150px; display: block; border: 1px solid var(--edge); }
+.mv-row { display: flex; gap: 12px; margin-bottom: 6px; }

@@ -6,6 +6,7 @@ import { analyseClip, wavefrontRings } from './core/wavefront.js';
 import { micPositions } from './core/mics.js';
 import { loadManifest, fetchClip, decodeToMono, clipAvailable } from './clips.js';
 import { spectrogram } from './core/spectro.js';
+import { createMicView } from './ui/micview.js';
 
 const $ = (id) => document.getElementById(id);
 const FS = 48000;
@@ -30,6 +31,21 @@ let playing = false;
 let speed = 1;
 let counter = 1;
 let worker = null;
+let lastCreate = null; // snapshot of what was rendered, so component views match the results even after edits
+let autoOpened = null;
+
+const micView = createMicView({
+  $,
+  accent: ACCENT,
+  getScenario: () => lastCreate?.scenario,
+  getRendered: () => rendered,
+  getResults: () => results,
+  getStatus: () => status,
+  getT: () => t,
+  setT: (v) => (t = Math.max(0, v)),
+  download,
+  requestComponents: (nodeIndex, mode, key) => worker?.postMessage({ type: 'components', scenario: lastCreate.scenario, clips: lastCreate.clips, lengthS: lastCreate.lengthS, nodeIndex, mode, key })
+});
 
 const durations = () => new Map([...clips].map(([id, s]) => [id, s.length / FS]));
 const lengthS = () => Math.max(1, scenarioLengthS(scenario, durations()));
@@ -245,9 +261,9 @@ $('exportBtn').addEventListener('click', () => {
   download('results.json', JSON.stringify({ app: 'echo-sim', schema: '0.2', constants: simConstants(), scenario, results }, null, 2));
 });
 
-function download(name, text) {
+function download(name, data, mime = 'application/json') {
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+  a.href = URL.createObjectURL(new Blob([data], { type: mime }));
   a.download = name;
   a.click();
   URL.revokeObjectURL(a.href);
@@ -278,6 +294,7 @@ $('createBtn').addEventListener('click', async () => {
   worker.onmessage = (e) => {
     const m = e.data;
     if (m.type === 'progress') $('progress').value = m.value;
+    else if (m.type === 'components') micView.onComponents(m);
     else if (m.type === 'done') {
       rendered = m.rendered;
       results = m.results;
@@ -289,13 +306,16 @@ $('createBtn').addEventListener('click', async () => {
       $('banner').hidden = true;
       refreshListen();
       renderInspector();
+      if (micView.isOpen()) micView.open(micView.nodeId());
     } else if (m.type === 'error') {
       status = 'edit';
       $('progress').hidden = true;
       alert(`Render failed: ${m.message}`);
     }
   };
-  worker.postMessage({ scenario, clips: [...clips].filter(([id]) => scenario.sources.some((s) => s.clip === id)), lengthS: renderLengthS(scenario, durations()), durations: [...durations()] });
+  const used = [...clips].filter(([id]) => scenario.sources.some((s) => s.clip === id));
+  lastCreate = { scenario: structuredClone(scenario), clips: used, lengthS: renderLengthS(scenario, durations()) };
+  worker.postMessage({ scenario, clips: used, lengthS: lastCreate.lengthS, durations: [...durations()] });
 });
 
 // ---------- map ----------
@@ -792,6 +812,7 @@ function renderInspector() {
   el.replaceChildren();
   const o = selected && find(selected);
   $('app').classList.toggle('has-inspector', !!o);
+  if (!o || selected.type !== 'node') autoOpened = null;
   updateHint();
   renderNodeToggles();
   if (!o) return;
@@ -827,7 +848,16 @@ function renderInspector() {
     ));
     el.append(removeButton());
     const rn = rendered?.nodes.find((n) => n.id === o.id);
-    if (rn) el.append(nodeResultPanel(rn));
+    if (rn) {
+      const mv = Object.assign(document.createElement('button'), { className: 'remove', textContent: "Mic's-eye view" });
+      mv.addEventListener('click', () => micView.open(o.id));
+      el.append(mv);
+      if (autoOpened !== o.id) {
+        autoOpened = o.id;
+        micView.open(o.id);
+      }
+      el.append(nodeResultPanel(rn));
+    }
   } else {
     const entry = library.find((c) => c.id === o.clip);
     el.append(h(`${entry?.name ?? o.clip} (${o.id})`));
@@ -1222,6 +1252,7 @@ function frame(now) {
   }
   $('timeLabel').textContent = `${t.toFixed(2)} s`;
   syncListen();
+  micView.draw();
   drawMap();
   drawTimeline();
   requestAnimationFrame(frame);

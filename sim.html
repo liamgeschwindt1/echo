@@ -59,6 +59,33 @@
       <footer id="timelineWrap"><canvas id="timeline"></canvas></footer>
     </div>
 
+    <section id="micView" hidden>
+      <header>
+        <strong id="mvTitle">Mic's-eye view</strong>
+        <label class="inline">Show
+          <select id="mvMode"><option value="total">Total</option><option value="by_source">By source</option><option value="by_path">By path</option><option value="noise">Noise only</option></select>
+        </label>
+        <label class="inline">Scale <select id="mvScale"><option value="lin">Linear</option><option value="db">dBFS</option></select></label>
+        <span id="mvStatus" class="muted"></span>
+        <span class="grow"></span>
+        <button id="mvWav" title="Simulated audio only">4-channel WAV</button>
+        <button id="mvCsv">Arrivals CSV</button>
+        <button id="mvExpand">Expand</button>
+        <button id="mvClose">Close</button>
+      </header>
+      <div id="mvBody">
+        <div id="mvLeft"><canvas id="mvTraces"></canvas><canvas id="mvSpec"></canvas></div>
+        <div id="mvRight">
+          <div id="mvLegend"></div>
+          <h4>Arrivals</h4>
+          <div id="mvArrivals"></div>
+          <h4>Delay view</h4>
+          <div class="mv-row"><label class="inline">Source <select id="mvSrc"></select></label><label class="inline">Pair <select id="mvPair"></select></label></div>
+          <canvas id="mvGcc"></canvas>
+        </div>
+      </div>
+    </section>
+
     <dialog id="settingsDlg">
       <h3>Settings</h3>
       <label>Temperature (&deg;C) <input id="s_temperature_c" class="mono" type="number" step="1" /></label>

@@ -14,8 +14,8 @@ function segmentSpectrum(signal, start, end, n) {
   return { re, im };
 }
 
-// Positive lag means the sound reaches mic i later than mic j (tdoa = t_i - t_j).
-export function gccPhat(a, b, { fs, band, maxLagS }) {
+// Phase-transform cross-correlation, 4x up-sampled, restricted to the band. Index l (mod big) is lag l / fsUp.
+function correlate(a, b, { fs, band }) {
   const len = a.end - a.start;
   const n = nextPow2(len * 2);
   const A = segmentSpectrum(a.signal, a.start, a.end, n);
@@ -35,7 +35,12 @@ export function gccPhat(a, b, { fs, band, maxLagS }) {
     im[big - k] = -ci / m;
   }
   fft(re, im, true);
-  const fsUp = fs * UPSAMPLE;
+  return { re, big, fsUp: fs * UPSAMPLE };
+}
+
+// Positive lag means the sound reaches mic i later than mic j (tdoa = t_i - t_j).
+export function gccPhat(a, b, { fs, band, maxLagS }) {
+  const { re, big, fsUp } = correlate(a, b, { fs, band });
   const maxLag = Math.ceil(maxLagS * fsUp) + UPSAMPLE;
   let best = -Infinity;
   let bestLag = 0;
@@ -52,6 +57,23 @@ export function gccPhat(a, b, { fs, band, maxLagS }) {
   const denom = ym - 2 * y0 + yp;
   const frac = denom === 0 ? 0 : (0.5 * (ym - yp)) / denom;
   return { tdoa_s: (bestLag + frac) / fsUp, peak: best };
+}
+
+/** The whole correlation over the physical lag range, plus its local peaks, for plotting multipath. */
+export function gccCurve(a, b, { fs, band, maxLagS }) {
+  const { re, big, fsUp } = correlate(a, b, { fs, band });
+  const maxLag = Math.ceil(maxLagS * fsUp) + UPSAMPLE;
+  const lags = [];
+  const values = [];
+  for (let l = -maxLag; l <= maxLag; l++) {
+    lags.push(l / fsUp);
+    values.push(re[(l + big) % big]);
+  }
+  const top = Math.max(...values);
+  const peaks = [];
+  for (let i = 1; i < values.length - 1; i++) if (values[i] > values[i - 1] && values[i] >= values[i + 1] && values[i] > 0.3 * top) peaks.push({ lag_s: lags[i], value: values[i] });
+  peaks.sort((x, y) => y.value - x.value);
+  return { lags_s: lags, values, peaks: peaks.slice(0, 6), est_lag_s: peaks[0]?.lag_s ?? 0 };
 }
 
 function solve3(m, v) {
