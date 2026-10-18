@@ -38,8 +38,9 @@ progress { accent-color: var(--accent); }
 .menu summary { list-style: none; cursor: pointer; border: 1px solid #555; border-radius: 6px; padding: 6px 12px; user-select: none; }
 .menu summary::-webkit-details-marker { display: none; }
 .menu[open] summary { border-color: var(--line); }
-.menu-body { position: absolute; z-index: 5; right: 0; top: calc(100% + 6px); min-width: 210px; display: flex; flex-direction: column; gap: 8px; padding: 12px; background: #000; border: 1px solid var(--line); border-radius: 8px; }
+.menu-body { position: absolute; z-index: 5; right: 0; top: calc(100% + 6px); min-width: 210px; display: flex; flex-direction: column; gap: 8px; padding: 12px; background: #000; border: 1px solid var(--line); border-radius: 8px; max-height: calc(100vh - 140px); overflow-y: auto; overscroll-behavior: contain; }
 #tools .menu-body { right: auto; left: 0; top: auto; bottom: calc(100% + 6px); }
+.menu-body > * { flex-shrink: 0; }
 .menu-body label { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .menu-body label.check { justify-content: flex-start; }
 .menu-body button { text-align: left; border-color: transparent; }
