@@ -15,6 +15,8 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--line);
 #mapWrap { grid-area: map; position: relative; min-height: 0; }
 #timelineWrap { grid-area: tl; border-top: 1px solid var(--edge); min-height: 0; }
 canvas { width: 100%; height: 100%; display: block; }
+#map3d { position: absolute; inset: 0; touch-action: none; cursor: grab; }
+#map3d[hidden] { display: none; }
 #hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; color: var(--dim); font-size: 18px; text-align: center; padding: 24px; }
 #hint:empty { display: none; }
 

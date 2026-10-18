@@ -8,6 +8,7 @@ import { micPositions } from './core/mics.js';
 import { loadManifest, fetchClip, decodeToMono, clipAvailable } from './clips.js';
 import { spectrogram } from './core/spectro.js';
 import { createMicView } from './ui/micview.js';
+import { createView3d } from './ui/view3d.js';
 
 const $ = (id) => document.getElementById(id);
 const FS = 48000;
@@ -1734,6 +1735,25 @@ $('listen').addEventListener('change', updateSpeedLabel);
 // ---------- loop ----------
 
 let last = performance.now();
+const view3d = createView3d($('map3d'));
+
+function draw3d() {
+  const c = $('map3d');
+  const on = $('show3d').checked;
+  c.hidden = !on;
+  if (!on) return;
+  const dpr = fit(c);
+  view3d.draw({
+    scenario,
+    results,
+    dpr,
+    selectedNodes: new Set([selected, selected2].filter((x) => x?.type === 'node').map((x) => x.id)),
+    hiddenNodes,
+    showBacktrace: $('showBacktrace').checked,
+    showRays: $('showCones').checked
+  });
+}
+
 function frame(now) {
   const dt = (now - last) / 1000;
   last = now;
@@ -1749,6 +1769,7 @@ function frame(now) {
   syncListen();
   micView.draw();
   drawMap();
+  draw3d();
   drawTimeline();
   drawSection();
   requestAnimationFrame(frame);
