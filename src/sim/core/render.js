@@ -4,6 +4,7 @@ import { micPositions } from './mics.js';
 import { gaussian, pinkNoise, streamFor, whiteNoise } from './rng.js';
 import { computePathTable, diffractionLossDb, findPaths } from './geometry.js';
 import { computeActivity } from './activity.js';
+import { timed } from './profile.js';
 
 const LEVEL_WINDOW_S = 0.125;
 
@@ -55,23 +56,23 @@ function trueMicPositions(node, ni, settings) {
 const micGain = (settings, ni, mi) => (settings.mic_gain_sigma_db ? 10 ** ((settings.mic_gain_sigma_db * gaussian(streamFor(settings.seed, ni, mi, 13))) / 20) : 1);
 
 /** Everything the per-mic spectra need, computed once per render. */
-export function prepareRender(scenario, clips, lengthS) {
+export function prepareRender(scenario, clips, lengthS, profile = null) {
   const { settings } = scenario;
   const fs = settings.render_sample_rate;
   const total = Math.ceil(lengthS * fs);
   const n = nextPow2(total);
   const bins = n / 2 + 1;
   const c = speedOfSound(settings.temperature_c);
-  const spectra = scenario.sources.map((src) => {
+  const spectra = timed(profile, 'clip_spectra', () => scenario.sources.map((src) => {
     const samples = clips.get(src.clip);
     if (!samples) throw new Error(`clip ${src.clip} not loaded`);
     const gain = clipGainPa(samples, fs, src.level_1m_db);
     const scaled = new Float32Array(samples.length);
     for (let i = 0; i < samples.length; i++) scaled[i] = samples[i] * gain;
     return rfft(scaled, n);
-  });
+  }));
   const truePositions = scenario.nodes.map((node, ni) => trueMicPositions(node, ni, settings));
-  const table = computePathTable(scenario, (node) => truePositions[scenario.nodes.indexOf(node)], c);
+  const table = timed(profile, 'path_table', () => computePathTable(scenario, (node) => truePositions[scenario.nodes.indexOf(node)], c));
   return {
     scenario, settings, fs, total, n, bins, c, spectra, table, truePositions,
     toDigital: digitalPerPa(settings.spl_ref_db, settings.dbfs_ref_db),
@@ -162,8 +163,8 @@ export const micGainFor = (ctx, ni, mi) => ctx.toDigital * micGain(ctx.settings,
  * Renders every mic signal for every node. Clips must already be at render_sample_rate.
  * clips: Map clipId -> Float32Array. Returns digital-float signals.
  */
-export function renderScenario(scenario, clips, { lengthS, onProgress } = {}) {
-  const ctx = prepareRender(scenario, clips, lengthS);
+export function renderScenario(scenario, clips, { lengthS, onProgress, profile = null } = {}) {
+  const ctx = prepareRender(scenario, clips, lengthS, profile);
   const { total, n, bins } = ctx;
   const nodes = [];
   const activity = [];
@@ -177,19 +178,22 @@ export function renderScenario(scenario, clips, { lengthS, onProgress } = {}) {
       const accRe = new Float64Array(bins);
       const accIm = new Float64Array(bins);
       const auditMic = scenario.sources.map(() => []);
-      scenario.sources.forEach((_, si) => addSourceSpectrum(ctx, si, ctx.table[ni].perMic[mi][si].paths, accRe, accIm, null, ctx.bins - 2, auditMic[si]));
+      const out = timed(profile, 'mic_render', () => {
+        scenario.sources.forEach((_, si) => addSourceSpectrum(ctx, si, ctx.table[ni].perMic[mi][si].paths, accRe, accIm, null, ctx.bins - 2, auditMic[si]));
+        const full = irfft(accRe, accIm, n);
+        const o = new Float32Array(total);
+        for (let i = 0; i < total; i++) o[i] = full[i];
+        return o;
+      });
       auditNode.push(auditMic);
-      const full = irfft(accRe, accIm, n);
-      const out = new Float32Array(total);
-      for (let i = 0; i < total; i++) out[i] = full[i];
-      const { amb, self } = noiseForMic(ctx, ni, mi, common);
+      const { amb, self } = timed(profile, 'noise', () => noiseForMic(ctx, ni, mi, common));
       const g = micGainFor(ctx, ni, mi);
       for (let i = 0; i < total; i++) out[i] = (out[i] + amb[i] + self[i]) * g;
       onProgress?.(++done / jobs);
       return out;
     });
     nodes.push({ id: node.id, mic_positions: micPositions(node), mic_positions_true: ctx.truePositions[ni], mics });
-    activity.push(computeActivity(ctx, ni));
+    activity.push(timed(profile, 'activity', () => computeActivity(ctx, ni)));
     audit.push(auditNode);
   });
   return { sample_rate: ctx.fs, length: total, nodes, paths: ctx.table, activity, audit };

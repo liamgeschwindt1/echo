@@ -2,6 +2,7 @@ import { dbToPa, digitalPerPa, distance, speedOfSound } from './physics.js';
 import { estimateBearing, intersectRays } from './localise.js';
 import { backtraceCandidates, scoreAgainstTruth } from './backtrace.js';
 import { pathReport } from './pathreport.js';
+import { timed } from './profile.js';
 import { azimuthUncertaintyDeg } from './uncertainty.js';
 import { FRAME_S } from './activity.js';
 import { sourcePosition } from './scenario.js';
@@ -77,7 +78,7 @@ function subtract(w, others) {
  * at mic 1 over its active window, divided by the mean in-band power of the ambient plus self noise at mic 1.
  * progressive: also store bearings from growing windows (for the time-resolved wedges in the UI).
  */
-export function analyseScenario(scenario, rendered, clipDurations, { progressive = false } = {}) {
+export function analyseScenario(scenario, rendered, clipDurations, { progressive = false, profile = null } = {}) {
   const { settings } = scenario;
   const fs = rendered.sample_rate;
   const c = speedOfSound(settings.temperature_c);
@@ -140,7 +141,7 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
       }
       const toSamples = (w) => [Math.max(0, Math.round(w[0] * fs)), Math.min(rendered.length, Math.max(Math.round(w[0] * fs) + 64, Math.round(w[1] * fs)))];
       const [a, b] = toSamples(loc);
-      const bearingFor = (s0, s1) => estimateBearing({ mics: rn.mics, positions: rn.mic_positions, startSample: s0, endSample: s1, fs, c, band: settings.localisation_band_hz });
+      const bearingFor = (s0, s1, stage = 'localise_final') => timed(profile, stage, () => estimateBearing({ mics: rn.mics, positions: rn.mic_positions, startSample: s0, endSample: s1, fs, c, band: settings.localisation_band_hz }));
       const trueAz = toDeg(Math.atan2(truth[1] - node.position[1], truth[0] - node.position[0]));
       const sigmaFor = (bearing, w) =>
         azimuthUncertaintyDeg({
@@ -156,7 +157,7 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
 
       const bearing = bearingFor(a, b);
       if (bearing) bearing.uncertainty_deg = sigmaFor(bearing, loc);
-      const report = pathReport({ centre, node, source: src, bearing, settings });
+      const report = timed(profile, 'path_report', () => pathReport({ centre, node, source: src, bearing, settings }));
       const snr = toDb(meanPower(own.all, active[0], active[1]), noiseP);
       const hasDirect = centre.paths.some((p) => p.type === 'direct');
       const reliable = status === 'ok';
@@ -168,7 +169,7 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
         for (let tau = PROGRESSIVE_FIRST_S; tau < loc[1] - loc[0]; tau *= 2) {
           const w = [loc[0], loc[0] + tau];
           const [s0, s1] = toSamples(w);
-          const bb = bearingFor(s0, s1);
+          const bb = bearingFor(s0, s1, 'localise_progressive');
           if (!bb) continue;
           bb.uncertainty_deg = sigmaFor(bb, w);
           steps.push({ t_end_s: w[1], azimuth_deg: bb.azimuth_deg, direction: bb.direction, uncertainty_deg: bb.uncertainty_deg, azimuth_error_deg: angDiff(bb.azimuth_deg, trueAz), snr_db: toDb(meanPower(own.all, w[0], w[1]), noiseP) });
@@ -207,11 +208,11 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
     const rays = used.map((n) => ({ origin: scenario.nodes.find((x) => x.id === n.node_id).position, direction: n.bearing.direction, weight: 10 ** (n.snr_db / 10) }));
     const fix = intersectRays(rays);
     const est = fix && !fix.poorly_conditioned ? fix.position : null;
-    const bt = backtraceCandidates(
+    const bt = timed(profile, 'backtrace', () => backtraceCandidates(
       used.map((n) => ({ node_id: n.node_id, position: scenario.nodes.find((x) => x.id === n.node_id).position, azimuth_deg: n.bearing.azimuth_deg, uncertainty_deg: n.bearing.uncertainty_deg })),
       scenario.buildings || [],
       { reflection_order: settings.backtrace_reflection_order ?? 2 }
-    );
+    ));
     const btTruth = scoreAgainstTruth(bt.candidates, truth);
     const suspect = used.some((n) => n.direct_blocked || n.picked_path_type !== 'direct');
     return {
