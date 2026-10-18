@@ -76,6 +76,96 @@ export function gccCurve(a, b, { fs, band, maxLagS }) {
   return { lags_s: lags, values, peaks: peaks.slice(0, 6), est_lag_s: peaks[0]?.lag_s ?? 0 };
 }
 
+// Spectra of the Hann-windowed segments of two real signals from ONE complex FFT (one in the real part, one in the imaginary part).
+// Only bins lo..hi are kept: the correlation is band limited.
+function pairSpectra(sigA, sigB, start, end, n, lo, hi) {
+  const len = end - start;
+  const re = new Float64Array(n);
+  const im = new Float64Array(n);
+  for (let i = 0; i < len; i++) {
+    const w = 0.5 - 0.5 * Math.cos((2 * Math.PI * (i + 0.5)) / len);
+    re[i] = sigA[start + i] * w;
+    im[i] = sigB[start + i] * w;
+  }
+  fft(re, im);
+  const size = hi + 1;
+  const A = { re: new Float64Array(size), im: new Float64Array(size) };
+  const B = { re: new Float64Array(size), im: new Float64Array(size) };
+  for (let k = lo; k <= hi; k++) {
+    const zr = re[k];
+    const zi = im[k];
+    const cr = re[(n - k) % n];
+    const ci = -im[(n - k) % n];
+    // Z = A + jB with A, B Hermitian: A = (Z[k] + conj(Z[n-k])) / 2, B = (Z[k] - conj(Z[n-k])) / (2j)
+    A.re[k] = 0.5 * (zr + cr);
+    A.im[k] = 0.5 * (zi + ci);
+    B.re[k] = 0.5 * (zi - ci);
+    B.im[k] = -0.5 * (zr - cr);
+  }
+  return { A, B };
+}
+
+// PHAT-weighted correlation at integer up-sampled lags -maxLag..maxLag (inclusive) by direct summation over the band bins.
+// Identical to the inverse transform of the zero-padded, up-sampled band spectrum, without computing the whole transform.
+function bandCorrelation(X, Y, { n, fs, band, lo, hi, maxLag }) {
+  const big = n * UPSAMPLE;
+  const count = 2 * maxLag + 1;
+  const out = new Float64Array(count);
+  for (let k = Math.max(1, lo); k <= hi; k++) {
+    const cr = X.re[k] * Y.re[k] + X.im[k] * Y.im[k];
+    const ci = X.im[k] * Y.re[k] - X.re[k] * Y.im[k];
+    const m = Math.hypot(cr, ci) || 1;
+    const xr = cr / m;
+    const xi = ci / m;
+    const theta = (2 * Math.PI * k) / big;
+    const dr = Math.cos(theta);
+    const di = Math.sin(theta);
+    let pr = Math.cos(theta * maxLag);
+    let pi = -Math.sin(theta * maxLag);
+    for (let l = 0; l < count; l++) {
+      out[l] += xr * pr - xi * pi;
+      const nr = pr * dr - pi * di;
+      pi = pr * di + pi * dr;
+      pr = nr;
+    }
+  }
+  const scale = 2 / big;
+  for (let l = 0; l < count; l++) out[l] *= scale;
+  return out;
+}
+
+// Peak of a lag correlation (lags -maxLag-1 .. maxLag+1 stored) with parabolic refinement, as gccPhat does.
+function peakTdoa(corr, maxLag, fsUp) {
+  let best = -Infinity;
+  let bestLag = 0;
+  for (let l = -maxLag; l <= maxLag; l++) {
+    const v = corr[l + maxLag + 1];
+    if (v > best) {
+      best = v;
+      bestLag = l;
+    }
+  }
+  const ym = corr[bestLag - 1 + maxLag + 1];
+  const yp = corr[bestLag + 1 + maxLag + 1];
+  const denom = ym - 2 * best + yp;
+  const frac = denom === 0 ? 0 : (0.5 * (ym - yp)) / denom;
+  return { tdoa_s: (bestLag + frac) / fsUp, peak: best };
+}
+
+/** TDOAs of the six mic pairs for one window: two packed FFTs for four mics, band-limited direct correlation at the needed lags. */
+function windowTdoas(mics, startSample, endSample, { fs, band, maxLagS }) {
+  const len = endSample - startSample;
+  const n = nextPow2(len * 2);
+  const lo = Math.max(1, Math.ceil((band[0] * n) / fs));
+  const hi = Math.min(n / 2 - 1, Math.floor((band[1] * n) / fs));
+  const fsUp = fs * UPSAMPLE;
+  const maxLag = Math.ceil(maxLagS * fsUp) + UPSAMPLE;
+  const p01 = pairSpectra(mics[0], mics[1], startSample, endSample, n, lo, hi);
+  const p23 = pairSpectra(mics[2], mics[3], startSample, endSample, n, lo, hi);
+  const spec = [p01.A, p01.B, p23.A, p23.B];
+  return MIC_PAIRS.map(([i, j]) => peakTdoa(bandCorrelation(spec[i], spec[j], { n, fs, band, lo, hi, maxLag: maxLag + 1 }), maxLag, fsUp));
+}
+
 function solve3(m, v) {
   const a = m.map((row, i) => [...row, v[i]]);
   for (let i = 0; i < 3; i++) {
@@ -106,12 +196,9 @@ export function estimateBearing({ mics, positions, startSample, endSample, fs, c
   const spacing = Math.max(...MIC_PAIRS.map(([i, j]) => distance(positions[i], positions[j])));
   const rows = [];
   const rhs = [];
-  for (const [i, j] of MIC_PAIRS) {
-    const { tdoa_s } = gccPhat(
-      { signal: mics[i], start: startSample, end: endSample },
-      { signal: mics[j], start: startSample, end: endSample },
-      { fs, band, maxLagS: spacing / c }
-    );
+  const tdoas = windowTdoas(mics, startSample, endSample, { fs, band, maxLagS: spacing / c });
+  for (const [pairIdx, [i, j]] of MIC_PAIRS.entries()) {
+    const { tdoa_s } = tdoas[pairIdx];
     // t_i - t_j = -(p_i - p_j).u / c  =>  (p_j - p_i).u = c * tdoa
     rows.push([positions[j][0] - positions[i][0], positions[j][1] - positions[i][1], positions[j][2] - positions[i][2]]);
     rhs.push(c * tdoa_s);
