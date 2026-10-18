@@ -24,6 +24,7 @@ let results = null;
 const hiddenNodes = new Set(); // nodes hidden from the map only; they still take part in the simulation
 let tool = 'select';
 let selected = null; // { type: 'node'|'source'|'building', id }
+let hover = null; // { id, sx, sy } node under the pointer
 let selected2 = null; // shift-click: second selection, so a node and a source can be shown together
 let pathFocus = null; // { nodeId, sourceId } chosen by clicking a result row
 let view = { cx: 0, cy: 0, scale: 4 };
@@ -355,9 +356,14 @@ function niceStep(minWorld) {
   return 1e6;
 }
 
+const traceNodeIds = () =>
+  $('showAllTraces').checked
+    ? new Set(scenario.nodes.filter((n) => !hiddenNodes.has(n.id)).map((n) => n.id))
+    : new Set([selected, selected2].filter((x) => x?.type === 'node').map((x) => x.id));
+
 // Back-traced bearings of the selected nodes (solid: first stretch, dashed: after a reflection) and the top 3 candidates as hollow rings.
 function drawBacktrace(dpr) {
-  const selNodes = new Set([selected, selected2].filter((x) => x?.type === 'node').map((x) => x.id));
+  const selNodes = traceNodeIds();
   const selSource = [selected, selected2].find((x) => x?.type === 'source')?.id;
   mctx.save();
   mctx.font = `${11 * dpr}px sans-serif`;
@@ -473,6 +479,7 @@ function drawMap() {
     if ($('showBacktrace').checked) drawBacktrace(dpr);
     mctx.globalAlpha = 1;
   }
+  drawHoverTooltip(dpr);
 
   // Scale bar
   const barM = niceStep(80 * dpr / view.scale);
@@ -623,19 +630,40 @@ function drawCone(node, n, dpr) {
   }
   mctx.setLineDash([]);
   mctx.lineWidth = 1;
+}
 
-  const deg = (v) => (v < 10 ? v.toFixed(1) : v.toFixed(0));
-  const text = `\u00b1${deg(u)}\u00b0  err ${deg(step.azimuth_error_deg)}\u00b0${wrong ? ' !' : ''}${overlapped ? '  \u26a0 overlap' : invalid ? '  (\u00b1 not valid)' : ''}`;
-  const lx = ox + Math.cos(-az) * len * 0.62;
-  const ly = oy + Math.sin(-az) * len * 0.62;
+const degText = (v) => (v < 10 ? v.toFixed(1) : v.toFixed(0));
+
+// Error readout for a node, shown while hovering it.
+function nodeErrorText(node) {
+  const lines = [];
+  for (const r of results || []) {
+    const n = r.nodes.find((x) => x.node_id === node.id);
+    const step = n && currentStep(n);
+    if (!step) continue;
+    const wrong = step.azimuth_error_deg > step.uncertainty_deg;
+    const note = n.overlapped_with?.length ? '  overlap' : !n.uncertainty_valid ? '  (\u00b1 not valid)' : '';
+    lines.push(`${r.source_id}: \u00b1${degText(step.uncertainty_deg)}\u00b0  err ${degText(step.azimuth_error_deg)}\u00b0${wrong ? ' !' : ''}${note}`);
+  }
+  return lines.length ? [node.id, ...lines] : [node.id, 'no bearing'];
+}
+
+function drawHoverTooltip(dpr) {
+  if (!hover || drag) return;
+  const node = scenario.nodes.find((n) => n.id === hover.id);
+  if (!node || hiddenNodes.has(node.id)) return;
+  const lines = nodeErrorText(node);
   mctx.font = `${11 * dpr}px monospace`;
-  const w = mctx.measureText(text).width + 8 * dpr;
-  const x = lx - w / 2;
-  const y = ly - 8 * dpr;
-  mctx.fillStyle = wrong ? ACCENT : 'rgba(0,0,0,0.75)';
-  mctx.fillRect(x, y, w, 16 * dpr);
-  mctx.fillStyle = wrong ? '#000' : ACCENT;
-  mctx.fillText(text, x + 4 * dpr, y + 12 * dpr);
+  const w = Math.max(...lines.map((l) => mctx.measureText(l).width)) + 12 * dpr;
+  const h = lines.length * 15 * dpr + 6 * dpr;
+  const x = Math.min(hover.sx + 14 * dpr, map.width - w - 4 * dpr);
+  const y = Math.min(hover.sy + 14 * dpr, map.height - h - 4 * dpr);
+  mctx.fillStyle = 'rgba(0,0,0,0.85)';
+  mctx.fillRect(x, y, w, h);
+  mctx.strokeStyle = ACCENT;
+  mctx.strokeRect(x, y, w, h);
+  mctx.fillStyle = ACCENT;
+  lines.forEach((l, i) => mctx.fillText(l, x + 6 * dpr, y + (i + 1) * 15 * dpr - 2 * dpr));
 }
 
 // Mics are ~10 cm apart, far below one pixel at map scale, so a magnified top-down inset is drawn beside the node.
@@ -1219,7 +1247,12 @@ map.addEventListener('pointerdown', (e) => {
   renderInspector();
 });
 map.addEventListener('pointermove', (e) => {
-  if (!drag) return;
+  if (!drag) {
+    const { sx, sy } = pointerWorld(e);
+    const h = pick(sx, sy);
+    hover = h?.type === 'node' ? { id: h.id, sx, sy } : null;
+    return;
+  }
   const { sx, sy, w: [wx, wy] } = pointerWorld(e);
   if (drag.kind === 'bnew') {
     drag.x1 = snap(wx);
@@ -1251,6 +1284,7 @@ map.addEventListener('pointermove', (e) => {
     markEdited();
   }
 });
+map.addEventListener('pointerleave', () => (hover = null));
 map.addEventListener('pointerup', () => {
   if (drag?.kind === 'section') {
     const [ax, ay] = sectionLine.a;
@@ -1763,7 +1797,7 @@ function draw3d() {
     scenario,
     results,
     dpr,
-    selectedNodes: new Set([selected, selected2].filter((x) => x?.type === 'node').map((x) => x.id)),
+    selectedNodes: traceNodeIds(),
     hiddenNodes,
     showBacktrace: $('showBacktrace').checked,
     showRays: $('showCones').checked,
