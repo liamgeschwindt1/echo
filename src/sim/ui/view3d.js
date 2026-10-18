@@ -84,7 +84,7 @@ export function createView3d(canvas) {
   }
 
   /** opts: { scenario, results, selectedNodes:Set, hiddenNodes:Set, showBacktrace, showRays, dpr } */
-  function draw({ scenario, results, selectedNodes = new Set(), hiddenNodes = new Set(), showBacktrace = true, showRays = true, dpr = 1 }) {
+  function draw({ scenario, results, selectedNodes = new Set(), hiddenNodes = new Set(), showBacktrace = true, showRays = true, rings = [], slice = 1.5, dpr = 1 }) {
     const W = canvas.width;
     const H = canvas.height;
     if (!fitted) fitScene(scenario);
@@ -180,6 +180,49 @@ export function createView3d(canvas) {
         ctx.fill();
       }
       label(p, src.id, '#fff');
+    }
+
+    // Waves: a ring on the slice plane (as in 2D, clipped by buildings/faces) plus the sphere's outline facing the camera.
+    const camAz = Math.atan2(eye[1] - cam.target[1], eye[0] - cam.target[0]);
+    for (const ring of rings) {
+      if (ring.alpha <= 0.02) continue;
+      const [cx, cy, cz] = ring.center;
+      const poly = (pts, rgba, width) => {
+        ctx.strokeStyle = rgba;
+        ctx.lineWidth = width * dpr;
+        ctx.beginPath();
+        let run = false;
+        for (const q of pts) {
+          const s = q && P(q);
+          if (!s) {
+            run = false;
+            continue;
+          }
+          if (run) ctx.lineTo(s[0], s[1]);
+          else ctx.moveTo(s[0], s[1]);
+          run = true;
+        }
+        ctx.stroke();
+      };
+      const N = 96;
+      const flat = [];
+      for (let i = 0; i <= N; i++) {
+        const th = (2 * Math.PI * i) / N;
+        const q = [cx + ring.rho * Math.cos(th), cy + ring.rho * Math.sin(th), slice];
+        flat.push(!ring.valid || ring.valid(q) ? q : null);
+      }
+      poly(flat, `rgba(${ring.tint},${ring.alpha.toFixed(3)})`, 1.5);
+      if (ring.sphere !== false && !ring.valid) {
+        const R = Math.hypot(ring.rho, cz - slice);
+        const arc = [];
+        for (let i = 0; i <= N; i++) {
+          const th = (2 * Math.PI * i) / N;
+          const h = R * Math.cos(th);
+          const z = cz + R * Math.sin(th);
+          arc.push(z < 0 ? null : [cx + h * Math.cos(camAz + Math.PI / 2), cy + h * Math.sin(camAz + Math.PI / 2), z]);
+        }
+        poly(arc, `rgba(${ring.tint},${(ring.alpha * 0.35).toFixed(3)})`, 1);
+      }
     }
 
     for (const r of results || []) {

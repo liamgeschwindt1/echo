@@ -704,11 +704,12 @@ function strokeRing(cx, cy, rho, valid, dpr) {
   mctx.stroke();
 }
 
-// Direct rings are cut off behind buildings (no diffraction); reflected rings start at the wall faces and travel out from the mirror image.
-function drawRings(dpr) {
-  if (!scenario.sources.length) return;
+// Wavefront rings shared by the 2D map and the 3D view. Direct rings are cut off behind buildings (no diffraction);
+// reflected rings start at the wall faces and travel out from the mirror image. center is the source or its image.
+function collectRings() {
+  const out = [];
+  if (!scenario.sources.length) return out;
   const c = speedOfSound(scenario.settings.temperature_c);
-  const styled = $('grain').checked;
   const floorPa = dbToPa(scenario.settings.noise_floor_db_spl);
   const slice = scenario.settings.slice_height_m;
   const boxes = scenario.buildings.map(buildingBox);
@@ -720,19 +721,11 @@ function drawRings(dpr) {
     const p = sourcePosition(s);
     const gainPa = clipGainPa(samples, FS, s.level_1m_db);
     const maxRings = Math.max(20, Math.round(150 / Math.max(1, speed)));
-    const style = (r, tint, scale) => {
-      const db = 20 * Math.log10(r.amp / floorPa);
-      const alpha = Math.min(1, db / 60) * scale;
-      if (alpha <= 0.02) return false;
-      mctx.strokeStyle = `rgba(${tint},${alpha.toFixed(3)})`;
-      mctx.lineWidth = (styled ? 1 + 3 * (1 - Math.min(r.centroid, 4000) / 4000) : 1.5) * dpr;
-      mctx.setLineDash(styled && r.flatness > 0.2 ? [2 * dpr, (1 + 4 * r.flatness) * dpr] : []);
-      return true;
-    };
     const base = { analysis: a, startS: s.start_s, t, c, floorPa };
+    const alphaOf = (r, scale) => Math.min(1, (20 * Math.log10(r.amp / floorPa)) / 60) * scale;
     const direct = wavefrontRings({ ...base, gainPa, dz: p[2] - slice, maxRings });
     const visible = boxes.length ? (P) => !segmentBlocked(p, [P[0], P[1], slice], boxes) : null;
-    for (const r of direct) if (style(r, '255,255,255', 1)) strokeRing(p[0], p[1], r.radius, visible, dpr);
+    for (const r of direct) out.push({ center: p, rho: r.radius, r, alpha: alphaOf(r, 1), tint: '255,255,255', valid: visible });
     if (showRefl) {
       for (const img of reflectionsFor(s)) {
         // dz uses the image height: the ground image sits at -z_source, wall images at their mirrored heights.
@@ -740,12 +733,24 @@ function drawRings(dpr) {
         const ground = img.seq.length === 1 && img.seq[0].kind === 'ground';
         // An arc exists only where the specular reflection point lies on the finite face, height range included.
         const valid = (P) => !!traceReflection(p, [P[0], P[1], slice], img.seq, img.images, boxes);
-        const tint = ground ? '150,150,150' : '200,200,200';
-        for (const r of rings) if (style(r, tint, ground ? 0.7 : 0.85)) strokeRing(img.image[0], img.image[1], r.radius, valid, dpr);
+        for (const r of rings) out.push({ center: img.image, rho: r.radius, r, alpha: alphaOf(r, ground ? 0.7 : 0.85), tint: ground ? '150,150,150' : '200,200,200', valid });
       }
     }
-    mctx.setLineDash([]);
   }
+  return out;
+}
+
+function drawRings(dpr) {
+  const styled = $('grain').checked;
+  for (const ring of collectRings()) {
+    if (ring.alpha <= 0.02) continue;
+    const { r } = ring;
+    mctx.strokeStyle = `rgba(${ring.tint},${ring.alpha.toFixed(3)})`;
+    mctx.lineWidth = (styled ? 1 + 3 * (1 - Math.min(r.centroid, 4000) / 4000) : 1.5) * dpr;
+    mctx.setLineDash(styled && r.flatness > 0.2 ? [2 * dpr, (1 + 4 * r.flatness) * dpr] : []);
+    strokeRing(ring.center[0], ring.center[1], ring.rho, ring.valid, dpr);
+  }
+  mctx.setLineDash([]);
 }
 
 const snap = (v, q = 0.5) => Math.round(v / q) * q;
@@ -1750,7 +1755,9 @@ function draw3d() {
     selectedNodes: new Set([selected, selected2].filter((x) => x?.type === 'node').map((x) => x.id)),
     hiddenNodes,
     showBacktrace: $('showBacktrace').checked,
-    showRays: $('showCones').checked
+    showRays: $('showCones').checked,
+    rings: $('showWaves3d').checked ? collectRings() : [],
+    slice: scenario.settings.slice_height_m
   });
 }
 
