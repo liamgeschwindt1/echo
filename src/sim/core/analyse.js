@@ -33,7 +33,10 @@ function snrBroadbandDb(signal, a, b, settings) {
 
 // Active window: first to last frame where the source's own in-band power is window_snr_db above the noise, padded.
 function activeWindow(own, noiseP, thresholdDb, padS, spreadS, lengthS) {
-  const thr = noiseP * 10 ** (thresholdDb / 10);
+  let peak = 0;
+  if (noiseP === 0) for (const power of own) peak = Math.max(peak, power);
+  // Noise-free FFT filtering has small tails; use a -60 dB relative analysis floor, never alter mic samples.
+  const thr = noiseP > 0 ? noiseP * 10 ** (thresholdDb / 10) : peak * 1e-6;
   let a = -1;
   let b = -1;
   for (let f = 0; f < own.length; f++) {

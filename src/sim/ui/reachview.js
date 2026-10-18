@@ -109,6 +109,7 @@ export function createReachView({ $, getScenario, getClips, ensureClip, getBound
       if (active !== token || version !== revision) return;
       grid = result.grid;
       section = result.section && { ...result.section, scenario: result.scenario };
+      sectionSignature = '';
       stale = false;
       $('showReach').checked = true;
       $('sideView').hidden = !section;

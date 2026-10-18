@@ -25,3 +25,21 @@ test('noise-off analysis keeps audible bearings finite and silent sources unhear
     if (result.fix?.position) assert.ok(result.fix.position.every(Number.isFinite));
   }
 });
+
+test('noise-free filtering tails do not make separated clips unresolved overlaps', () => {
+  const scenario = defaultScenario();
+  Object.assign(scenario.settings, { noise_off: true, air_absorption: false, ground_reflectivity: 0 });
+  scenario.nodes = [newNode('n1', 10, 0)];
+  scenario.sources = [
+    { ...newSource('s1', 'burst', 0, 0, 90), start_s: 0.1 },
+    { ...newSource('s2', 'burst', 0, 0, 90), start_s: 0.7 }
+  ];
+  const clip = Float32Array.from({ length: 4800 }, (_, i) =>
+    (Math.sin(2 * Math.PI * 500 * i / 48000) + Math.sin(2 * Math.PI * 1100 * i / 48000)) * Math.sin(Math.PI * i / 4799) ** 2);
+  const rendered = renderScenario(scenario, new Map([['burst', clip]]), { lengthS: 1.2 });
+  const results = analyseScenario(scenario, rendered, new Map([['burst', 0.1]]));
+  for (const result of results) {
+    assert.notEqual(result.nodes[0].localisation_status, 'unresolved_overlap');
+    assert.deepEqual(result.nodes[0].overlapped_with, []);
+  }
+});

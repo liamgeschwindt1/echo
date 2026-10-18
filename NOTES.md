@@ -80,7 +80,7 @@ Before this update, audio, components and node diagnostics already used `geometr
 
 The backtrace now has one implementation. Audio, diagnostics, ring visibility, the reach field and side view all obtain their paths from `findPaths`. Image enumeration only proposes sphere cross-sections; every drawn arc sample is validated by the finder, including finite face bounds, height, blocking and the cap. Cached screen-space visibility probes cull invisible candidates; narrow features below the 8-pixel probe spacing can be omitted, but illuminated arc samples still receive an exact path check. Candidate-only queries are used only when the maximum possible path count cannot reach the global cap. Ground and mixed ground/wall images are included; the first ground image has height `-z_source`.
 
-The production spectral summation and default microphone signals were deliberately preserved. The new noise-off switch bypasses ambient and self-noise; it does not subtract noise after rendering. Analysis handles infinite noise-free SNR and silent sources without NaNs.
+The production spectral summation and default microphone signals were deliberately preserved. The new noise-off switch bypasses ambient and self-noise; it does not subtract noise after rendering. Analysis handles infinite noise-free SNR and silent sources without NaNs. Noise-free active-window detection uses a −60 dB power floor relative to each contribution's peak to avoid treating insignificant FFT-filter tails as overlapping events; this is an analysis-only convention and never changes microphone samples.
 
 ### Reach map and side view
 
