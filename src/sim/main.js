@@ -482,10 +482,18 @@ function drawPaths(dpr) {
     const pts = [start, ...p.hits, end].map((q) => toScreen(q[0], q[1]));
     mctx.strokeStyle = picked ? ACCENT : `rgba(255,255,255,${alpha.toFixed(2)})`;
     mctx.lineWidth = (picked ? 2.5 : 1) * dpr;
+    // Diffracted paths are dashed so they differ from the solid reflection polylines.
+    mctx.setLineDash(p.type === 'diffracted' ? [8 * dpr, 4 * dpr] : []);
     mctx.beginPath();
     pts.forEach(([x, y], k) => (k ? mctx.lineTo(x, y) : mctx.moveTo(x, y)));
     mctx.stroke();
-    if (p.type !== 'direct') {
+    mctx.setLineDash([]);
+    if (p.type === 'diffracted') {
+      const [ex, ey] = toScreen(p.image[0], p.image[1]);
+      mctx.strokeStyle = picked ? ACCENT : '#ddd';
+      mctx.lineWidth = dpr;
+      mctx.strokeRect(ex - 3 * dpr, ey - 3 * dpr, 6 * dpr, 6 * dpr);
+    } else if (p.type !== 'direct') {
       const [ix, iy] = toScreen(p.image[0], p.image[1]);
       mctx.strokeStyle = picked ? ACCENT : '#aaa';
       mctx.lineWidth = dpr;

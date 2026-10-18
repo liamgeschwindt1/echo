@@ -99,6 +99,9 @@
         <select id="s_reflection_order"><option value="0">0: ground only (original)</option><option value="1">1: one bounce</option><option value="2">2: two bounces</option></select>
       </label>
       <label>Block direct path behind buildings <input id="s_block_direct_behind_buildings" type="checkbox" /></label>
+      <label>Diffraction
+        <select id="s_diffraction_order"><option value="0">0: off (hard block)</option><option value="1">1: over one edge</option></select>
+      </label>
       <label>Picked-path tolerance (°) <input id="s_picked_path_tolerance_deg" class="mono" type="number" step="1" /></label>
       <label>Sound during playback (1x speed only) <select id="listen"><option value="dry">Sources, as recorded</option><option value="off">Off</option></select></label>
       <div class="actions"><button id="settingsClose">Done</button></div>
@@ -117,7 +120,8 @@
       <h3>Limits of this simulation</h3>
       <ul>
         <li>Free field plus the ground and any buildings you add. Buildings are axis-aligned concrete boxes with one placeholder absorption (0.03, not measured). Only the vertical faces and the ground reflect; roofs block sound but do not reflect.</li>
-        <li>There is no diffraction. A building between a source and a node removes the direct path completely (a pessimistic worst case), and there is no transmission through walls. Real facades reflect less cleanly than flat boxes.</li>
+        <li>Diffraction is off by default. When on, it is first order only: one bend over a building corner or roof edge, no double diffraction around two corners. The loss formula is an engineering approximation fitted for thin screens, and the loss steps at the shadow boundary because it is applied only to blocked paths. The wave rings do not diffract.</li>
+        <li>With diffraction off, a building between a source and a node removes the direct path completely (a pessimistic worst case), and there is no transmission through walls. Real facades reflect less cleanly than flat boxes.</li>
         <li>The wave rings stop behind buildings (no diffraction) and reflect off the vertical faces up to the reflection order. They are drawn on one horizontal slice and are stylised.</li>
         <li>Uniform air, no wind, static sources.</li>
         <li>Source levels, ground reflectivity and the SPL-to-dBFS constant are placeholders until confirmed.</li>

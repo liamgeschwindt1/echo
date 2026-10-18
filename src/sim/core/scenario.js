@@ -18,6 +18,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   min_snr_db: 6,
   reflection_order: 1,
   block_direct_behind_buildings: true,
+  diffraction_order: 0,
   picked_path_tolerance_deg: 5,
   window_snr_db: 3,
   window_pad_ms: 10,

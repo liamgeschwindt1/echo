@@ -2,7 +2,7 @@ import { airAbsorptionDbPerM, dbToPa, digitalPerPa, speedOfSound } from './physi
 import { irfft, nextPow2, rfft } from './dsp.js';
 import { micPositions } from './mics.js';
 import { gaussian, pinkNoise, streamFor, whiteNoise } from './rng.js';
-import { computePathTable, findPaths } from './geometry.js';
+import { computePathTable, diffractionLossDb, findPaths } from './geometry.js';
 import { computeActivity } from './activity.js';
 
 const LEVEL_WINDOW_S = 0.125;
@@ -92,6 +92,8 @@ export function addSourceSpectrum(ctx, si, pathList, accRe, accIm, pathFilter = 
     const g0 = path.gain / Math.max(path.length, 1);
     const tau = src.start_s + path.delay_s;
     const lnAtt = (path.length * Math.LN10) / 20;
+    const diffracted = path.type === 'diffracted';
+    const delta = diffracted ? path.length - path.direct_distance : 0;
     const step = (2 * Math.PI * fs * tau) / n;
     const dr = Math.cos(step);
     const di = Math.sin(step);
@@ -108,7 +110,8 @@ export function addSourceSpectrum(ctx, si, pathList, accRe, accIm, pathFilter = 
         ci = cr * di + ci * dr;
         cr = nr;
       }
-      const g = g0 * Math.exp(-absorb[k] * lnAtt);
+      let g = g0 * Math.exp(-absorb[k] * lnAtt);
+      if (diffracted) g *= 10 ** (-diffractionLossDb(delta, (k * fs) / n, ctx.c) / 20);
       const c = cr * g;
       const s = ci * g;
       accRe[k] += X.re[k] * c + X.im[k] * s;

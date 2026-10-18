@@ -6,8 +6,46 @@ export const CONCRETE_ABSORPTION = 0.03;
 export const WALL_PRESSURE_FACTOR = Math.sqrt(1 - CONCRETE_ABSORPTION);
 export const MAX_PATHS_PER_MIC = 64;
 
+// ISO 9613-2 style single-diffraction attenuation: 3 + (C2 / lambda) * z, here C2 = 40 because the ground bounce is not added to
+// diffracted paths, capped at 20 dB for one edge. Written as 3 + 20 N with N = 2 z / lambda.
+export const DIFFRACTION_CAP_DB = 20;
+export function diffractionLossDb(delta, f, c) {
+  const n = (2 * Math.max(delta, 0) * f) / c;
+  return Math.min(10 * Math.log10(3 + 20 * n), DIFFRACTION_CAP_DB);
+}
+
+function buildingEdges(b) {
+  const { min, max } = buildingBox(b);
+  const h = max[2];
+  const edges = [['sw', min[0], min[1]], ['se', max[0], min[1]], ['ne', max[0], max[1]], ['nw', min[0], max[1]]].map(([n, x, y]) => ({ id: `${b.id}:corner-${n}`, a: [x, y, 0], b: [x, y, h] }));
+  edges.push(
+    { id: `${b.id}:roof-south`, a: [min[0], min[1], h], b: [max[0], min[1], h] },
+    { id: `${b.id}:roof-north`, a: [min[0], max[1], h], b: [max[0], max[1], h] },
+    { id: `${b.id}:roof-west`, a: [min[0], min[1], h], b: [min[0], max[1], h] },
+    { id: `${b.id}:roof-east`, a: [max[0], min[1], h], b: [max[0], max[1], h] }
+  );
+  return edges;
+}
+
+// Point on the edge segment with the shortest source -> point -> mic length (the sum of distances is convex along the edge).
+function shortestEdgePoint(src, mic, a, b) {
+  const at = (t) => [a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1]), a[2] + t * (b[2] - a[2])];
+  const len = (t) => distance(src, at(t)) + distance(at(t), mic);
+  let lo = 0;
+  let hi = 1;
+  const phi = (Math.sqrt(5) - 1) / 2;
+  for (let i = 0; i < 50; i++) {
+    const m1 = hi - phi * (hi - lo);
+    const m2 = lo + phi * (hi - lo);
+    if (len(m1) < len(m2)) hi = m2;
+    else lo = m1;
+  }
+  return at((lo + hi) / 2);
+}
+
 // Written into every export so nobody mistakes the placeholders for measurements.
 export const simConstants = () => ({
+  diffraction: { formula: '10 log10(3 + 20 N), N = 2 delta / lambda, capped at 20 dB', c2_equivalent: 40, cap_db: DIFFRACTION_CAP_DB, placeholder: true, note: 'engineering approximation, first order only' },
   concrete_absorption: { value: CONCRETE_ABSORPTION, placeholder: true, note: 'one broadband energy coefficient for every concrete face, not measured' },
   wall_pressure_factor: { value: WALL_PRESSURE_FACTOR, placeholder: true },
   max_paths_per_mic: MAX_PATHS_PER_MIC
@@ -188,6 +226,20 @@ export function findPaths(src, mic, { settings, buildings = [], surfaces, c }) {
     }
   }
   const direct = paths.filter((p) => p.type === 'direct');
+  // First-order diffraction over building edges, only when the direct path is blocked.
+  if (directBlocked && (settings.diffraction_order ?? 0) >= 1) {
+    const straight = distance(src, mic);
+    for (const [bi, b] of buildings.entries()) {
+      // Legs are checked against the other buildings only: the diffracting building is treated as a screen at that edge.
+      const others = boxes.filter((_, i) => i !== bi);
+      for (const edge of buildingEdges(b)) {
+        const e = shortestEdgePoint(src, mic, edge.a, edge.b);
+        if (segmentBlocked(src, e, others) || segmentBlocked(e, mic, others)) continue;
+        const length = distance(src, e) + distance(e, mic);
+        paths.push({ type: 'diffracted', surfaces: [edge.id], length, gain: 1, image: e, hits: [e], direct_distance: straight });
+      }
+    }
+  }
   const rest = paths.filter((p) => p.type !== 'direct').sort((a, b) => a.length - b.length);
   const capped = rest.length + direct.length > MAX_PATHS_PER_MIC;
   const kept = [...direct, ...rest.slice(0, MAX_PATHS_PER_MIC - direct.length)];

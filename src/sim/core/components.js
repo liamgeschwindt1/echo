@@ -3,7 +3,7 @@ import { irfft } from './dsp.js';
 import { addSourceSpectrum, commonNoise, micGainFor, noiseForMic, prepareRender } from './render.js';
 
 export const COMPONENT_MODES = ['by_source', 'by_path', 'noise'];
-const PATH_TYPES = ['direct', 'ground', 'wall'];
+const PATH_TYPES = ['direct', 'ground', 'wall', 'diffracted'];
 
 function pathSeries(ctx, ni, mi, filterFor, sourceIndices) {
   const { bins, n, total } = ctx;

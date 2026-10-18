@@ -193,7 +193,7 @@ export function createMicView(host) {
     specKey = '';
   }
 
-  const colourFor = (s, i) => (s.id === 'noise' ? '#555' : s.id === 'wall' ? host.accent : s.id === 'ground' ? '#9a9a9a' : s.id === 'direct' ? '#fff' : mode === 'by_source' ? (i % 5 === 3 ? host.accent : SHADES[i % SHADES.length]) : '#fff');
+  const colourFor = (s, i) => (s.id === 'noise' ? '#555' : s.id === 'wall' ? host.accent : s.id === 'diffracted' ? '#d8d8d8' : s.id === 'ground' ? '#9a9a9a' : s.id === 'direct' ? '#fff' : mode === 'by_source' ? (i % 5 === 3 ? host.accent : SHADES[i % SHADES.length]) : '#fff');
 
   function drawTraces() {
     const info = ctxInfo();
