@@ -27,3 +27,35 @@ From the **true** geometry: `[start + r/c - 20 ms, start + clip_duration + r/c +
 ## Regression baseline
 
 Three fixed scenes (`test/golden-scenes.js`) were rendered with the pre-change code and their fingerprints stored in `test/golden/golden.json` (signals) and `test/golden/golden-legacy-analysis.json` (bearings). `test/sim-golden.test.js` checks the signals within 1e-6 (relative) for `reflection_order` 0, 1, 2 and default, with no buildings. The legacy bearing check is skipped only if `GOLDEN_ANALYSIS=off`; it is expected to be re-baselined in phase 3 because windows, SNR and uncertainty change on purpose.
+
+## Formulas and definitions (after this work)
+
+**snr_db**: mean in-band (200-1600 Hz, raised-cosine edges 20 % wide) power of the source's *own* contribution (all paths summed) at mic 1, over its active window, divided by the mean in-band power of ambient plus self noise at mic 1 (measured on the generated noise). `snr_direct_db` uses the direct path only. `snr_broadband_db` is the old definition (total mic-1 power in the window, broadband). `heard` is `snr_db >= min_snr_db`.
+
+**Active window**: first to last 10 ms frame where the source's own in-band power is `window_snr_db` (3 dB, placeholder) above the noise, padded by `window_pad_ms` (10, placeholder) and extended at the end by the path delay spread. Overlaps with other sources' windows are reported (`overlapped_with`, `overlap_s`, `level_diff_db`). With overlap, localisation uses the largest non-overlapped part of at least `min_window_ms` (30, placeholder); otherwise `localisation_status: "unresolved_overlap"`, `reliable: false`, and that node is left out of the position fix (my choice).
+
+**uncertainty_deg** (1 sigma, azimuth): Carter / Cramer-Rao delay variance for a flat band-limited signal, `(1-g2) / (2 T g2 (4 pi^2/3)(f2^3-f1^3))` with `g2 = (s/(1+s))^2`, per-mic timing error `sigma_tau/sqrt(2)`, then a least-squares plane-wave fit: `var(az) = c^2 var_t / (cos^2(el) * sum_k((p_k - mean p).e_az)^2)`. A floor of 1/8 of a quarter-step of the up-sampled correlation applies (fitted to the calibration run, so a placeholder). `uncertainty_valid` is false when the picked path is not direct or the overlap was unresolved.
+
+**Elevation**: flat arrays report `elevation_raw_deg` (magnitude, null when the fit was impossible and clamped), `elevation_deg` (assumed below), `elevation_sign_assumed: true`, `elevation_confidence` ("low" near the horizon or when clamped). Tetrahedron arrays solve the sign (tested).
+
+## Results of the checks
+
+1. **Regression**: signals identical within 1e-6 for orders 0, 1, 2 and default (`test/sim-golden.test.js`). Bearings changed on purpose (new windows): clean click sources moved 0.0 to 0.4 degrees; tone sources moved by up to 56 degrees because tones plus the ground bounce are multipath-sensitive. Old values are kept in `test/golden/golden-legacy-analysis.json`; the new baseline is `golden-phase3.json`.
+2. **One-wall mirror**: direct 30.20 m, reflected 50.12 m, delay difference 58.5 ms, level -4.53 dB (test passes at 0.05 dB). Render also checked.
+3. **Blocked direct path**: `direct_blocked` true, no direct component in the By-path render, `first_arrival_s` is the earliest reflection.
+4. **Placement**: rejected inside a building below its roofline (core and UI).
+5. **Determinism**: identical paths and signals for the same seed.
+6. **Mic view consistency**: direct arrivals within one sample of `start + r_k/c` at every mic; by-source amplitude ratio matches spreading loss; component sums equal the main render.
+7. **Overlap case** (`scripts/sim-overlap-check.mjs`, real clips): the horn is **not** flagged as overlapped with the fireworks. The ESC-50 horn clip is padded with silence, so its active window is 8.58-9.26 s; the fireworks' is 13.07-18.13 s. The old fixed 5 s window (8.57-13.64 s) did contain the fireworks onset: it reproduces the -22.3 degree result exactly. With the fireworks moved to 25 s the old method gives 28.7 degrees (true 27.6). The new method gives 27.6 (error 0.0) in both cases. So the hypothesis was right about the cause, but the cause was the window definition, not an overlap of real active windows.
+8. **SNR**: the horn's old 37.6 dB was inflated by the fireworks onset inside its 5 s window. New broadband figure for the horn is 21.2 dB; the fireworks' is 38.8 dB, same as before. In-band energy shares: horn 33 %, fireworks 78 %, so band-limiting is not the cause. It was a bug (window contamination), now fixed.
+9. **Uncertainty calibration** (`scripts/sim-uncertainty-calibration.mjs`, 10 scenes x 50 seeds): empirical-spread to stated ratio, noise only: 1.25 to 2.1 for click and burst scenes (median 1.97 over all ten), but **11 to 13 for the two pure-tone scenes** because the flat-band assumption fails for narrowband signals. With the ground bounce on, ratios are 1.8 to 3.5 (bias from the bounce is not in the formula). This does not meet "roughly 1 to 2" for tones or with the ground bounce. Before lowering the timing floor the median was 1.15 (noise only) and 1.52 (ground on) but the stated value was nearly constant (about 0.2 degrees) in every scene, so it did not track the signal; I chose the more honest version.
+10. **Sweeps** run with buildings and report the share of trials where a reflection was picked.
+11. **UI**: smoke-tested in headless Chromium (open, Create, select node, mic view, by-source components, add building by dragging, stale banner, wedges at several playhead times) with no console errors. Resize handles and delete were not exercised by script.
+
+## Not done or done differently
+
+- Alternative "earliest strong peak" estimator: not added (optional).
+- Stretch realism settings (heading error, gain mismatch, mic position error, correlated noise) exist in the scenario and render but have no UI controls.
+- Create time: about 11 s for the 3-node, 1-source demo in headless Chromium (progressive wedge analysis included). I did not measure the old time or the 4-node, 4-source, 6-building scene.
+- Info panel text for the new SNR definition was not updated.
+- Time-resolved wedges: bearings from growing windows (20 ms doubling) are precomputed at Create and shown by the playhead.

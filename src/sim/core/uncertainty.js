@@ -1,6 +1,9 @@
 const UPSAMPLE = 4;
 // Placeholder, not measured: PHAT is less efficient than the Cramer-Rao bound; 1 means "no extra penalty".
 export const PHAT_EFFICIENCY_PENALTY = 1;
+// Empirical: the best-case spread in the calibration run (about 0.04 degrees, i.e. 0.19 us of timing) is about 1/8 of a quarter-step
+// of the up-sampled correlation. Fitted to that run, so treat it as a placeholder.
+export const INTERPOLATION_FLOOR_FRACTION = 0.125;
 
 /**
  * One-sigma azimuth uncertainty in degrees.
@@ -19,7 +22,7 @@ export function azimuthUncertaintyDeg({ snrDb, windowS, band, positions, azimuth
   const bandTerm = ((4 * Math.PI ** 2) / 3) * (f2 ** 3 - f1 ** 3);
   const varTau = (1 - g2) / (2 * Math.max(windowS, 1e-4) * g2 * bandTerm);
   // Sub-sample interpolation cannot resolve a delay better than a fraction of the up-sampled step.
-  const floorTau = 1 / (fs * UPSAMPLE * Math.sqrt(12));
+  const floorTau = (INTERPOLATION_FLOOR_FRACTION * 1) / (fs * UPSAMPLE * Math.sqrt(12));
   const sigmaTau = Math.max(Math.sqrt(varTau) * PHAT_EFFICIENCY_PENALTY, floorTau);
   const sigmaT = sigmaTau / Math.SQRT2;
   const az = (azimuthDeg * Math.PI) / 180;
