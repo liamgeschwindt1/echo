@@ -182,48 +182,55 @@ export function createView3d(canvas) {
       label(p, src.id, '#fff');
     }
 
-    // Waves: a ring on the slice plane (as in 2D, clipped by buildings/faces) plus the sphere's outline facing the camera.
-    const camAz = Math.atan2(eye[1] - cam.target[1], eye[0] - cam.target[0]);
-    for (const ring of rings) {
-      if (ring.alpha <= 0.02) continue;
+    // Waves are spheres about the source (or its mirror image): latitude rings and meridians, clipped at the ground,
+    // hidden where buildings block them (direct) or where no valid reflection point exists (reflected).
+    const poly = (pts, rgba, width) => {
+      ctx.strokeStyle = rgba;
+      ctx.lineWidth = width * dpr;
+      ctx.beginPath();
+      let run = false;
+      for (const q of pts) {
+        const s = q && P(q);
+        if (!s) {
+          run = false;
+          continue;
+        }
+        if (run) ctx.lineTo(s[0], s[1]);
+        else ctx.moveTo(s[0], s[1]);
+        run = true;
+      }
+      ctx.stroke();
+    };
+    const live = rings.filter((r) => r.alpha > 0.02);
+    const stride = Math.max(1, Math.ceil(live.length / 60));
+    const N = 48;
+    live.forEach((ring, k) => {
+      if (k % stride) return;
       const [cx, cy, cz] = ring.center;
-      const poly = (pts, rgba, width) => {
-        ctx.strokeStyle = rgba;
-        ctx.lineWidth = width * dpr;
-        ctx.beginPath();
-        let run = false;
-        for (const q of pts) {
-          const s = q && P(q);
-          if (!s) {
-            run = false;
-            continue;
-          }
-          if (run) ctx.lineTo(s[0], s[1]);
-          else ctx.moveTo(s[0], s[1]);
-          run = true;
-        }
-        ctx.stroke();
+      const R = Math.hypot(ring.rho, cz - slice);
+      const at = (lat, lon) => {
+        const q = [cx + R * Math.cos(lat) * Math.cos(lon), cy + R * Math.cos(lat) * Math.sin(lon), cz + R * Math.sin(lat)];
+        return q[2] < 0 || (ring.valid && !ring.valid(q)) ? null : q;
       };
-      const N = 96;
-      const flat = [];
-      for (let i = 0; i <= N; i++) {
-        const th = (2 * Math.PI * i) / N;
-        const q = [cx + ring.rho * Math.cos(th), cy + ring.rho * Math.sin(th), slice];
-        flat.push(!ring.valid || ring.valid(q) ? q : null);
+      const tint = (a) => `rgba(${ring.tint},${(ring.alpha * a).toFixed(3)})`;
+      for (const lat of [-0.6, 0, 0.6, 1.1]) {
+        poly(Array.from({ length: N + 1 }, (_, i) => at(lat, (2 * Math.PI * i) / N)), tint(0.45), 1);
       }
-      poly(flat, `rgba(${ring.tint},${ring.alpha.toFixed(3)})`, 1.5);
-      if (ring.sphere !== false && !ring.valid) {
-        const R = Math.hypot(ring.rho, cz - slice);
-        const arc = [];
-        for (let i = 0; i <= N; i++) {
-          const th = (2 * Math.PI * i) / N;
-          const h = R * Math.cos(th);
-          const z = cz + R * Math.sin(th);
-          arc.push(z < 0 ? null : [cx + h * Math.cos(camAz + Math.PI / 2), cy + h * Math.sin(camAz + Math.PI / 2), z]);
-        }
-        poly(arc, `rgba(${ring.tint},${(ring.alpha * 0.35).toFixed(3)})`, 1);
+      for (let m = 0; m < 6; m++) {
+        const lon = (Math.PI * m) / 3;
+        poly(Array.from({ length: N + 1 }, (_, i) => at(-Math.PI / 2 + (Math.PI * i) / N, lon)), tint(0.3), 1);
       }
-    }
+      // The slice plane cut, as in the 2D map
+      poly(
+        Array.from({ length: N * 2 + 1 }, (_, i) => {
+          const th = (2 * Math.PI * i) / (N * 2);
+          const q = [cx + ring.rho * Math.cos(th), cy + ring.rho * Math.sin(th), slice];
+          return !ring.valid || ring.valid(q) ? q : null;
+        }),
+        tint(1),
+        1.5
+      );
+    });
 
     for (const r of results || []) {
       // Bearing rays in 3D (elevation below the horizon is assumed for flat arrays)

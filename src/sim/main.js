@@ -735,7 +735,7 @@ function collectRings() {
     const base = { analysis: a, startS: s.start_s, t, c, floorPa };
     const alphaOf = (r, scale) => Math.min(1, (20 * Math.log10(r.amp / floorPa)) / 60) * scale;
     const direct = wavefrontRings({ ...base, gainPa, dz: p[2] - slice, maxRings });
-    const visible = boxes.length ? (P) => !segmentBlocked(p, [P[0], P[1], slice], boxes) : null;
+    const visible = boxes.length ? (P) => !segmentBlocked(p, [P[0], P[1], P[2] ?? slice], boxes) : null;
     for (const r of direct) out.push({ center: p, rho: r.radius, r, alpha: alphaOf(r, 1), tint: '255,255,255', valid: visible });
     if (showRefl) {
       for (const img of reflectionsFor(s)) {
@@ -743,7 +743,7 @@ function collectRings() {
         const rings = wavefrontRings({ ...base, gainPa: gainPa * img.gain, dz: img.image[2] - slice, maxRings: Math.round(maxRings / 2) });
         const ground = img.seq.length === 1 && img.seq[0].kind === 'ground';
         // An arc exists only where the specular reflection point lies on the finite face, height range included.
-        const valid = (P) => !!traceReflection(p, [P[0], P[1], slice], img.seq, img.images, boxes);
+        const valid = (P) => !!traceReflection(p, [P[0], P[1], P[2] ?? slice], img.seq, img.images, boxes);
         for (const r of rings) out.push({ center: img.image, rho: r.radius, r, alpha: alphaOf(r, ground ? 0.7 : 0.85), tint: ground ? '150,150,150' : '200,200,200', valid });
       }
     }
