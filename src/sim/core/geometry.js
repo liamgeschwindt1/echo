@@ -102,6 +102,40 @@ function* sequences(surfaces, maxOrder) {
 
 const outward = (p, s) => (p[s.axis] - s.offset) * s.sign > EPS;
 
+export const imagesFor = (src, seq) => seq.reduce((acc, s) => [...acc, mirror(acc[acc.length - 1], s)], [src]);
+
+/**
+ * Reflection points for one ordered surface sequence from src to mic, or null if the specular path is
+ * missing a face, comes from the wrong side, or is blocked. images = imagesFor(src, seq).
+ */
+export function traceReflection(src, mic, seq, images, boxes) {
+  const hits = new Array(seq.length);
+  let next = mic;
+  for (let k = seq.length - 1; k >= 0; k--) {
+    const h = hit(next, images[k + 1], seq[k]);
+    if (!h) return null;
+    hits[k] = h;
+    next = h;
+  }
+  const pts = [src, ...hits, mic];
+  for (let k = 0; k < seq.length; k++) if (!(outward(pts[k], seq[k]) && outward(pts[k + 2], seq[k]))) return null;
+  for (let k = 0; k + 1 < pts.length; k++) if (segmentBlocked(pts[k], pts[k + 1], boxes)) return null;
+  return hits;
+}
+
+/** Wall-only reflection images (no ground) up to the given order, for drawing reflected wavefronts. */
+export function reflectionImages(src, buildings, order) {
+  if (order < 1 || !buildings.length) return [];
+  const walls = buildSurfaces(buildings).filter((s) => s.kind === 'wall');
+  const out = [];
+  for (const idx of sequences(walls.map((_, i) => i), order)) {
+    const seq = idx.map((i) => walls[i]);
+    const images = imagesFor(src, seq);
+    out.push({ seq, images, image: images[images.length - 1], gain: WALL_PRESSURE_FACTOR ** seq.length });
+  }
+  return out;
+}
+
 /**
  * All valid paths from a source to one point (a mic, or the array centre).
  * Returns { paths, directBlocked, capped }. Each path: type, surfaces, length (m), gain (spreading excluded),

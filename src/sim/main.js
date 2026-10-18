@@ -1,5 +1,5 @@
 import { defaultScenario, newNode, newSource, newBuilding, placementErrors, validateScenario, scenarioLengthS, renderLengthS, sourcePosition } from './core/scenario.js';
-import { insideBuilding, buildingBox, simConstants } from './core/geometry.js';
+import { insideBuilding, buildingBox, simConstants, segmentBlocked, traceReflection, reflectionImages } from './core/geometry.js';
 import { speedOfSound, dbToPa } from './core/physics.js';
 import { clipGainPa } from './core/render.js';
 import { analyseClip, wavefrontRings } from './core/wavefront.js';
@@ -249,6 +249,7 @@ $('loadFile').addEventListener('change', async (e) => {
     status = 'edit';
     selected = selected2 = pathFocus = null;
     syncSettingsInputs();
+    for (const s of scenario.sources) ensureClip(s.clip).catch((err) => console.error(err));
     $('banner').hidden = true;
     renderInspector();
   } catch (err) {
@@ -598,37 +599,81 @@ function drawMicGlyph(n, sx, sy, dpr) {
   mctx.font = `${11 * dpr}px monospace`;
 }
 
+const reflCache = new Map();
+function reflectionsFor(s) {
+  const order = scenario.settings.reflection_order;
+  const key = `${s.id}|${sourcePosition(s)}|${order}|${JSON.stringify(scenario.buildings)}`;
+  if (!reflCache.has(key)) {
+    if (reflCache.size > 40) reflCache.clear();
+    reflCache.set(key, reflectionImages(sourcePosition(s), scenario.buildings, order));
+  }
+  return reflCache.get(key);
+}
+
+// One wavefront ring about (cx, cy) in world metres; valid(P) says which parts of the circle exist (null = all of it).
+function strokeRing(cx, cy, rho, valid, dpr) {
+  const [sx, sy] = toScreen(cx, cy);
+  const rpx = rho * view.scale;
+  mctx.beginPath();
+  if (!valid) {
+    mctx.arc(sx, sy, rpx, 0, 7);
+    mctx.stroke();
+    return;
+  }
+  const step = Math.max((2 * Math.PI) / 720, (5 * dpr) / Math.max(rpx, 1));
+  const W = map.width;
+  const H = map.height;
+  let run = false;
+  for (let th = 0; th <= 2 * Math.PI + step; th += step) {
+    const px = cx + rho * Math.cos(th);
+    const py = cy + rho * Math.sin(th);
+    const [x, y] = toScreen(px, py);
+    if (x < -40 || x > W + 40 || y < -40 || y > H + 40 || !valid([px, py])) {
+      run = false;
+      continue;
+    }
+    if (run) mctx.lineTo(x, y);
+    else mctx.moveTo(x, y);
+    run = true;
+  }
+  mctx.stroke();
+}
+
+// Direct rings are cut off behind buildings (no diffraction); reflected rings start at the wall faces and travel out from the mirror image.
 function drawRings(dpr) {
   if (!scenario.sources.length) return;
   const c = speedOfSound(scenario.settings.temperature_c);
   const styled = $('grain').checked;
   const floorPa = dbToPa(scenario.settings.noise_floor_db_spl);
+  const slice = scenario.settings.slice_height_m;
+  const boxes = scenario.buildings.map(buildingBox);
+  const showRefl = $('showReflWaves').checked && boxes.length;
   for (const s of scenario.sources) {
     const a = analyses.get(s.clip);
     const samples = clips.get(s.clip);
     if (!a || !samples) continue;
     const p = sourcePosition(s);
-    const [sx, sy] = toScreen(p[0], p[1]);
-    const rings = wavefrontRings({
-      analysis: a,
-      gainPa: clipGainPa(samples, FS, s.level_1m_db),
-      startS: s.start_s,
-      t,
-      c,
-      dz: p[2] - scenario.settings.slice_height_m,
-      floorPa,
-      maxRings: Math.max(20, Math.round(150 / Math.max(1, speed)))
-    });
-    for (const r of rings) {
+    const gainPa = clipGainPa(samples, FS, s.level_1m_db);
+    const maxRings = Math.max(20, Math.round(150 / Math.max(1, speed)));
+    const style = (r, tint, scale) => {
       const db = 20 * Math.log10(r.amp / floorPa);
-      const alpha = Math.min(1, db / 60);
-      if (alpha <= 0.02) continue;
-      mctx.strokeStyle = `rgba(255,255,255,${alpha.toFixed(3)})`;
+      const alpha = Math.min(1, db / 60) * scale;
+      if (alpha <= 0.02) return false;
+      mctx.strokeStyle = `rgba(${tint},${alpha.toFixed(3)})`;
       mctx.lineWidth = (styled ? 1 + 3 * (1 - Math.min(r.centroid, 4000) / 4000) : 1.5) * dpr;
       mctx.setLineDash(styled && r.flatness > 0.2 ? [2 * dpr, (1 + 4 * r.flatness) * dpr] : []);
-      mctx.beginPath();
-      mctx.arc(sx, sy, r.radius * view.scale, 0, 7);
-      mctx.stroke();
+      return true;
+    };
+    const base = { analysis: a, startS: s.start_s, t, c, floorPa };
+    const direct = wavefrontRings({ ...base, gainPa, dz: p[2] - slice, maxRings });
+    const visible = boxes.length ? (P) => !segmentBlocked(p, [P[0], P[1], slice], boxes) : null;
+    for (const r of direct) if (style(r, '255,255,255', 1)) strokeRing(p[0], p[1], r.radius, visible, dpr);
+    if (showRefl) {
+      for (const img of reflectionsFor(s)) {
+        const rings = wavefrontRings({ ...base, gainPa: gainPa * img.gain, dz: img.image[2] - slice, maxRings: Math.round(maxRings / 2) });
+        const valid = (P) => !!traceReflection(p, [P[0], P[1], slice], img.seq, img.images, boxes);
+        for (const r of rings) if (style(r, '200,200,200', 0.85)) strokeRing(img.image[0], img.image[1], r.radius, valid, dpr);
+      }
     }
     mctx.setLineDash([]);
   }
