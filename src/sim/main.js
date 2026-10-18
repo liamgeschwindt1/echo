@@ -1,4 +1,5 @@
-import { defaultScenario, newNode, newSource, validateScenario, scenarioLengthS, renderLengthS, sourcePosition } from './core/scenario.js';
+import { defaultScenario, newNode, newSource, newBuilding, placementErrors, validateScenario, scenarioLengthS, renderLengthS, sourcePosition } from './core/scenario.js';
+import { insideBuilding, buildingBox, simConstants } from './core/geometry.js';
 import { speedOfSound, dbToPa } from './core/physics.js';
 import { clipGainPa } from './core/render.js';
 import { analyseClip, wavefrontRings } from './core/wavefront.js';
@@ -19,7 +20,9 @@ let rendered = null;
 let results = null;
 const hiddenNodes = new Set(); // nodes hidden from the map only; they still take part in the simulation
 let tool = 'select';
-let selected = null; // { type: 'node'|'source', id }
+let selected = null; // { type: 'node'|'source'|'building', id }
+let selected2 = null; // shift-click: second selection, so a node and a source can be shown together
+let pathFocus = null; // { nodeId, sourceId } chosen by clicking a result row
 let view = { cx: 0, cy: 0, scale: 4 };
 let tl = { pxPerS: 40, x0: 0 };
 let t = 0;
@@ -70,10 +73,7 @@ async function init() {
     libraryError = String(err?.message || err);
   }
   loadDemo();
-  for (const [k, v] of Object.entries(scenario.settings)) {
-    const el = $(`s_${k}`);
-    if (el && typeof v === 'number') el.value = v;
-  }
+  syncSettingsInputs();
   renderInspector();
   requestAnimationFrame(frame);
 }
@@ -180,8 +180,9 @@ $('infoClose').addEventListener('click', () => $('infoDlg').close());
 function removeSelected() {
   if (!selected) return;
   if (selected.type === 'node') scenario.nodes = scenario.nodes.filter((n) => n.id !== selected.id);
+  else if (selected.type === 'building') scenario.buildings = scenario.buildings.filter((b) => b.id !== selected.id);
   else scenario.sources = scenario.sources.filter((s) => s.id !== selected.id);
-  selected = null;
+  selected = selected2 = pathFocus = null;
   markEdited();
 }
 document.addEventListener('keydown', (e) => {
@@ -192,9 +193,18 @@ document.addEventListener('keydown', (e) => {
 
 for (const el of document.querySelectorAll('[id^="s_"]')) {
   el.addEventListener('change', () => {
-    scenario.settings[el.id.slice(2)] = Number(el.value);
+    scenario.settings[el.id.slice(2)] = el.type === 'checkbox' ? el.checked : Number(el.value);
     markEdited();
   });
+}
+
+function syncSettingsInputs() {
+  for (const [k, v] of Object.entries(scenario.settings)) {
+    const el = $(`s_${k}`);
+    if (!el) continue;
+    if (el.type === 'checkbox') el.checked = !!v;
+    else if (typeof v === 'number') el.value = v;
+  }
 }
 
 $('speed').addEventListener('input', (e) => {
@@ -221,8 +231,8 @@ $('loadFile').addEventListener('change', async (e) => {
     rendered = results = null;
     hiddenNodes.clear();
     status = 'edit';
-    selected = null;
-    for (const [k, v] of Object.entries(scenario.settings)) if ($(`s_${k}`)) $(`s_${k}`).value = v;
+    selected = selected2 = pathFocus = null;
+    syncSettingsInputs();
     $('banner').hidden = true;
     renderInspector();
   } catch (err) {
@@ -232,7 +242,7 @@ $('loadFile').addEventListener('change', async (e) => {
 });
 $('exportBtn').addEventListener('click', () => {
   if (!results) return;
-  download('results.json', JSON.stringify({ app: 'echo-sim', scenario, results }, null, 2));
+  download('results.json', JSON.stringify({ app: 'echo-sim', schema: '0.2', constants: simConstants(), scenario, results }, null, 2));
 });
 
 function download(name, text) {
@@ -255,6 +265,8 @@ for (const b of document.querySelectorAll('[data-tool]')) {
 $('createBtn').addEventListener('click', async () => {
   if (status === 'rendering') return;
   if (!scenario.nodes.length || !scenario.sources.length) return alert('Add at least one node and one source.');
+  const bad = placementErrors(scenario);
+  if (bad.length) return alert(bad.join('\n'));
   try {
     for (const s of scenario.sources) await ensureClip(s.clip);
   } catch (err) {
@@ -325,13 +337,14 @@ function drawMap() {
   mctx.stroke();
 
   drawRings(dpr);
+  drawBuildings(dpr);
 
   const stale = status === 'stale';
   mctx.font = `${11 * dpr}px monospace`;
   for (const n of scenario.nodes) {
     if (hiddenNodes.has(n.id)) continue;
     const [sx, sy] = toScreen(n.position[0], n.position[1]);
-    mctx.strokeStyle = selected?.id === n.id ? ACCENT : '#fff';
+    mctx.strokeStyle = selected?.id === n.id || selected2?.id === n.id ? ACCENT : '#fff';
     mctx.strokeRect(sx - 5 * dpr, sy - 5 * dpr, 10 * dpr, 10 * dpr);
     if ($('showMics').checked) drawMicGlyph(n, sx, sy, dpr);
     mctx.fillStyle = '#888';
@@ -340,13 +353,15 @@ function drawMap() {
   for (const s of scenario.sources) {
     const p = sourcePosition(s);
     const [sx, sy] = toScreen(p[0], p[1]);
-    mctx.fillStyle = selected?.id === s.id ? ACCENT : '#fff';
+    mctx.fillStyle = selected?.id === s.id || selected2?.id === s.id ? ACCENT : '#fff';
     mctx.beginPath();
     mctx.arc(sx, sy, 4 * dpr, 0, 7);
     mctx.fill();
     mctx.fillStyle = '#888';
     mctx.fillText(`${s.id} ${s.clip}`, sx + 8 * dpr, sy + 12 * dpr);
   }
+
+  if ($('showPaths').checked) drawPaths(dpr);
 
   if (results) {
     mctx.globalAlpha = stale ? 0.3 : 1;
@@ -378,6 +393,88 @@ function drawMap() {
   mctx.lineTo(16 * dpr + barM * view.scale, H - 16 * dpr);
   mctx.stroke();
   mctx.fillText(`${barM} m`, 16 * dpr, H - 22 * dpr);
+}
+
+function drawBuildings(dpr) {
+  mctx.font = `${11 * dpr}px monospace`;
+  const rect = (b) => {
+    const { min, max } = buildingBox(b);
+    const [x0, y0] = toScreen(min[0], max[1]);
+    const [x1, y1] = toScreen(max[0], min[1]);
+    return [x0, y0, x1 - x0, y1 - y0];
+  };
+  for (const b of scenario.buildings) {
+    const [x, y, w, h] = rect(b);
+    const sel = selected?.type === 'building' && selected.id === b.id;
+    mctx.fillStyle = 'rgba(60,60,60,0.92)';
+    mctx.fillRect(x, y, w, h);
+    mctx.strokeStyle = sel ? ACCENT : '#fff';
+    mctx.lineWidth = dpr;
+    mctx.strokeRect(x, y, w, h);
+    mctx.fillStyle = '#ddd';
+    mctx.fillText(`${b.id}  ${b.size[2]} m`, x + 4 * dpr, y + 13 * dpr);
+    if (sel) {
+      mctx.fillStyle = ACCENT;
+      for (const [cx, cy] of buildingCorners(b)) {
+        const [px, py] = toScreen(cx, cy);
+        mctx.fillRect(px - 4 * dpr, py - 4 * dpr, 8 * dpr, 8 * dpr);
+      }
+    }
+  }
+  if (drag?.kind === 'bnew') {
+    const x = Math.min(drag.x0, drag.x1);
+    const y = Math.max(drag.y0, drag.y1);
+    const [sx, sy] = toScreen(x, y);
+    mctx.setLineDash([6 * dpr, 4 * dpr]);
+    mctx.strokeStyle = '#fff';
+    mctx.strokeRect(sx, sy, Math.abs(drag.x1 - drag.x0) * view.scale, Math.abs(drag.y1 - drag.y0) * view.scale);
+    mctx.setLineDash([]);
+  }
+}
+
+// Which node/source pair to draw paths for: a clicked result row, or a shift-click pair of one node and one source.
+function focusedPair() {
+  if (pathFocus) return pathFocus;
+  const pair = [selected, selected2].filter(Boolean);
+  const node = pair.find((s) => s.type === 'node');
+  const source = pair.find((s) => s.type === 'source');
+  return node && source ? { nodeId: node.id, sourceId: source.id } : null;
+}
+
+// Every valid path source -> reflection points -> node. Brightness shows level relative to the strongest; the picked path is amber.
+function drawPaths(dpr) {
+  const pair = focusedPair();
+  if (!pair || !results || !rendered?.paths) return;
+  const ni = scenario.nodes.findIndex((n) => n.id === pair.nodeId);
+  const si = scenario.sources.findIndex((s) => s.id === pair.sourceId);
+  if (ni < 0 || si < 0 || hiddenNodes.has(pair.nodeId)) return;
+  const table = rendered.paths[ni]?.centre[si]?.paths;
+  const nodeResult = results[si]?.nodes[ni];
+  if (!table || !nodeResult) return;
+  const start = sourcePosition(scenario.sources[si]);
+  const end = scenario.nodes[ni].position;
+  mctx.globalAlpha = status === 'stale' ? 0.3 : 1;
+  table.forEach((p, i) => {
+    const picked = i === nodeResult.picked_path_index;
+    const level = nodeResult.paths?.[i]?.level_db_re_direct ?? 0;
+    const alpha = Math.min(1, Math.max(0.2, 1 + level / 30));
+    const pts = [start, ...p.hits, end].map((q) => toScreen(q[0], q[1]));
+    mctx.strokeStyle = picked ? ACCENT : `rgba(255,255,255,${alpha.toFixed(2)})`;
+    mctx.lineWidth = (picked ? 2.5 : 1) * dpr;
+    mctx.beginPath();
+    pts.forEach(([x, y], k) => (k ? mctx.lineTo(x, y) : mctx.moveTo(x, y)));
+    mctx.stroke();
+    if (p.type !== 'direct') {
+      const [ix, iy] = toScreen(p.image[0], p.image[1]);
+      mctx.strokeStyle = picked ? ACCENT : '#aaa';
+      mctx.lineWidth = dpr;
+      mctx.beginPath();
+      mctx.arc(ix, iy, 3 * dpr, 0, 7);
+      mctx.stroke();
+    }
+  });
+  mctx.lineWidth = 1;
+  mctx.globalAlpha = 1;
 }
 
 // Every wedge has the same on-screen length and no end cap, so its length never implies range. Truth stays on the source dot.
@@ -505,57 +602,147 @@ function drawRings(dpr) {
   }
 }
 
+const snap = (v, q = 0.5) => Math.round(v / q) * q;
+const note = (msg) => ($('statusLabel').textContent = msg);
+
+const buildingCorners = (b) => {
+  const { min, max } = buildingBox(b);
+  return [[min[0], min[1]], [max[0], min[1]], [max[0], max[1]], [min[0], max[1]]]; // sw, se, ne, nw
+};
+
+function pickBuilding(sx, sy, dpr) {
+  if (selected?.type === 'building') {
+    const b = scenario.buildings.find((x) => x.id === selected.id);
+    if (b) {
+      const i = buildingCorners(b).findIndex(([x, y]) => Math.hypot(toScreen(x, y)[0] - sx, toScreen(x, y)[1] - sy) < 9 * dpr);
+      if (i >= 0) return { type: 'building', id: b.id, corner: i };
+    }
+  }
+  for (let i = scenario.buildings.length - 1; i >= 0; i--) {
+    const { min, max } = buildingBox(scenario.buildings[i]);
+    const [x0, y0] = toScreen(min[0], max[1]);
+    const [x1, y1] = toScreen(max[0], min[1]);
+    if (sx >= x0 && sx <= x1 && sy >= y0 && sy <= y1) return { type: 'building', id: scenario.buildings[i].id };
+  }
+  return null;
+}
+
 function pick(sx, sy) {
   const dpr = window.devicePixelRatio || 1;
   const near = (p) => Math.hypot(toScreen(p[0], p[1])[0] - sx, toScreen(p[0], p[1])[1] - sy) < 12 * dpr;
   for (const s of scenario.sources) if (near(sourcePosition(s))) return { type: 'source', id: s.id };
   for (const n of scenario.nodes) if (!hiddenNodes.has(n.id) && near(n.position)) return { type: 'node', id: n.id };
-  return null;
+  return pickBuilding(sx, sy, dpr);
 }
 
-const find = (sel) => (sel.type === 'node' ? scenario.nodes : scenario.sources).find((o) => o.id === sel.id);
+const collections = () => ({ node: scenario.nodes, source: scenario.sources, building: scenario.buildings });
+const find = (sel) => collections()[sel.type].find((o) => o.id === sel.id);
 let drag = null;
 
-map.addEventListener('pointerdown', async (e) => {
+// Applies a building change only if no node or source would end up inside it.
+function applyBuilding(b, candidate) {
+  const list = scenario.buildings.map((x) => (x === b ? candidate : x));
+  if (placementErrors({ ...scenario, buildings: list }).length) return false;
+  Object.assign(b, candidate);
+  markEdited();
+  return true;
+}
+
+const pointerWorld = (e) => {
   const dpr = window.devicePixelRatio || 1;
   const r = map.getBoundingClientRect();
   const sx = (e.clientX - r.left) * dpr;
   const sy = (e.clientY - r.top) * dpr;
-  const hit = pick(sx, sy);
-  const [wx, wy] = toWorld(sx, sy);
+  return { sx, sy, w: toWorld(sx, sy) };
+};
+
+map.addEventListener('pointerdown', (e) => {
+  const { sx, sy, w: [wx, wy] } = pointerWorld(e);
+  const px = Math.round(wx * 10) / 10;
+  const py = Math.round(wy * 10) / 10;
   if (tool === 'node') {
-    scenario.nodes.push(newNode(`n${counter++}`, Math.round(wx * 10) / 10, Math.round(wy * 10) / 10));
+    if (insideBuilding([px, py, 5], scenario.buildings)) return note('A node cannot be placed inside a building.');
+    scenario.nodes.push(newNode(`n${counter++}`, px, py));
     selected = { type: 'node', id: scenario.nodes.at(-1).id };
+    selected2 = pathFocus = null;
     return markEdited();
   }
   if (tool === 'source') {
-    openClipPicker(Math.round(wx * 10) / 10, Math.round(wy * 10) / 10);
+    if (insideBuilding([px, py, 1.5], scenario.buildings)) return note('A source cannot be placed inside a building.');
+    return openClipPicker(px, py);
+  }
+  if (tool === 'building') {
+    drag = { kind: 'bnew', x0: snap(wx), y0: snap(wy), x1: snap(wx), y1: snap(wy) };
+    map.setPointerCapture(e.pointerId);
     return;
   }
-  selected = hit;
-  drag = hit ? { kind: 'obj' } : { kind: 'pan', sx, sy, cx: view.cx, cy: view.cy };
+  const hit = pick(sx, sy);
+  if (e.shiftKey && hit && hit.type !== 'building' && selected && selected.type !== 'building' && selected.type !== hit.type) {
+    selected2 = hit;
+    pathFocus = null;
+    return renderInspector();
+  }
+  selected2 = pathFocus = null;
+  selected = hit ? { type: hit.type, id: hit.id } : null;
+  if (!hit) drag = { kind: 'pan', sx, sy, cx: view.cx, cy: view.cy };
+  else if (hit.type !== 'building') drag = { kind: 'obj' };
+  else if (hit.corner !== undefined) {
+    const b = find(selected);
+    drag = { kind: 'bresize', fixed: buildingCorners(b)[(hit.corner + 2) % 4] };
+  } else {
+    const b = find(selected);
+    drag = { kind: 'bmove', dx: wx - b.position[0], dy: wy - b.position[1] };
+  }
   map.setPointerCapture(e.pointerId);
   renderInspector();
 });
 map.addEventListener('pointermove', (e) => {
   if (!drag) return;
-  const dpr = window.devicePixelRatio || 1;
-  const r = map.getBoundingClientRect();
-  const sx = (e.clientX - r.left) * dpr;
-  const sy = (e.clientY - r.top) * dpr;
-  if (drag.kind === 'pan') {
+  const { sx, sy, w: [wx, wy] } = pointerWorld(e);
+  if (drag.kind === 'bnew') {
+    drag.x1 = snap(wx);
+    drag.y1 = snap(wy);
+  } else if (drag.kind === 'pan') {
     view.cx = drag.cx - (sx - drag.sx) / view.scale;
     view.cy = drag.cy + (sy - drag.sy) / view.scale;
+  } else if (drag.kind === 'bmove') {
+    const b = find(selected);
+    applyBuilding(b, { ...b, position: [snap(wx - drag.dx), snap(wy - drag.dy)] });
+  } else if (drag.kind === 'bresize') {
+    const b = find(selected);
+    const [fx, fy] = drag.fixed;
+    const w = Math.max(1, Math.abs(snap(wx) - fx));
+    const d = Math.max(1, Math.abs(snap(wy) - fy));
+    const cx = fx + (snap(wx) >= fx ? w / 2 : -w / 2);
+    const cy = fy + (snap(wy) >= fy ? d / 2 : -d / 2);
+    applyBuilding(b, { ...b, position: [cx, cy], size: [w, d, b.size[2]] });
   } else if (selected) {
-    const [wx, wy] = toWorld(sx, sy);
     const o = find(selected);
     const pos = selected.type === 'node' ? o.position : sourcePosition(o);
-    pos[0] = Math.round(wx * 10) / 10;
-    pos[1] = Math.round(wy * 10) / 10;
+    const nx = Math.round(wx * 10) / 10;
+    const ny = Math.round(wy * 10) / 10;
+    if (insideBuilding([nx, ny, pos[2]], scenario.buildings)) return;
+    pos[0] = nx;
+    pos[1] = ny;
     markEdited();
   }
 });
-map.addEventListener('pointerup', () => (drag = null));
+map.addEventListener('pointerup', () => {
+  if (drag?.kind === 'bnew') {
+    const w = Math.abs(drag.x1 - drag.x0);
+    const d = Math.abs(drag.y1 - drag.y0);
+    if (w >= 2 && d >= 2) {
+      const nb = newBuilding(`b${counter++}`, (drag.x0 + drag.x1) / 2, (drag.y0 + drag.y1) / 2, w, d);
+      if (placementErrors({ ...scenario, buildings: [...scenario.buildings, nb] }).length) note('A building cannot cover a node or source.');
+      else {
+        scenario.buildings.push(nb);
+        selected = { type: 'building', id: nb.id };
+        markEdited();
+      }
+    }
+  }
+  drag = null;
+});
 map.addEventListener('wheel', (e) => {
   e.preventDefault();
   view.scale = Math.min(200, Math.max(0.2, view.scale * (e.deltaY < 0 ? 1.15 : 1 / 1.15)));
@@ -570,7 +757,16 @@ function numField(label, value, onSet, step = 0.1) {
   i.type = 'number';
   i.step = step;
   i.value = value;
-  i.addEventListener('change', () => { onSet(Number(i.value)); markEdited(); });
+  i.addEventListener('change', () => {
+    onSet(Number(i.value));
+    const bad = placementErrors(scenario);
+    if (bad.length) {
+      onSet(value);
+      note(`Rejected: ${bad[0]}`);
+      return renderInspector();
+    }
+    markEdited();
+  });
   l.append(i);
   return l;
 }
@@ -600,6 +796,19 @@ function renderInspector() {
   renderNodeToggles();
   if (!o) return;
   const h = (text) => Object.assign(document.createElement('h3'), { textContent: text });
+  if (selected.type === 'building') {
+    el.append(h(`Building ${o.id}`));
+    el.append(
+      numField('x (m)', o.position[0], (v) => (o.position[0] = v)),
+      numField('y (m)', o.position[1], (v) => (o.position[1] = v)),
+      numField('width (m)', o.size[0], (v) => (o.size[0] = Math.max(1, v))),
+      numField('depth (m)', o.size[1], (v) => (o.size[1] = Math.max(1, v))),
+      numField('height (m)', o.size[2], (v) => (o.size[2] = Math.max(1, v)))
+    );
+    el.append(Object.assign(document.createElement('div'), { className: 'muted', textContent: 'Concrete, absorption 0.03 (placeholder).' }));
+    el.append(removeButton());
+    return;
+  }
   if (selected.type === 'node') {
     el.append(h(`Node ${o.id}`));
     el.append(numField('x (m)', o.position[0], (v) => (o.position[0] = v)), numField('y (m)', o.position[1], (v) => (o.position[1] = v)));
@@ -690,8 +899,13 @@ function resultPanel(r) {
   const f = (v, d = 1) => (v == null ? 'n/a' : v.toFixed(d));
   const rows = r.nodes.map((n) => {
     const b = n.bearing;
-    const flags = [n.azimuth_error_deg > b?.uncertainty_deg ? 'wrong' : '', n.overlaps?.length ? `overlap ${n.overlaps.join(',')}` : ''].filter(Boolean).join(', ');
-    return `<tr><td>${n.node_id}</td><td>${f(n.range_m, 0)}</td><td>${f(n.snr_db)}</td><td>${n.heard ? 'yes' : 'no'}</td><td>${f(b?.uncertainty_deg, 0)}</td><td>${f(n.azimuth_error_deg)}</td><td>${flags}</td></tr>`;
+    const flags = [
+      n.azimuth_error_deg > b?.uncertainty_deg ? 'wrong' : '',
+      n.overlaps?.length ? `overlap ${n.overlaps.join(',')}` : '',
+      n.direct_blocked ? 'direct blocked' : ''
+    ].filter(Boolean).join(', ');
+    const focus = pathFocus?.nodeId === n.node_id && pathFocus?.sourceId === r.source_id ? ' class="focus"' : '';
+    return `<tr data-node="${n.node_id}"${focus}><td>${n.node_id}</td><td>${f(n.range_m, 0)}</td><td>${f(n.snr_db)}</td><td>${n.heard ? 'yes' : 'no'}</td><td>${f(b?.uncertainty_deg, 0)}</td><td>${f(n.azimuth_error_deg)}</td><td>${n.picked_path_type ?? '-'}</td><td>${flags}</td></tr>`;
   });
   const positionText = r.fix?.position
     ? r.fix.position.map((v) => v.toFixed(1)).join(', ')
@@ -701,10 +915,17 @@ function resultPanel(r) {
         ? 'heard by one node: direction only'
         : 'poorly conditioned (directions nearly parallel)';
   box.innerHTML = `<h3>Result</h3>
-    <table><tr><th>node</th><th>m</th><th>SNR dB</th><th>used</th><th>\u00b1\u00b0</th><th>az err \u00b0</th><th></th></tr>${rows.join('')}</table>
-    <p>Position: <span class="accent">${positionText}</span><br>
+    <table><tr><th>node</th><th>m</th><th>SNR dB</th><th>used</th><th>\u00b1\u00b0</th><th>az err \u00b0</th><th>path</th><th></th></tr>${rows.join('')}</table>
+    <p class="muted">Click a row to draw that node's paths on the map.</p>
+    <p>Position: <span class="accent">${positionText}</span>${r.fix?.fix_suspect ? ' <b>(suspect: a contributing node picked a reflection or has its direct path blocked)</b>' : ''}<br>
     Error: ${f(r.error_horizontal_m, 2)} m horizontal, ${f(r.error_3d_m, 2)} m 3D<br>
     Ray angle: ${f(r.fix?.max_angle_deg, 0)}\u00b0</p>`;
+  for (const tr of box.querySelectorAll('tr[data-node]')) {
+    tr.addEventListener('click', () => {
+      pathFocus = { nodeId: tr.dataset.node, sourceId: r.source_id };
+      renderInspector();
+    });
+  }
   return box;
 }
 
@@ -864,8 +1085,8 @@ $('sweepRun').addEventListener('click', async () => {
 
 function showSweep(param, rows) {
   const f = (v, d = 2) => (v == null ? 'n/a' : v.toFixed(d));
-  $('sweepOut').innerHTML = `<table><tr><th>${param || 'repeat'}</th><th>trials</th><th>fix rate</th><th>err med m</th><th>err p90 m</th><th>bearing med \u00b0</th><th>bearing p90 \u00b0</th></tr>${rows
-    .map((r) => `<tr><td>${r.value ?? '-'}</td><td>${r.trials}</td><td>${f(r.fix_rate)}</td><td>${f(r.error_3d_median_m)}</td><td>${f(r.error_3d_p90_m)}</td><td>${f(r.bearing_median_deg)}</td><td>${f(r.bearing_p90_deg)}</td></tr>`)
+  $('sweepOut').innerHTML = `<table><tr><th>${param || 'repeat'}</th><th>trials</th><th>fix rate</th><th>reflection picked</th><th>err med m</th><th>err p90 m</th><th>bearing med \u00b0</th><th>bearing p90 \u00b0</th></tr>${rows
+    .map((r) => `<tr><td>${r.value ?? '-'}</td><td>${r.trials}</td><td>${f(r.fix_rate)}</td><td>${f(r.picked_not_direct_rate)}</td><td>${f(r.error_3d_median_m)}</td><td>${f(r.error_3d_p90_m)}</td><td>${f(r.bearing_median_deg)}</td><td>${f(r.bearing_p90_deg)}</td></tr>`)
     .join('')}</table>`;
   const cv = $('sweepPlot');
   cv.hidden = rows.length < 2;

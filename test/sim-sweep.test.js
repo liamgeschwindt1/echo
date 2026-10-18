@@ -43,3 +43,13 @@ test('more nodes localise where one cannot', () => {
   assert.equal(rows[0].fix_rate, 0);
   assert.equal(rows[1].fix_rate, 1);
 });
+
+test('repeats and sweeps run with buildings present and report the reflection-picked rate (acceptance 10)', async () => {
+  const { newBuilding } = await import('../src/sim/core/scenario.js');
+  const s = base();
+  s.buildings = [newBuilding('b1', 30, 30, 30, 6, 15)];
+  s.sources[0] = { ...s.sources[0], keyframes: [{ t: 0, position: [25, 5, 1.5] }] };
+  const rows = sweep(s, clips, durations, { param: 'noise_floor_db_spl', values: [30, 60], seeds: 1 });
+  assert.equal(rows.length, 2);
+  for (const r of rows) assert.ok(r.picked_not_direct_rate >= 0 && r.picked_not_direct_rate <= 1);
+});

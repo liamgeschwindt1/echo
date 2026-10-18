@@ -1,8 +1,8 @@
-import { airAbsorptionDbPerM, dbToPa, digitalPerPa, distance, speedOfSound } from './physics.js';
+import { airAbsorptionDbPerM, dbToPa, digitalPerPa, speedOfSound } from './physics.js';
 import { irfft, nextPow2, rfft } from './dsp.js';
 import { micPositions } from './mics.js';
-import { pinkNoise, streamFor, whiteNoise } from './rng.js';
-import { sourcePosition } from './scenario.js';
+import { gaussian, pinkNoise, streamFor, whiteNoise } from './rng.js';
+import { computePathTable, findPaths } from './geometry.js';
 
 const LEVEL_WINDOW_S = 0.125;
 
@@ -23,14 +23,11 @@ export function clipGainPa(samples, sampleRate, level1mDb) {
   return rms > 0 ? dbToPa(level1mDb) / rms : 0;
 }
 
-// Direct plus ground-reflected path descriptors from a source to one mic.
+// Direct plus the single ground bounce, no buildings; for callers that only need free-field geometry.
 export function pathsTo(srcPos, micPos, settings) {
   const c = speedOfSound(settings.temperature_c);
-  const paths = [{ r: distance(srcPos, micPos), gain: 1, kind: 'direct' }];
-  if (settings.ground_reflectivity > 0) {
-    paths.push({ r: distance([srcPos[0], srcPos[1], -srcPos[2]], micPos), gain: settings.ground_reflectivity, kind: 'ground' });
-  }
-  return paths.map((p) => ({ ...p, delay_s: p.r / c }));
+  const free = { ...settings, reflection_order: 0, block_direct_behind_buildings: true };
+  return findPaths(srcPos, micPos, { settings: free, buildings: [], c }).paths.map((p) => ({ ...p, r: p.length, kind: p.type }));
 }
 
 function absorptionTable(bins, fs, n, settings) {
@@ -40,19 +37,30 @@ function absorptionTable(bins, fs, n, settings) {
   return t;
 }
 
-/**
- * Renders every mic signal for every node. Clips must already be at render_sample_rate.
- * clips: Map clipId -> Float32Array. Returns digital-float signals.
- */
-export function renderScenario(scenario, clips, { lengthS, onProgress } = {}) {
+// Optional realism: the simulated array differs from the one the estimator assumes. All zero by default.
+function trueMicPositions(node, ni, settings) {
+  const nominal = micPositions(node);
+  const heading = settings.heading_error_sigma_deg || 0;
+  const posSigma = (settings.mic_position_sigma_mm || 0) / 1000;
+  if (!heading && !posSigma) return nominal;
+  const rot = heading ? micPositions({ ...node, rotation_deg: (node.rotation_deg || 0) + heading * gaussian(streamFor(settings.seed, ni, 0, 11)) }) : nominal;
+  return rot.map((p, mi) => {
+    if (!posSigma) return p;
+    const r = streamFor(settings.seed, ni, mi, 12);
+    return [p[0] + posSigma * gaussian(r), p[1] + posSigma * gaussian(r), p[2] + posSigma * gaussian(r)];
+  });
+}
+
+const micGain = (settings, ni, mi) => (settings.mic_gain_sigma_db ? 10 ** ((settings.mic_gain_sigma_db * gaussian(streamFor(settings.seed, ni, mi, 13))) / 20) : 1);
+
+/** Everything the per-mic spectra need, computed once per render. */
+export function prepareRender(scenario, clips, lengthS) {
   const { settings } = scenario;
   const fs = settings.render_sample_rate;
   const total = Math.ceil(lengthS * fs);
   const n = nextPow2(total);
   const bins = n / 2 + 1;
-  const toDigital = digitalPerPa(settings.spl_ref_db, settings.dbfs_ref_db);
-  const absorb = absorptionTable(bins, fs, n, settings);
-
+  const c = speedOfSound(settings.temperature_c);
   const spectra = scenario.sources.map((src) => {
     const samples = clips.get(src.clip);
     if (!samples) throw new Error(`clip ${src.clip} not loaded`);
@@ -61,57 +69,99 @@ export function renderScenario(scenario, clips, { lengthS, onProgress } = {}) {
     for (let i = 0; i < samples.length; i++) scaled[i] = samples[i] * gain;
     return rfft(scaled, n);
   });
+  const truePositions = scenario.nodes.map((node, ni) => trueMicPositions(node, ni, settings));
+  const table = computePathTable(scenario, (node) => truePositions[scenario.nodes.indexOf(node)], c);
+  return {
+    scenario, settings, fs, total, n, bins, c, spectra, table, truePositions,
+    toDigital: digitalPerPa(settings.spl_ref_db, settings.dbfs_ref_db),
+    absorb: absorptionTable(bins, fs, n, settings)
+  };
+}
 
+/**
+ * Adds one source's spectrum, through the chosen paths, into the accumulators.
+ * pathFilter(path) selects which paths count (all, direct only, one type...). kMax limits the highest bin.
+ */
+export function addSourceSpectrum(ctx, si, pathList, accRe, accIm, pathFilter = null, kMax = ctx.bins - 2) {
+  const { fs, n, absorb } = ctx;
+  const src = ctx.scenario.sources[si];
+  const X = ctx.spectra[si];
+  for (const path of pathList) {
+    if (pathFilter && !pathFilter(path)) continue;
+    const g0 = path.gain / Math.max(path.length, 1);
+    const tau = src.start_s + path.delay_s;
+    const lnAtt = (path.length * Math.LN10) / 20;
+    const step = (2 * Math.PI * fs * tau) / n;
+    const dr = Math.cos(step);
+    const di = Math.sin(step);
+    let cr = 1;
+    let ci = 0;
+    const top = Math.min(kMax, ctx.bins - 2);
+    for (let k = 1; k <= top; k++) {
+      // Rotate incrementally, re-anchoring often enough to keep rounding drift negligible.
+      if (((k - 1) & 1023) === 0) {
+        cr = Math.cos(k * step);
+        ci = Math.sin(k * step);
+      } else {
+        const nr = cr * dr - ci * di;
+        ci = cr * di + ci * dr;
+        cr = nr;
+      }
+      const g = g0 * Math.exp(-absorb[k] * lnAtt);
+      const c = cr * g;
+      const s = ci * g;
+      accRe[k] += X.re[k] * c + X.im[k] * s;
+      accIm[k] += X.im[k] * c - X.re[k] * s;
+    }
+    accRe[0] += X.re[0] * g0;
+  }
+}
+
+/** Ambient and self noise for one mic, in Pascals, kept separate so sums keep the original order. */
+export function noiseForMic(ctx, ni, mi, common = null) {
+  const { settings, total } = ctx;
+  const amb = pinkNoise(streamFor(settings.seed, ni, mi, 1), total, dbToPa(settings.noise_floor_db_spl));
+  const rho = settings.noise_correlation || 0;
+  if (rho > 0 && common) {
+    const a = Math.sqrt(rho);
+    const b = Math.sqrt(1 - rho);
+    for (let i = 0; i < total; i++) amb[i] = a * common[i] + b * amb[i];
+  }
+  const self = whiteNoise(streamFor(settings.seed, ni, mi, 2), total, dbToPa(settings.mic_self_noise_db_spl));
+  return { amb, self };
+}
+
+export const commonNoise = (ctx, ni) =>
+  ctx.settings.noise_correlation > 0 ? pinkNoise(streamFor(ctx.settings.seed, ni, 0, 14), ctx.total, dbToPa(ctx.settings.noise_floor_db_spl)) : null;
+
+export const micGainFor = (ctx, ni, mi) => ctx.toDigital * micGain(ctx.settings, ni, mi);
+
+/**
+ * Renders every mic signal for every node. Clips must already be at render_sample_rate.
+ * clips: Map clipId -> Float32Array. Returns digital-float signals.
+ */
+export function renderScenario(scenario, clips, { lengthS, onProgress } = {}) {
+  const ctx = prepareRender(scenario, clips, lengthS);
+  const { total, n, bins } = ctx;
   const nodes = [];
   const jobs = scenario.nodes.length * 4;
   let done = 0;
   scenario.nodes.forEach((node, ni) => {
-    const positions = micPositions(node);
-    const mics = positions.map((mp, mi) => {
+    const common = commonNoise(ctx, ni);
+    const mics = ctx.truePositions[ni].map((_, mi) => {
       const accRe = new Float64Array(bins);
       const accIm = new Float64Array(bins);
-      scenario.sources.forEach((src, si) => {
-        const X = spectra[si];
-        const sp = sourcePosition(src);
-        for (const path of pathsTo(sp, mp, settings)) {
-          const g0 = path.gain / Math.max(path.r, 1);
-          const tau = src.start_s + path.delay_s;
-          const lnAtt = (path.r * Math.LN10) / 20;
-          const step = (2 * Math.PI * fs * tau) / n;
-          const dr = Math.cos(step);
-          const di = Math.sin(step);
-          let cr = 1;
-          let ci = 0;
-          for (let k = 1; k < bins - 1; k++) {
-            // Rotate incrementally, re-anchoring often enough to keep rounding drift negligible.
-            if (((k - 1) & 1023) === 0) {
-              cr = Math.cos(k * step);
-              ci = Math.sin(k * step);
-            } else {
-              const nr = cr * dr - ci * di;
-              ci = cr * di + ci * dr;
-              cr = nr;
-            }
-            const g = g0 * Math.exp(-absorb[k] * lnAtt);
-            const c = cr * g;
-            const s = ci * g;
-            accRe[k] += X.re[k] * c + X.im[k] * s;
-            accIm[k] += X.im[k] * c - X.re[k] * s;
-          }
-          accRe[0] += X.re[0] * g0;
-        }
-      });
+      scenario.sources.forEach((_, si) => addSourceSpectrum(ctx, si, ctx.table[ni].perMic[mi][si].paths, accRe, accIm));
       const full = irfft(accRe, accIm, n);
       const out = new Float32Array(total);
       for (let i = 0; i < total; i++) out[i] = full[i];
-
-      const amb = pinkNoise(streamFor(settings.seed, ni, mi, 1), total, dbToPa(settings.noise_floor_db_spl));
-      const self = whiteNoise(streamFor(settings.seed, ni, mi, 2), total, dbToPa(settings.mic_self_noise_db_spl));
-      for (let i = 0; i < total; i++) out[i] = (out[i] + amb[i] + self[i]) * toDigital;
+      const { amb, self } = noiseForMic(ctx, ni, mi, common);
+      const g = micGainFor(ctx, ni, mi);
+      for (let i = 0; i < total; i++) out[i] = (out[i] + amb[i] + self[i]) * g;
       onProgress?.(++done / jobs);
       return out;
     });
-    nodes.push({ id: node.id, mic_positions: positions, mics });
+    nodes.push({ id: node.id, mic_positions: micPositions(node), mic_positions_true: ctx.truePositions[ni], mics });
   });
-  return { sample_rate: fs, length: total, nodes };
+  return { sample_rate: ctx.fs, length: total, nodes, paths: ctx.table };
 }

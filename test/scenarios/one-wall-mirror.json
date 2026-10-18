@@ -1,0 +1,7 @@
+{
+  "version": "0.2",
+  "settings": { "temperature_c": 15, "air_absorption": false, "ground_reflectivity": 0, "reflection_order": 1, "noise_floor_db_spl": 20, "seed": 1 },
+  "nodes": [{ "id": "n1", "position": [30, 0, 5], "rotation_deg": 0, "mic_layout": "flat_square", "mic_spacing_m": 0.1 }],
+  "sources": [{ "id": "s1", "clip": "glass_breaking", "keyframes": [{ "t": 0, "position": [0, 0, 1.5] }], "level_1m_db": 100, "start_s": 0.2 }],
+  "buildings": [{ "id": "b1", "position": [-20, 0], "size": [20, 20, 15], "rotation_deg": 0 }]
+}

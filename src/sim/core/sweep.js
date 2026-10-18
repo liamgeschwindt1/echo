@@ -38,7 +38,17 @@ export function runTrials(scenario, clips, durations, { seeds, onTrial } = {}) {
     const results = analyseScenario(scn, rendered, durations);
     for (const r of results) {
       const bearingErr = r.nodes.filter((n) => n.bearing).map((n) => angleBetweenDeg(n.bearing.direction, unit(n.true_azimuth_deg, n.true_elevation_deg)));
-      trials.push({ seed: scn.settings.seed, source_id: r.source_id, localised: !!r.fix?.position, error_3d_m: r.error_3d_m, error_horizontal_m: r.error_horizontal_m, bearing_error_deg: bearingErr });
+      const heard = r.nodes.filter((n) => n.heard && n.bearing);
+      trials.push({
+        seed: scn.settings.seed,
+        source_id: r.source_id,
+        localised: !!r.fix?.position,
+        error_3d_m: r.error_3d_m,
+        error_horizontal_m: r.error_horizontal_m,
+        bearing_error_deg: bearingErr,
+        // True when any contributing node picked a path other than the direct one.
+        picked_not_direct: heard.some((n) => n.picked_path_type !== 'direct')
+      });
     }
     onTrial?.(i + 1, seeds);
   }
@@ -51,6 +61,7 @@ export function summarise(trials) {
   return {
     trials: trials.length,
     fix_rate: trials.length ? err.length / trials.length : 0,
+    picked_not_direct_rate: trials.length ? trials.filter((t) => t.picked_not_direct).length / trials.length : 0,
     error_3d_median_m: percentile(err, 50),
     error_3d_p90_m: percentile(err, 90),
     bearing_median_deg: percentile(bearing, 50),

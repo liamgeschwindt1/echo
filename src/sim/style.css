@@ -54,6 +54,8 @@ progress { accent-color: var(--accent); }
 #inspector summary { cursor: pointer; color: var(--dim); }
 #inspector table { width: 100%; border-collapse: collapse; font-size: 12px; }
 #inspector td, #inspector th { border-bottom: 1px solid var(--edge); padding: 4px 4px; text-align: left; }
+#inspector tr[data-node] { cursor: pointer; }
+#inspector tr.focus td { color: var(--accent); }
 #inspector .remove { margin-top: 18px; width: 100%; }
 
 dialog { background: #000; color: #fff; border: 1px solid #fff; border-radius: 10px; padding: 22px 24px; max-width: 600px; }

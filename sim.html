@@ -36,12 +36,14 @@
         <button data-tool="select" class="active">Move</button>
         <button data-tool="node">Add node</button>
         <button data-tool="source">Add source</button>
+        <button data-tool="building">Add building</button>
         <span class="grow"></span>
         <details class="menu up" id="displayMenu">
           <summary>Display</summary>
           <div class="menu-body">
             <label class="check"><input id="showCones" type="checkbox" checked /> Direction cones</label>
             <label class="check"><input id="showMics" type="checkbox" checked /> Mic arrays</label>
+            <label class="check"><input id="showPaths" type="checkbox" checked /> Show reflections</label>
             <label class="check"><input id="grain" type="checkbox" checked /> Tone and grain</label>
             <label>Slice height (m) <input id="s_slice_height_m" class="mono" type="number" step="0.5" /></label>
             <div class="menu-head">Nodes shown <span class="grow"></span><button id="nodesAll">all</button><button id="nodesNone">none</button></div>
@@ -65,6 +67,11 @@
       <label>Ground reflectivity (0-1) <input id="s_ground_reflectivity" class="mono" type="number" step="0.1" min="0" max="1" /></label>
       <label>Random seed <input id="s_seed" class="mono" type="number" step="1" /></label>
       <label>Minimum SNR to use a node (dB) <input id="s_min_snr_db" class="mono" type="number" step="1" /></label>
+      <label>Reflection order
+        <select id="s_reflection_order"><option value="0">0: ground only (original)</option><option value="1">1: one bounce</option><option value="2">2: two bounces</option></select>
+      </label>
+      <label>Block direct path behind buildings <input id="s_block_direct_behind_buildings" type="checkbox" /></label>
+      <label>Picked-path tolerance (°) <input id="s_picked_path_tolerance_deg" class="mono" type="number" step="1" /></label>
       <label>Sound during playback (1x speed only) <select id="listen"><option value="dry">Sources, as recorded</option><option value="off">Off</option></select></label>
       <div class="actions"><button id="settingsClose">Done</button></div>
     </dialog>
@@ -81,7 +88,9 @@
     <dialog id="infoDlg">
       <h3>Limits of this simulation</h3>
       <ul>
-        <li>Free field plus ground only. Street canyons will be worse, so results are optimistic.</li>
+        <li>Free field plus the ground and any buildings you add. Buildings are axis-aligned concrete boxes with one placeholder absorption (0.03, not measured). Only the vertical faces and the ground reflect; roofs block sound but do not reflect.</li>
+        <li>There is no diffraction. A building between a source and a node removes the direct path completely (a pessimistic worst case), and there is no transmission through walls. Real facades reflect less cleanly than flat boxes.</li>
+        <li>The wave rings are free field and ignore buildings.</li>
         <li>Uniform air, no wind, static sources.</li>
         <li>Source levels, ground reflectivity and the SPL-to-dBFS constant are placeholders until confirmed.</li>
         <li>Ambient noise is independent per mic, which is pessimistic for localisation.</li>

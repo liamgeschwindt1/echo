@@ -1,0 +1,10 @@
+{
+  "version": "0.2",
+  "settings": { "seed": 1 },
+  "nodes": [{ "id": "n1", "position": [97.8, 20.2, 5], "rotation_deg": 0, "mic_layout": "flat_square", "mic_spacing_m": 0.1 }],
+  "sources": [
+    { "id": "s5", "clip": "car_horn", "keyframes": [{ "t": 0, "position": [143.4, 44, 1.5] }], "level_1m_db": 105, "start_s": 8.44 },
+    { "id": "s6", "clip": "fireworks", "keyframes": [{ "t": 0, "position": [162.5, -6.6, 1.5] }], "level_1m_db": 130, "start_s": 12.9 }
+  ],
+  "buildings": []
+}
