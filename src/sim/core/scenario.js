@@ -9,6 +9,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   humidity_pct: 70,
   pressure_kpa: 101.325,
   noise_floor_db_spl: 45,
+  noise_off: false,
   mic_self_noise_db_spl: 30,
   ground_reflectivity: 0.8,
   slice_height_m: 1.5,
@@ -17,6 +18,8 @@ export const DEFAULT_SETTINGS = Object.freeze({
   localisation_band_hz: [200, 1600],
   min_snr_db: 6,
   reflection_order: 1,
+  reach_reflection_order: 2,
+  reach_cell_m: 2,
   block_direct_behind_buildings: true,
   diffraction_order: 0,
   picked_path_tolerance_deg: 5,
@@ -74,6 +77,9 @@ export function validateScenario(s) {
   if (!s || typeof s !== 'object') throw new Error('not a scenario');
   if (!LOADABLE_VERSIONS.includes(s.version)) throw new Error(`unsupported scenario version ${s.version}`);
   const settings = { ...DEFAULT_SETTINGS, ...s.settings };
+  if (!Number.isFinite(settings.reach_cell_m) || settings.reach_cell_m <= 0) throw new Error('reach_cell_m must be positive');
+  if (!Number.isInteger(settings.reach_reflection_order) || settings.reach_reflection_order < 0 || settings.reach_reflection_order > 2) throw new Error('reach_reflection_order must be 0, 1 or 2');
+  if (typeof settings.noise_off !== 'boolean') throw new Error('noise_off must be boolean');
   const vec3 = (v) => Array.isArray(v) && v.length === 3 && v.every(Number.isFinite);
   for (const n of s.nodes || []) if (!vec3(n.position)) throw new Error(`node ${n.id}: bad position`);
   for (const src of s.sources || []) {

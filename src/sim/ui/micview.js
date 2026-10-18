@@ -3,6 +3,56 @@ import { gccCurve } from '../core/localise.js';
 import { MIC_PAIRS } from '../core/mics.js';
 import { distance, speedOfSound } from '../core/physics.js';
 import { arrivalsCsv, encodeWavFloat32 } from '../core/wav.js';
+import { findPaths, diffractionLossDb } from '../core/geometry.js';
+import { airAbsorptionDbPerM } from '../core/physics.js';
+
+const pathKey = (p) => `${p.type}:${p.surfaces.join('+')}`;
+
+// Expected geometry is recomputed, never read back from the renderer's path table.
+export function auditMicPaths(scenario, rendered, ni, mi) {
+  const { settings } = scenario;
+  const c = speedOfSound(settings.temperature_c);
+  const fs = rendered.sample_rate;
+  const actual = rendered.applied_paths?.[ni]?.[mi] || [];
+  const rows = [];
+  scenario.sources.forEach((src, si) => {
+    const found = findPaths(src.keyframes[0].position, rendered.nodes[ni].mic_positions_true[mi], { settings, buildings: scenario.buildings || [], c, audit: false });
+    const remaining = new Map(actual.filter((p) => p.source_index === si).map((p) => [pathKey(p), p]));
+    for (const p of found.paths) {
+      const applied = remaining.get(pathKey(p));
+      remaining.delete(pathKey(p));
+      const expectedDelay = (src.start_s + p.delay_s) * fs;
+      const expectedGain = p.gain / Math.max(p.length, 1);
+      const delayError = applied ? Math.abs(applied.delay_samples - expectedDelay) : Infinity;
+      const gainError = applied ? Math.abs(20 * Math.log10(applied.gain / expectedGain)) : Infinity;
+      let filterError = Infinity;
+      const f = applied?.filter.probe_hz;
+      const airDb = settings.air_absorption && Number.isFinite(f) ? airAbsorptionDbPerM(f, settings.temperature_c, settings.humidity_pct, settings.pressure_kpa) * p.length : 0;
+      const diffDb = p.type === 'diffracted' && Number.isFinite(f) ? diffractionLossDb(p.length - p.direct_distance, f, c) : 0;
+      const expectedFilter = {
+        model: 'gain(f) = spreading_gain * 10^(-(air_db_per_m(f) * distance_m + diffraction_db(f)) / 20)',
+        air_absorption: !!settings.air_absorption, temperature_c: settings.temperature_c,
+        humidity_pct: settings.humidity_pct, pressure_kpa: settings.pressure_kpa, distance_m: p.length,
+        diffraction_delta_m: p.type === 'diffracted' ? p.length - p.direct_distance : null,
+        diffraction_model: 'min(20, 10 log10(3 + 40 delta_m f / c)) dB',
+        speed_of_sound: c, probe_hz: f, probe_gain: expectedGain * 10 ** (-(airDb + diffDb) / 20),
+        dc_gain: expectedGain, nyquist_gain: 0,
+        endpoint_note: 'Legacy renderer bypasses filters at DC and omits Nyquist'
+      };
+      if (applied) {
+        filterError = Math.abs(20 * Math.log10(applied.filter.probe_gain / expectedFilter.probe_gain));
+      }
+      rows.push({ source: src.id, path: pathKey(p), expected_delay_samples: expectedDelay, applied_delay_samples: applied?.delay_samples,
+        expected_gain: expectedGain, applied_gain: applied?.gain, delay_error_samples: delayError, gain_error_db: gainError,
+        expected_filter: expectedFilter, applied_filter: applied?.filter,
+        filter_error_db: filterError, failed: !Number.isFinite(delayError + gainError + filterError) || delayError > 0.05 || gainError > 0.05 || filterError > 0.05 });
+    }
+    for (const p of remaining.values()) rows.push({ source: src.id, path: pathKey(p), failed: true, reason: 'unexpected_applied_path' });
+    for (const p of rendered.dropped_paths?.[ni]?.[mi] || []) if (p.source_index === si)
+      rows.push({ source: src.id, path: pathKey(p), reason: p.reason, dropped: true, failed: false });
+  });
+  return rows;
+}
 
 const SHADES = ['#ffffff', '#cfcfcf', '#a0a0a0', '#7a7a7a', '#5a5a5a'];
 const PYR_BASE = 32;
@@ -98,6 +148,19 @@ export function createMicView(host) {
   const sctx = specC.getContext('2d');
   const gccC = $('mvGcc');
   const gctx = gccC.getContext('2d');
+  const modeSelect = $('mvMode');
+  if (![...modeSelect.options].some((option) => option.value === 'audit')) {
+    const option = document.createElement('option');
+    option.value = 'audit';
+    option.textContent = 'Audit';
+    modeSelect.append(option);
+  }
+  const auditPanel = document.createElement('section');
+  auditPanel.id = 'mvAudit';
+  auditPanel.hidden = true;
+  auditPanel.style.overflow = 'auto';
+  auditPanel.style.padding = '12px';
+  root.append(auditPanel);
 
   let nodeId = null;
   let view = { t0: 0, t1: 1 };
@@ -159,6 +222,15 @@ export function createMicView(host) {
 
   function setSeriesForMode() {
     const info = ctxInfo();
+    $('mvBody').style.display = mode === 'audit' ? 'none' : '';
+    auditPanel.hidden = mode !== 'audit';
+    if (mode === 'audit') {
+      series = null;
+      pending = null;
+      $('mvStatus').textContent = 'Audit: red means missing path, >0.05 sample or >0.05 dB';
+      renderAuditPanel();
+      return;
+    }
     if (!info) return;
     if (mode === 'total') {
       series = [{ id: 'total', label: 'Total', mics: info.node.mics }];
@@ -268,7 +340,9 @@ export function createMicView(host) {
         tctx.setLineDash([4 * dpr, 3 * dpr]);
         tctx.strokeStyle = host.accent;
         info.scn.sources.forEach((src) => {
-          const t = src.start_s + distance(src.keyframes[0].position, info.node.mic_positions_true[mi]) / info.c;
+          const direct = findPaths(src.keyframes[0].position, info.node.mic_positions_true[mi], { settings: info.scn.settings, buildings: info.scn.buildings || [], c: info.c }).paths.find((p) => p.type === 'direct');
+          if (!direct) return;
+          const t = src.start_s + direct.delay_s;
           const x = ((t - view.t0) / span) * W;
           if (x >= 0 && x <= W) {
             tctx.beginPath();
@@ -400,10 +474,17 @@ export function createMicView(host) {
     const baseline = distance(info.node.mic_positions[i], info.node.mic_positions[j]) / info.c;
     const curve = gccCurve({ signal: info.node.mics[i], start: a, end: b }, { signal: info.node.mics[j], start: a, end: b }, { fs: info.fs, band: info.scn.settings.localisation_band_hz, maxLagS: baseline });
     const src = info.scn.sources[si].keyframes[0].position;
-    const tdoa = (img) => (distance(img, pos[i]) - distance(img, pos[j])) / info.c;
+    const pathsAt = (mi) => findPaths(src, pos[mi], { settings: info.scn.settings, buildings: info.scn.buildings || [], c: info.c }).paths;
+    const left = pathsAt(i);
+    const right = pathsAt(j);
+    const tdoa = (path) => {
+      const a = left.find((p) => pathKey(p) === pathKey(path));
+      const b = right.find((p) => pathKey(p) === pathKey(path));
+      return a && b ? a.delay_s - b.delay_s : null;
+    };
     const centre = host.getRendered().paths[info.ni].centre[si].paths;
     const pickedPath = nr.picked_path_index !== null && nr.picked_path_index !== undefined ? centre[nr.picked_path_index] : null;
-    gccState = { curve, baseline, trueLag: tdoa(src), pickedLag: pickedPath ? tdoa(pickedPath.image) : null, pair: [i, j] };
+    gccState = { curve, baseline, trueLag: tdoa({ type: 'direct', surfaces: [] }), pickedLag: pickedPath ? tdoa(pickedPath) : null, pair: [i, j] };
   }
 
   function drawGcc() {
@@ -446,7 +527,7 @@ export function createMicView(host) {
     for (const p of curve.peaks.slice(1)) {
       gctx.fillRect(x(p.lag_s) - dpr, y(p.value) - 5 * dpr, 2 * dpr, 4 * dpr);
     }
-    vline(gccState.trueLag, '#ffffff', [5 * dpr, 3 * dpr], 'true direct', 0);
+    if (gccState.trueLag !== null) vline(gccState.trueLag, '#ffffff', [5 * dpr, 3 * dpr], 'true direct', 0);
     vline(curve.est_lag_s, host.accent, [], 'estimated', 1);
     if (gccState.pickedLag !== null) vline(gccState.pickedLag, host.accent, [2 * dpr, 3 * dpr], 'picked path', 2);
     gctx.fillStyle = '#777';
@@ -461,6 +542,45 @@ export function createMicView(host) {
       .map((r, i) => `<tr data-i="${i}"${r.picked ? ' class="picked"' : ''}><td>${f(r.time_s, 4)}</td><td>${r.source}</td><td>${r.path}${r.surfaces ? ` ${r.surfaces}` : ''}</td><td>${f(r.level_db_re_direct)}</td><td>${f(r.level_above_noise_db)}</td><td>${f(r.arrival_azimuth_deg, 0)}</td><td>${r.overlapped}</td></tr>`)
       .join('')}</table>`;
     for (const tr of $('mvArrivals').querySelectorAll('tr[data-i]')) tr.addEventListener('click', () => seek(rows[Number(tr.dataset.i)].time_s, true));
+  }
+
+  function renderAuditPanel() {
+    auditPanel.replaceChildren();
+    const title = document.createElement('h3');
+    title.textContent = 'Per-mic render audit';
+    const note = document.createElement('p');
+    note.textContent = 'Expected: independent shared-finder query. Applied and dropped: saved render records. Red: missing/unexpected path, delay error >0.05 sample, gain/filter error >0.05 dB. Filter check uses recorded probe frequency; JSON describes full model and legacy endpoints.';
+    auditPanel.append(title, note);
+    const info = ctxInfo();
+    if (!info) return;
+    const table = document.createElement('table');
+    const header = document.createElement('tr');
+    for (const label of ['mic', 'source', 'path', 'expected delay (samples)', 'applied delay (samples)', 'delay_error_samples', 'expected gain', 'applied gain', 'gain_error_db', 'filter_error_db', 'expected filter model', 'applied filter', 'drop reason']) {
+      const th = document.createElement('th');
+      th.textContent = label;
+      header.append(th);
+    }
+    table.append(header);
+    const number = (value) => value == null ? 'missing' : String(value);
+    for (let mi = 0; mi < info.node.mics.length; mi++) for (const row of auditMicPaths(info.scn, info.rendered, info.ni, mi)) {
+      const tr = document.createElement('tr');
+      if (row.failed) tr.style.color = '#ff5252';
+      const values = [mi + 1, row.source, row.path, number(row.expected_delay_samples), number(row.applied_delay_samples),
+        number(row.delay_error_samples), number(row.expected_gain), number(row.applied_gain), number(row.gain_error_db),
+        number(row.filter_error_db), JSON.stringify(row.expected_filter, null, 2) ?? 'not applied',
+        JSON.stringify(row.applied_filter, null, 2) ?? 'not applied', row.reason || ''];
+      values.forEach((value, index) => {
+        const td = document.createElement('td');
+        if (index === 10 || index === 11) {
+          const pre = document.createElement('pre');
+          pre.textContent = String(value);
+          td.append(pre);
+        } else td.textContent = String(value);
+        tr.append(td);
+      });
+      table.append(tr);
+    }
+    auditPanel.append(table);
   }
 
   function fillSelectors() {
@@ -500,6 +620,7 @@ export function createMicView(host) {
   function draw() {
     if (root.hidden) return;
     root.classList.toggle('stale', host.getStatus() === 'stale');
+    if (mode === 'audit') return;
     drawTraces();
     drawSpec();
     drawGcc();

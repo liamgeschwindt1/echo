@@ -18,13 +18,14 @@ function meanPower(frames, t0, t1) {
   return s / Math.max(1, f1 - f0);
 }
 
-const toDb = (p, noise) => 10 * Math.log10(Math.max(p / noise, 1e-6));
+const toDb = (p, noise) => noise > 0 ? 10 * Math.log10(Math.max(p / noise, 1e-6)) : p > 0 ? Infinity : -Infinity;
 
 // Legacy broadband definition: total mic-1 power in the window (every source) above the analytic noise power.
 function snrBroadbandDb(signal, a, b, settings) {
   let s = 0;
   for (let i = a; i < b; i++) s += signal[i] * signal[i];
   const win = s / Math.max(1, b - a);
+  if (settings.noise_off) return win > 0 ? Infinity : -Infinity;
   const k = digitalPerPa(settings.spl_ref_db, settings.dbfs_ref_db);
   const noise = (dbToPa(settings.noise_floor_db_spl) ** 2 + dbToPa(settings.mic_self_noise_db_spl) ** 2) * k * k;
   return 10 * Math.log10(Math.max(win - noise, noise * 1e-3) / noise);
@@ -36,7 +37,7 @@ function activeWindow(own, noiseP, thresholdDb, padS, spreadS, lengthS) {
   let a = -1;
   let b = -1;
   for (let f = 0; f < own.length; f++) {
-    if (own[f] >= thr) {
+    if (own[f] > 0 && own[f] >= thr) {
       if (a < 0) a = f;
       b = f;
     }
@@ -203,7 +204,7 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
 
     // A node leaves the fix if it cannot hear the sound or its window is dominated by another sound.
     const used = perNode.filter((n) => n.bearing && n.heard && n.reliable);
-    const rays = used.map((n) => ({ origin: scenario.nodes.find((x) => x.id === n.node_id).position, direction: n.bearing.direction, weight: 10 ** (n.snr_db / 10) }));
+    const rays = used.map((n) => ({ origin: scenario.nodes.find((x) => x.id === n.node_id).position, direction: n.bearing.direction, weight: n.snr_db === Infinity ? 1 : 10 ** (n.snr_db / 10) }));
     const fix = intersectRays(rays);
     const est = fix && !fix.poorly_conditioned ? fix.position : null;
     const suspect = used.some((n) => n.direct_blocked || n.picked_path_type !== 'direct');

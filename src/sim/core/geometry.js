@@ -146,30 +146,36 @@ export const imagesFor = (src, seq) => seq.reduce((acc, s) => [...acc, mirror(ac
  * Reflection points for one ordered surface sequence from src to mic, or null if the specular path is
  * missing a face, comes from the wrong side, or is blocked. images = imagesFor(src, seq).
  */
-export function traceReflection(src, mic, seq, images, boxes) {
+export function traceReflection(src, mic, seq, images, boxes, onDrop = () => {}) {
+  const drop = (reason) => { onDrop(reason); return null; };
   const hits = new Array(seq.length);
   let next = mic;
   for (let k = seq.length - 1; k >= 0; k--) {
     const h = hit(next, images[k + 1], seq[k]);
-    if (!h) return null;
+    if (!h) return drop('missed_face');
     hits[k] = h;
     next = h;
   }
   const pts = [src, ...hits, mic];
-  for (let k = 0; k < seq.length; k++) if (!(outward(pts[k], seq[k]) && outward(pts[k + 2], seq[k]))) return null;
-  for (let k = 0; k + 1 < pts.length; k++) if (segmentBlocked(pts[k], pts[k + 1], boxes)) return null;
+  for (let k = 0; k < seq.length; k++) if (!(outward(pts[k], seq[k]) && outward(pts[k + 2], seq[k]))) return drop('wrong_side');
+  for (let k = 0; k + 1 < pts.length; k++) if (segmentBlocked(pts[k], pts[k + 1], boxes)) return drop('blocked_leg');
   return hits;
 }
 
-/** Wall-only reflection images (no ground) up to the given order, for drawing reflected wavefronts. */
-export function reflectionImages(src, buildings, order) {
-  if (order < 1 || !buildings.length) return [];
-  const walls = buildSurfaces(buildings).filter((s) => s.kind === 'wall');
+/** Candidate images for drawing; settings enables the same ground/mixed sequences as findPaths. */
+export function reflectionImages(src, buildings, order, settings = null) {
+  if (!settings && (order < 1 || !buildings.length)) return [];
+  const surfaces = buildSurfaces(buildings).filter((s) => settings
+    ? s.kind === 'ground' ? settings.ground_reflectivity > 0 : order !== 0
+    : s.kind === 'wall');
+  const maxOrder = settings ? Math.max(1, order) : order;
   const out = [];
-  for (const idx of sequences(walls.map((_, i) => i), order)) {
-    const seq = idx.map((i) => walls[i]);
+  for (const idx of sequences(surfaces.map((_, i) => i), maxOrder)) {
+    const seq = idx.map((i) => surfaces[i]);
     const images = imagesFor(src, seq);
-    out.push({ seq, images, image: images[images.length - 1], gain: WALL_PRESSURE_FACTOR ** seq.length });
+    let gain = 1;
+    for (const s of seq) gain *= s.kind === 'ground' ? settings.ground_reflectivity : WALL_PRESSURE_FACTOR;
+    out.push({ seq, images, image: images[images.length - 1], gain });
   }
   return out;
 }
@@ -178,40 +184,41 @@ export function reflectionImages(src, buildings, order) {
  * All valid paths from a source to one point (a mic, or the array centre).
  * Returns { paths, directBlocked, capped }. Each path: type, surfaces, length (m), gain (spreading excluded),
  * image (final image source), hits (reflection points).
+ * candidateSurfaces selects one reflection sequence ([] selects direct only). Use only when the full
+ * candidate count cannot reach MAX_PATHS_PER_MIC: this mode does not apply the global path ranking/cap.
  */
-export function findPaths(src, mic, { settings, buildings = [], surfaces, c }) {
+export function findPaths(src, mic, { settings, buildings = [], surfaces, c, audit = true, candidateSurfaces }) {
   const surf = surfaces || buildSurfaces(buildings);
   const boxes = buildings.map(buildingBox);
   const paths = [];
+  const dropped = [];
+  const drop = (type, surfaces, reason) => { if (audit) dropped.push({ type, surfaces, reason }); };
   const directBlocked = segmentBlocked(src, mic, boxes);
-  if (!directBlocked || !settings.block_direct_behind_buildings) {
-    paths.push({ type: 'direct', surfaces: [], length: distance(src, mic), gain: 1, image: src, hits: [] });
+  const allCandidates = candidateSurfaces === undefined;
+  if (allCandidates || candidateSurfaces.length === 0) {
+    if (!directBlocked || !settings.block_direct_behind_buildings) {
+      paths.push({ type: 'direct', surfaces: [], length: distance(src, mic), gain: 1, image: src, hits: [] });
+    } else drop('direct', [], 'blocked_direct');
   }
   const order = settings.reflection_order ?? 1;
   // Order 0 keeps the original single ground bounce (controlled only by ground_reflectivity); walls are off.
   const usable = order === 0 ? (settings.ground_reflectivity > 0 ? [0] : []) : surf.map((_, i) => i).filter((i) => i !== 0 || settings.ground_reflectivity > 0);
   const maxOrder = Math.max(1, order);
+  if (audit && !(settings.ground_reflectivity > 0)) drop('ground', ['ground'], 'ground_disabled');
+  if (audit && order === 0) for (const s of surf.filter((s) => s.kind === 'wall')) drop('wall', [s.id], 'reflection_order_zero');
+  let selected = [];
+  if (!allCandidates && candidateSurfaces.length) {
+    const indices = candidateSurfaces.map((id) => usable.findIndex((i) => surf[i].id === id));
+    if (indices.length <= maxOrder && indices.every((i, k) => i >= 0 && (k === 0 || i !== indices[k - 1]))) selected = [indices];
+    else drop('wall', candidateSurfaces, 'candidate_not_enabled');
+  }
   if (usable.length) {
-    for (const seqIdx of sequences(usable, maxOrder)) {
+    for (const seqIdx of allCandidates ? sequences(usable, maxOrder) : selected) {
       const seq = seqIdx.map((i) => surf[usable[i]]);
-      const images = [src];
-      for (const s of seq) images.push(mirror(images[images.length - 1], s));
-      const hits = new Array(seq.length);
-      let next = mic;
-      let ok = true;
-      for (let k = seq.length - 1; k >= 0 && ok; k--) {
-        const h = hit(next, images[k + 1], seq[k]);
-        if (!h) ok = false;
-        else {
-          hits[k] = h;
-          next = h;
-        }
-      }
-      if (!ok) continue;
-      const pts = [src, ...hits, mic];
-      for (let k = 0; k < seq.length && ok; k++) ok = outward(pts[k], seq[k]) && outward(pts[k + 2], seq[k]);
-      for (let k = 0; k + 1 < pts.length && ok; k++) ok = !segmentBlocked(pts[k], pts[k + 1], boxes);
-      if (!ok) continue;
+      const images = imagesFor(src, seq);
+      const hits = traceReflection(src, mic, seq, images, boxes, audit ? (reason) =>
+        drop(seq.some((s) => s.kind === 'wall') ? 'wall' : 'ground', seq.map((s) => s.id), reason) : undefined);
+      if (!hits) continue;
       const names = seq.map((s) => s.id);
       let gain = 1;
       for (const s of seq) gain *= s.kind === 'ground' ? settings.ground_reflectivity : WALL_PRESSURE_FACTOR;
@@ -227,23 +234,28 @@ export function findPaths(src, mic, { settings, buildings = [], surfaces, c }) {
   }
   const direct = paths.filter((p) => p.type === 'direct');
   // First-order diffraction over building edges, only when the direct path is blocked.
-  if (directBlocked && (settings.diffraction_order ?? 0) >= 1) {
+  if (allCandidates && directBlocked && (settings.diffraction_order ?? 0) >= 1) {
     const straight = distance(src, mic);
     for (const [bi, b] of buildings.entries()) {
       // Legs are checked against the other buildings only: the diffracting building is treated as a screen at that edge.
       const others = boxes.filter((_, i) => i !== bi);
       for (const edge of buildingEdges(b)) {
         const e = shortestEdgePoint(src, mic, edge.a, edge.b);
-        if (segmentBlocked(src, e, others) || segmentBlocked(e, mic, others)) continue;
+        if (segmentBlocked(src, e, others) || segmentBlocked(e, mic, others)) {
+          drop('diffracted', [edge.id], 'blocked_leg');
+          continue;
+        }
         const length = distance(src, e) + distance(e, mic);
         paths.push({ type: 'diffracted', surfaces: [edge.id], length, gain: 1, image: e, hits: [e], direct_distance: straight });
       }
     }
-  }
+  } else if (allCandidates && audit) for (const b of buildings) for (const edge of buildingEdges(b))
+    drop('diffracted', [edge.id], directBlocked ? 'diffraction_disabled' : 'direct_unblocked');
   const rest = paths.filter((p) => p.type !== 'direct').sort((a, b) => a.length - b.length);
   const capped = rest.length + direct.length > MAX_PATHS_PER_MIC;
   const kept = [...direct, ...rest.slice(0, MAX_PATHS_PER_MIC - direct.length)];
-  return { paths: kept.map((p) => ({ ...p, delay_s: p.length / c })), directBlocked, capped };
+  if (audit) for (const p of rest.slice(MAX_PATHS_PER_MIC - direct.length)) drop(p.type, p.surfaces, 'path_cap');
+  return { paths: kept.map((p) => ({ ...p, delay_s: p.length / c })), directBlocked, capped, dropped };
 }
 
 /** Path tables for every node: per mic and for the array centre, per source. */

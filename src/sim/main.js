@@ -1,12 +1,13 @@
 import { defaultScenario, newNode, newSource, newBuilding, placementErrors, validateScenario, scenarioLengthS, renderLengthS, sourcePosition } from './core/scenario.js';
-import { insideBuilding, buildingBox, simConstants, segmentBlocked, traceReflection, reflectionImages } from './core/geometry.js';
-import { speedOfSound, dbToPa } from './core/physics.js';
+import { insideBuilding, buildingBox, buildSurfaces, simConstants, findPaths, reflectionImages, diffractionLossDb, MAX_PATHS_PER_MIC } from './core/geometry.js';
+import { speedOfSound, dbToPa, airAbsorptionDbPerM } from './core/physics.js';
 import { clipGainPa } from './core/render.js';
 import { analyseClip, wavefrontRings } from './core/wavefront.js';
 import { micPositions } from './core/mics.js';
 import { loadManifest, fetchClip, decodeToMono, clipAvailable } from './clips.js';
 import { spectrogram } from './core/spectro.js';
 import { createMicView } from './ui/micview.js';
+import { createReachView } from './ui/reachview.js';
 
 const $ = (id) => document.getElementById(id);
 const FS = 48000;
@@ -51,6 +52,7 @@ const durations = () => new Map([...clips].map(([id, s]) => [id, s.length / FS])
 const lengthS = () => Math.max(1, scenarioLengthS(scenario, durations()));
 
 function markEdited() {
+  reachView.invalidate();
   if (status === 'ready') status = 'stale';
   $('banner').hidden = status !== 'stale';
   renderInspector();
@@ -82,7 +84,7 @@ function loadDemo() {
 
 async function init() {
   try {
-    const entries = (await loadManifest()).filter((c) => c.file);
+    const entries = await loadManifest();
     await Promise.all(entries.map(async (c) => (c.available = await clipAvailable(c))));
     library.push(...entries);
   } catch (err) {
@@ -244,6 +246,7 @@ $('loadFile').addEventListener('change', async (e) => {
   if (!file) return;
   try {
     scenario = validateScenario(JSON.parse(await file.text()));
+    reachView.invalidate();
     rendered = results = null;
     hiddenNodes.clear();
     status = 'edit';
@@ -325,6 +328,16 @@ const map = $('map');
 const mctx = map.getContext('2d');
 const toScreen = (x, y) => [map.width / 2 + (x - view.cx) * view.scale, map.height / 2 - (y - view.cy) * view.scale];
 const toWorld = (sx, sy) => [view.cx + (sx - map.width / 2) / view.scale, view.cy - (sy - map.height / 2) / view.scale];
+const reachView = createReachView({
+  $, getScenario: () => scenario, getClips: () => clips, ensureClip,
+  getBounds: () => {
+    const [minX, maxY] = toWorld(0, 0);
+    const [maxX, minY] = toWorld(map.width, map.height);
+    return { minX, minY, maxX, maxY };
+  },
+  getSelected: () => selected,
+  accent: ACCENT
+});
 
 function fit(canvas) {
   const r = canvas.getBoundingClientRect();
@@ -358,6 +371,7 @@ function drawMap() {
   mctx.stroke();
 
   drawRings(dpr);
+  reachView.drawMap(mctx, toScreen, view.scale, dpr);
   drawBuildings(dpr);
 
   const stale = status === 'stale';
@@ -427,8 +441,10 @@ function drawBuildings(dpr) {
   for (const b of scenario.buildings) {
     const [x, y, w, h] = rect(b);
     const sel = selected?.type === 'building' && selected.id === b.id;
-    mctx.fillStyle = 'rgba(60,60,60,0.92)';
-    mctx.fillRect(x, y, w, h);
+    if (scenario.settings.slice_height_m < b.size[2]) {
+      mctx.fillStyle = 'rgba(60,60,60,0.92)';
+      mctx.fillRect(x, y, w, h);
+    }
     mctx.strokeStyle = sel ? ACCENT : '#fff';
     mctx.lineWidth = dpr;
     mctx.strokeRect(x, y, w, h);
@@ -608,12 +624,50 @@ function drawMicGlyph(n, sx, sy, dpr) {
 }
 
 const reflCache = new Map();
+const waveVisibilityCache = new Map();
+function waveVisibility(source, c, slice, dpr, candidateCount) {
+  const key = JSON.stringify([sourcePosition(source), scenario.settings, scenario.buildings, view, map.width, map.height]);
+  if (waveVisibilityCache.has(key)) return waveVisibilityCache.get(key);
+  const step = 8 * dpr;
+  const width = Math.ceil(map.width / step) + 1;
+  const height = Math.ceil(map.height / step) + 1;
+  const cells = new Array(width * height);
+  const seen = new Set();
+  const options = { settings: scenario.settings, buildings: scenario.buildings, surfaces: buildSurfaces(scenario.buildings), c, audit: false };
+  const at = (point) => findPaths(sourcePosition(source), point, options).paths;
+  for (let row = 0; row < height; row++) for (let col = 0; col < width; col++) {
+    const [x, y] = toWorld(col * step, row * step);
+    cells[row * width + col] = new Set(at([x, y, slice]).filter((path) => path.type !== 'diffracted').map((path) => path.surfaces.join('|')));
+    for (const id of cells[row * width + col]) seen.add(id);
+  }
+  const exact = new Map();
+  const capImpossible = candidateCount + (scenario.settings.diffraction_order === 1 ? 8 * scenario.buildings.length : 0) <= MAX_PATHS_PER_MIC;
+  const visible = (point, id) => {
+    const [x, y] = toScreen(...point);
+    const col = Math.max(0, Math.min(width - 2, Math.floor(x / step)));
+    const row = Math.max(0, Math.min(height - 2, Math.floor(y / step)));
+    const neighbours = [cells[row * width + col], cells[row * width + col + 1], cells[(row + 1) * width + col], cells[(row + 1) * width + col + 1]];
+    if (neighbours.every((cell) => !cell.has(id))) return false;
+    const pointKey = `${point[0]},${point[1]},${id}`;
+    if (exact.has(pointKey)) return exact.get(pointKey);
+    const paths = capImpossible ? findPaths(sourcePosition(source), [point[0], point[1], slice], { ...options, candidateSurfaces: id ? id.split('|') : [] }).paths : at([point[0], point[1], slice]);
+    const valid = paths.some((path) => path.type !== 'diffracted' && path.surfaces.join('|') === id);
+    if (exact.size > 100000) exact.clear();
+    exact.set(pointKey, valid);
+    return valid;
+  };
+  visible.ids = seen;
+  if (waveVisibilityCache.size >= Math.max(8, scenario.sources.length * 2)) waveVisibilityCache.clear();
+  waveVisibilityCache.set(key, visible);
+  return visible;
+}
+
 function reflectionsFor(s) {
   const order = scenario.settings.reflection_order;
-  const key = `${s.id}|${sourcePosition(s)}|${order}|${JSON.stringify(scenario.buildings)}`;
+  const key = `${s.id}|${sourcePosition(s)}|${order}|${scenario.settings.ground_reflectivity}|${JSON.stringify(scenario.buildings)}`;
   if (!reflCache.has(key)) {
-    if (reflCache.size > 40) reflCache.clear();
-    reflCache.set(key, reflectionImages(sourcePosition(s), scenario.buildings, order));
+    if (reflCache.size > Math.max(40, scenario.sources.length * 2)) reflCache.clear();
+    reflCache.set(key, reflectionImages(sourcePosition(s), scenario.buildings, order, scenario.settings));
   }
   return reflCache.get(key);
 }
@@ -647,22 +701,21 @@ function strokeRing(cx, cy, rho, valid, dpr) {
   mctx.stroke();
 }
 
-// Direct rings are cut off behind buildings (no diffraction); reflected rings start at the wall faces and travel out from the mirror image.
+// Image sources propose rings; only paths returned by the renderer's path finder can light an arc.
 function drawRings(dpr) {
   if (!scenario.sources.length) return;
   const c = speedOfSound(scenario.settings.temperature_c);
   const styled = $('grain').checked;
   const floorPa = dbToPa(scenario.settings.noise_floor_db_spl);
   const slice = scenario.settings.slice_height_m;
-  const boxes = scenario.buildings.map(buildingBox);
-  const showRefl = $('showReflWaves').checked && boxes.length;
+  const showRefl = $('showReflWaves').checked;
   for (const s of scenario.sources) {
     const a = analyses.get(s.clip);
     const samples = clips.get(s.clip);
     if (!a || !samples) continue;
     const p = sourcePosition(s);
     const gainPa = clipGainPa(samples, FS, s.level_1m_db);
-    const maxRings = Math.max(20, Math.round(150 / Math.max(1, speed)));
+    const maxRings = Math.max(12, Math.round(40 / Math.max(1, speed)));
     const style = (r, tint, scale) => {
       const db = 20 * Math.log10(r.amp / floorPa);
       const alpha = Math.min(1, db / 60) * scale;
@@ -673,17 +726,59 @@ function drawRings(dpr) {
       return true;
     };
     const base = { analysis: a, startS: s.start_s, t, c, floorPa };
-    const direct = wavefrontRings({ ...base, gainPa, dz: p[2] - slice, maxRings });
-    const visible = boxes.length ? (P) => !segmentBlocked(p, [P[0], P[1], slice], boxes) : null;
-    for (const r of direct) if (style(r, '255,255,255', 1)) strokeRing(p[0], p[1], r.radius, visible, dpr);
-    if (showRefl) {
-      for (const img of reflectionsFor(s)) {
-        const rings = wavefrontRings({ ...base, gainPa: gainPa * img.gain, dz: img.image[2] - slice, maxRings: Math.round(maxRings / 2) });
-        const valid = (P) => !!traceReflection(p, [P[0], P[1], slice], img.seq, img.images, boxes);
-        for (const r of rings) if (style(r, '200,200,200', 0.85)) strokeRing(img.image[0], img.image[1], r.radius, valid, dpr);
+    if (t <= s.start_s) continue;
+    const candidates = [{ image: p, gain: 1, seq: [] }, ...(showRefl ? reflectionsFor(s) : [])];
+    const candidateCount = 1 + reflectionsFor(s).length;
+    const visibility = waveVisibility(s, c, slice, dpr, candidateCount);
+    for (const img of candidates) {
+      const ids = img.seq.map((face) => face.id).join('|');
+      if (!visibility.ids.has(ids)) continue;
+      const rings = wavefrontRings({ ...base, gainPa: gainPa * img.gain, dz: img.image[2] - slice, maxRings });
+      const valid = (P) => visibility(P, ids);
+      for (const r of rings) {
+        const length = Math.hypot(r.radius, img.image[2] - slice);
+        const attenuation = scenario.settings.air_absorption ? 10 ** (-airAbsorptionDbPerM(r.centroid, scenario.settings.temperature_c, scenario.settings.humidity_pct, scenario.settings.pressure_kpa) * length / 20) : 1;
+        if (style({ ...r, amp: r.amp * attenuation }, ids ? '200,200,200' : '255,255,255', 1)) strokeRing(img.image[0], img.image[1], r.radius, valid, dpr);
       }
     }
+    drawDiffractedWave(s, a, gainPa, floorPa, c, slice, dpr);
     mctx.setLineDash([]);
+  }
+}
+
+const diffractionWaveCache = new Map();
+function drawDiffractedWave(source, analysis, gainPa, floorPa, c, slice, dpr) {
+  if (scenario.settings.diffraction_order !== 1 || !scenario.buildings.length || t <= source.start_s) return;
+  const key = JSON.stringify([sourcePosition(source), scenario.settings, scenario.buildings, view, map.width, map.height]);
+  let probes = diffractionWaveCache.get(key);
+  const step = 12 * dpr;
+  if (!probes) {
+    probes = [];
+    const surfaces = buildSurfaces(scenario.buildings);
+    for (let y = step / 2; y < map.height; y += step) for (let x = step / 2; x < map.width; x += step) {
+      const [wx, wy] = toWorld(x, y);
+      const point = [wx, wy, slice];
+      if (insideBuilding(point, scenario.buildings)) continue;
+      const paths = findPaths(sourcePosition(source), point, { settings: scenario.settings, buildings: scenario.buildings, surfaces, c, audit: false }).paths.filter((p) => p.type === 'diffracted');
+      if (paths.length) probes.push({ x, y, paths });
+    }
+    if (diffractionWaveCache.size >= Math.max(8, scenario.sources.length * 2)) diffractionWaveCache.clear();
+    diffractionWaveCache.set(key, probes);
+  }
+  for (const probe of probes) {
+    let power = 0;
+    for (const path of probe.paths) {
+      const f = Math.floor((t - source.start_s - path.delay_s) / analysis.hop_s);
+      if (f < 0 || f >= analysis.rms.length) continue;
+      const frequency = analysis.centroid[f];
+      const air = scenario.settings.air_absorption ? airAbsorptionDbPerM(frequency, scenario.settings.temperature_c, scenario.settings.humidity_pct, scenario.settings.pressure_kpa) * path.length : 0;
+      const loss = air + diffractionLossDb(path.length - path.direct_distance, frequency, c);
+      power += (analysis.rms[f] * gainPa * path.gain / Math.max(1, path.length) * 10 ** (-loss / 20)) ** 2;
+    }
+    const alpha = Math.min(0.65, Math.max(0, 10 * Math.log10(power / floorPa ** 2) / 60));
+    if (alpha <= 0.02) continue;
+    mctx.fillStyle = `rgba(220,220,220,${alpha})`;
+    mctx.fillRect(probe.x - step / 2, probe.y - step / 2, step, step);
   }
 }
 
@@ -745,6 +840,12 @@ map.addEventListener('pointerdown', (e) => {
   const { sx, sy, w: [wx, wy] } = pointerWorld(e);
   const px = Math.round(wx * 10) / 10;
   const py = Math.round(wy * 10) / 10;
+  if (tool === 'section') {
+    drag = { kind: 'section' };
+    reachView.startLine([wx, wy]);
+    map.setPointerCapture(e.pointerId);
+    return;
+  }
   if (tool === 'node') {
     if (insideBuilding([px, py, 5], scenario.buildings)) return note('A node cannot be placed inside a building.');
     scenario.nodes.push(newNode(`n${counter++}`, px, py));
@@ -784,7 +885,9 @@ map.addEventListener('pointerdown', (e) => {
 map.addEventListener('pointermove', (e) => {
   if (!drag) return;
   const { sx, sy, w: [wx, wy] } = pointerWorld(e);
-  if (drag.kind === 'bnew') {
+  if (drag.kind === 'section') {
+    reachView.endLine([wx, wy]);
+  } else if (drag.kind === 'bnew') {
     drag.x1 = snap(wx);
     drag.y1 = snap(wy);
   } else if (drag.kind === 'pan') {
@@ -813,6 +916,7 @@ map.addEventListener('pointermove', (e) => {
   }
 });
 map.addEventListener('pointerup', () => {
+  if (drag?.kind === 'section') reachView.compute();
   if (drag?.kind === 'bnew') {
     const w = Math.abs(drag.x1 - drag.x0);
     const d = Math.abs(drag.y1 - drag.y0);

@@ -37,6 +37,7 @@
         <button data-tool="node">Add node</button>
         <button data-tool="source">Add source</button>
         <button data-tool="building">Add building</button>
+        <button data-tool="section">Draw side view</button>
         <span class="grow"></span>
         <details class="menu up" id="displayMenu">
           <summary>Display</summary>
@@ -47,6 +48,13 @@
             <label class="check"><input id="showReflWaves" type="checkbox" checked /> Reflected waves</label>
             <label class="check"><input id="grain" type="checkbox" checked /> Tone and grain</label>
             <label>Slice height (m) <input id="s_slice_height_m" class="mono" type="number" step="0.5" /></label>
+            <label class="check"><input id="showReach" type="checkbox" /> Reach map</label>
+            <label>Sources <select id="reachSource"><option value="">All sources</option></select></label>
+            <label>Quantity <select id="reachMode"><option value="snr">SNR above noise</option><option value="level">Level (dB SPL)</option></select></label>
+            <label>Cell size (m) <input id="s_reach_cell_m" type="number" min="0.25" step="0.5" /></label>
+            <label>Reach reflection order <select id="s_reach_reflection_order"><option value="0">0</option><option value="1">1</option><option value="2">2</option></select></label>
+            <label>Side view top (m) <input id="sectionHeight" type="number" min="2" value="30" /></label>
+            <button id="reachCompute">Compute reach / side view</button>
             <div class="menu-head">Nodes shown <span class="grow"></span><button id="nodesAll">all</button><button id="nodesNone">none</button></div>
             <div id="nodeToggles"></div>
           </div>
@@ -55,6 +63,12 @@
       <main id="mapWrap">
         <canvas id="map"></canvas>
         <div id="hint"></div>
+        <div id="reachHud"><progress id="reachProgress" value="0" max="1" hidden></progress><span id="reachStatus" class="muted"></span></div>
+        <section id="sideView" hidden>
+          <header><strong>Vertical cross-section</strong> <button id="sideClose">Close</button></header>
+          <canvas id="sideCanvas" aria-label="Distance versus height acoustic cross-section"></canvas>
+          <div id="sideStatus" class="muted"></div>
+        </section>
       </main>
       <aside id="inspector"></aside>
       <footer id="timelineWrap"><canvas id="timeline"></canvas></footer>
@@ -92,6 +106,7 @@
       <label>Temperature (&deg;C) <input id="s_temperature_c" class="mono" type="number" step="1" /></label>
       <label>Humidity (%) <input id="s_humidity_pct" class="mono" type="number" step="1" /></label>
       <label>Noise floor (dB SPL) <input id="s_noise_floor_db_spl" class="mono" type="number" step="1" /></label>
+      <label>Noise off (test runs) <input id="s_noise_off" type="checkbox" /></label>
       <label>Ground reflectivity (0-1) <input id="s_ground_reflectivity" class="mono" type="number" step="0.1" min="0" max="1" /></label>
       <label>Random seed <input id="s_seed" class="mono" type="number" step="1" /></label>
       <label>Minimum SNR to use a node (dB) <input id="s_min_snr_db" class="mono" type="number" step="1" /></label>
@@ -120,10 +135,11 @@
       <h3>Limits of this simulation</h3>
       <ul>
         <li>Free field plus the ground and any buildings you add. Buildings are axis-aligned concrete boxes with one placeholder absorption (0.03, not measured). Only the vertical faces and the ground reflect; roofs block sound but do not reflect.</li>
-        <li>Diffraction is off by default. When on, it is first order only: one bend over a building corner or roof edge, no double diffraction around two corners. The loss formula is an engineering approximation fitted for thin screens, and the loss steps at the shadow boundary because it is applied only to blocked paths. The wave rings do not diffract.</li>
+        <li>Diffraction is off by default. When on, it is first order only: one bend over a building corner or roof edge, no double diffraction around two corners. The loss formula is an engineering approximation fitted for thin screens, and the loss steps at the shadow boundary because it is applied only to blocked paths.</li>
         <li>With diffraction off, a building between a source and a node removes the direct path completely (a pessimistic worst case), and there is no transmission through walls. Real facades reflect less cleanly than flat boxes.</li>
-        <li>The wave rings stop behind buildings (no diffraction) and reflect off the vertical faces up to the reflection order. They are drawn on one horizontal slice and are stylised.</li>
-        <li>Uniform air, no wind, static sources.</li>
+        <li>Rings are 3D sphere cross-sections on the chosen slice. Ground images are below ground; reflected arcs must meet finite faces. Rings display loudness, not true wavelengths.</li>
+        <li>The reach map sums path energies in three bands (250 Hz, 1 kHz, 4 kHz), ignoring interference. The side view uses the same calculation. Tonal microphone signals can differ because they interfere; reported microphone SNR uses its active localisation-band window, not this three-band steady field.</li>
+        <li>Uniform air, no wind or temperature gradients, static sources.</li>
         <li>Source levels, ground reflectivity and the SPL-to-dBFS constant are placeholders until confirmed.</li>
         <li>Ambient noise is independent per mic, which is pessimistic for localisation.</li>
         <li>Mic timing has no hardware jitter, clock drift or mismatch.</li>

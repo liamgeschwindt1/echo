@@ -17,7 +17,7 @@ export const INTERPOLATION_FLOOR_FRACTION = 0.125;
  */
 export function azimuthUncertaintyDeg({ snrDb, windowS, band, positions, azimuthDeg, elevationDeg, c, fs }) {
   const s = 10 ** (snrDb / 10);
-  const g2 = Math.min(0.999999, (s / (1 + s)) ** 2);
+  const g2 = s === Infinity ? 0.999999 : Math.min(0.999999, (s / (1 + s)) ** 2);
   const [f1, f2] = band;
   const bandTerm = ((4 * Math.PI ** 2) / 3) * (f2 ** 3 - f1 ** 3);
   const varTau = (1 - g2) / (2 * Math.max(windowS, 1e-4) * g2 * bandTerm);

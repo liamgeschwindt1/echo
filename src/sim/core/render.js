@@ -62,10 +62,12 @@ export function prepareRender(scenario, clips, lengthS) {
   const n = nextPow2(total);
   const bins = n / 2 + 1;
   const c = speedOfSound(settings.temperature_c);
+  const sourceGains = [];
   const spectra = scenario.sources.map((src) => {
     const samples = clips.get(src.clip);
     if (!samples) throw new Error(`clip ${src.clip} not loaded`);
     const gain = clipGainPa(samples, fs, src.level_1m_db);
+    sourceGains.push(gain);
     const scaled = new Float32Array(samples.length);
     for (let i = 0; i < samples.length; i++) scaled[i] = samples[i] * gain;
     return rfft(scaled, n);
@@ -73,7 +75,7 @@ export function prepareRender(scenario, clips, lengthS) {
   const truePositions = scenario.nodes.map((node, ni) => trueMicPositions(node, ni, settings));
   const table = computePathTable(scenario, (node) => truePositions[scenario.nodes.indexOf(node)], c);
   return {
-    scenario, settings, fs, total, n, bins, c, spectra, table, truePositions,
+    scenario, settings, fs, total, n, bins, c, spectra, table, truePositions, sourceGains,
     toDigital: digitalPerPa(settings.spl_ref_db, settings.dbfs_ref_db),
     absorb: absorptionTable(bins, fs, n, settings)
   };
@@ -83,7 +85,7 @@ export function prepareRender(scenario, clips, lengthS) {
  * Adds one source's spectrum, through the chosen paths, into the accumulators.
  * pathFilter(path) selects which paths count (all, direct only, one type...). kMax limits the highest bin.
  */
-export function addSourceSpectrum(ctx, si, pathList, accRe, accIm, pathFilter = null, kMax = ctx.bins - 2) {
+export function addSourceSpectrum(ctx, si, pathList, accRe, accIm, pathFilter = null, kMax = ctx.bins - 2, applied = null) {
   const { fs, n, absorb } = ctx;
   const src = ctx.scenario.sources[si];
   const X = ctx.spectra[si];
@@ -100,6 +102,18 @@ export function addSourceSpectrum(ctx, si, pathList, accRe, accIm, pathFilter = 
     let cr = 1;
     let ci = 0;
     const top = Math.min(kMax, ctx.bins - 2);
+    const record = applied ? {
+      source_index: si, type: path.type, surfaces: [...path.surfaces],
+      delay_samples: tau * fs, gain: g0,
+      source_gain_pa: ctx.sourceGains[si],
+      filter: {
+        air_absorption: !!ctx.settings.air_absorption,
+        temperature_c: ctx.settings.temperature_c, humidity_pct: ctx.settings.humidity_pct,
+        pressure_kpa: ctx.settings.pressure_kpa, distance_m: path.length,
+        diffraction_delta_m: diffracted ? delta : null, speed_of_sound: ctx.c,
+        fft_size: n, first_bin: 1, last_bin: top, dc_gain: g0, nyquist_gain: 0
+      }
+    } : null;
     for (let k = 1; k <= top; k++) {
       // Rotate incrementally, re-anchoring often enough to keep rounding drift negligible.
       if (((k - 1) & 1023) === 0) {
@@ -112,18 +126,24 @@ export function addSourceSpectrum(ctx, si, pathList, accRe, accIm, pathFilter = 
       }
       let g = g0 * Math.exp(-absorb[k] * lnAtt);
       if (diffracted) g *= 10 ** (-diffractionLossDb(delta, (k * fs) / n, ctx.c) / 20);
+      if (record && k === Math.min(top, Math.max(1, Math.round(1000 * n / fs)))) {
+        record.filter.probe_hz = k * fs / n;
+        record.filter.probe_gain = g;
+      }
       const c = cr * g;
       const s = ci * g;
       accRe[k] += X.re[k] * c + X.im[k] * s;
       accIm[k] += X.im[k] * c - X.re[k] * s;
     }
     accRe[0] += X.re[0] * g0;
+    if (record) applied.push(record);
   }
 }
 
 /** Ambient and self noise for one mic, in Pascals, kept separate so sums keep the original order. */
 export function noiseForMic(ctx, ni, mi, common = null) {
   const { settings, total } = ctx;
+  if (settings.noise_off) return { amb: new Float32Array(total), self: new Float32Array(total) };
   const amb = pinkNoise(streamFor(settings.seed, ni, mi, 1), total, dbToPa(settings.noise_floor_db_spl));
   const rho = settings.noise_correlation || 0;
   if (rho > 0 && common) {
@@ -136,7 +156,7 @@ export function noiseForMic(ctx, ni, mi, common = null) {
 }
 
 export const commonNoise = (ctx, ni) =>
-  ctx.settings.noise_correlation > 0 ? pinkNoise(streamFor(ctx.settings.seed, ni, 0, 14), ctx.total, dbToPa(ctx.settings.noise_floor_db_spl)) : null;
+  !ctx.settings.noise_off && ctx.settings.noise_correlation > 0 ? pinkNoise(streamFor(ctx.settings.seed, ni, 0, 14), ctx.total, dbToPa(ctx.settings.noise_floor_db_spl)) : null;
 
 export const micGainFor = (ctx, ni, mi) => ctx.toDigital * micGain(ctx.settings, ni, mi);
 
@@ -149,25 +169,36 @@ export function renderScenario(scenario, clips, { lengthS, onProgress } = {}) {
   const { total, n, bins } = ctx;
   const nodes = [];
   const activity = [];
+  const appliedPaths = [];
   const jobs = scenario.nodes.length * 4;
   let done = 0;
   scenario.nodes.forEach((node, ni) => {
+    const perMicApplied = [];
     const common = commonNoise(ctx, ni);
     const mics = ctx.truePositions[ni].map((_, mi) => {
       const accRe = new Float64Array(bins);
       const accIm = new Float64Array(bins);
-      scenario.sources.forEach((_, si) => addSourceSpectrum(ctx, si, ctx.table[ni].perMic[mi][si].paths, accRe, accIm));
+      const applied = [];
+      scenario.sources.forEach((_, si) => addSourceSpectrum(ctx, si, ctx.table[ni].perMic[mi][si].paths, accRe, accIm, null, bins - 2, applied));
       const full = irfft(accRe, accIm, n);
       const out = new Float32Array(total);
       for (let i = 0; i < total; i++) out[i] = full[i];
       const { amb, self } = noiseForMic(ctx, ni, mi, common);
       const g = micGainFor(ctx, ni, mi);
+      for (const path of applied) {
+        path.mic_gain_digital_per_pa = g;
+        path.gain_digital_per_clip_unit = path.gain * path.source_gain_pa * g;
+      }
+      perMicApplied.push(applied);
       for (let i = 0; i < total; i++) out[i] = (out[i] + amb[i] + self[i]) * g;
       onProgress?.(++done / jobs);
       return out;
     });
     nodes.push({ id: node.id, mic_positions: micPositions(node), mic_positions_true: ctx.truePositions[ni], mics });
     activity.push(computeActivity(ctx, ni));
+    appliedPaths.push(perMicApplied);
   });
-  return { sample_rate: ctx.fs, length: total, nodes, paths: ctx.table, activity };
+  const droppedPaths = ctx.table.map((node) => node.perMic.map((sources) =>
+    sources.flatMap((result, si) => result.dropped.map((path) => ({ ...path, source_index: si })))));
+  return { sample_rate: ctx.fs, length: total, nodes, paths: ctx.table, applied_paths: appliedPaths, dropped_paths: droppedPaths, activity };
 }
