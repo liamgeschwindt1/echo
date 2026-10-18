@@ -54,7 +54,16 @@
             <label class="check"><input id="grain" type="checkbox" checked /> Tone and grain</label>
             <label class="check"><input id="showReach" type="checkbox" /> Reach map</label>
             <label>Reach view <select id="reachMode"><option value="snr">SNR over noise</option><option value="level">Level (dB SPL)</option></select></label>
+            <label class="check"><input id="showHeatmap" type="checkbox" checked /> Heatmap</label>
+            <label>Heatmap mode <select id="heatMode"><option value="pulse">Pulse (at the playhead)</option><option value="peak">Peak-hold</option><option value="level">Level (clip mean)</option></select></label>
+            <label class="check"><input id="heatLevelPeak" type="checkbox" /> Level mode: show peak instead of mean</label>
+            <label>Heatmap band <select id="heatBand"><option value="loc">localisation band</option><option value="low">low (250 Hz)</option><option value="mid">mid (1 kHz)</option><option value="high">high (4 kHz)</option></select></label>
+            <label>Heatmap source <select id="heatSource"><option value="selected">selected source (all if none)</option><option value="all">all sources</option></select></label>
+            <label class="check"><input id="heatAboveNoise" type="checkbox" checked /> Show level above noise (localisation band only; off: dB SPL)</label>
+            <label>Backdrop opacity <input id="s_heatmap_backdrop" class="mono" type="number" step="0.05" min="0" max="1" /></label>
             <label>Slice height (m) <input id="s_slice_height_m" class="mono" type="number" step="0.5" /></label>
+            <label>z = <span id="sliceLabel" class="mono">1.5 m</span> <input id="sliceSlider" type="range" min="0" max="25" step="0.5" value="1.5" /></label>
+            <div class="menu-head">Height: <button id="zStreet">street 1.5 m</button><button id="zNode">node</button><button id="zRoof">roof</button></div>
             <div class="menu-head">Nodes shown <span class="grow"></span><button id="nodesAll">all</button><button id="nodesNone">none</button></div>
             <div id="nodeToggles"></div>
           </div>
@@ -65,6 +74,7 @@
         <canvas id="map3d" hidden></canvas>
         <div id="hint"></div>
         <div id="reachLabel" class="mono" hidden></div>
+        <div id="heatLabel" class="mono" hidden></div>
       </main>
       <aside id="inspector"></aside>
       <footer id="timelineWrap"><canvas id="timeline"></canvas></footer>
@@ -154,6 +164,7 @@
         <li><b>Not modelled:</b> facade scattering, and ground effects at edges (the ground still reflects as before). Roofs and building undersides do not reflect. A bearing that follows a diffracted path points at the last edge it bent round (or the reflection point after it), not at the source, and the back-trace works in the horizontal plane only. The wave rings do not diffract; the reach map and the heatmap do. The diffraction constants are design values, not measurements.</li>
         <li>With diffraction order 0, a building between a source and a node removes the direct path completely (a pessimistic worst case), and there is no transmission through walls. Real facades reflect less cleanly than flat boxes.</li>
         <li>The wave rings are a loudness display, not true wavelengths: ring brightness follows the clip's 10 ms envelope with 1/r loss, and each ring is the 3D wavefront sphere cut by the slice plane, so rings from sources above or below the slice grow from a point. They do not diffract.</li>
+        <li>The heatmap (on by default) is an incoherent sum over arrivals (no interference). Pulse shows the level reaching each point at the playhead, peak-hold keeps the highest level so far, level is the clip mean (or peak). Diffraction uses the wedge model above, levels depend on the placeholder constants, and the wave rings are a stylised loudness display, not true wavelengths. It is computed for the slice height, from the same path finder as the render, and does not need Create.</li>
         <li>The reach map and the side view are energetic (incoherent) sums over paths in three octave bands: interference is ignored, so a real microphone can measure several dB more or less, especially for tones. Same air absorption, bounce losses and diffraction as the audio render; the map uses its own reflection order setting (default 2).</li>
         <li>Uniform air: no wind and no temperature gradients, so rays do not bend. Static sources.</li>
         <li>Source levels, ground reflectivity and the SPL-to-dBFS constant are placeholders until confirmed.</li>

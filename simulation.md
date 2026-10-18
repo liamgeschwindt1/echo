@@ -276,7 +276,8 @@ Test each phase before starting the next.
 
 ## 15. Known limits to state in the UI
 
-- Free field plus ground only. Street canyons will be worse, and this is where the sim is most optimistic.
+- Free field plus ground and axis-aligned concrete buildings. Edge diffraction uses a rigid-wedge model (uniform theory of diffraction, orders 1 and 2, on by default); facade scattering and ground effects at edges are not modelled. Street canyons will still be worse than the model, and this is where the sim is most optimistic.
+- The heatmap is an incoherent sum over the strongest arrivals (no interference), for one slice height.
 - Uniform temperature and humidity, no wind, static sources.
 - Level calibration constants, source levels and ground reflectivity are placeholders until confirmed.
 - Localisation timing is only as good as the simulated mics, with no hardware jitter, clock drift or mic mismatch.
@@ -285,7 +286,6 @@ Test each phase before starting the next.
 ## 16. Later versions (not now)
 
 - 3D view with spheres and a free camera.
-- Buildings and walls, with image-source reflections and then ray tracing with diffraction.
 - Moving sources (more keyframes per source).
 - Scenario clock time and priority by hour, background tracks, and decoy tracks.
 - Cross-node timing with a clock-error setting.

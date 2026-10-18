@@ -179,10 +179,26 @@ Everything below describes the code as it is. Numbers live in `docs/` (`profile-
 - `test/golden/golden-wedge.json` was generated after the wedge model was finished (it pins the new defaults on two buildings, two sources, a tetrahedron node), and regenerated once when the diffraction grid start changed from 10 Hz to 1 Hz (a measured pre-arrival artefact, see above).
 - **Regression:** with `diffraction_order: 0` and with `diffraction_order: 1, diffraction_model: 'maekawa'` the buildings scenes match the old code exactly (`legacy golden (bit-identical)` tests, compared on the JSON round trip, so `-0` equals `0`).
 
-## Not done in this pass
+## Heatmap (D) and sensitivity (F)
 
-- **Phase C:** only the GCC-PHAT speed-up was done (see `docs/profile-after.md`). Short-buffer rendering, decimated localisation render, bin skipping and worker parallelism were not implemented; scene 3 meets the 2x target narrowly (96.6 s vs 52.7-57.4 s).
-- **Phase D (heatmap, height slider, pulse/peak-hold/level modes, time-resolved field data):** not implemented.
-- **Phase F (`scripts/sim-sensitivity.mjs`, `docs/sensitivity.md`):** not implemented.
-- Architecture doc, `simulation.md` and `simulation-guide.md` were not updated for the wedge model; the Info panel and `simConstants()` were.
-- GCC-PHAT: the old `gccPhat` function is kept (used by the mic view); `estimateBearing` uses a faster equivalent. The legacy analysis golden check now compares to 1e-8 instead of exactly (signals remain bit-identical).
+- `src/sim/core/field.js` (pure): top 16 arrivals per cell and source (delay, per-band pressure-squared gain) from `findPaths`, per-band 10 ms clip envelopes, pulse, peak-hold, memory estimate with automatic coarsening (64 MB budget, doubling the cell size, a visible note on the map label). `src/sim/ui/heatmap.js` is the controller (cache of heights, debounce 300 ms, coarse 4 m preview then the configured cell size, a new request terminates the worker so superseded jobs are cancelled). `renderWorker.js` handles the `field` message in the second worker instance, so the heatmap never uses the Create stale banner and works before Create.
+- Defaults chosen: heatmap on, mode Pulse, band localisation, source = selected source (all if none), backdrop opacity 0.25 (`settings.heatmap_backdrop`), height slider 0 to tallest building + 10 m in 0.5 m steps bound to `settings.slice_height_m` (it also drives the rings and the reach map). While dragging, the nearest cached height is shown; the exact height is computed on release. Colour: turbo in 5 dB bands, 60 dB span below the loudest estimated level in the band, contour at `min_snr_db` when showing level above noise.
+- **Above noise is only defined for the localisation band** (the noise power is measured in that band). Other bands show dB SPL regardless of the switch.
+- The mask is applied when the slice is below the building height; above it the cell is open air and the roof footprint is drawn dashed. Wall echoes above wall tops vanish because the faces are finite (`off_face`).
+- Level mode uses the clip-mean band envelope (like the reach map); "peak" uses the peak-hold at the end of the clip.
+- Peak-hold is recomputed on seeks backwards and resets when the height changes (a new field is loaded).
+- Browser smoke test (headless Chromium via Playwright, mocked clip manifest): loads a scenario, heatmap draws, slider, mode switch, no console errors. Not part of `npm test`.
+- `settings.concrete_absorption` (optional, unset by default) overrides the placeholder constant; added so the sensitivity sweep can vary it. Unset behaves exactly as before.
+- **F:** `scripts/sim-sensitivity.mjs` writes `docs/sensitivity.md` (20 seeds, one input at a time, three scenes, ranked by the change in mean bearing error). The scenes use short synthetic noise bursts, so absolute numbers are indicative only. No interpretation is added beyond the table.
+- **C:** only the GCC-PHAT speed-up. Short-buffer rendering, the decimated localisation render, bin skipping and node parallelism were not implemented because the scene-3 target (2x) was already met (96.6 s vs 52.7 to 57.4 s) and they change the rendered numbers (golden tests would need regenerating). The remaining hot spot is the per-microphone render (78 s on scene 3).
+
+## Not done
+
+- Optional wave-solver check (B7.9).
+- Phase C optimisations other than the GCC-PHAT rewrite (see above).
+- Heatmap section-view (side view) integration: the side view still uses the reach map.
+- The mic view's GCC curve still uses the old full `gccPhat`; the bearing path uses the faster equivalent (agreement 1.3e-10 degrees).
+
+## Pruning report
+
+`docs/prune-report.md` (`node scripts/sim-prune-report.mjs`): paths pruned at 40, 50 and 60 dB for the three scenes, and the bearing error on scene 2 (scene 3 bearing error was not measured: one render takes minutes). On scene 2 the bearing error of the node behind buildings changes by 0.2 degrees between no pruning and 40 dB (it is about 11 degrees either way, because that bearing follows an edge, not the source).

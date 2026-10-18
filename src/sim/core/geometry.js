@@ -6,6 +6,8 @@ import { diffractionConstants, diffractionResponse } from './diffraction.js';
 // Placeholder, not measured: one broadband energy absorption coefficient for every concrete face.
 export const CONCRETE_ABSORPTION = 0.03;
 export const WALL_PRESSURE_FACTOR = Math.sqrt(1 - CONCRETE_ABSORPTION);
+// Optional settings.concrete_absorption overrides the placeholder (used by the sensitivity sweep); unset keeps the constant.
+export const wallFactor = (settings) => (settings?.concrete_absorption === undefined ? WALL_PRESSURE_FACTOR : Math.sqrt(1 - settings.concrete_absorption));
 // Safety cap only: energy pruning (settings.path_prune_db) is the main limiter for the wedge model. The legacy model keeps its cap of 64.
 export const MAX_PATHS_PER_MIC = 128;
 const LEGACY_MAX_PATHS = 64;
@@ -150,7 +152,7 @@ const outward = (p, s) => (p[s.axis] - s.offset) * s.sign > EPS;
 export const imagesFor = (src, seq) => seq.reduce((acc, s) => [...acc, mirror(acc[acc.length - 1], s)], [src]);
 
 // Per-surface pressure gain, shared by the render, the rings and the reach map.
-export const surfaceGain = (s, settings) => (s.kind === 'ground' ? settings.ground_reflectivity : WALL_PRESSURE_FACTOR);
+export const surfaceGain = (s, settings) => (s.kind === 'ground' ? settings.ground_reflectivity : wallFactor(settings));
 
 /**
  * The single enumeration of reflection sequences used everywhere (render, rings, reach map, diagnostics).
@@ -210,12 +212,12 @@ const PAIR_SAMPLES = 5;
 const edgeCache = new Map();
 
 /** Edges of every building, cached by geometry so repeated calls (reach grid, audit) do not rebuild them. */
-export function edgesFor(buildings) {
-  const key = buildings.map((b) => `${b.id}|${b.position}|${b.size}`).join(';');
+export function edgesFor(buildings, wallR = WALL_PRESSURE_FACTOR) {
+  const key = wallR + ':' + buildings.map((b) => `${b.id}|${b.position}|${b.size}`).join(';');
   let entry = edgeCache.get(key);
   if (!entry) {
     if (edgeCache.size > 16) edgeCache.clear();
-    entry = { edges: buildings.flatMap((b, bi) => boxEdges(b, bi, WALL_PRESSURE_FACTOR)), adjacency: null };
+    entry = { edges: buildings.flatMap((b, bi) => boxEdges(b, bi, wallR)), adjacency: null };
     edgeCache.set(key, entry);
   }
   return entry;
@@ -265,7 +267,7 @@ const singleSequences = (settings, surfaces) => reflectionSequences(settings, su
 export function buildSourceGraph(src, { settings, buildings = [], surfaces }) {
   const surf = surfaces || buildSurfaces(buildings);
   const boxes = buildings.map(buildingBox);
-  const entry = edgesFor(buildings);
+  const entry = edgesFor(buildings, wallFactor(settings));
   const { edges } = entry;
   const singles = singleSequences(settings, surf);
   const seen = [];

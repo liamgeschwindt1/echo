@@ -4,6 +4,7 @@ import { speedOfSound, dbToPa } from './core/physics.js';
 import { clipGainPa } from './core/render.js';
 import { analyseClip, wavefrontRings } from './core/wavefront.js';
 import { sourceBandLevels } from './core/reach.js';
+import { createHeatmap } from './ui/heatmap.js';
 import { micPositions } from './core/mics.js';
 import { loadManifest, fetchClip, decodeToMono, clipAvailable } from './clips.js';
 import { spectrogram } from './core/spectro.js';
@@ -53,10 +54,13 @@ const micView = createMicView({
 const durations = () => new Map([...clips].map(([id, s]) => [id, s.length / FS]));
 const lengthS = () => Math.max(1, scenarioLengthS(scenario, durations()));
 
+let lastHeatKey = '';
+let heatmap = null; // created after the reach section so its helpers exist
 function markEdited() {
   if (status === 'ready') status = 'stale';
   $('banner').hidden = status !== 'stale';
   reachStale();
+  heatmap?.schedule();
   renderInspector();
 }
 
@@ -268,6 +272,8 @@ $('loadFile').addEventListener('change', async (e) => {
     status = 'edit';
     selected = selected2 = pathFocus = null;
     syncSettingsInputs();
+    syncSliceRange();
+    heatmap.schedule(0);
     for (const s of scenario.sources) ensureClip(s.clip).catch((err) => console.error(err));
     $('banner').hidden = true;
     renderInspector();
@@ -417,6 +423,26 @@ function drawMap() {
   for (let y = Math.ceil(y0 / step) * step; y <= y1; y += step) { const [, sy] = toScreen(0, y); mctx.moveTo(0, sy); mctx.lineTo(W, sy); }
   mctx.stroke();
 
+  const heatKey = `${$('heatSource').value}|${heatSel()}`;
+  if (heatKey !== lastHeatKey) {
+    lastHeatKey = heatKey;
+    heatmap.schedule(150);
+  }
+  heatmap.draw(mctx, dpr);
+  // Above a roof the cell is open air: the roof footprint is only an outline.
+  if ($('showHeatmap').checked) {
+    mctx.strokeStyle = '#fff';
+    mctx.lineWidth = dpr;
+    mctx.setLineDash([4 * dpr, 3 * dpr]);
+    for (const b of scenario.buildings) {
+      if (sliceHeight() < b.size[2]) continue;
+      const { min, max } = buildingBox(b);
+      const [ax, ay] = toScreen(min[0], max[1]);
+      const [bx, by] = toScreen(max[0], min[1]);
+      mctx.strokeRect(ax, ay, bx - ax, by - ay);
+    }
+    mctx.setLineDash([]);
+  }
   drawReach(dpr);
   drawRings(dpr);
   drawBuildings(dpr);
@@ -1832,3 +1858,76 @@ function frame(now) {
 }
 
 init();
+
+
+// ---------- heatmap (height slider, pulse / peak-hold / level) ----------
+
+const sliceHeight = () => scenario.settings.slice_height_m;
+const heatSel = () => (selected?.type === 'source' ? selected.id : null);
+heatmap = createHeatmap({
+  getScenario: () => scenario,
+  enabled: () => $('showHeatmap').checked,
+  mode: () => $('heatMode').value,
+  band: () => $('heatBand').value,
+  levelPeak: () => $('heatLevelPeak').checked,
+  showAboveNoise: () => $('heatAboveNoise').checked,
+  backdrop: () => scenario.settings.heatmap_backdrop ?? 0.25,
+  minSnr: () => scenario.settings.min_snr_db,
+  height: sliceHeight,
+  time: () => t,
+  sourceFilter: () => ($('heatSource').value === 'all' ? null : heatSel()),
+  extent: reachExtent,
+  toScreen: (x, y) => toScreen(x, y),
+  contour: (rec, toXY, thr) => strokeContour(rec, toXY, thr, mctx, window.devicePixelRatio || 1),
+  loadClips: async () => {
+    for (const s of scenario.sources) await ensureClip(s.clip);
+    return clips;
+  },
+  note,
+  redraw: () => {},
+  label: (text) => {
+    const el = $('heatLabel');
+    el.hidden = !text;
+    el.textContent = text;
+  }
+});
+
+function setSliceHeight(z, commit) {
+  const v = Math.max(0, Math.round(z * 2) / 2);
+  scenario.settings.slice_height_m = v;
+  $('s_slice_height_m').value = v;
+  $('sliceSlider').value = v;
+  $('sliceLabel').textContent = `${v.toFixed(1)} m`;
+  reachImages.clear();
+  if (commit) {
+    heatmap.onHeightCommit(v);
+    reachStale();
+  } else heatmap.onHeightInput(v);
+}
+function syncSliceRange() {
+  const tall = Math.max(0, ...scenario.buildings.map((b) => b.size[2]));
+  $('sliceSlider').max = tall + 10;
+  $('sliceSlider').value = sliceHeight();
+  $('sliceLabel').textContent = `${sliceHeight().toFixed(1)} m`;
+}
+$('sliceSlider').addEventListener('input', (e) => setSliceHeight(Number(e.target.value), false));
+$('sliceSlider').addEventListener('change', (e) => setSliceHeight(Number(e.target.value), true));
+$('zStreet').addEventListener('click', () => setSliceHeight(1.5, true));
+$('zRoof').addEventListener('click', () => setSliceHeight(Math.max(0, ...scenario.buildings.map((b) => b.size[2])), true));
+$('zNode').addEventListener('click', () => {
+  const sel = selected?.type === 'node' ? scenario.nodes.find((n) => n.id === selected.id) : null;
+  if (sel) return setSliceHeight(sel.position[2], true);
+  const counts = new Map();
+  for (const n of scenario.nodes) counts.set(n.position[2], (counts.get(n.position[2]) || 0) + 1);
+  const common = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
+  if (common) setSliceHeight(common[0], true);
+});
+$('s_slice_height_m').addEventListener('change', () => {
+  syncSliceRange();
+  heatmap.onHeightCommit(sliceHeight());
+});
+for (const id of ['showHeatmap', 'heatBand', 'heatSource']) $(id).addEventListener('change', () => heatmap.schedule(0));
+for (const id of ['heatMode', 'heatLevelPeak', 'heatAboveNoise', 's_heatmap_backdrop']) $(id).addEventListener('change', () => {});
+syncSliceRange();
+syncSettingsInputs();
+heatmap.schedule(0);

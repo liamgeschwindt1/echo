@@ -138,6 +138,18 @@ The rings need no Create. They are drawn from the sound's own audio whenever the
 
 This is a stylised display of loudness over time, not true wavelength.
 
+### The heatmap (on by default)
+
+A coloured map under the rings, in the Display menu. It needs no Create: it is computed from the scenario, the sound and the path finder, and recomputes itself a moment after any change (a coarse preview first, then full detail).
+
+- **Height slider** (`z = ...`): the height of the slice. It drives the rings, the reach map and the heatmap together. Buttons jump to street level (1.5 m), the selected node's height, or the tallest roof. While you drag, the nearest height already computed is shown; the exact one is computed when you let go. Above a roof the cells are open air and the roof is drawn as a dashed outline.
+- **Pulse** (default): the level arriving at each point at the playhead. The front moves out and fades; echoes and sound bent round corners or over roofs show as later fronts. A faint level map (about 25 % opacity) sits underneath so the map is never empty before the first sound arrives.
+- **Peak-hold:** the highest level each point has reached so far. At the end it shows how far the sound got and where the shadows are. It restarts when the height changes.
+- **Level:** the clip-mean level (or the peak, with the option). Same idea as the reach map, recoloured.
+- **Band:** 250 Hz, 1 kHz, 4 kHz or the localisation band. **Source:** the selected source (all of them if none is selected) or all sources.
+- Colours are a rainbow in 5 dB steps with a legend. By default it shows level above the noise floor (localisation band only) with a line where the sound falls to the minimum SNR; switch it off to see dB SPL.
+- Levels are added without interference, bending round building edges uses the wedge diffraction model, and levels depend on placeholder constants.
+
 ---
 
 ## 8. Top bar
@@ -255,6 +267,7 @@ For every source and every mic:
 2. **Loudness** falls as 1/distance (6 dB per doubling of distance).
 3. **Air absorption** removes high frequencies with distance (ISO 9613-1), so far-away sounds arrive duller.
 4. **Ground bounce:** one extra reflected path from the mirror image of the source below the ground, scaled by ground reflectivity. The direct and bounced sound interfere.
+   **Buildings:** reflections off the walls, and **diffraction** round the vertical corners and over the roof edges (a rigid-wedge model, on by default at order 2: one edge, two edges, or a reflection plus an edge). Sound behind a building fades smoothly into the shadow, higher pitches fade more, and a path that bends is reported with its edge name. The settings dialog has the diffraction order (0 switches it off), the model (the old formula is kept for comparison only) and how far below the strongest path a weak path is dropped (50 dB).
 5. All sources are added together, then **background noise** (pink, at the noise-floor level) and **mic self-noise** (white) are added, separately for each mic.
 
 Direction finding then compares arrival-time differences between the six mic pairs (band-limited to 200 to 1600 Hz, because 10 cm spacing cannot resolve higher pitches) and solves for the direction of the sound. Directions from several nodes are intersected to give a position.

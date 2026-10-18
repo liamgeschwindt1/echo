@@ -20,6 +20,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   block_direct_behind_buildings: true,
   diffraction_model: 'wedge', // 'wedge' (UTD rigid wedge) or 'maekawa' (legacy formula, kept for comparison and regression)
   diffraction_order: 2, // 0 off, 1 one edge, 2 adds edge to edge and reflection + edge
+  heatmap_backdrop: 0.25, // opacity of the level map shown under the Pulse heatmap
   path_prune_db: 50, // wedge model: drop paths this far below the strongest at 250 Hz, 1 kHz and 4 kHz
   picked_path_tolerance_deg: 5,
   window_snr_db: 3,
