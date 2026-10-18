@@ -32,6 +32,7 @@
         <input id="loadFile" type="file" accept="application/json" hidden />
       </header>
       <div id="banner" hidden>Out of date, press Create</div>
+      <div id="loadNotice" hidden></div>
       <aside id="tools">
         <button data-tool="select" class="active">Move</button>
         <button data-tool="node">Add node</button>
@@ -118,10 +119,14 @@
       <label>Reflection order
         <select id="s_reflection_order"><option value="0">0: ground only (original)</option><option value="1">1: one bounce</option><option value="2">2: two bounces</option></select>
       </label>
-      <label>Block direct path behind buildings <input id="s_block_direct_behind_buildings" type="checkbox" /></label>
-      <label>Diffraction
-        <select id="s_diffraction_order"><option value="0">0: off (hard block)</option><option value="1">1: over one edge</option></select>
+      <label>Block direct path behind buildings (diffraction order 0 only) <input id="s_block_direct_behind_buildings" type="checkbox" /></label>
+      <label>Diffraction order
+        <select id="s_diffraction_order"><option value="0">0: off (hard block)</option><option value="1">1: one edge</option><option value="2">2: two edges, reflection + edge (default)</option></select>
       </label>
+      <label>Diffraction model
+        <select id="s_diffraction_model" data-string="1"><option value="wedge">wedge (UTD, default)</option><option value="maekawa">maekawa (old formula, comparison only)</option></select>
+      </label>
+      <label>Path pruning (dB below the strongest path) <input id="s_path_prune_db" class="mono" type="number" step="5" min="10" /></label>
       <label>Noise (ambient + mic self-noise) <input id="s_noise_enabled" type="checkbox" /></label>
       <label>Reach map cell size (m) <input id="s_reach_cell_m" class="mono" type="number" step="0.5" min="0.5" /></label>
       <label>Reach map reflection order
@@ -145,8 +150,9 @@
       <h3>Limits of this simulation</h3>
       <ul>
         <li>Free field plus the ground and any buildings you add. Buildings are flat, axis-aligned concrete boxes with one placeholder absorption coefficient (0.03, not measured) for every surface. Only the vertical faces and the ground reflect; roofs block sound but do not reflect.</li>
-        <li>Diffraction is off by default. When on, it is first order only: one bend over a building corner or roof edge, no double diffraction around two corners. The loss formula is an engineering approximation fitted for thin screens, and the loss steps at the shadow boundary because it is applied only to blocked paths. The wave rings do not diffract; the reach map does when diffraction is on.</li>
-        <li>With diffraction off, a building between a source and a node removes the direct path completely (a pessimistic worst case), and there is no transmission through walls. Real facades reflect less cleanly than flat boxes.</li>
+        <li>Diffraction is on by default (order 2). Each building edge (4 vertical corners, 4 roof edges) is a rigid 90&deg; wedge and uses the uniform theory of diffraction (Kouyoumjian and Pathak 1974) with a complex, frequency-dependent coefficient, so the loss rises with frequency and the diffracted sound arrives no earlier than its path length divided by the speed of sound. The direct and diffracted fields join smoothly at the shadow boundary (about &minus;6 dB on it). Order 1 is one edge; order 2 adds edge to edge (two edges, also round the same building and over its roof), reflection then edge, and edge then reflection. A single edge cannot connect two points on opposite sides of a building, so order 1 gives no path there. Weak paths (more than 50 dB below the strongest at 250 Hz, 1 kHz and 4 kHz) are pruned and listed in the audit. Double diffraction is an engineering approximation, not checked against an exact solution; slope and vertex diffraction are left out.</li>
+        <li><b>Not modelled:</b> facade scattering, and ground effects at edges (the ground still reflects as before). Roofs and building undersides do not reflect. A bearing that follows a diffracted path points at the last edge it bent round (or the reflection point after it), not at the source, and the back-trace works in the horizontal plane only. The wave rings do not diffract; the reach map and the heatmap do. The diffraction constants are design values, not measurements.</li>
+        <li>With diffraction order 0, a building between a source and a node removes the direct path completely (a pessimistic worst case), and there is no transmission through walls. Real facades reflect less cleanly than flat boxes.</li>
         <li>The wave rings are a loudness display, not true wavelengths: ring brightness follows the clip's 10 ms envelope with 1/r loss, and each ring is the 3D wavefront sphere cut by the slice plane, so rings from sources above or below the slice grow from a point. They do not diffract.</li>
         <li>The reach map and the side view are energetic (incoherent) sums over paths in three octave bands: interference is ignored, so a real microphone can measure several dB more or less, especially for tones. Same air absorption, bounce losses and diffraction as the audio render; the map uses its own reflection order setting (default 2).</li>
         <li>Uniform air: no wind and no temperature gradients, so rays do not bend. Static sources.</li>

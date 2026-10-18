@@ -1,7 +1,8 @@
 // Reach map and side-view cross-sections: where a source's sound actually reaches, in 3D.
 // Every path comes from findPaths (the same finder the mic render, the map and the rings use);
 // paths are summed energetically (incoherent) per band. No interference, no phase.
-import { findPaths, buildSurfaces, buildingBox, diffractionLossDb } from './geometry.js';
+import { findPaths, buildSurfaces, buildingBox, buildSourceGraph, diffractionLossDb } from './geometry.js';
+import { diffractionResponse } from './diffraction.js';
 import { airAbsorptionDbPerM, dbToPa, speedOfSound, P_REF_PA } from './physics.js';
 import { rfft, nextPow2 } from './dsp.js';
 import { clipGainPa } from './render.js';
@@ -102,14 +103,22 @@ export function pathsBandPowers(paths, bandPa2, settings, c) {
   for (const path of paths) {
     const r = Math.max(path.length, 1);
     const g2 = (path.gain / r) ** 2;
-    const delta = path.type === 'diffracted' ? path.length - path.direct_distance : 0;
+    const wedge = path.diffraction;
+    const delta = path.type === 'diffracted' && !wedge ? path.length - path.direct_distance : 0;
+    // Squared magnitude of the same complex coefficient the render applies.
+    const wedgeGain2 = (f) => {
+      const [re, im] = diffractionResponse(wedge, f, c);
+      return re * re + im * im;
+    };
     for (let b = 0; b < 3; b++) {
       let e = bandPa2[b] * g2 * 10 ** (-(absorb[b] * path.length) / 10);
       if (delta) e *= 10 ** (-diffractionLossDb(delta, REACH_BANDS[b].fc, c) / 10);
+      if (wedge) e *= wedgeGain2(REACH_BANDS[b].fc);
       out[b] += e;
     }
     let e = bandPa2[3] * g2 * 10 ** (-(absorbLoc * path.length) / 10);
     if (delta) e *= 10 ** (-diffractionLossDb(delta, locFc, c) / 10);
+    if (wedge) e *= wedgeGain2(locFc);
     out[3] += e;
   }
   return out;
@@ -143,9 +152,12 @@ export function computeReachField({ sources, settings, buildings = [], grid, noi
   for (const [si, src] of sources.entries()) {
     // Per-source image cache so findPaths does not re-mirror the same sequences for every cell.
     const imagesCache = new Map();
+    // Visibility graph per source, shared by every cell (wedge model only).
+    const wedgeOn = mapSettings.diffraction_model === 'wedge' && (mapSettings.diffraction_order ?? 0) >= 1;
+    const graph = wedgeOn ? buildSourceGraph(src.position, { settings: mapSettings, buildings, surfaces }) : undefined;
     pts.forEach((p, i) => {
       if (mask[i]) return;
-      const { paths } = findPaths(src.position, p, { settings: mapSettings, buildings, surfaces, c, imagesCache });
+      const { paths } = findPaths(src.position, p, { settings: mapSettings, buildings, surfaces, c, imagesCache, graph });
       const e = pathsBandPowers(paths, src.bandPa2, mapSettings, c);
       pw[i] += e[0] + e[1] + e[2];
       pwLoc[i] += e[3];

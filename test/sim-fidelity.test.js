@@ -18,7 +18,7 @@ const C15 = speedOfSound(15);
 
 function scene(over = {}, buildings = [], nodes = null, sources = null) {
   const s = defaultScenario();
-  Object.assign(s.settings, over);
+  Object.assign(s.settings, { diffraction_order: 0, diffraction_model: 'maekawa', ...over });
   s.buildings = buildings;
   s.nodes = nodes ?? [{ ...newNode('n1', 30, 0), mic_spacing_m: 0.05 }];
   s.sources = sources ?? [{ ...newSource('s1', 'test_impulse', 0, 0, 94), start_s: 0.1 }];

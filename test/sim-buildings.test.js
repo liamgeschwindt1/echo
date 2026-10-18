@@ -8,7 +8,7 @@ import { speedOfSound } from '../src/sim/core/physics.js';
 import { mulberry32, gaussian } from '../src/sim/core/rng.js';
 
 const FS = 48000;
-const settings = (over = {}) => ({ ...defaultScenario().settings, air_absorption: false, ground_reflectivity: 0, ...over });
+const settings = (over = {}) => ({ ...defaultScenario().settings, air_absorption: false, ground_reflectivity: 0, diffraction_order: 0, diffraction_model: 'maekawa', ...over });
 const wallAt = (id, xMax, yMin, yMax, h = 15) => newBuilding(id, xMax - 10, (yMin + yMax) / 2, 20, yMax - yMin, h);
 
 function burst(ms = 20, seed = 3) {
@@ -38,7 +38,7 @@ test('one-wall mirror: lengths, delay difference and level (acceptance 2)', () =
 
 test('one-wall mirror in a render: second arrival 58.5 ms later at about -4.5 dB', () => {
   const scn = defaultScenario();
-  Object.assign(scn.settings, { air_absorption: false, ground_reflectivity: 0, noise_floor_db_spl: -40, mic_self_noise_db_spl: -40 });
+  Object.assign(scn.settings, { air_absorption: false, ground_reflectivity: 0, noise_floor_db_spl: -40, mic_self_noise_db_spl: -40, diffraction_order: 0, diffraction_model: 'maekawa' });
   scn.buildings = [wallAt('b1', -10, -10, 10)];
   scn.nodes = [{ ...newNode('n1', 30, 0), mic_spacing_m: 0.001 }];
   scn.sources = [{ ...newSource('s1', 'b', 0, 0, 100), start_s: 0.2 }];
@@ -55,7 +55,7 @@ test('one-wall mirror in a render: second arrival 58.5 ms later at about -4.5 dB
 
 test('blocked direct path is removed and first arrival is the earliest reflection (acceptance 3)', () => {
   const scn = defaultScenario();
-  Object.assign(scn.settings, { air_absorption: false, ground_reflectivity: 0, noise_floor_db_spl: 20 });
+  Object.assign(scn.settings, { air_absorption: false, ground_reflectivity: 0, noise_floor_db_spl: 20, diffraction_order: 0, diffraction_model: 'maekawa' });
   scn.buildings = [newBuilding('b1', 50, 0, 10, 10, 15), newBuilding('b2', 50, 30, 40, 4, 15)];
   scn.nodes = [newNode('n1', 100, 0)];
   scn.sources = [{ ...newSource('s1', 'b', 0, 0, 110), start_s: 0.2 }];

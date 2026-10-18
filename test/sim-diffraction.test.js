@@ -21,7 +21,7 @@ const tone = (f, ms = 300) => Float32Array.from({ length: Math.round((ms / 1000)
 
 function scene(over = {}, buildings = [], nodes = [], sources = []) {
   const s = defaultScenario();
-  Object.assign(s.settings, { air_absorption: false, ground_reflectivity: 0, noise_floor_db_spl: 25, mic_self_noise_db_spl: 10, reflection_order: 0, ...over });
+  Object.assign(s.settings, { air_absorption: false, ground_reflectivity: 0, noise_floor_db_spl: 25, mic_self_noise_db_spl: 10, reflection_order: 0, diffraction_order: 0, diffraction_model: 'maekawa', ...over });
   s.buildings = buildings;
   s.nodes = nodes;
   s.sources = sources;

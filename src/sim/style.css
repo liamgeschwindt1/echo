@@ -8,6 +8,8 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--line);
 #app { display: grid; height: 100vh; grid-template-columns: 96px 1fr; grid-template-rows: auto auto 1fr 190px; grid-template-areas: "top top" "banner banner" "tools map" "tl tl"; }
 #app.has-inspector { grid-template-columns: 96px 1fr 290px; grid-template-areas: "top top top" "banner banner banner" "tools map inspector" "tl tl tl"; }
 #top { grid-area: top; display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--edge); }
+#loadNotice { grid-area: banner; padding: 6px 18px; background: #222; color: #ddd; border-bottom: 1px solid #666; }
+#loadNotice[hidden] { display: none; }
 #banner { grid-area: banner; padding: 6px 18px; background: var(--accent); color: #000; font-weight: 600; }
 #tools { grid-area: tools; display: flex; flex-direction: column; gap: 10px; padding: 14px 10px; border-right: 1px solid var(--edge); }
 #inspector { grid-area: inspector; padding: 16px; border-left: 1px solid var(--edge); overflow: auto; }

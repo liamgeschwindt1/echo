@@ -2,7 +2,7 @@ import { spectrogram } from '../core/spectro.js';
 import { gccCurve } from '../core/localise.js';
 import { MIC_PAIRS } from '../core/mics.js';
 import { airAbsorptionDbPerM, distance, speedOfSound } from '../core/physics.js';
-import { diffractionLossDb, findPaths } from '../core/geometry.js';
+import { findPaths, pathPressure } from '../core/geometry.js';
 import { arrivalsCsv, encodeWavFloat32 } from '../core/wav.js';
 
 const SHADES = ['#ffffff', '#cfcfcf', '#a0a0a0', '#7a7a7a', '#5a5a5a'];
@@ -486,11 +486,11 @@ export function createMicView(host) {
           type: p.type,
           surfaces: p.surfaces,
           delay_samples: (src.start_s + p.length / c) * fs,
-          gain_db_1khz: 20 * Math.log10(p.gain / Math.max(p.length, 1)) - a1k * p.length - (p.type === 'diffracted' ? diffractionLossDb(p.length - p.direct_distance, 1000, c) : 0)
+          gain_db_1khz: 20 * Math.log10(pathPressure(p, 1000, c)) - a1k * p.length
         }));
         for (const d of re.dropped || []) {
-          droppedCount++;
-          dropReasons[d.reason] = (dropReasons[d.reason] || 0) + 1;
+          droppedCount += d.count || 1;
+          dropReasons[d.reason] = (dropReasons[d.reason] || 0) + (d.count || 1);
         }
         applied[mi][si].forEach((a, i) => {
           const r = recomputed[i];
@@ -501,7 +501,7 @@ export function createMicView(host) {
             worstD = Math.max(worstD, Math.abs(dd));
             worstG = Math.max(worstG, Math.abs(dg));
           }
-          rows += `<tr${bad ? ' class="bad"' : ''}><td>${src.id}</td><td>mic ${mi + 1}</td><td>${a.type}${a.surfaces.length ? ` ${a.surfaces.join('+')}` : ''}</td>` +
+          rows += `<tr${bad ? ' class="bad"' : ''}><td>${src.id}</td><td>mic ${mi + 1}</td><td title="${String(a.filter || '').replace(/"/g, '&quot;')}">${a.type}${a.surfaces.length ? ` ${a.surfaces.join('+')}` : ''}</td>` +
             `<td>${a.delay_samples.toFixed(2)}</td><td>${r ? r.delay_samples.toFixed(2) : 'missing'}</td><td>${r ? dd.toFixed(4) : '-'}</td>` +
             `<td>${a.gain_db_1khz.toFixed(2)}</td><td>${r ? r.gain_db_1khz.toFixed(2) : 'missing'}</td><td>${r ? dg.toFixed(4) : '-'}</td></tr>`;
         });

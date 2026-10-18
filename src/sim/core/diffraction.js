@@ -95,6 +95,7 @@ function cotF(arg, n, kL) {
 export function utdCoefficient(term, f, c) {
   const k = (2 * Math.PI * Math.max(f, 1)) / c;
   const { n, beta, phi, phiP, L, R0, Rn } = term;
+  const half = term.scale ?? 1;
   const kL = k * L;
   const dm = phi - phiP;
   const dp = phi + phiP;
@@ -105,7 +106,7 @@ export function utdCoefficient(term, f, c) {
   const sr = t1[0] + t2[0] + R0 * t3[0] + Rn * t4[0];
   const si = t1[1] + t2[1] + R0 * t3[1] + Rn * t4[1];
   // -e^{-j pi/4} / (2 n sqrt(2 pi k) sin beta)
-  const pre = -1 / (2 * n * Math.sqrt(2 * Math.PI * k) * Math.sin(beta));
+  const pre = (-half) / (2 * n * Math.sqrt(2 * Math.PI * k) * Math.sin(beta));
   const er = Math.SQRT1_2;
   const ei = -Math.SQRT1_2;
   return [pre * (er * sr - ei * si), pre * (er * si + ei * sr)];
@@ -125,7 +126,7 @@ export function diffractionResponse(diff, f, c) {
 }
 
 const GRID_PER_OCTAVE = 12;
-const GRID_FMIN = 10;
+const GRID_FMIN = 1;
 
 /** Log-spaced frequency grid (1/12 octave) up to and including the Nyquist frequency. */
 export function diffractionGrid(fs) {

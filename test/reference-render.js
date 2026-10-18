@@ -6,6 +6,7 @@
 // Shared with production (the model, not the method): geometry/path list, the absorption and
 // diffraction formulas, the level chain constants and the noise generators.
 import { findPaths, buildSurfaces, diffractionLossDb } from '../src/sim/core/geometry.js';
+import { diffractionResponse } from '../src/sim/core/diffraction.js';
 import { micPositions } from '../src/sim/core/mics.js';
 import { airAbsorptionDbPerM, digitalPerPa, dbToPa, speedOfSound } from '../src/sim/core/physics.js';
 import { clipGainPa, noiseForMic, commonNoise } from '../src/sim/core/render.js';
@@ -23,6 +24,7 @@ function magnitudeFir(path, fs, settings, c) {
   const re = new Float64Array(M / 2 + 1);
   const im = new Float64Array(M / 2 + 1);
   const g0 = path.gain / Math.max(path.length, 1);
+  if (path.diffraction) return wedgeFir(path, g0, fs, settings, c);
   const delta = path.type === 'diffracted' ? path.length - path.direct_distance : 0;
   // DC through the same filter chain as every other bin (the production render does this too):
   // a single-bin step at DC would smear a constant pedestal across the whole impulse response.
@@ -37,6 +39,27 @@ function magnitudeFir(path, fs, settings, c) {
   const ir = irfft(re, im, M); // zero-phase, peak at index 0
   const h = new Float64Array(M);
   for (let i = 0; i < M; i++) h[i] = ir[(i - M / 2 + M) % M]; // shift the peak to M/2
+  return h;
+}
+
+// Wedge paths: the complex UTD coefficient is evaluated directly on the dense FIR frequency grid (no log grid, no interpolation),
+// multiplied by the air absorption and inverse transformed to a real impulse response whose causal part sits after the centre tap.
+function wedgeFir(path, g0, fs, settings, c) {
+  const M = FIR_LEN;
+  const re = new Float64Array(M / 2 + 1);
+  const im = new Float64Array(M / 2 + 1);
+  for (let k = 0; k < M / 2; k++) {
+    const f = (k * fs) / M;
+    let g = g0;
+    if (k > 0 && settings.air_absorption) g *= 10 ** (-(airAbsorptionDbPerM(f, settings.temperature_c, settings.humidity_pct, settings.pressure_kpa) * path.length) / 20);
+    const [dr, di] = diffractionResponse(path.diffraction, f, c);
+    re[k] = g * dr;
+    im[k] = g * di;
+  }
+  im[0] = 0;
+  const ir = irfft(re, im, M);
+  const h = new Float64Array(M);
+  for (let i = 0; i < M; i++) h[i] = ir[(i - M / 2 + M) % M];
   return h;
 }
 

@@ -3,6 +3,7 @@ import { irfft, nextPow2, rfft } from './dsp.js';
 import { micPositions } from './mics.js';
 import { gaussian, pinkNoise, streamFor, whiteNoise } from './rng.js';
 import { computePathTable, diffractionLossDb, findPaths } from './geometry.js';
+import { diffractionGrid, diffractionOnGrid, gridMap, WEDGE_DESCRIPTION } from './diffraction.js';
 import { computeActivity } from './activity.js';
 import { timed } from './profile.js';
 
@@ -80,6 +81,62 @@ export function prepareRender(scenario, clips, lengthS, profile = null) {
   };
 }
 
+// Complex diffraction filter of a wedge path: evaluated once on a 1/12-octave grid, interpolated to the render bins.
+function diffractionFilterBins(ctx, path) {
+  if (!ctx.diffMap) {
+    ctx.diffFreqs = diffractionGrid(ctx.fs);
+    ctx.diffMap = gridMap(ctx.bins, ctx.fs, ctx.n, ctx.diffFreqs);
+  }
+  return diffractionOnGrid(path.diffraction, ctx.diffFreqs, ctx.c);
+}
+
+function addWedgePath(ctx, X, path, tau, accRe, accIm, kMax, record, k1k) {
+  const { fs, n, absorb } = ctx;
+  const g0 = path.gain / Math.max(path.length, 1);
+  const lnAtt = (path.length * Math.LN10) / 20;
+  const { re: gRe, im: gIm } = diffractionFilterBins(ctx, path);
+  const { idx, frac } = ctx.diffMap;
+  const step = (2 * Math.PI * fs * tau) / n;
+  const dr = Math.cos(step);
+  const di = Math.sin(step);
+  let cr = 1;
+  let ci = 0;
+  let g1k = null;
+  const top = Math.min(kMax, ctx.bins - 2);
+  for (let k = 0; k <= top; k++) {
+    if (k === 0 || ((k - 1) & 1023) === 0) {
+      cr = Math.cos(k * step);
+      ci = Math.sin(k * step);
+    } else {
+      const nr = cr * dr - ci * di;
+      ci = cr * di + ci * dr;
+      cr = nr;
+    }
+    const i = idx[k];
+    const t = frac[k];
+    const Dr = gRe[i] + t * (gRe[i + 1] - gRe[i]);
+    const Di = gIm[i] + t * (gIm[i + 1] - gIm[i]);
+    const g = g0 * Math.exp(-absorb[k] * lnAtt);
+    if (k === k1k) g1k = g * Math.hypot(Dr, Di);
+    // (cos - j sin) * D * g
+    const wr = g * (cr * Dr + ci * Di);
+    const wi = g * (cr * Di - ci * Dr);
+    if (k === 0) {
+      accRe[0] += X.re[0] * wr;
+      continue;
+    }
+    accRe[k] += X.re[k] * wr - X.im[k] * wi;
+    accIm[k] += X.re[k] * wi + X.im[k] * wr;
+  }
+  record?.push({
+    type: path.type,
+    surfaces: path.surfaces,
+    delay_samples: tau * fs,
+    gain_db_1khz: 20 * Math.log10(g1k ?? g0),
+    filter: `spreading ${path.diffraction.chain} r=${path.length.toFixed(3)} m; bounce gain ${path.gain.toFixed(4)} (incl. UTD spreading); air absorption ${ctx.settings.air_absorption ? 'ISO 9613-1' : 'off'}; ${WEDGE_DESCRIPTION}; ${path.diffraction.terms.length} edge(s) ${path.surfaces.join('+')}`
+  });
+}
+
 /**
  * Adds one source's spectrum, through the chosen paths, into the accumulators.
  * pathFilter(path) selects which paths count (all, direct only, one type...). kMax limits the highest bin.
@@ -96,6 +153,10 @@ export function addSourceSpectrum(ctx, si, pathList, accRe, accIm, pathFilter = 
     const g0 = path.gain / Math.max(path.length, 1);
     const tau = src.start_s + path.delay_s;
     const lnAtt = (path.length * Math.LN10) / 20;
+    if (path.diffraction) {
+      addWedgePath(ctx, X, path, tau, accRe, accIm, kMax, record, k1k);
+      continue;
+    }
     const diffracted = path.type === 'diffracted';
     const delta = diffracted ? path.length - path.direct_distance : 0;
     const step = (2 * Math.PI * fs * tau) / n;

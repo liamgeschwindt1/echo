@@ -133,7 +133,7 @@ test('one-wall mirror: 58.5 ms delay difference, -4.5 dB, absorption and ground 
 });
 
 test('diffraction on the reach map: ~5 dB at the shadow edge, rising with depth, less at 250 Hz than 4 kHz', () => {
-  const settings = openSettings({ diffraction_order: 1 });
+  const settings = openSettings({ diffraction_order: 1, diffraction_model: 'maekawa' });
   const b = [newBuilding('b1', 50, 0, 10, 20, 15)]; // footprint x 45..55, y -10..10
   const bandPa2 = noiseBandPa2(100, settings);
   // Shadow boundary at x=100: |y| = 10*100/45 = 22.2. Sample just inside it and deeper.

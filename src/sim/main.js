@@ -1,4 +1,4 @@
-import { defaultScenario, newNode, newSource, newBuilding, placementErrors, validateScenario, scenarioLengthS, renderLengthS, sourcePosition } from './core/scenario.js';
+import { defaultScenario, newNode, newSource, newBuilding, placementErrors, validateScenario, scenarioNotices, scenarioLengthS, renderLengthS, sourcePosition } from './core/scenario.js';
 import { insideBuilding, buildingBox, simConstants, segmentBlocked, traceReflection, reflectionImages } from './core/geometry.js';
 import { speedOfSound, dbToPa } from './core/physics.js';
 import { clipGainPa } from './core/render.js';
@@ -224,7 +224,7 @@ document.addEventListener('keydown', (e) => {
 
 for (const el of document.querySelectorAll('[id^="s_"]')) {
   el.addEventListener('change', () => {
-    scenario.settings[el.id.slice(2)] = el.type === 'checkbox' ? el.checked : Number(el.value);
+    scenario.settings[el.id.slice(2)] = el.type === 'checkbox' ? el.checked : el.dataset.string ? el.value : Number(el.value);
     markEdited();
   });
 }
@@ -234,7 +234,7 @@ function syncSettingsInputs() {
     const el = $(`s_${k}`);
     if (!el) continue;
     if (el.type === 'checkbox') el.checked = !!v;
-    else if (typeof v === 'number') el.value = v;
+    else if (typeof v === 'number' || typeof v === 'string') el.value = v;
   }
 }
 
@@ -258,7 +258,11 @@ $('loadFile').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
   try {
-    scenario = validateScenario(JSON.parse(await file.text()));
+    const raw = JSON.parse(await file.text());
+    scenario = validateScenario(raw);
+    const notices = scenarioNotices(raw);
+    $('loadNotice').textContent = notices.join(' ');
+    $('loadNotice').hidden = !notices.length;
     rendered = results = null;
     hiddenNodes.clear();
     status = 'edit';
@@ -937,7 +941,7 @@ function updateReachLabel(extra = '') {
   el.hidden = !on;
   if (!on) return;
   const order = scenario.settings.reach_reflection_order ?? 2;
-  const dif = (scenario.settings.diffraction_order ?? 0) >= 1 ? 'diffraction order 1' : 'no diffraction (pessimistic)';
+  const dif = (scenario.settings.diffraction_order ?? 0) >= 1 ? `diffraction order ${scenario.settings.diffraction_order} (${scenario.settings.diffraction_model})` : 'no diffraction (pessimistic)';
   const mode = $('reachMode').value === 'snr' ? 'SNR over noise' : 'level dB SPL';
   el.textContent = `Reach map: ${mode}, cell ${reach.grid.cell.toFixed(1)} m, order ${order}, ${dif}${reachStaleFlag ? ' — out of date' : ''}${extra ? ` ${extra}` : ''}`;
   if (reachStaleFlag) el.textContent += ' ';

@@ -1,5 +1,6 @@
 import { distance } from './physics.js';
-import { diffractionLossDb } from './geometry.js';
+import { diffractionLossDb, pathPressure } from './geometry.js';
+import { diffractionResponse } from './diffraction.js';
 
 const toDeg = (r) => (r * 180) / Math.PI;
 const angDiff = (a, b) => Math.abs(((a - b + 540) % 360) - 180);
@@ -10,10 +11,17 @@ const direction = (from, to) => {
   return d.map((v) => v / n);
 };
 
-// Pressure amplitude at 1/r spreading with the 1 m floor, bounce factors included, air absorption excluded.
-// Diffracted paths also lose the diffraction attenuation, taken at 1 kHz as one broadband figure.
-const diffLoss1k = (p) => (p.type === 'diffracted' ? diffractionLossDb(p.length - p.direct_distance, 1000, p.length / p.delay_s) : 0);
-const amplitude = (p) => (p.gain / Math.max(p.length, 1)) * 10 ** (-diffLoss1k(p) / 20);
+// Pressure amplitude at 1 kHz: 1/r spreading with the 1 m floor, bounce factors and the diffraction coefficient included, air absorption excluded.
+const speed = (p) => p.length / p.delay_s;
+const amplitude = (p) => pathPressure(p, 1000, speed(p));
+
+// Diffraction loss at 1 kHz relative to a free-field spherical wave over the same unfolded length, and the coefficient phase.
+function diffractionDetail(p) {
+  if (p.type !== 'diffracted') return { loss_db: null, phase_deg: null };
+  if (!p.diffraction) return { loss_db: diffractionLossDb(p.length - p.direct_distance, 1000, speed(p)), phase_deg: null };
+  const [re, im] = diffractionResponse(p.diffraction, 1000, speed(p));
+  return { loss_db: -20 * Math.log10(Math.hypot(re, im) * p.diffraction.spread * p.length), phase_deg: toDeg(Math.atan2(im, re)) };
+}
 
 /**
  * Per node and source path diagnostics. centre = { paths, directBlocked } from the array centre.
@@ -34,7 +42,9 @@ export function pathReport({ centre, node, source, bearing, settings }) {
       length_m: p.length,
       delay_s: p.delay_s,
       level_db_re_direct: 20 * Math.log10(amplitude(p) / refAmp),
-      diffraction_loss_db_1khz: p.type === 'diffracted' ? diffLoss1k(p) : null,
+      diffraction_loss_db_1khz: diffractionDetail(p).loss_db,
+      diffraction_phase_deg_1khz: diffractionDetail(p).phase_deg,
+      added_delay_s: p.type === 'diffracted' ? (p.length - distance(origin, src)) / speed(p) : null,
       level_reference: direct ? 'direct' : 'strongest_path',
       arrival_azimuth_deg: toDeg(Math.atan2(d[1], d[0])),
       arrival_elevation_deg: toDeg(Math.asin(Math.max(-1, Math.min(1, d[2]))))

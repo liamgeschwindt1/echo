@@ -18,7 +18,7 @@ function burst(ms = 200) {
 
 function scene(name, over, buildings, nodePos, srcPos) {
   const s = defaultScenario();
-  Object.assign(s.settings, { ...over });
+  Object.assign(s.settings, { diffraction_order: 0, diffraction_model: 'maekawa', ...over });
   s.buildings = buildings;
   s.nodes = [{ ...newNode('n1', nodePos[0], nodePos[1]), position: nodePos, mic_spacing_m: 0.05 }];
   s.sources = [{ ...newSource('s1', 'b', srcPos[0], srcPos[1], 100), keyframes: [{ t: 0, position: srcPos }], start_s: 0.05 }];
@@ -37,10 +37,32 @@ const SCENES = [
     [0, 0, 1.5]
   ),
   scene(
-    'blocked direct with diffraction',
+    'blocked direct with Maekawa diffraction',
     { ground_reflectivity: 0.8, reflection_order: 1, diffraction_order: 1 },
     [newBuilding('b1', 50, 0, 10, 10, 15), newBuilding('b2', 50, 30, 40, 4, 15)],
     [100, 0, 5],
+    [0, 0, 1.5]
+  ),
+  // Wedge model: the reference builds each diffracted impulse response from the complex coefficient on a dense linear grid.
+  scene(
+    'wedge: blocked direct, order 2 (round the ends and over the roof)',
+    { ground_reflectivity: 0.8, reflection_order: 1, diffraction_order: 2, diffraction_model: 'wedge' },
+    [newBuilding('b1', 50, 0, 10, 10, 15), newBuilding('b2', 50, 30, 40, 4, 15)],
+    [100, 0, 5],
+    [0, 0, 1.5]
+  ),
+  scene(
+    'wedge: lit receiver near a shadow boundary (edge terms on top of the direct path)',
+    { ground_reflectivity: 0.8, reflection_order: 1, diffraction_order: 2, diffraction_model: 'wedge' },
+    [newBuilding('b1', 50, 12, 10, 10, 15)],
+    [100, 0, 5],
+    [0, 0, 1.5]
+  ),
+  scene(
+    'wedge: reflection plus diffraction in a two-building canyon',
+    { ground_reflectivity: 0.8, reflection_order: 1, diffraction_order: 2, diffraction_model: 'wedge' },
+    [newBuilding('b1', 40, 8, 14, 6, 12), newBuilding('b2', 40, -8, 14, 6, 12)],
+    [90, 0, 3],
     [0, 0, 1.5]
   )
 ];

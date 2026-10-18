@@ -18,7 +18,9 @@ export const DEFAULT_SETTINGS = Object.freeze({
   min_snr_db: 6,
   reflection_order: 1,
   block_direct_behind_buildings: true,
-  diffraction_order: 0,
+  diffraction_model: 'wedge', // 'wedge' (UTD rigid wedge) or 'maekawa' (legacy formula, kept for comparison and regression)
+  diffraction_order: 2, // 0 off, 1 one edge, 2 adds edge to edge and reflection + edge
+  path_prune_db: 50, // wedge model: drop paths this far below the strongest at 250 Hz, 1 kHz and 4 kHz
   picked_path_tolerance_deg: 5,
   window_snr_db: 3,
   window_pad_ms: 10,
@@ -92,6 +94,13 @@ export function validateScenario(s) {
   const bad = placementErrors(out);
   if (bad.length) throw new Error(bad.join('; '));
   return out;
+}
+
+/** One-line notices for an older file about to load (before defaults are merged in). */
+export function scenarioNotices(raw) {
+  const notices = [];
+  if (raw?.settings?.diffraction_order === undefined) notices.push('This file has no diffraction setting: it now uses the new defaults (wedge diffraction, order 2), so levels behind buildings differ from before. Set diffraction order 0 to switch it off.');
+  return notices;
 }
 
 // Playback and the timeline end exactly when the last clip ends.

@@ -20,8 +20,8 @@ export function fingerprint(sig) {
   return { n: sig.length, sum, sum_sq: sumSq, peak, picks };
 }
 
-export function runScene(name, overrides = {}) {
-  const { scenario, clips, lengthS } = GOLDEN_SCENES[name]();
+export function runScene(name, overrides = {}, scenes = GOLDEN_SCENES) {
+  const { scenario, clips, lengthS } = scenes[name]();
   Object.assign(scenario.settings, overrides);
   const rendered = renderScenario(scenario, new Map(Object.entries(clips)), { lengthS });
   const durations = new Map(Object.entries(clips).map(([k, v]) => [k, v.length / 48000]));
@@ -29,8 +29,8 @@ export function runScene(name, overrides = {}) {
   return { rendered, results };
 }
 
-export function goldenFor(name) {
-  const { rendered, results } = runScene(name);
+export function goldenFor(name, scenes = GOLDEN_SCENES) {
+  const { rendered, results } = runScene(name, {}, scenes);
   return {
     mics: rendered.nodes.map((n) => n.mics.map(fingerprint)),
     analysis: results.map((r) => ({
