@@ -8,6 +8,7 @@ export const BACKTRACE_DEFAULTS = Object.freeze({
   cluster_m: 1,
   path_scale_m: 100,
   fallback_uncertainty_deg: 5,
+  min_tolerance_deg: 3,
   edge_margin_m: 100
 });
 
@@ -112,7 +113,7 @@ export function backtraceCandidates(nodes, buildings, opts = {}) {
   for (const n of nodes) {
     traces.set(n.node_id, traceBearing(n.position, n.azimuth_deg, { buildings, reflection_order: o.reflection_order, bounds }));
   }
-  const sigma = (n) => Math.max(n.uncertainty_deg ?? o.fallback_uncertainty_deg, 0.1);
+  const sigma = (n) => Math.max(n.uncertainty_deg ?? o.fallback_uncertainty_deg, o.min_tolerance_deg);
 
   // Best (shortest-path) leg of each node that passes the point within its bearing uncertainty, or null.
   const support = (p, z) => {
