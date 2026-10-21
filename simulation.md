@@ -28,7 +28,6 @@ It is a design tool, not validation. Free-field results are optimistic. Do not p
 **Deliberately out of scope for now**
 
 - Buildings, walls, obstacles, reflections other than the ground, diffraction.
-- Moving sources (but see the keyframe rule in section 5).
 - Wind, temperature gradients, rain.
 - Scenario clock time and priority by hour. The output shows label, group and confidence, not the hour-based priority.
 - Background and decoy tracks. A decoy such as fireworks is simply another clip the user can place. A single scenario-wide noise level still exists (section 6.5), because without it everything is audible at any distance.
@@ -88,7 +87,7 @@ Layout: top bar, left toolbox, centre map, right inspector, bottom timeline.
 
 ## 5. Data model
 
-All positions are x, y, z in metres. A source's position is stored as a keyframe list with exactly one keyframe, so moving sources can be added later without changing the format.
+All positions are x, y, z in metres. A source's position is stored as a keyframe list. One keyframe is a still source; two or more (times in scenario seconds, strictly increasing) make a moving source that follows the line between them, drawn with **Add path** and timed on the timeline.
 
 ```json
 {
@@ -278,7 +277,7 @@ Test each phase before starting the next.
 
 - Free field plus ground and axis-aligned concrete buildings. Edge diffraction uses a rigid-wedge model (uniform theory of diffraction, orders 1 and 2, on by default); facade scattering and ground effects at edges are not modelled. Street canyons will still be worse than the model, and this is where the sim is most optimistic.
 - The heatmap is an incoherent sum over the strongest arrivals (no interference), for one slice height.
-- Uniform temperature and humidity, no wind, static sources.
+- Uniform temperature and humidity, no wind. Moving sources are rendered piecewise (short crossfaded pieces from successive positions), so Doppler is approximate.
 - Level calibration constants, source levels and ground reflectivity are placeholders until confirmed.
 - Localisation timing is only as good as the simulated mics, with no hardware jitter, clock drift or mic mismatch.
 - The wave display is stylised. It shows loudness, tone and noisiness, not true wavelength.
@@ -286,7 +285,6 @@ Test each phase before starting the next.
 ## 16. Later versions (not now)
 
 - 3D view with spheres and a free camera.
-- Moving sources (more keyframes per source).
 - Scenario clock time and priority by hour, background tracks, and decoy tracks.
 - Cross-node timing with a clock-error setting.
 - Calibration against real recordings from the phone rig at known distances.

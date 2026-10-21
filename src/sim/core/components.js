@@ -9,7 +9,7 @@ function pathSeries(ctx, ni, mi, filterFor, sourceIndices) {
   const { bins, n, total } = ctx;
   const accRe = new Float64Array(bins);
   const accIm = new Float64Array(bins);
-  for (const si of sourceIndices) addSourceSpectrum(ctx, si, ctx.table[ni].perMic[mi][si].paths, accRe, accIm, filterFor);
+  for (const si of sourceIndices) addSourceSpectrum(ctx, si, ctx.table[ni].perMic[mi][si].paths, accRe, accIm, filterFor, ctx.bins - 2, null, { ni, mi });
   const full = irfft(accRe, accIm, n);
   const g = micGainFor(ctx, ni, mi);
   const out = new Float32Array(total);

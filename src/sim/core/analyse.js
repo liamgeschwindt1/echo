@@ -6,6 +6,8 @@ import { timed } from './profile.js';
 import { azimuthUncertaintyDeg } from './uncertainty.js';
 import { FRAME_S } from './activity.js';
 import { sourcePosition } from './scenario.js';
+import { emittedPosition, isMoving, positionAt } from './motion.js';
+import { buildSourceGraph, buildSurfaces, findPaths } from './geometry.js';
 
 const toDeg = (r) => (r * 180) / Math.PI;
 const angDiff = (a, b) => Math.abs(((a - b + 540) % 360) - 180);
@@ -98,7 +100,10 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
   );
 
   return scenario.sources.map((src, si) => {
-    const truth = sourcePosition(src);
+    const moving = isMoving(src);
+    // A moving source has no single true position: each node is judged against where the sound it localised was
+    // emitted (mid-window), and the source as a whole against the mean of those points.
+    let truth = moving ? rendered.source_positions?.[si] ?? sourcePosition(src) : sourcePosition(src);
     const perNode = scenario.nodes.map((node, ni) => {
       const rn = rendered.nodes[ni];
       const act = rendered.activity[ni];
@@ -106,7 +111,8 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
       const r = distance(truth, node.position);
       const own = act.per_source[si];
       const noiseP = act.noise_band_power;
-      const firstDelay = centre.paths.length ? Math.min(...centre.paths.map((p) => p.delay_s)) : r / c;
+      // A moving source's reference-position paths say nothing about when it is first heard: use its position at the start.
+      const firstDelay = moving ? distance(positionAt(src, src.start_s), node.position) / c : centre.paths.length ? Math.min(...centre.paths.map((p) => p.delay_s)) : r / c;
       const win = windows[ni][si];
       const active = win || [src.start_s + firstDelay, Math.min(lengthS, src.start_s + firstDelay + 0.2)];
 
@@ -142,8 +148,16 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
       const toSamples = (w) => [Math.max(0, Math.round(w[0] * fs)), Math.min(rendered.length, Math.max(Math.round(w[0] * fs) + 64, Math.round(w[1] * fs)))];
       const [a, b] = toSamples(loc);
       const bearingFor = (s0, s1, stage = 'localise_final') => timed(profile, stage, () => estimateBearing({ mics: rn.mics, positions: rn.mic_positions, startSample: s0, endSample: s1, fs, c, band: settings.localisation_band_hz }));
-      const trueAz = toDeg(Math.atan2(truth[1] - node.position[1], truth[0] - node.position[0]));
-      const sigmaFor = (bearing, w) =>
+      const nodeTruth = moving ? emittedPosition(src, node.position, (loc[0] + loc[1]) / 2, c) : truth;
+      const nodeRange = moving ? distance(nodeTruth, node.position) : r;
+      const trueAz = toDeg(Math.atan2(nodeTruth[1] - node.position[1], nodeTruth[0] - node.position[0]));
+      const azAt = (tArr) => {
+        const q = emittedPosition(src, node.position, tArr, c);
+        return toDeg(Math.atan2(q[1] - node.position[1], q[0] - node.position[0]));
+      };
+      // A moving source sweeps across the window: half the swept angle is added (in quadrature) to the noise-limited spread.
+      const sigmaFor = (bearing, w) => (moving ? Math.hypot(noiseSigma(bearing, w), angDiff(azAt(w[0]), azAt(w[1])) / 2) : noiseSigma(bearing, w));
+      const noiseSigma = (bearing, w) =>
         azimuthUncertaintyDeg({
           snrDb: toDb(meanPower(own.all, w[0], w[1]), noiseP),
           windowS: w[1] - w[0],
@@ -157,9 +171,20 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
 
       const bearing = bearingFor(a, b);
       if (bearing) bearing.uncertainty_deg = sigmaFor(bearing, loc);
-      const report = timed(profile, 'path_report', () => pathReport({ centre, node, source: src, bearing, settings }));
+      let centreUsed = centre;
+      if (moving) {
+        // Diagnose against the paths from where the localised sound left the source. They replace the reference-position
+        // entry in rendered.paths so the map and mic view draw the same paths the picked index refers to.
+        const buildings = scenario.buildings || [];
+        const surfaces = buildSurfaces(buildings);
+        const wedgeOn = settings.diffraction_model === 'wedge' && (settings.diffraction_order ?? 0) >= 1;
+        const graph = wedgeOn ? buildSourceGraph(nodeTruth, { settings, buildings, surfaces }) : undefined;
+        centreUsed = findPaths(nodeTruth, node.position, { settings, buildings, surfaces, c, graph });
+        rendered.paths[ni].centre[si] = centreUsed;
+      }
+      const report = timed(profile, 'path_report', () => pathReport({ centre: centreUsed, node, source: src, bearing, settings, sourcePos: nodeTruth }));
       const snr = toDb(meanPower(own.all, active[0], active[1]), noiseP);
-      const hasDirect = centre.paths.some((p) => p.type === 'direct');
+      const hasDirect = centreUsed.paths.some((p) => p.type === 'direct');
       const reliable = status === 'ok';
 
       // Bearings from growing windows: the wedge is "generated" as the sound accumulates at the node.
@@ -179,7 +204,7 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
 
       return {
         node_id: node.id,
-        range_m: r,
+        range_m: nodeRange,
         snr_db: snr,
         snr_direct_db: hasDirect ? toDb(meanPower(own.direct, active[0], active[1]), noiseP) : null,
         snr_broadband_db: snrBroadbandDb(rn.mics[0], ...toSamples(active), settings),
@@ -198,13 +223,15 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
         ...report,
         azimuth_error_deg: bearing ? angDiff(bearing.azimuth_deg, trueAz) : null,
         true_azimuth_deg: trueAz,
-        true_elevation_deg: toDeg(Math.asin((truth[2] - node.position[2]) / r)),
+        true_elevation_deg: toDeg(Math.asin((nodeTruth[2] - node.position[2]) / nodeRange)),
+        ...(moving ? { true_position: nodeTruth } : {}),
         first_arrival_s: src.start_s + firstDelay
       };
     });
 
     // A node leaves the fix if it cannot hear the sound or its window is dominated by another sound.
     const used = perNode.filter((n) => n.bearing && n.heard && n.reliable);
+    if (moving && used.length) truth = [0, 1, 2].map((k) => used.reduce((a, n) => a + n.true_position[k], 0) / used.length);
     const rays = used.map((n) => ({ origin: scenario.nodes.find((x) => x.id === n.node_id).position, direction: n.bearing.direction, weight: 10 ** (n.snr_db / 10) }));
     const fix = intersectRays(rays);
     const est = fix && !fix.poorly_conditioned ? fix.position : null;

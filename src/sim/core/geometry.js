@@ -587,27 +587,30 @@ export function findPaths(src, mic, { settings, buildings = [], surfaces, c, ima
   return { paths: kept.map((p) => ({ ...p, delay_s: p.length / c })), directBlocked, capped, dropped };
 }
 
-/** Path tables for every node: per mic and for the array centre, per source. Includes each entry's dropped list. */
-export function computePathTable(scenario, micPositionsOf, c) {
+/**
+ * Path tables for every node: per mic and for the array centre, per source. Includes each entry's dropped list.
+ * positionOf(source, index) picks the source position (default: the first keyframe).
+ */
+export function computePathTable(scenario, micPositionsOf, c, positionOf = (s) => s.keyframes[0].position) {
   const { settings } = scenario;
   const buildings = scenario.buildings || [];
   const surfaces = buildSurfaces(buildings);
   const wedgeOn = settings.diffraction_model === 'wedge' && (settings.diffraction_order ?? 0) >= 1;
   // One visibility graph per source, shared by every node and microphone.
-  const graphs = wedgeOn ? scenario.sources.map((s) => buildSourceGraph(s.keyframes[0].position, { settings, buildings, surfaces })) : [];
+  const graphs = wedgeOn ? scenario.sources.map((s, si) => buildSourceGraph(positionOf(s, si), { settings, buildings, surfaces })) : [];
   const optsFor = (si) => ({ settings, buildings, surfaces, c, graph: graphs[si] });
   let capped = false;
   const table = scenario.nodes.map((node) => {
     const mics = micPositionsOf(node);
     const perMic = mics.map((mp) =>
       scenario.sources.map((s, si) => {
-        const r = findPaths(s.keyframes[0].position, mp, optsFor(si));
+        const r = findPaths(positionOf(s, si), mp, optsFor(si));
         capped ||= r.capped;
         return r;
       })
     );
     const centre = scenario.sources.map((s, si) => {
-      const r = findPaths(s.keyframes[0].position, node.position, optsFor(si));
+      const r = findPaths(positionOf(s, si), node.position, optsFor(si));
       capped ||= r.capped;
       return r;
     });

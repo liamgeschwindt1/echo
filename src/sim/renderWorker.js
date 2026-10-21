@@ -2,7 +2,7 @@ import { renderScenario } from './core/render.js';
 import { analyseScenario } from './core/analyse.js';
 import { renderComponents } from './core/components.js';
 import { computeReachField, noiseBandPowerPa2, gridSize } from './core/reach.js';
-import { clipBandEnvelopes, computeFieldArrivals, fieldSources, fitGridToBudget, DEFAULT_MEMORY_BUDGET_BYTES, DEFAULT_TOP_N } from './core/field.js';
+import { computeFieldArrivals, fieldEnvelopes, fieldSources, fitGridToBudget, DEFAULT_MEMORY_BUDGET_BYTES, DEFAULT_TOP_N } from './core/field.js';
 
 self.onmessage = (e) => {
   const { type, scenario, clips, lengthS, durations } = e.data;
@@ -19,11 +19,10 @@ self.onmessage = (e) => {
       try {
         const clipMap = new Map(clips);
         const all = fieldSources(scenario, clipMap);
-        const only = sourceFilter ? scenario.sources.findIndex((s) => s.id === sourceFilter) : -1;
-        const sources = only >= 0 ? [all[only]] : all;
+        const sources = sourceFilter && all.some((s) => s.id === sourceFilter) ? all.filter((s) => s.id === sourceFilter) : all;
         const fit = fitGridToBudget(grid, sources.length, DEFAULT_TOP_N, DEFAULT_MEMORY_BUDGET_BYTES);
         const field = computeFieldArrivals({ sources, settings: scenario.settings, buildings: scenario.buildings || [], grid: fit.grid, topN: DEFAULT_TOP_N });
-        const envelopes = sources.map((s) => clipBandEnvelopes(clipMap.get(s.clip), scenario.settings.render_sample_rate, scenario.settings.localisation_band_hz));
+        const envelopes = fieldEnvelopes(sources, clipMap, scenario.settings.render_sample_rate, scenario.settings.localisation_band_hz);
         const noisePa2 = scenario.settings.noise_enabled === false ? 0 : noiseBandPowerPa2(scenario.settings);
         const rec = { ...field, envelopes, grid: fit.grid, noisePa2, coarsened: fit.coarsened, budget: DEFAULT_MEMORY_BUDGET_BYTES };
         const transfer = [field.mask.buffer, ...field.perSource.flatMap((s) => [s.count.buffer, s.delay.buffer, s.amp2.buffer])];

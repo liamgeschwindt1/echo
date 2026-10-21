@@ -31,7 +31,7 @@ export function computeActivity(ctx, ni) {
   const powerFrames = (filter, si) => {
     const accRe = new Float64Array(bins);
     const accIm = new Float64Array(bins);
-    addSourceSpectrum(ctx, si, ctx.table[ni].perMic[0][si].paths, accRe, accIm, filter, kMax);
+    addSourceSpectrum(ctx, si, ctx.table[ni].perMic[0][si].paths, accRe, accIm, filter, kMax, null, { ni, mi: 0 });
     const hRe = new Float64Array(m / 2 + 1);
     const hIm = new Float64Array(m / 2 + 1);
     for (let k = lo; k <= hi; k++) {

@@ -3,6 +3,7 @@ import { gccCurve } from '../core/localise.js';
 import { MIC_PAIRS } from '../core/mics.js';
 import { airAbsorptionDbPerM, distance, speedOfSound } from '../core/physics.js';
 import { findPaths, pathPressure } from '../core/geometry.js';
+import { isMoving, positionAt } from '../core/motion.js';
 import { arrivalsCsv, encodeWavFloat32 } from '../core/wav.js';
 
 const SHADES = ['#ffffff', '#cfcfcf', '#a0a0a0', '#7a7a7a', '#5a5a5a'];
@@ -275,7 +276,7 @@ export function createMicView(host) {
         tctx.setLineDash([4 * dpr, 3 * dpr]);
         tctx.strokeStyle = host.accent;
         info.scn.sources.forEach((src) => {
-          const t = src.start_s + distance(src.keyframes[0].position, info.node.mic_positions_true[mi]) / info.c;
+          const t = src.start_s + distance(positionAt(src, src.start_s), info.node.mic_positions_true[mi]) / info.c;
           const x = ((t - view.t0) / span) * W;
           if (x >= 0 && x <= W) {
             tctx.beginPath();
@@ -406,7 +407,7 @@ export function createMicView(host) {
     const pos = info.node.mic_positions_true;
     const baseline = distance(info.node.mic_positions[i], info.node.mic_positions[j]) / info.c;
     const curve = gccCurve({ signal: info.node.mics[i], start: a, end: b }, { signal: info.node.mics[j], start: a, end: b }, { fs: info.fs, band: info.scn.settings.localisation_band_hz, maxLagS: baseline });
-    const src = info.scn.sources[si].keyframes[0].position;
+    const src = nr.true_position ?? info.scn.sources[si].keyframes[0].position;
     const tdoa = (img) => (distance(img, pos[i]) - distance(img, pos[j])) / info.c;
     const centre = host.getRendered().paths[info.ni].centre[si].paths;
     const pickedPath = nr.picked_path_index !== null && nr.picked_path_index !== undefined ? centre[nr.picked_path_index] : null;
@@ -478,6 +479,10 @@ export function createMicView(host) {
     let droppedCount = 0;
     const dropReasons = {};
     scn.sources.forEach((src, si) => {
+      if (isMoving(src)) {
+        rows += `<tr><td>${src.id}</td><td colspan="8" class="muted">moving source: its paths change along the route, so it is not audited</td></tr>`;
+        return;
+      }
       const srcPos = src.keyframes[0].position;
       info.node.mic_positions_true.forEach((mp, mi) => {
         // Independent recomputation straight from the geometry, not from the render.

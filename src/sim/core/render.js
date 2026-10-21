@@ -2,7 +2,8 @@ import { airAbsorptionDbPerM, dbToPa, digitalPerPa, speedOfSound } from './physi
 import { irfft, nextPow2, rfft } from './dsp.js';
 import { micPositions } from './mics.js';
 import { gaussian, pinkNoise, streamFor, whiteNoise } from './rng.js';
-import { computePathTable, diffractionLossDb, findPaths } from './geometry.js';
+import { buildSourceGraph, buildSurfaces, computePathTable, diffractionLossDb, findPaths } from './geometry.js';
+import { hatWeight, isMoving, motionKnots, positionAt, referencePosition } from './motion.js';
 import { diffractionGrid, diffractionOnGrid, gridMap, WEDGE_DESCRIPTION } from './diffraction.js';
 import { computeActivity } from './activity.js';
 import { timed } from './profile.js';
@@ -64,18 +65,22 @@ export function prepareRender(scenario, clips, lengthS, profile = null) {
   const n = nextPow2(total);
   const bins = n / 2 + 1;
   const c = speedOfSound(settings.temperature_c);
-  const spectra = timed(profile, 'clip_spectra', () => scenario.sources.map((src) => {
+  const scaledClips = scenario.sources.map((src) => {
     const samples = clips.get(src.clip);
     if (!samples) throw new Error(`clip ${src.clip} not loaded`);
     const gain = clipGainPa(samples, fs, src.level_1m_db);
     const scaled = new Float32Array(samples.length);
     for (let i = 0; i < samples.length; i++) scaled[i] = samples[i] * gain;
-    return rfft(scaled, n);
-  }));
+    return scaled;
+  });
+  // Moving sources are rendered piecewise from the clip itself (see movingSignal), so they need no full spectrum.
+  const spectra = timed(profile, 'clip_spectra', () => scenario.sources.map((src, si) => (isMoving(src) ? null : rfft(scaledClips[si], n))));
+  // The path table (diagnostics, plots) of a moving source is taken half way through its clip.
+  const sourcePositions = scenario.sources.map((src, si) => referencePosition(src, scaledClips[si].length / fs));
   const truePositions = scenario.nodes.map((node, ni) => trueMicPositions(node, ni, settings));
-  const table = timed(profile, 'path_table', () => computePathTable(scenario, (node) => truePositions[scenario.nodes.indexOf(node)], c));
+  const table = timed(profile, 'path_table', () => computePathTable(scenario, (node) => truePositions[scenario.nodes.indexOf(node)], c, (_, si) => sourcePositions[si]));
   return {
-    scenario, settings, fs, total, n, bins, c, spectra, table, truePositions,
+    scenario, settings, fs, total, n, bins, c, spectra, scaled: scaledClips, sourcePositions, table, truePositions,
     toDigital: digitalPerPa(settings.spl_ref_db, settings.dbfs_ref_db),
     absorb: absorptionTable(bins, fs, n, settings)
   };
@@ -137,66 +142,176 @@ function addWedgePath(ctx, X, path, tau, accRe, accIm, kMax, record, k1k) {
   });
 }
 
+// One non-moving path: delay by tau seconds, spreading, absorption and (for edge paths) diffraction, added into acc.
+function addPath(ctx, X, path, tau, accRe, accIm, kMax, record, k1k) {
+  const { fs, n, absorb } = ctx;
+  const g0 = path.gain / Math.max(path.length, 1);
+  const lnAtt = (path.length * Math.LN10) / 20;
+  if (path.diffraction) {
+    addWedgePath(ctx, X, path, tau, accRe, accIm, kMax, record, k1k);
+    return;
+  }
+  const diffracted = path.type === 'diffracted';
+  const delta = diffracted ? path.length - path.direct_distance : 0;
+  const step = (2 * Math.PI * fs * tau) / n;
+  const dr = Math.cos(step);
+  const di = Math.sin(step);
+  let cr = 1;
+  let ci = 0;
+  let g1k = null;
+  const top = Math.min(kMax, ctx.bins - 2);
+  for (let k = 1; k <= top; k++) {
+    // Rotate incrementally, re-anchoring often enough to keep rounding drift negligible.
+    if (((k - 1) & 1023) === 0) {
+      cr = Math.cos(k * step);
+      ci = Math.sin(k * step);
+    } else {
+      const nr = cr * dr - ci * di;
+      ci = cr * di + ci * dr;
+      cr = nr;
+    }
+    let g = g0 * Math.exp(-absorb[k] * lnAtt);
+    if (diffracted) g *= 10 ** (-diffractionLossDb(delta, (k * fs) / n, ctx.c) / 20);
+    if (k === k1k) g1k = g;
+    const c = cr * g;
+    const s = ci * g;
+    accRe[k] += X.re[k] * c + X.im[k] * s;
+    accIm[k] += X.im[k] * c - X.re[k] * s;
+  }
+  // DC goes through the same filter chain: skipping the losses here would put a single-bin step
+  // in the magnitude response, which spreads as a constant pedestal across the whole impulse
+  // response (measured: -32 dB IR tail, which broke the reference-renderer comparison).
+  let gDC = g0 * Math.exp(-absorb[0] * lnAtt);
+  if (diffracted) gDC *= 10 ** (-diffractionLossDb(delta, 0, ctx.c) / 20);
+  accRe[0] += X.re[0] * gDC;
+  record?.push({
+    type: path.type,
+    surfaces: path.surfaces,
+    delay_samples: tau * fs,
+    gain_db_1khz: 20 * Math.log10(g1k ?? g0),
+    filter: `spreading 1/max(r,1), r=${path.length.toFixed(3)} m; bounce gain ${path.gain}; air absorption ${ctx.settings.air_absorption ? 'ISO 9613-1' : 'off'}${diffracted ? `; diffraction 10log10(3+20N) cap 20 dB, delta=${delta.toFixed(3)} m` : ''}`
+  });
+}
+
 /**
  * Adds one source's spectrum, through the chosen paths, into the accumulators.
  * pathFilter(path) selects which paths count (all, direct only, one type...). kMax limits the highest bin.
  * When record is given, every applied path is pushed as the render stage actually applies it:
  * { type, surfaces, delay_samples, gain_db_1khz, filter } — the audit reads these back, never geometry.
+ * at = { ni, mi } names the receiving mic; it is required for a moving source, whose paths change along its
+ * route and are found here (pathList, the paths at the reference position, is then ignored and nothing is recorded).
  */
-export function addSourceSpectrum(ctx, si, pathList, accRe, accIm, pathFilter = null, kMax = ctx.bins - 2, record = null) {
-  const { fs, n, absorb } = ctx;
+export function addSourceSpectrum(ctx, si, pathList, accRe, accIm, pathFilter = null, kMax = ctx.bins - 2, record = null, at = null) {
   const src = ctx.scenario.sources[si];
+  if (isMoving(src)) {
+    if (!at) throw new Error(`source ${src.id} moves: addSourceSpectrum needs the receiving mic`);
+    addMovingSource(ctx, si, at, accRe, accIm, pathFilter, kMax);
+    return;
+  }
   const X = ctx.spectra[si];
-  const k1k = Math.round((1000 * n) / fs);
+  const k1k = Math.round((1000 * ctx.n) / ctx.fs);
   for (const path of pathList) {
     if (pathFilter && !pathFilter(path)) continue;
-    const g0 = path.gain / Math.max(path.length, 1);
-    const tau = src.start_s + path.delay_s;
-    const lnAtt = (path.length * Math.LN10) / 20;
-    if (path.diffraction) {
-      addWedgePath(ctx, X, path, tau, accRe, accIm, kMax, record, k1k);
-      continue;
+    addPath(ctx, X, path, src.start_s + path.delay_s, accRe, accIm, kMax, record, k1k);
+  }
+}
+
+const MOVING_PAD = 2048;
+const MOVING_SPREAD = 2048;
+
+// Smaller render context for one crossfaded piece of a moving source (same filters, transform size m).
+function pieceContext(ctx, m) {
+  ctx.pieceCtx ??= new Map();
+  let p = ctx.pieceCtx.get(m);
+  if (!p) {
+    const bins = m / 2 + 1;
+    p = { fs: ctx.fs, n: m, bins, c: ctx.c, settings: ctx.settings, absorb: absorptionTable(bins, ctx.fs, m, ctx.settings) };
+    ctx.pieceCtx.set(m, p);
+  }
+  return p;
+}
+
+function movingPaths(ctx, pos, mic) {
+  const { settings } = ctx;
+  ctx.geom ??= { buildings: ctx.scenario.buildings || [], surfaces: buildSurfaces(ctx.scenario.buildings || []), graphs: new Map() };
+  const { buildings, surfaces, graphs } = ctx.geom;
+  let graph;
+  if (settings.diffraction_model === 'wedge' && (settings.diffraction_order ?? 0) >= 1) {
+    const key = pos.join(',');
+    graph = graphs.get(key);
+    if (!graph) graphs.set(key, (graph = buildSourceGraph(pos, { settings, buildings, surfaces })));
+  }
+  return findPaths(pos, mic, { settings, buildings, surfaces, c: ctx.c, graph }).paths;
+}
+
+/**
+ * Time signal (length ctx.n) of a moving source at one mic. The clip is split into overlapping pieces with linear
+ * crossfades (weights summing to 1) between knots along the route; each piece goes through the paths found from the
+ * source position at its knot, so delays, levels and occlusion follow the motion (Doppler arises from the changing
+ * delays, approximated piecewise).
+ */
+function movingSignal(ctx, si, at, pathFilter) {
+  const { fs, n, scenario } = ctx;
+  const src = scenario.sources[si];
+  const clip = ctx.scaled[si];
+  const L = clip.length;
+  const S = src.start_s;
+  const knots = motionKnots(src, S, S + L / fs);
+  const mic = at.mi == null ? scenario.nodes[at.ni].position : ctx.truePositions[at.ni][at.mi];
+  const out = new Float64Array(n);
+  const pathCache = new Map();
+  for (let j = 0; j < knots.length; j++) {
+    const a = j === 0 ? 0 : Math.max(0, Math.ceil((knots[j - 1] - S) * fs));
+    const b = j === knots.length - 1 ? L : Math.min(L, Math.floor((knots[j + 1] - S) * fs) + 1);
+    if (b <= a) continue;
+    const pos = positionAt(src, knots[j]);
+    const key = pos.join(',');
+    let paths = pathCache.get(key);
+    if (!paths) pathCache.set(key, (paths = movingPaths(ctx, pos, mic)));
+    const used = pathFilter ? paths.filter(pathFilter) : paths;
+    if (!used.length) continue;
+    const tA = S + a / fs;
+    const seg = new Float32Array(b - a);
+    for (let i = a; i < b; i++) seg[i - a] = clip[i] * hatWeight(knots, j, S + i / fs);
+    // Late echoes spread the delays far beyond one piece: rather than one transform long enough for all of them,
+    // paths are grouped by delay so each group fits a transform of size m (one forward FFT, one inverse per group).
+    const m = nextPow2(b - a + 2 * MOVING_PAD + 1 + MOVING_SPREAD);
+    const room = m - (b - a) - 2 * MOVING_PAD - 1;
+    const piece = pieceContext(ctx, m);
+    const X = rfft(seg, m);
+    const sorted = [...used].sort((p, q) => p.delay_s - q.delay_s);
+    for (let g0 = 0; g0 < sorted.length; ) {
+      const minTau = sorted[g0].delay_s;
+      let g1 = g0 + 1;
+      while (g1 < sorted.length && Math.ceil((sorted[g1].delay_s - minTau) * fs) <= room) g1++;
+      const B = Math.floor((tA + minTau) * fs) - MOVING_PAD;
+      const accRe = new Float64Array(piece.bins);
+      const accIm = new Float64Array(piece.bins);
+      for (let pi = g0; pi < g1; pi++) addPath(piece, X, sorted[pi], tA + sorted[pi].delay_s - B / fs, accRe, accIm, piece.bins - 2, null, -1);
+      const y = irfft(accRe, accIm, m);
+      const q0 = Math.max(0, -B);
+      const q1 = Math.min(m, n - B);
+      for (let q = q0; q < q1; q++) out[B + q] += y[q];
+      g0 = g1;
     }
-    const diffracted = path.type === 'diffracted';
-    const delta = diffracted ? path.length - path.direct_distance : 0;
-    const step = (2 * Math.PI * fs * tau) / n;
-    const dr = Math.cos(step);
-    const di = Math.sin(step);
-    let cr = 1;
-    let ci = 0;
-    let g1k = null;
-    const top = Math.min(kMax, ctx.bins - 2);
-    for (let k = 1; k <= top; k++) {
-      // Rotate incrementally, re-anchoring often enough to keep rounding drift negligible.
-      if (((k - 1) & 1023) === 0) {
-        cr = Math.cos(k * step);
-        ci = Math.sin(k * step);
-      } else {
-        const nr = cr * dr - ci * di;
-        ci = cr * di + ci * dr;
-        cr = nr;
-      }
-      let g = g0 * Math.exp(-absorb[k] * lnAtt);
-      if (diffracted) g *= 10 ** (-diffractionLossDb(delta, (k * fs) / n, ctx.c) / 20);
-      if (k === k1k) g1k = g;
-      const c = cr * g;
-      const s = ci * g;
-      accRe[k] += X.re[k] * c + X.im[k] * s;
-      accIm[k] += X.im[k] * c - X.re[k] * s;
-    }
-    // DC goes through the same filter chain: skipping the losses here would put a single-bin step
-    // in the magnitude response, which spreads as a constant pedestal across the whole impulse
-    // response (measured: -32 dB IR tail, which broke the reference-renderer comparison).
-    let gDC = g0 * Math.exp(-absorb[0] * lnAtt);
-    if (diffracted) gDC *= 10 ** (-diffractionLossDb(delta, 0, ctx.c) / 20);
-    accRe[0] += X.re[0] * gDC;
-    record?.push({
-      type: path.type,
-      surfaces: path.surfaces,
-      delay_samples: tau * fs,
-      gain_db_1khz: 20 * Math.log10(g1k ?? g0),
-      filter: `spreading 1/max(r,1), r=${path.length.toFixed(3)} m; bounce gain ${path.gain}; air absorption ${ctx.settings.air_absorption ? 'ISO 9613-1' : 'off'}${diffracted ? `; diffraction 10log10(3+20N) cap 20 dB, delta=${delta.toFixed(3)} m` : ''}`
-    });
+  }
+  return out;
+}
+
+function addMovingSource(ctx, si, at, accRe, accIm, pathFilter, kMax) {
+  // The activity pass re-reads mic 0 with all paths right after the main render produced it: keep that one spectrum.
+  const key = !pathFilter && at.mi === 0 ? `${si}:${at.ni}` : null;
+  ctx.movingCache ??= new Map();
+  let X = key ? ctx.movingCache.get(key) : null;
+  if (!X) {
+    X = rfft(movingSignal(ctx, si, at, pathFilter), ctx.n);
+    if (key) ctx.movingCache.set(key, X);
+  }
+  const top = Math.min(kMax, ctx.bins - 2);
+  accRe[0] += X.re[0];
+  for (let k = 1; k <= top; k++) {
+    accRe[k] += X.re[k];
+    accIm[k] += X.im[k];
   }
 }
 
@@ -240,7 +355,7 @@ export function renderScenario(scenario, clips, { lengthS, onProgress, profile =
       const accIm = new Float64Array(bins);
       const auditMic = scenario.sources.map(() => []);
       const out = timed(profile, 'mic_render', () => {
-        scenario.sources.forEach((_, si) => addSourceSpectrum(ctx, si, ctx.table[ni].perMic[mi][si].paths, accRe, accIm, null, ctx.bins - 2, auditMic[si]));
+        scenario.sources.forEach((_, si) => addSourceSpectrum(ctx, si, ctx.table[ni].perMic[mi][si].paths, accRe, accIm, null, ctx.bins - 2, auditMic[si], { ni, mi }));
         const full = irfft(accRe, accIm, n);
         const o = new Float32Array(total);
         for (let i = 0; i < total; i++) o[i] = full[i];
@@ -257,5 +372,5 @@ export function renderScenario(scenario, clips, { lengthS, onProgress, profile =
     activity.push(timed(profile, 'activity', () => computeActivity(ctx, ni)));
     audit.push(auditNode);
   });
-  return { sample_rate: ctx.fs, length: total, nodes, paths: ctx.table, activity, audit };
+  return { sample_rate: ctx.fs, length: total, nodes, paths: ctx.table, source_positions: ctx.sourcePositions, activity, audit };
 }

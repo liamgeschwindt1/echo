@@ -2,6 +2,7 @@ import { defaultScenario, newNode, newSource, newBuilding, placementErrors, vali
 import { insideBuilding, buildingBox, simConstants, segmentBlocked, traceReflection, reflectionImages } from './core/geometry.js';
 import { speedOfSound, dbToPa } from './core/physics.js';
 import { clipGainPa } from './core/render.js';
+import { isMoving, keyframesAlong, motionSpan, pathLength, pathSpeed, positionAt, retime, setPathHeight, shiftTimes, translatePath, MIN_MOTION_S } from './core/motion.js';
 import { analyseClip, wavefrontRings } from './core/wavefront.js';
 import { sourceBandLevels } from './core/reach.js';
 import { createHeatmap } from './ui/heatmap.js';
@@ -221,7 +222,17 @@ function removeSelected() {
   markEdited();
 }
 document.addEventListener('keydown', (e) => {
-  if ((e.key === 'Delete' || e.key === 'Backspace') && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName || '')) removeSelected();
+  if (/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName || '')) return;
+  if (pathDraw) {
+    if (e.key === 'Enter') finishPathDraw();
+    else if (e.key === 'Escape') cancelPathDraw();
+    else if (e.key === 'Backspace' || e.key === 'Delete') {
+      e.preventDefault();
+      if (pathDraw.points.length > 1) pathDraw.points.pop();
+    }
+    return;
+  }
+  if (e.key === 'Delete' || e.key === 'Backspace') removeSelected();
 });
 
 // ---------- settings and top bar ----------
@@ -459,15 +470,18 @@ function drawMap() {
     mctx.fillText(n.id, sx + 8 * dpr, sy - 8 * dpr);
   }
   for (const s of scenario.sources) {
-    const p = sourcePosition(s);
+    const sel = selected?.id === s.id || selected2?.id === s.id;
+    if (isMoving(s)) drawSourcePath(s, sel, dpr);
+    const p = positionAt(s, t);
     const [sx, sy] = toScreen(p[0], p[1]);
-    mctx.fillStyle = selected?.id === s.id || selected2?.id === s.id ? ACCENT : '#fff';
+    mctx.fillStyle = sel ? ACCENT : '#fff';
     mctx.beginPath();
     mctx.arc(sx, sy, 4 * dpr, 0, 7);
     mctx.fill();
     mctx.fillStyle = '#888';
     mctx.fillText(`${s.id} ${s.clip}`, sx + 8 * dpr, sy + 12 * dpr);
   }
+  drawPathDraft(dpr);
 
   if ($('showPaths').checked) drawPaths(dpr);
 
@@ -519,6 +533,41 @@ function drawMap() {
   mctx.lineTo(16 * dpr + barM * view.scale, H - 16 * dpr);
   mctx.stroke();
   mctx.fillText(`${barM} m`, 16 * dpr, H - 22 * dpr);
+}
+
+// Route of a moving source: dashed polyline from its start (ring) to its end (arrow tip square).
+function drawSourcePath(s, sel, dpr) {
+  const pts = s.keyframes.map((k) => toScreen(k.position[0], k.position[1]));
+  mctx.strokeStyle = sel ? ACCENT : 'rgba(255,255,255,0.6)';
+  mctx.lineWidth = (sel ? 2 : 1.25) * dpr;
+  mctx.setLineDash([6 * dpr, 4 * dpr]);
+  mctx.beginPath();
+  pts.forEach(([x, y], k) => (k ? mctx.lineTo(x, y) : mctx.moveTo(x, y)));
+  mctx.stroke();
+  mctx.setLineDash([]);
+  mctx.lineWidth = dpr;
+  const [ax, ay] = pts[0];
+  mctx.beginPath();
+  mctx.arc(ax, ay, 5 * dpr, 0, 7);
+  mctx.stroke();
+  const [bx, by] = pts[pts.length - 1];
+  mctx.strokeRect(bx - 3.5 * dpr, by - 3.5 * dpr, 7 * dpr, 7 * dpr);
+}
+
+// The path being drawn: clicked points plus a rubber band to the pointer.
+function drawPathDraft(dpr) {
+  if (!pathDraw) return;
+  const pts = [...pathDraw.points, ...(pathDraw.cursor ? [pathDraw.cursor] : [])].map((q) => toScreen(q[0], q[1]));
+  mctx.strokeStyle = ACCENT;
+  mctx.lineWidth = 2 * dpr;
+  mctx.setLineDash([6 * dpr, 4 * dpr]);
+  mctx.beginPath();
+  pts.forEach(([x, y], k) => (k ? mctx.lineTo(x, y) : mctx.moveTo(x, y)));
+  mctx.stroke();
+  mctx.setLineDash([]);
+  mctx.fillStyle = ACCENT;
+  for (const [x, y] of pts.slice(0, pathDraw.points.length)) mctx.fillRect(x - 3 * dpr, y - 3 * dpr, 6 * dpr, 6 * dpr);
+  mctx.lineWidth = 1;
 }
 
 function drawBuildings(dpr) {
@@ -577,7 +626,7 @@ function drawPaths(dpr) {
   const table = rendered.paths[ni]?.centre[si]?.paths;
   const nodeResult = results[si]?.nodes[ni];
   if (!table || !nodeResult) return;
-  const start = sourcePosition(scenario.sources[si]);
+  const start = nodeResult.true_position ?? rendered.source_positions?.[si] ?? sourcePosition(scenario.sources[si]);
   const end = scenario.nodes[ni].position;
   mctx.globalAlpha = status === 'stale' ? 0.3 : 1;
   table.forEach((p, i) => {
@@ -793,7 +842,16 @@ function collectRings() {
     const base = { analysis: a, startS: s.start_s, t, c, floorPa };
     const alphaOf = (r, scale) => Math.min(1, (20 * Math.log10(r.amp / floorPa)) / 60) * scale;
     const direct = wavefrontRings({ ...base, gainPa, dz: p[2] - slice, maxRings });
-    const visible = boxes.length ? (P) => !segmentBlocked(p, [P[0], P[1], P[2] ?? slice], boxes) : null;
+    const visibleFrom = (q) => (boxes.length ? (P) => !segmentBlocked(q, [P[0], P[1], P[2] ?? slice], boxes) : null);
+    if (isMoving(s)) {
+      // Each ring of a moving source is centred where the source was when that sound left it.
+      for (const r of direct) {
+        const q = positionAt(s, r.emit_s);
+        out.push({ center: q, rho: r.radius, r, alpha: alphaOf(r, 1), tint: '255,255,255', valid: visibleFrom(q) });
+      }
+      continue; // reflected rings are drawn for still sources only
+    }
+    const visible = visibleFrom(p);
     for (const r of direct) out.push({ center: p, rho: r.radius, r, alpha: alphaOf(r, 1), tint: '255,255,255', valid: visible });
     if (showRefl) {
       for (const img of reflectionsFor(s)) {
@@ -845,9 +903,10 @@ function reachExtent() {
     ys.push(n.position[1]);
   }
   for (const s of scenario.sources) {
-    const p = sourcePosition(s);
-    xs.push(p[0]);
-    ys.push(p[1]);
+    for (const k of s.keyframes) {
+      xs.push(k.position[0]);
+      ys.push(k.position[1]);
+    }
   }
   for (const b of scenario.buildings) {
     const { min, max } = buildingBox(b);
@@ -1144,7 +1203,7 @@ function drawSection() {
   }
   g.fillStyle = ACCENT;
   for (const src of scenario.sources) {
-    const p = sourcePosition(src);
+    const p = positionAt(src, t);
     const s = project(p);
     if (s === null) continue;
     g.beginPath();
@@ -1204,7 +1263,7 @@ function pickBuilding(sx, sy, dpr) {
 function pick(sx, sy) {
   const dpr = window.devicePixelRatio || 1;
   const near = (p) => Math.hypot(toScreen(p[0], p[1])[0] - sx, toScreen(p[0], p[1])[1] - sy) < 12 * dpr;
-  for (const s of scenario.sources) if (near(sourcePosition(s))) return { type: 'source', id: s.id };
+  for (const s of scenario.sources) if (near(positionAt(s, t)) || near(sourcePosition(s))) return { type: 'source', id: s.id };
   for (const n of scenario.nodes) if (!hiddenNodes.has(n.id) && near(n.position)) return { type: 'node', id: n.id };
   return pickBuilding(sx, sy, dpr);
 }
@@ -1222,6 +1281,67 @@ function applyBuilding(b, candidate) {
   return true;
 }
 
+// ---------- moving-source paths ----------
+
+let pathDraw = null; // { sourceId, points: [[x, y, z]...], cursor }
+
+const segmentInsideBuilding = (a, b) => {
+  const n = Math.max(1, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 0.5));
+  for (let j = 0; j <= n; j++) if (insideBuilding([a[0] + ((b[0] - a[0]) * j) / n, a[1] + ((b[1] - a[1]) * j) / n, a[2]], scenario.buildings)) return true;
+  return false;
+};
+
+function startPathDraw(src) {
+  const p = sourcePosition(src);
+  pathDraw = { sourceId: src.id, points: [[...p]], cursor: null };
+  selected = { type: 'source', id: src.id };
+  note('Drawing path: click to add points, double-click or Enter to finish, Backspace removes the last point, Esc cancels.');
+  renderInspector();
+}
+
+function cancelPathDraw() {
+  pathDraw = null;
+  note('Path drawing cancelled.');
+  renderInspector();
+}
+
+function finishPathDraw() {
+  const d = pathDraw;
+  pathDraw = null;
+  const src = scenario.sources.find((s) => s.id === d.sourceId);
+  if (!src) return renderInspector();
+  if (d.points.length < 2) {
+    note('A path needs at least one more point after the source.');
+    return renderInspector();
+  }
+  const old = src.keyframes;
+  // Keep the timing of an existing path; a new one runs over the clip (at least 1 s).
+  const [t0, t1] = isMoving(src) ? motionSpan(src) : [src.start_s, src.start_s + Math.max(1, (clips.get(src.clip)?.length || FS) / FS)];
+  src.keyframes = keyframesAlong(d.points, t0, t1);
+  const bad = placementErrors(scenario);
+  if (bad.length) {
+    src.keyframes = old;
+    note(`Rejected: ${bad[0]}`);
+    return renderInspector();
+  }
+  note(`Path set: ${pathLength(src).toFixed(1)} m in ${(t1 - t0).toFixed(2)} s. Drag the path handles on the timeline to change the speed.`);
+  markEdited();
+}
+
+function addPathPoint(px, py) {
+  const pts = pathDraw.points;
+  const last = pts[pts.length - 1];
+  const q = [px, py, last[2]];
+  // A double-click sends two clicks on the same spot; ignore points on top of the previous one.
+  if (Math.hypot(q[0] - last[0], q[1] - last[1]) < 0.3) return;
+  if (segmentInsideBuilding(last, q)) return note('A path cannot go through a building.');
+  pts.push(q);
+}
+
+map.addEventListener('dblclick', () => {
+  if (pathDraw) finishPathDraw();
+});
+
 const pointerWorld = (e) => {
   const dpr = window.devicePixelRatio || 1;
   const r = map.getBoundingClientRect();
@@ -1234,6 +1354,7 @@ map.addEventListener('pointerdown', (e) => {
   const { sx, sy, w: [wx, wy] } = pointerWorld(e);
   const px = Math.round(wx * 10) / 10;
   const py = Math.round(wy * 10) / 10;
+  if (pathDraw) return addPathPoint(px, py);
   if (tool === 'node') {
     if (insideBuilding([px, py, 5], scenario.buildings)) return note('A node cannot be placed inside a building.');
     scenario.nodes.push(newNode(`n${counter++}`, px, py));
@@ -1265,7 +1386,7 @@ map.addEventListener('pointerdown', (e) => {
   selected2 = pathFocus = null;
   selected = hit ? { type: hit.type, id: hit.id } : null;
   if (!hit) drag = { kind: 'pan', sx, sy, cx: view.cx, cy: view.cy };
-  else if (hit.type !== 'building') drag = { kind: 'obj' };
+  else if (hit.type !== 'building') drag = { kind: 'obj', grab: [wx, wy] };
   else if (hit.corner !== undefined) {
     const b = find(selected);
     drag = { kind: 'bresize', fixed: buildingCorners(b)[(hit.corner + 2) % 4] };
@@ -1277,6 +1398,12 @@ map.addEventListener('pointerdown', (e) => {
   renderInspector();
 });
 map.addEventListener('pointermove', (e) => {
+  if (pathDraw) {
+    const { w: [wx, wy] } = pointerWorld(e);
+    const last = pathDraw.points[pathDraw.points.length - 1];
+    pathDraw.cursor = [Math.round(wx * 10) / 10, Math.round(wy * 10) / 10, last[2]];
+    return;
+  }
   if (!drag) {
     const { sx, sy } = pointerWorld(e);
     const h = pick(sx, sy);
@@ -1303,6 +1430,16 @@ map.addEventListener('pointermove', (e) => {
     const cx = fx + (snap(wx) >= fx ? w / 2 : -w / 2);
     const cy = fy + (snap(wy) >= fy ? d / 2 : -d / 2);
     applyBuilding(b, { ...b, position: [cx, cy], size: [w, d, b.size[2]] });
+  } else if (selected?.type === 'source' && isMoving(find(selected))) {
+    // A moving source drags its whole path along.
+    const o = find(selected);
+    const dx = Math.round((wx - drag.grab[0]) * 10) / 10;
+    const dy = Math.round((wy - drag.grab[1]) * 10) / 10;
+    if (!dx && !dy) return;
+    translatePath(o, dx, dy);
+    if (placementErrors(scenario).length) return translatePath(o, -dx, -dy);
+    drag.grab = [drag.grab[0] + dx, drag.grab[1] + dy];
+    markEdited();
   } else if (selected) {
     const o = find(selected);
     const pos = selected.type === 'node' ? o.position : sourcePosition(o);
@@ -1436,18 +1573,59 @@ function renderInspector() {
     const entry = library.find((c) => c.id === o.clip);
     el.append(h(`${entry?.name ?? o.clip} (${o.id})`));
     const p = sourcePosition(o);
+    const moving = isMoving(o);
     el.append(
-      numField('x (m)', p[0], (v) => (p[0] = v)),
-      numField('y (m)', p[1], (v) => (p[1] = v)),
+      numField(moving ? 'path start x (m)' : 'x (m)', p[0], (v) => translatePath(o, v - p[0], 0)),
+      numField(moving ? 'path start y (m)' : 'y (m)', p[1], (v) => translatePath(o, 0, v - p[1])),
       numField('level at 1 m (dB)', o.level_1m_db, (v) => (o.level_1m_db = v), 1),
-      numField('start (s)', o.start_s, (v) => (o.start_s = Math.max(0, v)))
+      numField('start (s)', o.start_s, (v) => {
+        const nv = Math.max(0, v);
+        shiftTimes(o, nv - o.start_s);
+        o.start_s = nv;
+      })
     );
     if (entry && !entry.confirmed) el.append(Object.assign(document.createElement('div'), { className: 'muted', textContent: 'Level is a placeholder (unconfirmed).' }));
-    el.append(advanced(numField('height z (m)', p[2], (v) => (p[2] = v))));
+    el.append(pathPanel(o));
+    el.append(advanced(numField('height z (m)', p[2], (v) => setPathHeight(o, v))));
     el.append(removeButton());
     const r = results?.find((x) => x.source_id === o.id);
     if (r) el.append(resultPanel(r));
   }
+}
+
+// Add / redraw / remove a moving-source path, and its timing (also draggable on the timeline).
+function pathPanel(o) {
+  const box = document.createElement('div');
+  box.append(Object.assign(document.createElement('h3'), { textContent: 'Path' }));
+  const button = (text, onClick) => {
+    const b = Object.assign(document.createElement('button'), { className: 'remove', textContent: text });
+    b.addEventListener('click', onClick);
+    return b;
+  };
+  if (pathDraw?.sourceId === o.id) {
+    box.append(Object.assign(document.createElement('div'), { className: 'muted', textContent: 'Click on the map to add points. Double-click or Enter finishes, Backspace removes the last point, Esc cancels.' }));
+    box.append(button('Finish path', finishPathDraw), button('Cancel', cancelPathDraw));
+    return box;
+  }
+  if (!isMoving(o)) {
+    box.append(Object.assign(document.createElement('div'), { className: 'muted', textContent: 'Still. Add a path to make this sound move along a line.' }));
+    box.append(button('Add path', () => startPathDraw(o)));
+    return box;
+  }
+  const [t0, t1] = motionSpan(o);
+  box.append(Object.assign(document.createElement('div'), { className: 'muted', textContent: `${o.keyframes.length} points, ${pathLength(o).toFixed(1)} m, ${pathSpeed(o).toFixed(1)} m/s (${(pathSpeed(o) * 3.6).toFixed(0)} km/h)` }));
+  box.append(
+    numField('moves from (s)', t0, (v) => retime(o, v, motionSpan(o)[1]), 0.01),
+    numField('arrives at (s)', t1, (v) => retime(o, motionSpan(o)[0], Math.max(motionSpan(o)[0] + MIN_MOTION_S, v)), 0.01)
+  );
+  box.append(
+    button('Redraw path', () => startPathDraw(o)),
+    button('Remove path', () => {
+      o.keyframes = [{ t: 0, position: o.keyframes[0].position }];
+      markEdited();
+    })
+  );
+  return box;
 }
 
 function nodeResultPanel(rn) {
@@ -1552,7 +1730,7 @@ function drawTimeline() {
   if (!scenario.sources.length) {
     tctx.fillStyle = '#8a8a8a';
     tctx.font = `${14 * dpr}px system-ui, sans-serif`;
-    tctx.fillText('Sounds appear here as blocks once you add a source. Drag a block to change when it starts.', 18 * dpr, 60 * dpr);
+    tctx.fillText('Sounds appear here as blocks once you add a source. Drag a block to change when it starts; a moving sound shows a blue bar whose ends set when it moves.', 18 * dpr, 60 * dpr);
   }
   const px = tl.pxPerS * dpr;
   tctx.font = `${10 * dpr}px monospace`;
@@ -1573,7 +1751,8 @@ function drawTimeline() {
     tctx.fillStyle = selected?.id === s.id ? ACCENT : '#fff';
     tctx.fillRect(s.start_s * px, y + 2 * dpr, dur * px, (ROW - 6) * dpr);
     tctx.fillStyle = '#000';
-    tctx.fillText(`${s.id} ${s.clip}`, s.start_s * px + 4, y + 17 * dpr);
+    tctx.fillText(`${s.id} ${s.clip}`, s.start_s * px + 4, y + 13 * dpr);
+    if (isMoving(s)) drawMotionBar(s, y, px, dpr);
   });
   if (results && status !== 'rendering') {
     const y0 = (RULER + scenario.sources.length * ROW + 8) * dpr;
@@ -1590,6 +1769,32 @@ function drawTimeline() {
   tctx.moveTo(t * px, 0);
   tctx.lineTo(t * px, H);
   tctx.stroke();
+}
+
+// When a moving source travels: a bar along the bottom of its row with draggable start / end handles.
+const MOTION_BAR_Y = 17; // CSS px below the row top
+function drawMotionBar(s, y, px, dpr) {
+  const [t0, t1] = motionSpan(s);
+  const x0 = t0 * px;
+  const x1 = t1 * px;
+  const by = y + MOTION_BAR_Y * dpr;
+  tctx.fillStyle = 'rgba(0,170,255,0.85)';
+  tctx.fillRect(x0, by, Math.max(1, x1 - x0), 5 * dpr);
+  tctx.fillStyle = '#00aaff';
+  for (const x of [x0, x1]) tctx.fillRect(x - 2 * dpr, y + 1 * dpr, 4 * dpr, (ROW - 4) * dpr);
+  tctx.fillText(`${pathSpeed(s).toFixed(1)} m/s`, x1 + 5 * dpr, by + 5 * dpr);
+}
+
+// Which part of a moving source's motion bar is under the pointer (CSS px), if any.
+function motionHit(src, x, yInRow) {
+  if (!isMoving(src)) return null;
+  const [t0, t1] = motionSpan(src);
+  const x0 = t0 * tl.pxPerS;
+  const x1 = t1 * tl.pxPerS;
+  if (Math.abs(x - x1) <= 6) return 'mend';
+  if (Math.abs(x - x0) <= 6) return 'mstart';
+  if (yInRow >= MOTION_BAR_Y - 3 && x > x0 && x < x1) return 'mmove';
+  return null;
 }
 
 // Localisation error per source, drawn over the clip's audible span at the first node.
@@ -1630,7 +1835,12 @@ tlc.addEventListener('pointerdown', (e) => {
   const sec = x / tl.pxPerS;
   const row = Math.floor((y - RULER) / ROW);
   const src = y > RULER ? scenario.sources[row] : null;
-  if (src && sec >= src.start_s && sec <= src.start_s + (clips.get(src.clip)?.length || FS) / FS) {
+  const mHit = src && motionHit(src, x, y - RULER - row * ROW);
+  if (mHit) {
+    selected = { type: 'source', id: src.id };
+    tlDrag = { kind: mHit, src, grab: sec, span: motionSpan(src) };
+    renderInspector();
+  } else if (src && sec >= src.start_s && sec <= src.start_s + (clips.get(src.clip)?.length || FS) / FS) {
     selected = { type: 'source', id: src.id };
     tlDrag = { kind: 'clip', src, grab: sec - src.start_s };
     renderInspector();
@@ -1642,9 +1852,23 @@ tlc.addEventListener('pointerdown', (e) => {
 tlc.addEventListener('pointermove', (e) => {
   if (!tlDrag) return;
   const sec = tlPos(e).x / tl.pxPerS;
+  const r2 = (v) => Math.round(v * 100) / 100;
   if (tlDrag.kind === 'head') t = Math.max(0, Math.min(lengthS(), sec));
-  else {
-    tlDrag.src.start_s = Math.max(0, Math.round((sec - tlDrag.grab) * 100) / 100);
+  else if (tlDrag.kind === 'mstart' || tlDrag.kind === 'mend' || tlDrag.kind === 'mmove') {
+    const [a, b] = tlDrag.span;
+    if (tlDrag.kind === 'mstart') retime(tlDrag.src, Math.min(r2(sec), b - MIN_MOTION_S), b);
+    else if (tlDrag.kind === 'mend') retime(tlDrag.src, a, Math.max(r2(sec), a + MIN_MOTION_S));
+    else {
+      const d = Math.max(-a, r2(sec - tlDrag.grab));
+      retime(tlDrag.src, a + d, b + d);
+    }
+    note(`${tlDrag.src.id} moves ${motionSpan(tlDrag.src).map((v) => v.toFixed(2)).join('-')} s at ${pathSpeed(tlDrag.src).toFixed(1)} m/s`);
+    markEdited();
+  } else {
+    const start = Math.max(0, r2(sec - tlDrag.grab));
+    // The path timing travels with the clip.
+    shiftTimes(tlDrag.src, start - tlDrag.src.start_s);
+    tlDrag.src.start_s = start;
     markEdited();
   }
 });
@@ -1832,7 +2056,8 @@ function draw3d() {
     showBacktrace: $('showBacktrace').checked,
     showRays: $('showCones').checked,
     rings: $('showWaves3d').checked ? collectRings() : [],
-    slice: scenario.settings.slice_height_m
+    slice: scenario.settings.slice_height_m,
+    time: t
   });
 }
 

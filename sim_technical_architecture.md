@@ -47,7 +47,9 @@ scenario = {
 }
 ```
 
-- Sources have exactly one keyframe (static); `sourcePosition(src)` returns it. Validation enforces this.
+- One keyframe = a static source; `sourcePosition(src)` returns it (for a moving source, the start of its path). Two or more keyframes (times strictly increasing, scenario seconds) make a moving source that walks the polyline with linear interpolation, waiting at the first keyframe before and at the last one after (`core/motion.js`: `positionAt`, `keyframesAlong` for constant speed, `retime`). `placementErrors` also rejects paths through buildings (sampled every 0.5 m); `scenarioLengthS` runs until the last motion ends.
+- Moving render (`render.js` `movingSignal`): knots at most 25 cm of travel apart (hop 10-100 ms, at most 300) over the part of the clip where the source moves; the clip is split with linear hat crossfades that sum to 1, each piece goes through `findPaths` from the knot position into a short transform (pieces padded by 2048 samples) and is overlap-added at its absolute time, then transformed once at full length. A moving source needs the receiving mic (`addSourceSpectrum(..., at = { ni, mi })`), has no full-length clip spectrum and records no audit entries. The path table (`rendered.paths`) holds it at the mid-clip reference position (`rendered.source_positions`). Cutting the far tails of the fractional-delay kernels at the piece edges makes a still path render about -40 dB off the static render.
+- Analysis of a moving source: per node the truth is the emitting position for the middle of the localisation window (`emittedPosition`, fixed point on the travel time); centre paths are recomputed there and replace `rendered.paths[ni].centre[si]`; the stated uncertainty adds half the swept azimuth over the window in quadrature; the source `true_position` is the mean of the used nodes' emitting positions. Heatmap: up to 5 sub-sources along the path with crossfaded envelopes (`fieldSources`, `fieldEnvelopes`). Wavefront direct rings are centred on the emitting position; no reflected rings; the reach map uses the path start.
 - Buildings are axis-aligned boxes (rotation must be 0), footprint centred on `position`, height `h`.
 - `validateScenario` accepts versions `0.1` (no buildings) and `0.2`, merges settings over `DEFAULT_SETTINGS`, checks vectors and sizes, and rejects nodes or sources inside a building below its roofline (`placementErrors`).
 - Defaults of note: 15 °C, 70 % RH, ambient noise 45 dB SPL (pink), mic self-noise 30 dB SPL (white), ground reflectivity 0.8, render rate 48 kHz, localisation band 200–1600 Hz, `min_snr_db` 6, `reflection_order` 1, `diffraction_model` `wedge`, `diffraction_order` 2, `path_prune_db` 50, `window_snr_db` 3, pad 10 ms, minimum window 30 ms, and optional impairments (`heading_error_sigma_deg`, `mic_gain_sigma_db`, `mic_position_sigma_mm`, `noise_correlation`) all 0.
@@ -255,7 +257,7 @@ Scripts: `scripts/sim-golden.mjs` regenerates golden data, `sim-overlap-check.mj
 
 ## 16. Known limits
 
-- Static sources, axis-aligned buildings, specular reflections only, roofs do not reflect.
+- Moving sources only along drawn straight-line segments at constant speed per path, piecewise rendering (Doppler approximated), axis-aligned buildings, specular reflections only, roofs do not reflect.
 - No wind, temperature gradients or rain.
 - Diffraction is wedge UTD (orders 1 and 2, double diffraction approximate, no facade scattering, no ground effects at edges); concrete absorption and several other constants are placeholders.
 - Bearings only, no cross-node timing.

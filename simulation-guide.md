@@ -99,6 +99,17 @@ Greyed-out sounds mean the audio file is missing on the server. The window says 
 
 A new source starts at 3 s by default. You can change its start time in the right panel or by dragging its block on the timeline; any time from 0 s works.
 
+### Making a sound move
+
+Any sound can travel along a line you draw:
+
+1. Select the source and press **Add path** in the right panel.
+2. Click on the map to add points; the path starts at the source. A dashed line follows the pointer. **Double-click** or **Enter** finishes, **Backspace** removes the last point, **Esc** cancels. A path cannot go through a building.
+3. The source now walks the line at a constant speed. On the map the path is dashed (ring = start, square = end) and the dot shows where the source is at the playhead time.
+4. The timeline shows a **blue bar** under the sound's block from when it starts moving to when it arrives. Drag either **end handle** to change when it sets off or arrives (this sets the speed, shown next to the bar), or drag the bar itself to move the whole trip in time. A new path runs over the length of the clip (at least 1 s).
+
+Before the trip starts the source waits at the start of the path; after it ends it stays at the end. Dragging the sound's block also moves the trip with it. In the right panel a moving source shows its length, speed and **moves from / arrives at** times, plus **Redraw path** and **Remove path**. Its x and y move the whole path; dragging it on the map does the same.
+
 ---
 
 ## 6. Right panel (selection)
@@ -118,7 +129,8 @@ It opens only when something is selected, and closes when nothing is.
 
 - x, y, **level at 1 m (dB)** (how loud the sound is one metre from the source), **start (s)**.
 - A note if the level is a placeholder. All built-in levels are placeholders, not measurements.
-- **Advanced:** height z (default 1.5 m).
+- **Path:** **Add path** makes the sound move (section 5). A moving source shows its points, length, speed, **moves from (s)** and **arrives at (s)**, and **Redraw path** / **Remove path**.
+- **Advanced:** height z (default 1.5 m; for a moving source it sets the whole path).
 - Delete button.
 - After Create: the **Result** table (section 9).
 
@@ -135,6 +147,7 @@ The rings need no Create. They are drawn from the sound's own audio whenever the
 - Rings get dimmer with distance (1/distance) and vanish once they fall below the background-noise level.
 - They travel at the real speed of sound for the current temperature (about 340 m/s). At 1x speed you watch sound crawl across the map. Use the slow speeds to see it arrive at each mic.
 - At high playback speeds the simulator draws fewer rings to stay smooth.
+- A moving sound leaves each ring where the source was when that bit of sound left it, so the rings bunch up ahead of it and spread out behind. Moving sounds show direct rings only (no reflected rings).
 
 This is a stylised display of loudness over time, not true wavelength.
 
@@ -147,7 +160,7 @@ A coloured map under the rings, in the Display menu. It needs no Create: it is c
 - **Peak-hold:** the highest level each point has reached so far. At the end it shows how far the sound got and where the shadows are. It restarts when the height changes.
 - **Level:** the clip-mean level (or the peak, with the option). Same idea as the reach map, recoloured.
 - **Band:** 250 Hz, 1 kHz, 4 kHz or the localisation band. **Source:** the selected source (all of them if none is selected) or all sources.
-- Colours are a rainbow in 5 dB steps with a legend. By default it shows level above the noise floor (localisation band only) with a line where the sound falls to the minimum SNR; switch it off to see dB SPL.
+- Colours use a smooth rainbow gradient with a 60 dB span and a legend. By default it shows level above the noise floor (localisation band only) with a line where the sound falls to the minimum SNR; switch it off to see dB SPL.
 - Levels are added without interference, bending round building edges uses the wedge diffraction model, and levels depend on placeholder constants.
 
 ---
@@ -268,6 +281,7 @@ For every source and every mic:
 3. **Air absorption** removes high frequencies with distance (ISO 9613-1), so far-away sounds arrive duller.
 4. **Ground bounce:** one extra reflected path from the mirror image of the source below the ground, scaled by ground reflectivity. The direct and bounced sound interfere.
    **Buildings:** reflections off the walls, and **diffraction** round the vertical corners and over the roof edges (a rigid-wedge model, on by default at order 2: one edge, two edges, or a reflection plus an edge). Sound behind a building fades smoothly into the shadow, higher pitches fade more, and a path that bends is reported with its edge name. The settings dialog has the diffraction order (0 switches it off), the model (the old formula is kept for comparison only) and how far below the strongest path a weak path is dropped (50 dB).
+   **Moving sounds:** the clip is cut into short overlapping pieces (crossfaded, about every 25 cm of travel) and each piece is sent from where the source was at that moment, so delays, loudness and blocking follow the motion and the pitch shifts (Doppler) as the delays change.
 5. All sources are added together, then **background noise** (pink, at the noise-floor level) and **mic self-noise** (white) are added, separately for each mic.
 
 Direction finding then compares arrival-time differences between the six mic pairs (band-limited to 200 to 1600 Hz, because 10 cm spacing cannot resolve higher pitches) and solves for the direction of the sound. Directions from several nodes are intersected to give a position.
@@ -285,6 +299,7 @@ Direction finding then compares arrival-time differences between the six mic pai
 - **Flat nodes assume the sound is below them.** A source above the node gives the wrong elevation unless you use the tetrahedron layout.
 - **Levels are placeholders.** Do not quote distances or detection rates from this tool as evidence the real system works.
 - **Sounds greyed out in the picker?** Their audio files are missing on the server. The simulator service must be built with `SIM_ENABLED=1`.
+- **Moving sound: which "true position"?** A moving sound has no single position. Each node is scored against where the source was when the sound it used left it (middle of its window), and the position error against the average of those points. The stated uncertainty includes the angle the source sweeps through during the window. The render audit skips moving sounds, the reach map uses the start of the path, and the heatmap uses a few points along it.
 - **Clips are non-commercial** (ESC-50 dataset), fine for this tool but not for a production product.
 
 ---

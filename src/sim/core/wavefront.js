@@ -65,7 +65,7 @@ export function wavefrontRings({ analysis, gainPa, startS, t, c, dz, floorPa, ma
     if (rho === null) continue;
     const amp = (rms[f] * gainPa) / Math.max(r3, 1);
     if (amp < floorPa) continue;
-    candidates.push({ radius: rho, amp, centroid: centroid[f], flatness: flatness[f] });
+    candidates.push({ radius: rho, amp, centroid: centroid[f], flatness: flatness[f], emit_s: startS + f * hop_s });
   }
   if (candidates.length <= maxRings) return candidates;
   const stride = Math.ceil(candidates.length / maxRings);

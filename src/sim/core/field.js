@@ -9,6 +9,7 @@ import { REACH_BANDS, gridPositions, gridSize, noiseBandPowerPa2 } from './reach
 import { bandWeight } from './activity.js';
 import { fft, nextPow2 } from './dsp.js';
 import { clipGainPa } from './render.js';
+import { hatWeight, isMoving, motionSpan, pathLength, positionAt } from './motion.js';
 
 export const FIELD_FRAME_S = 0.01;
 export const FIELD_BANDS = ['250', '1k', '4k', 'loc'];
@@ -171,13 +172,48 @@ export function powerToDb(power, mask, noisePa2 = null) {
   return out;
 }
 
-/** Source descriptors for the field from a scenario and clip map. */
+/**
+ * Source descriptors for the field from a scenario and clip map. A moving source becomes a few sub-sources at points
+ * along its route (one per knot, at most 5), each carrying the knots so its clip envelope can be crossfaded with
+ * weightEnvelopes. Every descriptor keeps the scenario source id.
+ */
 export function fieldSources(scenario, clips, onlyIndex = null) {
   const fs = scenario.settings.render_sample_rate;
   return scenario.sources
     .map((s, i) => ({ s, i }))
     .filter(({ i }) => onlyIndex === null || i === onlyIndex)
-    .map(({ s }) => ({ position: s.keyframes[0].position, start_s: s.start_s, gainPa: clipGainPa(clips.get(s.clip), fs, s.level_1m_db), clip: s.clip }));
+    .flatMap(({ s }) => {
+      const clip = clips.get(s.clip);
+      const base = { id: s.id, start_s: s.start_s, gainPa: clipGainPa(clip, fs, s.level_1m_db), clip: s.clip };
+      if (!isMoving(s)) return [{ ...base, position: s.keyframes[0].position }];
+      const S = s.start_s;
+      const E = S + clip.length / fs;
+      const [t0, t1] = motionSpan(s);
+      const a = Math.max(S, t0);
+      const b = Math.min(E, t1);
+      const knots = [S, E];
+      if (b > a) {
+        const k = Math.min(5, Math.max(2, Math.ceil(pathLength(s) / 20) + 1));
+        for (let i = 0; i < k; i++) knots.push(a + ((b - a) * i) / (k - 1));
+      }
+      knots.sort((x, y) => x - y);
+      const uniq = knots.filter((t, i) => i === 0 || t - knots[i - 1] > 1e-6);
+      const positions = uniq.map((t) => positionAt(s, t));
+      if (positions.every((p) => p.every((v, k) => v === positions[0][k]))) return [{ ...base, position: positions[0] }];
+      return uniq.map((t, j) => ({ ...base, position: positions[j], knots: uniq, knot: j }));
+    });
+}
+
+/** Clip envelopes for the field sources: crossfaded (power weights summing to 1) for the parts of moving sources. */
+export function fieldEnvelopes(sources, clips, fs, locBand) {
+  const cache = new Map();
+  return sources.map((s) => {
+    let env = cache.get(s.clip);
+    if (!env) cache.set(s.clip, (env = clipBandEnvelopes(clips.get(s.clip), fs, locBand)));
+    if (!s.knots) return env;
+    const w = (f) => hatWeight(s.knots, s.knot, s.start_s + (f + 0.5) * env.frame_s);
+    return { frame_s: env.frame_s, bands: env.bands.map((band) => band.map((v, f) => v * w(f))) };
+  });
 }
 
 export { noiseBandPowerPa2 };

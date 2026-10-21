@@ -19,10 +19,10 @@ export const SWEEP_PARAMS = {
     const n = s.nodes;
     const cx = n.reduce((a, o) => a + o.position[0], 0) / n.length;
     const cy = n.reduce((a, o) => a + o.position[1], 0) / n.length;
-    const sources = s.sources.map((src) => {
-      const [x, y, z] = src.keyframes[0].position;
-      return { ...src, keyframes: [{ ...src.keyframes[0], position: [cx + (x - cx) * v, cy + (y - cy) * v, z] }] };
-    });
+    const sources = s.sources.map((src) => ({
+      ...src,
+      keyframes: src.keyframes.map((k) => ({ ...k, position: [cx + (k.position[0] - cx) * v, cy + (k.position[1] - cy) * v, k.position[2]] }))
+    }));
     return { ...s, sources };
   },
   node_count: (s, v) => ({ ...s, nodes: s.nodes.slice(0, Math.max(1, Math.round(v))) })

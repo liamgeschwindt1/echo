@@ -34,7 +34,7 @@ export function createHeatmap(host) {
   const settingsKey = () => {
     const s = host.getScenario();
     const src = host.sourceFilter();
-    return JSON.stringify({ b: s.buildings, n: s.sources.map((x) => [x.clip, x.keyframes[0].position, x.level_1m_db, x.start_s]), st: s.settings, src });
+    return JSON.stringify({ b: s.buildings, n: s.sources.map((x) => [x.clip, x.keyframes, x.level_1m_db, x.start_s]), st: s.settings, src });
   };
   const hKey = (z, cell, base) => `${base}|${z}|${cell}`;
 
@@ -210,8 +210,7 @@ export function createHeatmap(host) {
         const i = iy * rec.nx + ix;
         const v = dbValues[i];
         if (rec.mask[i] || !(v >= lo)) continue;
-        const q = Math.floor(v / DB_STEP) * DB_STEP; // discrete 5 dB bands
-        const [r, gg, b] = turbo((q - lo) / DB_SPAN);
+        const [r, gg, b] = turbo((v - lo) / DB_SPAN);
         const o = ((rec.ny - 1 - iy) * rec.nx + ix) * 4;
         img.data[o] = r;
         img.data[o + 1] = gg;
@@ -247,7 +246,8 @@ export function createHeatmap(host) {
     const g = rec.grid;
     const [sx0, sy0] = host.toScreen(g.x0, g.y0);
     const [sx1, sy1] = host.toScreen(g.x0 + g.nx * g.cell, g.y0 + g.ny * g.cell);
-    ctx.imageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     for (const [cv] of layers) ctx.drawImage(cv, sx0, sy1, sx1 - sx0, sy0 - sy1);
     if (noise) host.contour({ nx: rec.nx, ny: rec.ny, snrDb: mainDb, mask: rec.mask }, (ix, iy) => host.toScreen(g.x0 + (ix + 0.5) * g.cell, g.y0 + (iy + 0.5) * g.cell), host.minSnr());
     drawLegend(ctx, dpr, hi, noise !== null);
@@ -261,15 +261,19 @@ export function createHeatmap(host) {
     const bands = DB_SPAN / DB_STEP;
     const y0 = 40 * dpr;
     ctx.font = `${10 * dpr}px monospace`;
+    const gradient = ctx.createLinearGradient(x, y0 + bands * h, x, y0);
+    for (let i = 0; i <= DB_SPAN; i++) {
+      const [r, g, b] = turbo(i / DB_SPAN);
+      gradient.addColorStop(i / DB_SPAN, `rgb(${r},${g},${b})`);
+    }
+    ctx.fillStyle = gradient;
+    ctx.fillRect(x, y0, 14 * dpr, bands * h);
     for (let i = 0; i < bands; i++) {
       const v = hi - DB_SPAN + i * DB_STEP;
-      const [r, g, b] = turbo((i * DB_STEP) / DB_SPAN);
-      ctx.fillStyle = `rgb(${r},${g},${b})`;
-      const y = y0 + (bands - 1 - i) * h;
-      ctx.fillRect(x, y, 14 * dpr, h);
       if (i % 2 === 0) {
         ctx.fillStyle = '#fff';
-        ctx.fillText(`${v}`, x + 18 * dpr, y + h - 2 * dpr);
+        const y = y0 + (bands - i) * h;
+        ctx.fillText(`${v}`, x + 18 * dpr, y + 3 * dpr);
       }
     }
     ctx.fillStyle = '#fff';

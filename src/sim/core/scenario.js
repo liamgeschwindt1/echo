@@ -1,5 +1,6 @@
 import { distance, speedOfSound } from './physics.js';
 import { insideBuilding } from './geometry.js';
+import { isMoving, motionSpan, samplePath } from './motion.js';
 
 export const SCENARIO_VERSION = '0.2';
 const LOADABLE_VERSIONS = ['0.1', '0.2'];
@@ -58,7 +59,7 @@ export function newSource(id, clip, x = 0, y = 0, level_1m_db = 90) {
   return { id, clip, keyframes: [{ t: 0, position: [x, y, 1.5] }], level_1m_db, start_s: 3 };
 }
 
-// Exactly one keyframe in the MVP; later versions interpolate.
+// The first keyframe: the position of a static source, or where a moving source's path starts (see motion.js).
 export const sourcePosition = (source) => source.keyframes[0].position;
 
 // Messages for any node or source placed inside a building below its roofline.
@@ -72,6 +73,10 @@ export function placementErrors(scenario) {
   for (const s of scenario.sources) {
     const hit = insideBuilding(sourcePosition(s), b);
     if (hit) errors.push(`source ${s.id} is inside building ${hit.id}`);
+    else if (isMoving(s)) {
+      const crossed = samplePath(s).map((p) => insideBuilding(p, b)).find(Boolean);
+      if (crossed) errors.push(`the path of source ${s.id} goes through building ${crossed.id}`);
+    }
   }
   return errors;
 }
@@ -83,7 +88,10 @@ export function validateScenario(s) {
   const vec3 = (v) => Array.isArray(v) && v.length === 3 && v.every(Number.isFinite);
   for (const n of s.nodes || []) if (!vec3(n.position)) throw new Error(`node ${n.id}: bad position`);
   for (const src of s.sources || []) {
-    if (!Array.isArray(src.keyframes) || src.keyframes.length !== 1 || !vec3(src.keyframes[0].position)) throw new Error(`source ${src.id}: needs exactly one keyframe`);
+    if (!Array.isArray(src.keyframes) || !src.keyframes.length || !src.keyframes.every((k) => vec3(k.position))) throw new Error(`source ${src.id}: needs at least one keyframe with a position`);
+    if (src.keyframes.length > 1 && !src.keyframes.every((k, i) => Number.isFinite(k.t) && (i === 0 || k.t > src.keyframes[i - 1].t))) {
+      throw new Error(`source ${src.id}: keyframe times must be numbers in increasing order`);
+    }
   }
   for (const b of s.buildings || []) {
     if (!Array.isArray(b.position) || b.position.length !== 2 || !b.position.every(Number.isFinite)) throw new Error(`building ${b.id}: bad position`);
@@ -104,10 +112,13 @@ export function scenarioNotices(raw) {
   return notices;
 }
 
-// Playback and the timeline end exactly when the last clip ends.
+// Playback and the timeline end exactly when the last clip ends (or the last moving source reaches the end of its path).
 export function scenarioLengthS(scenario, clipDurations) {
   let end = 0;
-  for (const src of scenario.sources) end = Math.max(end, src.start_s + (clipDurations.get(src.clip) || 0));
+  for (const src of scenario.sources) {
+    end = Math.max(end, src.start_s + (clipDurations.get(src.clip) || 0));
+    if (isMoving(src)) end = Math.max(end, motionSpan(src)[1]);
+  }
   return end;
 }
 
@@ -115,6 +126,6 @@ export function scenarioLengthS(scenario, clipDurations) {
 export function renderLengthS(scenario, clipDurations, minS = 0) {
   const c = speedOfSound(scenario.settings.temperature_c);
   let travel = 0;
-  for (const src of scenario.sources) for (const n of scenario.nodes) travel = Math.max(travel, distance(sourcePosition(src), n.position) / c);
+  for (const src of scenario.sources) for (const k of src.keyframes) for (const n of scenario.nodes) travel = Math.max(travel, distance(k.position, n.position) / c);
   return Math.max(scenarioLengthS(scenario, clipDurations) + travel + 0.5 + ((scenario.buildings || []).length ? 0.5 : 0), minS);
 }

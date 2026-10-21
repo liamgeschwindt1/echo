@@ -1,5 +1,5 @@
 import { buildingBox } from '../core/geometry.js';
-import { sourcePosition } from '../core/scenario.js';
+import { isMoving, positionAt } from '../core/motion.js';
 
 // Orbit camera around a target. World is x east, y north, z up (metres).
 export function createCamera() {
@@ -73,7 +73,7 @@ export function createView3d(canvas) {
   }, { passive: false });
 
   function fitScene(scenario) {
-    const pts = [...scenario.nodes.map((n) => n.position), ...scenario.sources.map(sourcePosition)];
+    const pts = [...scenario.nodes.map((n) => n.position), ...scenario.sources.flatMap((s) => s.keyframes.map((k) => k.position))];
     for (const b of scenario.buildings || []) pts.push([b.position[0], b.position[1], 0]);
     if (!pts.length) return;
     const xs = pts.map((p) => p[0]);
@@ -83,8 +83,8 @@ export function createView3d(canvas) {
     fitted = true;
   }
 
-  /** opts: { scenario, results, selectedNodes:Set, hiddenNodes:Set, showBacktrace, showRays, dpr } */
-  function draw({ scenario, results, selectedNodes = new Set(), hiddenNodes = new Set(), showBacktrace = true, showRays = true, rings = [], slice = 1.5, dpr = 1 }) {
+  /** opts: { scenario, results, selectedNodes:Set, hiddenNodes:Set, showBacktrace, showRays, dpr, time (s, places moving sources) } */
+  function draw({ scenario, results, selectedNodes = new Set(), hiddenNodes = new Set(), showBacktrace = true, showRays = true, rings = [], slice = 1.5, dpr = 1, time = 0 }) {
     const W = canvas.width;
     const H = canvas.height;
     if (!fitted) fitScene(scenario);
@@ -170,7 +170,8 @@ export function createView3d(canvas) {
 
     // Sources
     for (const src of scenario.sources) {
-      const p = sourcePosition(src);
+      const p = positionAt(src, time);
+      if (isMoving(src)) for (let i = 1; i < src.keyframes.length; i++) line(src.keyframes[i - 1].position, src.keyframes[i].position, '#aaa', 1, [6, 4]);
       line([p[0], p[1], 0], p, '#666', 1, [3, 3]);
       const s = P(p);
       if (s) {

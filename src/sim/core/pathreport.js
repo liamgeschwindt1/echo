@@ -27,9 +27,9 @@ function diffractionDetail(p) {
  * Per node and source path diagnostics. centre = { paths, directBlocked } from the array centre.
  * Azimuth comparisons are horizontal, matching the wedge on the map.
  */
-export function pathReport({ centre, node, source, bearing, settings }) {
+export function pathReport({ centre, node, source, bearing, settings, sourcePos = source.keyframes[0].position }) {
   const origin = node.position;
-  const src = source.keyframes[0].position;
+  const src = sourcePos;
   const direct = centre.paths.find((p) => p.type === 'direct');
   const strongest = centre.paths.reduce((a, p) => (!a || amplitude(p) > amplitude(a) ? p : a), null);
   const ref = direct || strongest;
