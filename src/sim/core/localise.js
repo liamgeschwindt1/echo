@@ -153,7 +153,7 @@ function peakTdoa(corr, maxLag, fsUp) {
 }
 
 /** TDOAs of the six mic pairs for one window: two packed FFTs for four mics, band-limited direct correlation at the needed lags. */
-function windowTdoas(mics, startSample, endSample, { fs, band, maxLagS }) {
+export function windowTdoas(mics, startSample, endSample, { fs, band, maxLagS }) {
   const len = endSample - startSample;
   const n = nextPow2(len * 2);
   const lo = Math.max(1, Math.ceil((band[0] * n) / fs));
