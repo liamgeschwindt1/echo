@@ -1,0 +1,17 @@
+{
+  "name": "@echo/sim-core",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Acoustic simulation core: geometry, propagation, rendering, localisation and scenario model.",
+  "exports": {
+    "./*": "./src/*"
+  },
+  "scripts": {
+    "test": "node --test --test-timeout=900000 test/*.test.js"
+  },
+  "dependencies": {
+    "@echo/shared": "*",
+    "osmtogeojson": "^3.0.0-beta.5"
+  }
+}

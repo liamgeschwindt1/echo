@@ -1,0 +1,17 @@
+{
+  "name": "@echo/assets",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Static files served by the echo and sim frontends: models, wasm, label config, worklet and clips.",
+  "scripts": {
+    "postinstall": "node scripts/copy-wasm.mjs",
+    "fetch-models": "node scripts/fetch-models.mjs",
+    "fetch-test-audio": "node scripts/fetch-test-audio.mjs",
+    "clap:embed": "node scripts/clap-embed.mjs"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-audio": "1.1.0",
+    "@xenova/transformers": "^2.17.2"
+  }
+}

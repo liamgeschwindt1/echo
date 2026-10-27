@@ -211,3 +211,10 @@ Everything below describes the code as it is. Numbers live in `docs/` (`profile-
 - Analysis: truth per node is the emitting position at the middle of the localisation window; centre paths recomputed there (replacing the reference entry in `rendered.paths`); half the swept azimuth added to the stated uncertainty; source truth is the mean over used nodes.
 - Not motion-aware (by choice): render audit (moving sources skipped with a note), reflected wavefront rings, reach map (path start). The heatmap uses up to 5 crossfaded sub-sources along the path.
 - Tests: `test/sim-motion.test.js`. Browser smoke test (headless Chromium via Playwright, not part of `npm test`): add path, drag the end handle, Create, playhead mid-trip; no console errors.
+
+# Monorepo and saved simulations
+
+- Paths in the notes above predate the move: `src/sim/core/*` is now `packages/sim-core/src/*`, simulator `test/` and `scripts/` are under `packages/sim-core/`, `sim.html` and the sim UI are in `apps/sim/`, `public/` is `packages/assets/public/`, and `server/` is `apps/backend/src/`.
+- Four Railway services: `backend-` (API), `sim` and `echo` (static frontends that proxy `/api` to the backend over the private network), Postgres. `SIM_ENABLED` is gone; the sim is its own build.
+- Saved simulations: tables `simulations` and `simulation_versions` (append-only versions, scenario and optional results as jsonb). Scenarios are checked with `validateScenario` on the server. Saving from an older version creates a new latest version; a stale `base_version` returns 409 and the UI asks before overwriting.
+- Tests: `apps/backend/test/simulations.test.js` (memory store, and Postgres when `TEST_DATABASE_URL` is set), `apps/sim/test/sim-library.test.js`, `packages/web-server/test/server.test.js`. Browser check (headless Chromium over CDP, not part of `npm test`): save, reload from URL, versions, rename, save as new, delete, and save with results then Create again; no page errors.

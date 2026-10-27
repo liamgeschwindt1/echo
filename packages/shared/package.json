@@ -1,0 +1,10 @@
+{
+  "name": "@echo/shared",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Label catalogue, period detection, report validation and default settings shared by echo, sim and backend.",
+  "exports": {
+    "./*": "./src/*"
+  }
+}

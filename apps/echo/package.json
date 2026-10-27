@@ -1,0 +1,23 @@
+{
+  "name": "@echo/echo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Labelling models frontend: live and file-based sound labelling with reports.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "node server.js",
+    "test": "node --test --test-timeout=120000 test/*.test.js"
+  },
+  "dependencies": {
+    "@echo/assets": "*",
+    "@echo/shared": "*",
+    "@xenova/transformers": "^2.17.2",
+    "@echo/web-server": "*",
+    "@mediapipe/tasks-audio": "1.1.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.11"
+  }
+}

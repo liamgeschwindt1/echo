@@ -1,6 +1,6 @@
 # Simulator technical architecture
 
-This document explains all the simulation code under `src/sim/`, how the pieces connect, and the maths and assumptions behind each stage. It describes the code as it is now. For the product spec see [simulation.md](simulation.md) and [simulation-guide.md](simulation-guide.md).
+This document explains all the simulation code (the `sim` app in `apps/sim/` and the engine in `packages/sim-core/`), how the pieces connect, and the maths and assumptions behind each stage. It describes the code as it is now. For the product spec see [simulation.md](simulation.md) and [simulation-guide.md](simulation-guide.md).
 
 ## 1. What the simulator does
 
@@ -19,23 +19,28 @@ Coordinates: metres, x east, y north, z up. Time in seconds. Pressure in Pascals
 ## 2. Layout
 
 ```
-sim.html                 page shell (top bar, tools, map canvas, inspector, timeline, dialogs)
-src/sim/main.js          UI controller: state, map/3D drawing, inspector, timeline, playback, workers
-src/sim/clips.js         clip library: manifest, generated test clips, decoding
-src/sim/models.js        YAMNet + CLAP runner loading (browser only)
-src/sim/renderWorker.js  worker: render+analyse, component renders, reach field
-src/sim/sweepWorker.js   worker: repeated trials and sweeps
-src/sim/style.css        styling
-src/sim/ui/micview.js    "mic's-eye view" panel (traces, spectrogram, GCC, audit, exports)
-src/sim/ui/view3d.js     orbit camera + projector for the 3D view
-src/sim/core/*.js        pure, DOM-free simulation code (runs in browser, worker and Node tests)
-scripts/sim-*.mjs        acceptance and calibration scripts
-test/sim-*.test.js       node:test suites (see section 11)
+apps/sim/index.html                 page shell (top bar, tools, map canvas, inspector, timeline, dialogs)
+apps/sim/src/main.js                UI controller: state, map/3D drawing, inspector, timeline, playback, workers
+apps/sim/src/models.js              YAMNet + CLAP runner loading (browser only)
+apps/sim/src/renderWorker.js        worker: render+analyse, component renders, reach field
+apps/sim/src/sweepWorker.js         worker: repeated trials and sweeps
+apps/sim/src/style.css              styling
+apps/sim/src/ui/micview.js          "mic's-eye view" panel (traces, spectrogram, GCC, audit, exports)
+apps/sim/src/ui/view3d.js           orbit camera + projector for the 3D view
+apps/sim/src/ui/library.js          saved simulations: API client, save/open dialogs, URL state
+apps/sim/server.js                  production static server, proxies /api to the backend
+apps/backend/src/simulations.js     /api/simulations routes (validation, versions)
+apps/backend/src/store.js           Postgres and in-memory simulation stores
+packages/sim-core/src/clips.js      clip library: manifest, generated test clips, decoding
+packages/sim-core/src/*.js          pure, DOM-free simulation code (runs in browser, worker and Node tests)
+packages/sim-core/scripts/sim-*.mjs acceptance and calibration scripts
+packages/sim-core/test/sim-*.test.js node:test suites (see section 15)
+apps/sim/test/*.test.js             UI-side suites (3D view, tracking, OSM loader, library, server)
 ```
 
-Design rule: everything under `core/` is pure and deterministic given the scenario and seed. It has no DOM, no `fetch`, no global state, so it runs identically in the Web Worker, the UI thread and Node tests. `main.js` and `ui/` own all drawing and I/O.
+Design rule: everything in `packages/sim-core/src/` except `clips.js` is pure and deterministic given the scenario and seed. It has no DOM, no `fetch`, no global state, so it runs identically in the Web Worker, the UI thread and Node tests. `apps/sim/src/main.js` and `ui/` own all drawing and I/O. Simulation code is imported as `@echo/sim-core/<file>.js`.
 
-## 3. Data model ([scenario.js](src/sim/core/scenario.js))
+## 3. Data model ([scenario.js](packages/sim-core/src/scenario.js))
 
 ```
 scenario = {
@@ -50,7 +55,7 @@ scenario = {
 - One keyframe = a static source; `sourcePosition(src)` returns it (for a moving source, the start of its path). Two or more keyframes (times strictly increasing, scenario seconds) make a moving source that walks the polyline with linear interpolation, waiting at the first keyframe before and at the last one after (`core/motion.js`: `positionAt`, `keyframesAlong` for constant speed, `retime`). `placementErrors` also rejects paths through buildings (sampled every 0.5 m); `scenarioLengthS` runs until the last motion ends.
 - Moving render (`render.js` `movingSignal`): knots at most 25 cm of travel apart (hop 10-100 ms, at most 300) over the part of the clip where the source moves; the clip is split with linear hat crossfades that sum to 1, each piece goes through `findPaths` from the knot position into a short transform (pieces padded by 2048 samples) and is overlap-added at its absolute time, then transformed once at full length. A moving source needs the receiving mic (`addSourceSpectrum(..., at = { ni, mi })`), has no full-length clip spectrum and records no audit entries. The path table (`rendered.paths`) holds it at the mid-clip reference position (`rendered.source_positions`). Cutting the far tails of the fractional-delay kernels at the piece edges makes a still path render about -40 dB off the static render.
 - Analysis of a moving source: per node the truth is the emitting position for the middle of the localisation window (`emittedPosition`, fixed point on the travel time); centre paths are recomputed there and replace `rendered.paths[ni].centre[si]`; the stated uncertainty adds half the swept azimuth over the window in quadrature; the source `true_position` is the mean of the used nodes' emitting positions. Heatmap: up to 5 sub-sources along the path with crossfaded envelopes (`fieldSources`, `fieldEnvelopes`). Wavefront direct rings are centred on the emitting position; no reflected rings; the reach map uses the path start.
-- Buildings are axis-aligned boxes (rotation must be 0), footprint centred on `position`, height `h`.
+- Buildings are axis-aligned boxes (rotation must be 0), footprint centred on `position`, height `h`. A building with a `footprint` (OpenStreetMap import: rings normalised to the box) is a vertical prism over its outer ring instead: `buildingPolygon` simplifies it (`FOOTPRINT_SIMPLIFY_M` = 1 m), makes it counter-clockwise and caches it; inner rings (courtyards) are solid. Placement, blocking, reflection walls, diffraction edges, picking and the cross-section all use the outline.
 - `validateScenario` accepts versions `0.1` (no buildings) and `0.2`, merges settings over `DEFAULT_SETTINGS`, checks vectors and sizes, and rejects nodes or sources inside a building below its roofline (`placementErrors`).
 - Defaults of note: 15 °C, 70 % RH, ambient noise 45 dB SPL (pink), mic self-noise 30 dB SPL (white), ground reflectivity 0.8, render rate 48 kHz, localisation band 200–1600 Hz, `min_snr_db` 6, `reflection_order` 1, `diffraction_model` `wedge`, `diffraction_order` 2, `path_prune_db` 50, `window_snr_db` 3, pad 10 ms, minimum window 30 ms, and optional impairments (`heading_error_sigma_deg`, `mic_gain_sigma_db`, `mic_position_sigma_mm`, `noise_correlation`) all 0.
 - `scenarioLengthS` = last clip end. `renderLengthS` adds the longest travel time + 0.5 s (+0.5 s more when buildings exist, for reflections) so late arrivals are not cut off.
@@ -77,7 +82,7 @@ Create click (main.js)
 
 `main.js` stores `rendered` and `results`, flips status to `ready`, and every view (map, 3D, inspector, timeline, mic view, sound playback) reads from those two objects. Editing anything marks status `stale` and shows the "Out of date, press Create" banner.
 
-## 5. Physics ([physics.js](src/sim/core/physics.js), [mics.js](src/sim/core/mics.js), [rng.js](src/sim/core/rng.js))
+## 5. Physics ([physics.js](packages/sim-core/src/physics.js), [mics.js](packages/sim-core/src/mics.js), [rng.js](packages/sim-core/src/rng.js))
 
 - Speed of sound `c = 331.3 + 0.606 T` m/s.
 - `dbToPa` / `paToDb` with 20 µPa reference.
@@ -86,7 +91,7 @@ Create click (main.js)
 - Mic layouts: `flat_square` (corners of a square, side = spacing) and `tetrahedron`. Offsets are rotated about z by `rotation_deg` and translated to the node. `MIC_PAIRS` is the 6 pairs of 4 mics.
 - RNG: `mulberry32` plus `streamFor(seed, ...parts)`, an independent stream per (seed, node, mic, kind). Kinds: 1 ambient, 2 self noise, 11 heading error, 12 position error, 13 gain error, 14 common noise. Same seed gives the same result everywhere. `pinkNoise` uses Kellet's filter rescaled to the requested rms; `gaussian` is Box–Muller.
 
-## 6. Geometry and path finding ([geometry.js](src/sim/core/geometry.js))
+## 6. Geometry and path finding ([geometry.js](packages/sim-core/src/geometry.js))
 
 All path logic lives in `findPaths`. The render, wavefront rings, reach map, path diagnostics and mic view all use it, so they cannot disagree.
 
@@ -94,14 +99,14 @@ All path logic lives in `findPaths`. The render, wavefront rings, reach map, pat
 
 **Reflection sequences** (`reflectionSequences`): ordered lists of surfaces up to `reflection_order`. Order 0 means a single ground bounce only; higher orders use all enabled surfaces. The ground is skipped when `ground_reflectivity` is 0. Consecutive repeats of the same surface are excluded.
 
-**Image-source method** (`imagesFor`, `traceReflection`): mirror the source across each surface in sequence; trace back from the mic to the final image, intersecting each surface plane (`hit`). A path is rejected if a specular point misses the finite face, the source or mic is on the wrong side (`outward`), or any leg is blocked by a building (`segmentBlocked`, a slab test on boxes shrunk by 1e-6 so grazing is not blocking).
+**Image-source method** (`imagesFor`, `traceReflection`): mirror the source across each surface in sequence; trace back from the mic to the final image, intersecting each surface plane (`hit`). A path is rejected if a specular point misses the finite face, the source or mic is on the wrong side (`outward`), or any leg is blocked by a building (`segmentBlocked`, a slab test on boxes shrunk by 1e-6 so grazing is not blocking; for a footprint the part inside the box is split where it crosses the outline and each piece is inside or outside by its crossing direction, falling back to a point-in-polygon test at vertices; with 12 or more buildings a 20 m plan grid limits the test to buildings in the cells the segment crosses). Box walls and the ground are axis-aligned surfaces; footprint walls are general vertical planes (`normal`, `offset`, `a`, `dir`, `len`, `h`), one per outline edge, ids `bN:wall-i`.
 
 **Per path result**: `{ type, surfaces, length, gain, image, hits, delay_s }`. `type` is `direct`, `ground`, `wall` (any wall in the sequence) or `diffracted`. `gain` is the product of per-surface pressure gains (`surfaceGain`): ground = `ground_reflectivity`, wall = `sqrt(1 - 0.03)` (`CONCRETE_ABSORPTION` placeholder). Spreading is applied later.
 
 **Direct path**: included unless blocked by a building and `block_direct_behind_buildings` is true.
 
-**Diffraction, wedge model (default)** ([diffraction.js](src/sim/core/diffraction.js), [edges.js](src/sim/core/edges.js)). Each box has 8 edges (4 vertical corners `bN:edge:SW|SE|NE|NW`, 4 roof edges `bN:roof:south|north|west|east`), each a rigid 90° wedge (n = 3/2). The coefficient is the Kouyoumjian–Pathak uniform theory of diffraction with the Fresnel transition function F, complex and frequency dependent, spherical incidence (`L = s s' sin²β / (s + s')`). It is causal, and the diffracted field jumps across the shadow boundary by exactly the geometrical-optics field it replaces, so direct + diffracted is continuous (about −6 dB on the boundary). Walls use the wall factor and roofs a reflection coefficient of 0 (roofs do not reflect). Chains found by `wedgeCandidates`: order 1 = `E` (one edge); order 2 adds `SE` (reflect then edge), `ES` (edge then reflect, via the receiver image) and `EE` (two edges, on different buildings or round the same one; the grazing connecting leg halves the coefficient, the standard UTD face rule). Double diffraction uses spreading `1/sqrt(s0 s1 s2 (s0+s1+s2))` and is an engineering approximation. Slope and vertex diffraction are omitted. A path carries `diffraction = { chain, terms[], spread }` and `gain = bounce gain × spread × length` so the usual `gain/length` factor gives the UTD spreading. Each leg must be unobstructed by every building (the diffracting building's own faces are touched only along the edge; grazing allowed by the 1e-6 shrink and the angle tolerance).
-- **Visibility graph** (`buildSourceGraph`, once per source, shared by the render table and the reach/heatmap grids): edges the source sees, edges seen from each single-reflection image through the reflecting face, and the cached edge-to-edge adjacency (9 samples per edge, 5×5 per pair; accepted paths are re-checked exactly). Per receiver only the receiver-side legs are tested.
+**Diffraction, wedge model (default)** ([diffraction.js](packages/sim-core/src/diffraction.js), [edges.js](packages/sim-core/src/edges.js)). Each box has 8 edges (4 vertical corners `bN:edge:SW|SE|NE|NW`, 4 roof edges `bN:roof:south|north|west|east`), each a rigid 90° wedge (n = 3/2). A footprint building (`polygonEdges`) has a vertical edge `bN:edge:i` at each convex corner turning at least `MIN_CORNER_TURN_DEG` = 10°, with its own exterior angle (n = 1 + turn / π), and a roof edge `bN:roof:i` (n = 3/2) per wall; concave corners and edges whose exterior is filled by neighbouring buildings (`buriedEdge`) are left out. The coefficient is the Kouyoumjian–Pathak uniform theory of diffraction with the Fresnel transition function F, complex and frequency dependent, spherical incidence (`L = s s' sin²β / (s + s')`). It is causal, and the diffracted field jumps across the shadow boundary by exactly the geometrical-optics field it replaces, so direct + diffracted is continuous (about −6 dB on the boundary). Walls use the wall factor and roofs a reflection coefficient of 0 (roofs do not reflect). Chains found by `wedgeCandidates`: order 1 = `E` (one edge); order 2 adds `SE` (reflect then edge), `ES` (edge then reflect, via the receiver image) and `EE` (two edges, on different buildings or round the same one; the grazing connecting leg halves the coefficient, the standard UTD face rule). Double diffraction uses spreading `1/sqrt(s0 s1 s2 (s0+s1+s2))` and is an engineering approximation. Slope and vertex diffraction are omitted. A path carries `diffraction = { chain, terms[], spread }` and `gain = bounce gain × spread × length` so the usual `gain/length` factor gives the UTD spreading. Each leg must be unobstructed by every building (the diffracting building's own faces are touched only along the edge; grazing allowed by the 1e-6 shrink and the angle tolerance).
+- **Visibility graph** (`buildSourceGraph`, once per source, shared by the render table and the reach/heatmap grids): edges the source sees, edges seen from each single-reflection image through the reflecting face, and the cached edge-to-edge adjacency (9 samples per edge, 5×5 per pair; rows computed on demand, only for edges a source sees, and only for `diffraction_order` 2; accepted paths are re-checked exactly). Per receiver only the receiver-side legs are tested.
 - **Direct path** with the wedge model: replaced by the diffracted field in the shadow (no step); `block_direct_behind_buildings` applies only at order 0 or with the legacy model.
 - **Pruning**: a path is dropped when it is more than `path_prune_db` below the strongest path at each of 250 Hz, 1 kHz and 4 kHz (`pathPressure`). `MAX_PATHS_PER_MIC` = 128 is a safety cap (keeps the strongest at 1 kHz).
 - **Legacy model** (`diffraction_model: 'maekawa'`, kept for comparison and regression): when the direct path is blocked and order ≥ 1, `shortestEdgePoint` finds the point on each edge minimising src→point→mic length; legs are checked against the other buildings only; loss `min(10 log10(3 + 20 N), 20)` dB with `N = 2 δ f / c` (`diffractionLossDb`); magnitude only. Cap 64, no pruning.
@@ -113,7 +118,7 @@ All path logic lives in `findPaths`. The render, wavefront rings, reach map, pat
 
 **`simConstants()`** is written into exports so placeholders are not mistaken for measurements.
 
-## 7. Rendering ([render.js](src/sim/core/render.js))
+## 7. Rendering ([render.js](packages/sim-core/src/render.js))
 
 Rendering is done per mic in the frequency domain; there is no time-domain convolution.
 
@@ -129,12 +134,12 @@ Rendering is done per mic in the frequency domain; there is no time-domain convo
 
 Because the signal is built in the frequency domain with circular FFTs, the render length always includes padding (section 3) so wrap-around lands in silence.
 
-### Components ([components.js](src/sim/core/components.js))
+### Components ([components.js](packages/sim-core/src/components.js))
 `renderComponents(scenario, clips, lengthS, nodeIndex, mode)` re-renders one node with the same code and seed, split by `by_source`, `by_path` (direct / ground / wall / diffracted) or `noise`. Used by the mic view for stacked traces. Runs in the worker.
 
-## 8. Analysis ([analyse.js](src/sim/core/analyse.js) and helpers)
+## 8. Analysis ([analyse.js](packages/sim-core/src/analyse.js) and helpers)
 
-### 8.1 Activity ([activity.js](src/sim/core/activity.js))
+### 8.1 Activity ([activity.js](packages/sim-core/src/activity.js))
 `computeActivity` produces, per source, 10 ms-frame power at mic 0 inside the localisation band, for all paths and for the direct path alone, without rendering a full-rate signal per source. It works at 1/8 decimation by taking only the low-frequency part of the spectrum, with raised-cosine band edges (`bandWeight`, 20 % skirts, so a hard cutoff does not ring and stretch windows). It also measures the in-band noise power on the actual generated noise (`noise_band_power`).
 
 ### 8.2 Active windows and overlap
@@ -142,7 +147,7 @@ Because the signal is built in the frequency domain with circular FFTs, the rend
 - Windows of other sources that intersect it are **overlaps**. Overlap statistics include seconds overlapped and a level difference (others vs own power).
 - If overlapped, localisation uses the longest non-overlapped part when at least `min_window_ms` long (`localised_on: 'non_overlapped_part'`), otherwise status is `unresolved_overlap`. No window at all gives `no_signal`. Windows shorter than the minimum are widened around their midpoint.
 
-### 8.3 Bearing ([localise.js](src/sim/core/localise.js))
+### 8.3 Bearing ([localise.js](packages/sim-core/src/localise.js))
 - `estimateBearing` computes the six pair TDOAs with `windowTdoas`: two packed complex FFTs for the four mics and a band-limited direct evaluation of the PHAT correlation at the needed lags only (numerically equal to `gccPhat`'s up-sampled inverse FFT to ~1e-10°). `gccPhat`/`gccCurve` are kept for the mic view's curve.
 - `gccPhat`: phase-transform cross-correlation of two mics, restricted to the localisation band, 4× up-sampled, parabolic peak refinement. Search range is ± spacing/c.
 - `estimateBearing`: TDOA for the 6 mic pairs, then a least-squares plane-wave fit `(p_j - p_i)·u = c·τ`. The direction `u` points toward the source.
@@ -152,28 +157,32 @@ Because the signal is built in the frequency domain with circular FFTs, the rend
 - `intersectRays`: weighted least-squares closest point to all rays, weight = linear SNR. Rejects the fix when any range along a ray is negative or when no two rays differ by at least 10° (`poorly_conditioned`).
 - `angleBetweenDeg` helper.
 
-### 8.4 Uncertainty ([uncertainty.js](src/sim/core/uncertainty.js))
-One-sigma azimuth error from a Cramér–Rao-style timing bound: `var(τ) = (1 - γ²) / (2 T γ² (4π²/3)(f2³ - f1³))`, with `γ² = (s/(1+s))²` and `s` the linear SNR. Timing error is floored at a fraction of the up-sampled step (`INTERPOLATION_FLOOR_FRACTION`, fitted placeholder). Four mics with independent timing error give `σ_az = c σ_t / sqrt(Σ((p_k - mean)·e_az)²) / max(cos el, 0.15)`, capped at 90°. Hence the error depends on array geometry and direction. `PHAT_EFFICIENCY_PENALTY` is 1 (placeholder). `scripts/sim-uncertainty-calibration.mjs` compares this against empirical spread.
+### 8.4 Uncertainty ([uncertainty.js](packages/sim-core/src/uncertainty.js))
+One-sigma azimuth error from a Cramér–Rao-style timing bound: `var(τ) = (1 - γ²) / (2 T γ² (4π²/3)(f2³ - f1³))`, with `γ² = (s/(1+s))²` and `s` the linear SNR. Timing error is floored at a fraction of the up-sampled step (`INTERPOLATION_FLOOR_FRACTION`, fitted placeholder). Four mics with independent timing error give `σ_az = c σ_t / sqrt(Σ((p_k - mean)·e_az)²) / max(cos el, 0.15)`, capped at 90°. Hence the error depends on array geometry and direction. `PHAT_EFFICIENCY_PENALTY` is 1 (placeholder). `packages/sim-core/scripts/sim-uncertainty-calibration.mjs` compares this against empirical spread.
 
 ### 8.5 Per-node result (inside `analyseScenario`)
 For every source and node: range, `snr_db` (own in-band power over window ÷ noise), `snr_direct_db`, legacy `snr_broadband_db`, `heard` (`snr >= min_snr_db`), bearing with uncertainty, overlap info, localisation status, `reliable` (status ok), `uncertainty_valid` (direct path picked and not an unresolved overlap), windows, true azimuth/elevation, first arrival time, azimuth error, and the `pathReport` fields.
 
 With `progressive: true` it also computes bearings from growing windows (20 ms, doubling up to the full window). The UI draws these as a direction wedge that tightens as sound accumulates.
 
-### 8.6 Path report ([pathreport.js](src/sim/core/pathreport.js))
+For time-resolved display, each source also has a `track` with per-node bearing observations and combined fixes. It uses a rolling 100 ms microphone window at 100 ms intervals (10 Hz), applies the configured minimum SNR, and skips windows overlapping another source. Each usable node bearing is retained with its timestamp; fixes are intersected from the nodes that provide an observation at that update. This is a design-model cadence, not a measured hardware benchmark.
+
+### 8.6 Path report ([pathreport.js](packages/sim-core/src/pathreport.js))
 From the array-centre path list: per path type, length, delay, level relative to the direct path (or strongest path when direct is blocked), diffraction loss at 1 kHz, and arrival azimuth/elevation. It then answers "which path did the bearing actually follow": the path whose arrival azimuth is within `picked_path_tolerance_deg` (5°) of the estimate. Also direct-to-reflected ratio, delay spread, first-path delay, and bearing error against direct and against the picked path.
 
 ### 8.7 Position fix per source
 - Nodes used: those with a bearing that `heard` the source and are `reliable`. Nodes excluded for overlap are listed in `excluded_unreliable`.
 - Fix by `intersectRays`; errors in 2D and 3D versus truth. `fix_suspect` flags use of a node whose direct path is blocked or whose bearing follows a non-direct path. `ready_s` is when the last used window ends.
+- The UI plots the repeated `track.fixes` as a time-ordered estimated path. Per-node observations, bearing cones, and back-trace lines use a distinct node colour; bearing and back-trace lines are dashed. Map endpoints on bearing rays are visual-only and do not encode range.
+- Both canvas views use `ui/tracking.js`: the latest fix at or before playback time gets a large orange ring and timestamp; previous fixes get smaller hollow rings. The ring steps between measured fixes rather than interpolating or extrapolating. Gaps retain the last fix with an explicit "last fix" label and break the trail. Whole-event back-trace overlays are hidden for moving sources; the inspector labels its full-event summary separately from live tracking.
 
-### 8.8 Back-trace ([backtrace.js](src/sim/core/backtrace.js))
-When bearings may be reflections (buildings present), each node's bearing is traced backwards in the horizontal plane at the node's height. At a wall hit the ray reflects (up to `reflection_order`, default 2) and continues; each stretch is a "leg" (solid for the direct line, dashed after bounces) that may contain the source. Legs from different nodes are crossed (`crossLegs`); a crossing is kept if at least two nodes have a leg passing within their bearing uncertainty (`support`) and it is not inside a building. Score = `n_nodes · angleFactor / (1 + meanPath/100)`, where `angleFactor` penalises crossings below 20°. Candidates are clustered within 1 m and ranked. `scoreAgainstTruth` reports the rank and error of the candidate nearest the true source. Only horizontal reflections are traced.
+### 8.8 Back-trace ([backtrace.js](packages/sim-core/src/backtrace.js))
+When bearings may be reflections (buildings present), each node's bearing is traced backwards in the horizontal plane at the node's height. At a wall hit the ray reflects (up to `reflection_order`, default 2) and continues; each stretch is a "leg" (direct or after a bounce) that may contain the source. Legs from different nodes are crossed (`crossLegs`); a crossing is kept if at least two nodes have a leg passing within their bearing uncertainty (`support`) and it is not inside a building. Score = `n_nodes · angleFactor / (1 + meanPath/100)`, where `angleFactor` penalises crossings below 20°. Candidates are clustered within 1 m and ranked. `scoreAgainstTruth` reports the rank and error of the candidate nearest the true source. Only horizontal reflections are traced. In the map, node legs are dashed in their node's colour, with a longer dash after a bounce.
 
-### 8.9 Detection attach ([match.js](src/sim/core/match.js))
+### 8.9 Detection attach ([match.js](packages/sim-core/src/match.js))
 `matchEvents` assigns each labelled detection period to the source whose audible window it overlaps most; unmatched periods are false alerts, unmatched windows are missed. `attachDetections` writes `detected`, first detection time, lag, label, confidence, agreement, YAMNet/CLAP tops onto each node result, then recomputes the fix using only nodes that detected the source, and sets `final` to the most confident node's label.
 
-## 9. Classification ([label.js](src/sim/core/label.js), [models.js](src/sim/models.js))
+## 9. Classification ([label.js](packages/sim-core/src/label.js), [models.js](apps/sim/src/models.js))
 
 `classify(audio, rate, mode, { cat, runners })` is an adapter that runs the same detection code as the phone app (`src/core/periods.js`, `catalogue.js`, `settings.js`):
 
@@ -183,28 +192,29 @@ When bearings may be reflections (buildings present), each node's bearing is tra
 
 `models.js` loads the catalogue (`/config/labels.json`, `priorities.json`), YAMNet through MediaPipe (`/wasm`, `/model/yamnet.tflite`) and CLAP in a separate worker (`src/clapWorker.js`). It returns the `runners` that `classify` expects, keeping models behind one interface.
 
-Status: this classification path, plus `match.js`, is implemented and covered by `test/sim-label.test.js`, but `main.js` does not call it yet. The UI's Create step currently does render, analysis and localisation only. Detection fields appear in results only when `attachDetections` is called.
+Status: this classification path, plus `match.js`, is implemented and covered by `packages/sim-core/test/sim-label.test.js`, but `main.js` does not call it yet. The UI's Create step currently does render, analysis and localisation only. Detection fields appear in results only when `attachDetections` is called.
 
 ## 10. Other core modules
 
-- [dsp.js](src/sim/core/dsp.js): radix-2 `fft` (cached twiddles), `rfft`/`irfft` half-spectrum helpers, `nextPow2`, `resampleLinear`, `resampleSinc` (windowed sinc, used before models).
-- [wavefront.js](src/sim/core/wavefront.js): `analyseClip` gives per 10 ms frame RMS, spectral centroid and flatness. `wavefrontRings` returns the sphere cross-section rings on the slice plane at time `t`: the frame that left the source at `t - r/c`, amplitude scaled by 1/r exactly as the render, culled below a floor and thinned to `maxRings`. Reflected rings use image sources.
-- [reach.js](src/sim/core/reach.js): reach map and side-view field. Uses `findPaths` (reflection order `reach_reflection_order`, default 2) on a grid. Powers are summed **energetically** (no phase) over three octave bands (250 Hz, 1 kHz, 4 kHz) plus a localisation-band channel, with 1/r², bounce gain², air absorption and diffraction at band centres. Source band powers come from `sourceBandLevels` (clip spectrum, scaled by `clipGainPa`). Noise power is measured deterministically (`noiseBandPowerPa2`). Output: level in dB SPL and SNR over noise per cell; cells inside buildings are masked. Grid kinds: `plan` (horizontal slice) and `section` (vertical cross-section along a line). Impulsive clips read lower than their peak since the whole-clip mean is used.
-- [field.js](src/sim/core/field.js) and [ui/heatmap.js](src/sim/ui/heatmap.js): the heatmap. `computeFieldArrivals` stores for the slice height the strongest 16 arrivals per cell and source (delay + per-band pressure² gain from `findPaths`, including reflected and diffracted paths); `clipBandEnvelopes` gives 10 ms band envelopes. Pulse power at time t = Σ arrivals amp² × gain² × envelope(t − start − delay); peak-hold is its running maximum; level is the clip mean (or peak). Memory is estimated first (cells × arrivals × 5 × 4 bytes per source) and the cell size is doubled until it fits 64 MB. It runs in the second worker on the `field` message, independent of Create; the controller debounces 300 ms, shows a 4 m preview then the configured cell, caches several heights and terminates the worker to cancel superseded jobs. The slider is bound to `settings.slice_height_m`, which also drives rings and the reach map.
-- [profile.js](src/sim/core/profile.js): optional stage timing (`{ ms, calls }`) used by `scripts/sim-profile.mjs`.
-- [sweep.js](src/sim/core/sweep.js): `runTrials` renders and analyses once per seed (`seed + i`) and collects fix success, 2D/3D error and bearing error. `summarise` reports fix rate, median and p90 errors, and the rate of picking a non-direct path. `sweep` varies one parameter, `noise_floor_db_spl`, `distance_scale` (sources scaled around the node centroid) or `node_count`, and returns one summary row per value.
-- [spectro.js](src/sim/core/spectro.js): dB magnitude spectrogram for drawing.
-- [wav.js](src/sim/core/wav.js): float32 WAV encoder and arrivals CSV for exports.
+- [dsp.js](packages/sim-core/src/dsp.js): radix-2 `fft` (cached twiddles), `rfft`/`irfft` half-spectrum helpers, `nextPow2`, `resampleLinear`, `resampleSinc` (windowed sinc, used before models).
+- [wavefront.js](packages/sim-core/src/wavefront.js): `analyseClip` gives per 10 ms frame RMS, spectral centroid and flatness. `wavefrontRings` returns the sphere cross-section rings on the slice plane at time `t`: the frame that left the source at `t - r/c`, amplitude scaled by 1/r exactly as the render, culled below a floor and thinned to `maxRings`. Reflected rings use image sources.
+- [reach.js](packages/sim-core/src/reach.js): reach map and side-view field. Uses `findPaths` (reflection order `reach_reflection_order`, default 2) on a grid. Powers are summed **energetically** (no phase) over three octave bands (250 Hz, 1 kHz, 4 kHz) plus a localisation-band channel, with 1/r², bounce gain², air absorption and diffraction at band centres. Source band powers come from `sourceBandLevels` (clip spectrum, scaled by `clipGainPa`). Noise power is measured deterministically (`noiseBandPowerPa2`). Output: level in dB SPL and SNR over noise per cell; cells inside buildings are masked. Grid kinds: `plan` (horizontal slice) and `section` (vertical cross-section along a line). Impulsive clips read lower than their peak since the whole-clip mean is used.
+- [field.js](packages/sim-core/src/field.js) and [ui/heatmap.js](apps/sim/src/ui/heatmap.js): the heatmap. `computeFieldArrivals` stores for the slice height the strongest 16 arrivals per cell and source (delay + per-band pressure² gain from `findPaths`, including reflected and diffracted paths); `clipBandEnvelopes` gives 10 ms band envelopes. Pulse power at time t = Σ arrivals amp² × gain² × envelope(t − start − delay); peak-hold is its running maximum; level is the clip mean (or peak). Memory is estimated first (cells × arrivals × 5 × 4 bytes per source) and the cell size is doubled until it fits 64 MB. It runs in the second worker on the `field` message, independent of Create; the controller debounces 300 ms, shows a 4 m preview then the configured cell, caches several heights and terminates the worker to cancel superseded jobs. The slider is bound to `settings.slice_height_m`, which also drives rings and the reach map.
+- [profile.js](packages/sim-core/src/profile.js): optional stage timing (`{ ms, calls }`) used by `packages/sim-core/scripts/sim-profile.mjs`.
+- [sweep.js](packages/sim-core/src/sweep.js): `runTrials` renders and analyses once per seed (`seed + i`) and collects fix success, 2D/3D error and bearing error. `summarise` reports fix rate, median and p90 errors, and the rate of picking a non-direct path. `sweep` varies one parameter, `noise_floor_db_spl`, `distance_scale` (sources scaled around the node centroid) or `node_count`, and returns one summary row per value.
+- [spectro.js](packages/sim-core/src/spectro.js): dB magnitude spectrogram for drawing.
+- [wav.js](packages/sim-core/src/wav.js): float32 WAV encoder and arrivals CSV for exports.
 
 ## 11. UI layer
 
-### [sim.html](sim.html) and [main.js](src/sim/main.js)
+### [index.html](apps/sim/index.html) and [main.js](apps/sim/src/main.js)
 `main.js` is one module that owns all state: `scenario`, loaded `clips` (Float32Array at 48 kHz), wavefront `analyses`, `status` (`edit | rendering | ready | stale`), `rendered`, `results`, selection, view transform, playhead `t` and playback speed. It is organised in sections:
 
 | Section | Responsibility |
 |---|---|
 | clips, clip picker | library from manifest and uploads, `ensureClip`, `addSource` |
-| menus, settings, top bar | settings dialog bound to `scenario.settings`, speed slider (log scale), save/load JSON, export results |
+| menus, settings, top bar | settings dialog bound to `scenario.settings`, speed slider (log scale), download/load scenario JSON, export results |
+| saved simulations | `ui/library.js` via `bindSimulationLibrary`: save, save as new, open, version history, rename, delete, dirty tracking, `?sim=&v=` URL; `applyScenario` restores a scenario and optional saved results (without rendered audio) |
 | create | validates, loads clips, posts to `renderWorker`, receives `done` |
 | map | pan/zoom canvas, grid and scale bar, buildings, nodes, mic glyphs, truth vs estimate and error line, direction cones/wedges, reflected paths, back-trace lines and candidates, wavefront rings, hover tooltip |
 | heatmap | `ui/heatmap.js` controller: Display menu (toggle default on, mode Pulse/Peak-hold/Level, band, source, height slider with street/node/roof buttons), cached heights, legend, contour at `min_snr_db` |
@@ -220,25 +230,25 @@ Because physics is deterministic, playback is just scrubbing `t` through cached 
 
 The accent colour is used only for estimated positions and error lines.
 
-### [ui/micview.js](src/sim/ui/micview.js)
+### [ui/micview.js](apps/sim/src/ui/micview.js)
 Mic's-eye panel for the selected node: 4 waveform traces (min/max pyramid so long traces draw fast), spectrogram, arrivals table, audit table (the paths the renderer actually applied), GCC-PHAT curve per mic pair, display modes (total, by source, by path, noise), WAV and CSV export. Component series come from the worker.
 
-### [ui/view3d.js](src/sim/ui/view3d.js)
+### [ui/view3d.js](apps/sim/src/ui/view3d.js)
 Canvas 3D view: an orbit camera (`createCamera`, `cameraPosition`) and a perspective projector (`makeProjector`), drawing buildings, nodes, sources, cones and waves with 2D canvas calls (no WebGL).
 
 ## 12. Workers and threading
 
-- [renderWorker.js](src/sim/renderWorker.js) handles three message types: default (render + analyse, progress at 90 % for render, then 100 %), `components`, and `reach`. Large buffers are transferred, not copied. A second instance serves reach requests so they do not queue behind a render.
-- [sweepWorker.js](src/sim/sweepWorker.js) runs `runTrials` or `sweep` and reports progress.
+- [renderWorker.js](apps/sim/src/renderWorker.js) handles three message types: default (render + analyse, progress at 90 % for render, then 100 %), `components`, and `reach`. Large buffers are transferred, not copied. A second instance serves reach requests so they do not queue behind a render.
+- [sweepWorker.js](apps/sim/src/sweepWorker.js) runs `runTrials` or `sweep` and reports progress.
 - Models run in the main thread (YAMNet via MediaPipe) and in `clapWorker.js` (CLAP).
 - Workers receive clips as `[id, Float32Array]` pairs and rebuild a `Map`; `lastCreate` snapshots the scenario at Create so component views match the results even after edits.
 
-## 13. Clip library ([clips.js](src/sim/clips.js))
+## 13. Clip library ([clips.js](packages/sim-core/src/clips.js))
 
 - `loadManifest` reads `/test-audio/manifest.json` (no-store cache) and keeps entries flagged `sim`, plus two generated test clips: `test_impulse` (200–1600 Hz flat) and `test_noise_burst` (50–12 000 Hz flat, exact RMS 1 so loudest-window and mean agree).
 - `PLACEHOLDER_LEVELS` gives each real clip a 1 m level in dB SPL. These are placeholders (`confirmed: false`).
 - `decodeToMono` decodes via `OfflineAudioContext` to 48 kHz and averages channels. `clipAvailable` guards against the SPA fallback returning `index.html` for a missing file.
-- Real clips come from ESC-50 (see `scripts/fetch-sim-audio.mjs`). The simulator page is only built when `SIM_ENABLED=1` ([vite.config.js](vite.config.js)) because of the clip licence.
+- Real clips come from ESC-50, downloaded by `packages/assets/scripts/fetch-test-audio.mjs` as part of `npm run build:sim`. The clips are non-commercial (CC-BY-NC), which is one reason the simulator is a separate service from echo.
 
 ## 14. Determinism, units and invariants
 
@@ -251,9 +261,9 @@ Canvas 3D view: an orbit camera (`createCamera`, `cameraPosition`) and a perspec
 
 ## 15. Tests and scripts
 
-`npm test` runs `node --test test/*.test.js`. Simulator suites: `sim.test.js` (core), `sim-buildings`, `sim-diffraction`, `sim-backtrace`, `sim-components`, `sim-fidelity`, `sim-reference` (against `test/reference-render.js`, an independent time-domain renderer), `sim-golden` (regression against `test/golden/`, scenes in `test/golden-scenes.js`), `sim-wedge`, `sim-vertical`, `sim-field`, `sim-reach`, `sim-sweep`, `sim-label`, `sim-view3d`.
+`npm test` at the root runs every workspace. Engine suites in `packages/sim-core/test/` (`npm test -w @echo/sim-core`): `sim.test.js` (core), `sim-buildings`, `sim-diffraction`, `sim-backtrace`, `sim-components`, `sim-fidelity`, `sim-reference` (against `test/reference-render.js`, an independent time-domain renderer), `sim-golden` (regression against `test/golden/`, scenes in `test/golden-scenes.js`), `sim-wedge`, `sim-vertical`, `sim-field`, `sim-reach`, `sim-sweep`, `sim-label`, `sim-footprint`, `sim-osm`, `sim-motion`, `sim-suite`. UI suites in `apps/sim/test/`: `sim-view3d`, `sim-tracking`, `sim-osm-loader`, `sim-library` (saved-simulation client), `vite-config` (page and `/api` proxy). Backend suites in `apps/backend/test/` cover `/api/simulations` on the memory store and, with `TEST_DATABASE_URL`, on Postgres (footprint prisms: blocking, placement, angled reflections, corner wedges, grid equivalence).
 
-Scripts: `scripts/sim-golden.mjs` regenerates golden data, `sim-overlap-check.mjs` checks overlap and SNR with real clips, `sim-profile.mjs`, `sim-diffraction-validation.mjs` (writes docs/diffraction-validation.md), `sim-heatmap-timing.mjs`, `sim-sensitivity.mjs` (docs/sensitivity.md), `sim-uncertainty-calibration.mjs [seeds]` compares stated and empirical azimuth uncertainty, `fetch-sim-audio.mjs` downloads the clips.
+Scripts (in `packages/sim-core/scripts/`, run from `packages/sim-core`): `sim-golden.mjs` regenerates golden data, `sim-overlap-check.mjs` checks overlap and SNR with real clips, `sim-profile.mjs`, `sim-diffraction-validation.mjs` (writes docs/diffraction-validation.md), `sim-heatmap-timing.mjs`, `sim-sensitivity.mjs` (docs/sensitivity.md), `sim-uncertainty-calibration.mjs [seeds]` compares stated and empirical azimuth uncertainty, `packages/assets/scripts/fetch-test-audio.mjs` downloads the clips.
 
 ## 16. Known limits
 

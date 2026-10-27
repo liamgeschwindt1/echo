@@ -9,7 +9,50 @@ It does not identify or label sounds. (The YAMNet and CLAP recognition step has 
 
 It is not validation. It models open ground only (no buildings), so real streets will do worse than the simulator shows.
 
-Open it at `/sim` on the simulator service (or `/sim.html` on the dev server).
+Open the simulator service at `/` (in development, `npm run dev` serves it on http://localhost:5174).
+
+### Saving simulations
+
+Use the **File** menu:
+
+- **Save…** stores the scenario in the shared database. Tick **Include current results** to keep the latest results too. Every save adds a new version; older versions stay available.
+- **Save as new…** makes a separate copy.
+- **Open saved…** lists every saved simulation. Search by name, open the latest version, view the version history, rename or delete.
+- **New simulation** starts again from the demo.
+
+The title next to the menu shows the open simulation, its version and a dot when there are unsaved changes. Ctrl+S saves. The page URL (`?sim=…&v=…`) points to the open simulation, so reloading or sharing the link reopens it. Saved results come back without audio; press **Create** to render it again. Uploaded WAV clips are not saved.
+
+**Files on this computer** still downloads and loads scenario files and exports results, without using the database.
+
+### OpenStreetMap environment
+
+Open **Environment** in the top bar, then **Load map** to import the default
+Battersea Power Station area. Change latitude, longitude and tile size (200 to
+1000 metres) to load another area. The simulator server fetches map data through
+the same-origin `/api/osm` endpoint, so the browser does not need direct access
+to map providers or external CORS permissions. The server requests the bounded
+tile from the official OpenStreetMap JSON map API first, with Overpass as a
+fallback. The server needs internet access;
+each upstream attempt stops after 15 seconds, and the browser stops waiting
+after 35 seconds. The Load map button shows a countdown. **Cancel loading**
+stops waiting immediately without changing the current scene. Failures appear
+below the button, and Load map becomes available again. Restart
+the dev server after updating its configuration. Upstream failures appear with
+the server name and failure reason rather than a generic browser fetch error.
+
+The map adds building footprints, roads, rail, water, parks and trees to the 2D
+and 3D views. Loading replaces current buildings; nodes or sources inside the
+new buildings are removed and listed in a notice. Acoustic calculations use each
+building's real footprint outline: placement, line-of-sight blocking,
+reflections off walls at any angle, and diffraction at every outward corner
+(with that corner's angle) and along every roof edge. Outlines are simplified
+for acoustics by dropping points within 1 metre of a straight wall; the views
+draw the full outline. Courtyards are treated as solid, and corners or roof
+edges buried against a neighbouring building do not diffract. Heights without
+OSM height tags are estimated from storeys or default to 15 metres.
+
+**Remove map** removes the imported environment and its buildings. Saved simulations and downloaded
+scenario files include the map data, so reopening a saved scenario does not need another fetch.
 
 ---
 
@@ -56,9 +99,10 @@ On first open you see a **demo scenario**: three nodes at (0, 0), (60, 0) and (3
 - **Scale bar:** bottom-left of the map.
 - **Node:** a small square. Beside it is a **magnified inset** showing the four mics, numbered 1 to 4 (the mics are only 10 cm apart, which is under one pixel at map scale, so the inset enlarges them and labels it "mics xN"). At high zoom the mics are drawn at their true positions instead. Filled dots are at or above the node's plane, hollow dots below it (only matters for the tetrahedron layout).
 - **Source:** a dot with its id and sound name.
-- **White** = ground truth (where things really are). **Amber** = what the simulator worked out.
-- **Direction wedges** (amber, after Create): one wedge per node that heard the sound, pointing the way that node thinks the sound came from. Every wedge is drawn the same length with an open end and fading out, so its length means nothing about distance. The true position is only ever the white source dot. Each wedge is labelled `±U°  err E°`: **U** is the stated uncertainty (half-width, indicative, from how much the four mics disagreed) and **E** is the actual azimuth error against the truth. When E is bigger than U the node was confidently wrong: the wedge edges are drawn thicker, the label is a solid amber block and ends in `!`. If another sound overlaps this one in time at that node, the wedge edges are dashed and the label ends in `⚠ overlap`, because the direction is contaminated. Where wedges from different nodes cross is where the sound probably is.
-- **Amber ring + amber line:** the estimated position, with a line back to the true (white) position showing the error. It appears when at least two nodes heard the sound.
+- **White** = ground truth (where things really are). **Amber** = combined position estimates. Each node has its own map colour; node labels and bearing marks use that same colour.
+- **Direction observations** (after Create): the simulator uses a rolling 100 ms microphone window and updates every 100 ms (10 estimates per second). Each node's dashed line and circle show that node's bearing at that update; dashed-line length and circle position are visual markers only, not measured range. The translucent cone shows the latest bearing and its uncertainty. Acoustic arrival and the 100 ms window mean updates are delayed; low-SNR or overlapped windows can leave gaps.
+- **Amber estimated path:** the large orange ring follows the latest combined fix as playback advances, with its source id and measurement time alongside. Smaller hollow circles retain every earlier fix, joined as a trail; future fixes appear only when playback reaches their time. This works in both 2D and 3D. At least two nodes must provide usable bearings. During detection gaps the ring stays at the last known fix, labelled "last fix", and the trail does not bridge the gap. The original source dot remains ground truth; compare it with the estimated path to see error.
+- **Whole-event summaries:** the inspector's summary position and back-trace candidates use the full event, not a tracking update. For moving sources, those static back-trace overlays are hidden so they cannot be mistaken for the live orange ring. A source can only be tracked while it emits audible sound; moving the path does not make a short clip play for longer.
 - **Rings** spreading from each source are the sound wave (section 7).
 
 If the map is empty it says what to do next ("Add a node, then add a sound").
@@ -79,11 +123,13 @@ There is no Delete tool. To delete: select the object, then press the **Delete k
 
 **Display** menu (bottom of the strip):
 
-- **Direction cones:** show or hide the amber wedges.
+- **Sound display:** choose **Heatmap / waves** for the existing overlays, or **Particles** for outward-moving sound-energy markers. Every source has its own colour, shared by its particles, source dot, and legend in both 2D and 3D. Particle mode temporarily hides the heatmap and wave rings; switching back restores their settings. Use **3D view** to see spherical particle fields, or leave it off to see their slice at **Slice height**. Play, pause, speed, and timeline scrubbing control both views without Create. New sources start at 3 s by default, so particles appear only after their start time.
+- **Reflected sound:** includes reflected rings or particles using the existing wall and ground reflection paths. Particles follow the wavefront display's travel time, loudness fade, and building visibility checks. Moving-source emissions originate at the source's position when emitted; reflected particles are available for stationary sources only. These are visual sound-energy markers, not simulated air molecules or true wavelengths, and they do not diffract.
+- **Direction cones:** show or hide node-coloured bearing observations and cones.
 - **Mic arrays:** show or hide the magnified mic insets beside each node.
 - **Tone and grain:** on = rings are drawn with thickness and dashes that reflect the sound's pitch and noisiness. Off = plain loudness pulses.
 - **Slice height (m):** which horizontal plane the rings are drawn on (default 1.5 m, roughly head height).
-- **Nodes shown:** a tick box per node, plus **all** and **none**. Hiding a node removes it, its mic inset and its wedges from the map so overlapping nodes are easier to read. It is a view setting only: the node still takes part in Create and in the position estimate, and you cannot select or move a hidden node. Loading a scenario shows all nodes again.
+- **Nodes shown:** a tick box per node, plus **all** and **none**. Hiding a node removes it, its mic inset, bearing line and observations from the map so overlapping nodes are easier to read. It is a view setting only: the node still takes part in Create and in the position estimate, and you cannot select or move a hidden node. Loading a scenario shows all nodes again.
 
 ---
 
@@ -186,8 +232,9 @@ Moves the playhead forward at the chosen speed and **plays the sounds** (see "He
 The playhead position in seconds. The scenario **ends exactly when the last sound finishes**. Behind the scenes Create renders a little longer than that, enough for sound still travelling to the farthest mic.
 
 ### File menu
-- **Save scenario:** downloads the scenario as JSON (nodes, sources, settings, seed).
-- **Load scenario:** loads a saved file and clears results.
+- **New simulation / Open saved… / Save… / Save as new…:** the shared database; see "Saving simulations" at the top.
+- **Download scenario file:** downloads the scenario as JSON (nodes, sources, settings, seed).
+- **Load scenario file:** loads a downloaded file and clears results.
 - **Export results:** downloads scenario, summary, results and model readings as JSON. Only works after Create. The same scenario and seed always give identical results.
 - **Repeats / sweep:** see section 11.
 
@@ -298,7 +345,7 @@ Direction finding then compares arrival-time differences between the six mic pai
 - **High-pitched sounds locate badly.** That is expected: the direction finder only uses 200 to 1600 Hz.
 - **Flat nodes assume the sound is below them.** A source above the node gives the wrong elevation unless you use the tetrahedron layout.
 - **Levels are placeholders.** Do not quote distances or detection rates from this tool as evidence the real system works.
-- **Sounds greyed out in the picker?** Their audio files are missing on the server. The simulator service must be built with `SIM_ENABLED=1`.
+- **Sounds greyed out in the picker?** Their audio files are missing on the server. The simulator service must be built with `npm run build:sim`, which downloads them.
 - **Moving sound: which "true position"?** A moving sound has no single position. Each node is scored against where the source was when the sound it used left it (middle of its window), and the position error against the average of those points. The stated uncertainty includes the angle the source sweeps through during the window. The render audit skips moving sounds, the reach map uses the start of the path, and the heatmap uses a few points along it.
 - **Clips are non-commercial** (ESC-50 dataset), fine for this tool but not for a production product.
 
@@ -306,10 +353,10 @@ Direction finding then compares arrival-time differences between the six mic pai
 
 ## 14. Typical session
 
-1. Open `/sim`. Look at the demo.
+1. Open the simulator. Look at the demo.
 2. Press **Create**. Wait for "Located 1 of 1 sound" in the top bar.
 3. Press **Play** and watch the rings reach each node. Select the source and read the Result table. Look at the amber wedges and their labels: they should cross near the true position.
 4. Select a node to see its waveforms and spectrogram. Use Display > Nodes shown to hide nodes and see one node's cone at a time.
 5. Drag the source further away and press **Create** again. Compare the SNR, label and error.
 6. Open **File > Repeats / sweep**, vary distance scale, and read the fix rate to see where it stops working.
-7. **File > Save scenario** to keep it.
+7. **File > Save…** to keep it.

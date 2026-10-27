@@ -2,33 +2,89 @@
 
 Phone sound labeller v2.2. YAMNet (MediaPipe) and CLAP (transformers.js, Web Worker) run on the device. Audio is never stored or uploaded. Only labels, levels and notes are posted to `POST /api/report` when you tap **View results**, and the server forwards them to Gemini.
 
+## Architecture
+
+npm workspaces monorepo. Four Railway services:
+
+| Service | Code | What it does |
+|---|---|---|
+| `backend-` | [apps/backend](apps/backend) | Express API: `/api/report` (Gemini), `/api/osm` (OpenStreetMap proxy), `/api/simulations` (saved simulations), `/healthz`. No static files. |
+| `sim` | [apps/sim](apps/sim) | Acoustic simulator frontend, served at `/`. Proxies `/api/*` to the backend. |
+| `echo` | [apps/echo](apps/echo) | Phone sound labeller frontend, served at `/`. Proxies `/api/*` to the backend. |
+| `Postgres` | Railway plugin | Stores saved simulations and their versions. |
+
+Shared code:
+
+- [packages/shared](packages/shared) (`@echo/shared`): catalogue, periods, report core, settings.
+- [packages/sim-core](packages/sim-core) (`@echo/sim-core`): simulation engine, its tests, scripts and docs.
+- [packages/assets](packages/assets) (`@echo/assets`): `public/` (models, WASM, config, test audio), served by both frontends.
+- [packages/web-server](packages/web-server) (`@echo/web-server`): shared Vite config (CSP, `/api` proxy) and the production static + proxy server.
+
+The browser only talks to its own frontend origin. Each frontend server forwards `/api/*` to `BACKEND_URL` and keeps the original `Host` header, so the backend's same-origin check still works.
+
+### Saved simulations
+
+In the sim, **File → Save…** stores the scenario (and, optionally, the latest results) in Postgres. Every save adds a new version; nothing is overwritten. **File → Open saved…** lists all simulations with search, version history, rename and delete. The URL (`?sim=<id>&v=<version>`) points to the open simulation, so it can be reloaded or shared. There is no login: everyone with access to the sim sees every saved simulation.
+
+Saved results come back without rendered audio. Press **Create** to render audio again. Uploaded WAV clips are not stored.
+
+Tables are created by [apps/backend/migrations](apps/backend/migrations) when the backend starts (or with `npm run migrate -w @echo/backend`).
+
 ## Develop
 
 ```sh
 npm install
-npm run fetch-models          # CLAP audio model into public/models (once)
-npm run dev:server            # API on :8787 (set GEMINI_API_KEY to use Gemini)
-npm run dev                   # Vite, proxies /api to :8787
+npm run fetch-models -w @echo/assets      # CLAP audio model (once)
+npm run fetch-test-audio -w @echo/assets  # test clips used by the sim (once)
+npm run dev                               # backend :8787, echo :5173, sim :5174
 ```
 
-After editing CLAP prompts in `public/config/labels.json`, run `npm run clap:embed` to regenerate `public/config/clap_text_embeddings.json`. Priorities are in `public/config/priorities.json`.
+Without `DATABASE_URL` the backend keeps simulations in memory (lost on restart) and logs a warning. To use Postgres locally:
+
+```sh
+docker run -d --name echo-pg -e POSTGRES_PASSWORD=dev -e POSTGRES_DB=echo -p 5432:5432 postgres:16-alpine
+DATABASE_URL=postgres://postgres:dev@localhost:5432/echo npm run dev
+```
+
+Set `GEMINI_API_KEY` to use Gemini for echo reports.
+
+After editing CLAP prompts in `packages/assets/public/config/labels.json`, run `npm run clap:embed -w @echo/assets` to regenerate `clap_text_embeddings.json`. Priorities are in `packages/assets/public/config/priorities.json`.
+
+## Test
+
+```sh
+npm test                                   # every workspace
+npm test -w @echo/backend                  # one workspace
+TEST_DATABASE_URL=postgres://... npm test -w @echo/backend   # also run store tests on Postgres
+```
 
 ## Build / run production
 
 ```sh
-npm run build
-npm run start   # Express: serves dist/ and /api/report on $PORT (default 8787)
+npm run build:sim    && npm run start:sim       # PORT default 8080
+npm run build:echo   && npm run start:echo      # PORT default 8080
+npm run start:backend                           # PORT default 8787
 ```
 
 ## Deploy to Railway
 
-`railway.json` runs `npm run build` then `npm run start`. Environment variables: `GEMINI_API_KEY` (required for Gemini; without it the basic report is used), `GEMINI_MODEL` (default `gemini-3.8-flash`), `GEMINI_THINKING_LEVEL` (default `medium`), `MAX_BODY_BYTES` (default 2 MB), `RATE_LIMIT_PER_MIN` (default 10).
+All services build from the repository root (do not set a root directory; the apps need `packages/`). For each service, set **Settings → Config-as-code** to its file:
+
+| Service | Config file | Variables |
+|---|---|---|
+| `backend-` | `/apps/backend/railway.json` | `DATABASE_URL=${{Postgres.DATABASE_URL}}`, `PORT=8787`, `NODE_ENV=production`, `GEMINI_API_KEY` |
+| `sim` | `/apps/sim/railway.json` | `BACKEND_URL=http://${{backend-.RAILWAY_PRIVATE_DOMAIN}}:${{backend-.PORT}}` |
+| `echo` | `/apps/echo/railway.json` | `BACKEND_URL=http://${{backend-.RAILWAY_PRIVATE_DOMAIN}}:${{backend-.PORT}}` |
+
+The backend needs no public domain; the frontends reach it over the private network. `SIM_ENABLED` is no longer used. Health checks use `/healthz` on every service.
+
+Optional backend variables: `GEMINI_MODEL` (default `gemini-3.8-flash`), `GEMINI_THINKING_LEVEL` (default `medium`), `MAX_BODY_BYTES` (default 2 MB, report API), `RATE_LIMIT_PER_MIN` (default 10, report API), `PGSSL=1` (TLS to Postgres, not needed on Railway's private network).
 
 ## Assets
 
-- `public/model/yamnet.tflite` and `public/model/yamnet_class_map.csv` — the model and its class names, hosted ourselves (no third-party runtime calls).
-- `public/wasm/` — MediaPipe's WASM runtime, copied out of `node_modules` by `scripts/copy-wasm.mjs` (runs on `npm install` via `postinstall`).
-- `public/worklet/capture-processor.js` — AudioWorklet that buffers mic samples into overlapping windows in memory only.
+- `packages/assets/public/model/yamnet.tflite` and `public/model/yamnet_class_map.csv` — the model and its class names, hosted ourselves (no third-party runtime calls).
+- `packages/assets/public/wasm/` — MediaPipe's WASM runtime, copied out of `node_modules` by `packages/assets/scripts/copy-wasm.mjs` (runs on `npm install` via `postinstall`).
+- `packages/assets/public/worklet/capture-processor.js` — AudioWorklet that buffers mic samples into overlapping windows in memory only.
 
 See [instructions/instructions_v2.2.md](instructions/instructions_v2.2.md) for the full product brief.
 
@@ -42,8 +98,8 @@ Headphones are recommended; playback is audible but the input is wired digitally
 not re-recorded from the speakers. Keep the tab in the foreground.
 
 The checked-in fixtures are selected reproducibly from a pinned ESC-50 revision.
-To restore them: `npm run fetch-test-audio`. The manifest, metadata and full upstream
-licence/individual credits are in [public/test-audio/](public/test-audio/).
+To restore them: `npm run fetch-test-audio -w @echo/assets`. The manifest, metadata and full upstream
+licence/individual credits are in [packages/assets/public/test-audio/](packages/assets/public/test-audio/).
 **ESC-50 is CC-BY-NC-3.0: do not ship this fixture set as part of a commercial app.**
 This is one clip per class, not a representative benchmark or evidence of safety.
 ESC-50 is not sourced from AudioSet, but that alone does not prove training-set independence.

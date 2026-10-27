@@ -1,0 +1,16 @@
+{
+  "name": "@echo/web-server",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Static file server with an /api proxy to the backend, plus shared Vite settings, for the frontends.",
+  "exports": {
+    "./*": "./src/*"
+  },
+  "scripts": {
+    "test": "node --test --test-timeout=120000 test/*.test.js"
+  },
+  "dependencies": {
+    "express": "^4.22.3"
+  }
+}

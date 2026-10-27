@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' blob:" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Estate Acoustics Simulator</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header id="top">
+        <button id="createBtn" class="primary">Create</button>
+        <button id="playBtn">Play</button>
+        <label class="inline">Speed <input id="speed" type="range" min="-4.32" max="2" step="0.01" value="0" /> <span id="speedLabel" class="mono">1x</span></label>
+        <span id="timeLabel" class="mono">0.00 s</span>
+        <span id="statusLabel" class="muted"></span>
+        <progress id="progress" value="0" max="1" hidden></progress>
+        <span class="grow"></span>
+        <span id="simTitle" class="sim-title">Unsaved simulation</span>
+        <details class="menu" id="fileMenu">
+          <summary>File</summary>
+          <div class="menu-body">
+            <button id="simNew">New simulation</button>
+            <button id="simOpen">Open saved…</button>
+            <button id="simSave" title="Ctrl+S">Save…</button>
+            <button id="simSaveAs">Save as new…</button>
+            <div class="menu-head">Files on this computer</div>
+            <button id="saveBtn">Download scenario file</button>
+            <button id="loadBtn">Load scenario file</button>
+            <button id="exportBtn">Export results</button>
+            <button id="sweepBtn">Repeats / sweep</button>
+          </div>
+        </details>
+        <details class="menu" id="environmentMenu">
+          <summary>Environment</summary>
+          <div class="menu-body">
+            <fieldset id="osmForm">
+              <legend>OpenStreetMap area</legend>
+              <label>Name <input id="osmName" value="Battersea Power Station" /></label>
+              <label>Latitude <input id="osmLat" type="number" step="any" value="51.4818" /></label>
+              <label>Longitude <input id="osmLon" type="number" step="any" value="-0.1446" /></label>
+              <label>Tile size (m) <input id="osmSize" type="number" min="200" max="1000" step="50" value="600" /></label>
+              <button id="osmLoad">Load map</button>
+              <button id="osmCancel" hidden>Cancel loading</button>
+              <p id="osmStatus" role="status" aria-live="polite"></p>
+              <button id="osmClear">Remove map</button>
+            </fieldset>
+            <p class="muted">Load real buildings, roads, water and parks. Replaces current buildings. Internet access required.</p>
+          </div>
+        </details>
+        <button id="settingsBtn" class="icon" title="Settings" aria-label="Settings">&#9881;</button>
+        <button id="infoBtn" class="icon" title="Limits of this simulation" aria-label="Limits">i</button>
+        <input id="loadFile" type="file" accept="application/json" hidden />
+      </header>
+      <div id="banner" hidden>Out of date, press Create</div>
+      <div id="loadNotice" hidden></div>
+      <aside id="tools">
+        <button data-tool="select" class="active">Move</button>
+        <button data-tool="node">Add node</button>
+        <button data-tool="source">Add source</button>
+        <button data-tool="building">Add building</button>
+        <button data-tool="section">Side view</button>
+        <span class="grow"></span>
+        <details class="menu up" id="displayMenu">
+          <summary>Display</summary>
+          <div class="menu-body">
+            <label>Sound display <select id="soundDisplay"><option value="field">Heatmap / waves</option><option value="particles">Particles</option></select></label>
+            <label class="check"><input id="show3d" type="checkbox" /> 3D view</label>
+            <label class="check"><input id="showWaves3d" type="checkbox" checked /> Waves in 3D view</label>
+            <label class="check"><input id="showCones" type="checkbox" checked /> Direction cones</label>
+            <label class="check"><input id="showBacktrace" type="checkbox" checked /> Back-trace candidates (select a node)</label>
+            <label class="check"><input id="showAllTraces" type="checkbox" /> Back-trace lines for all nodes</label>
+            <label class="check"><input id="showMics" type="checkbox" /> Mic arrays</label>
+            <label class="check"><input id="showPaths" type="checkbox" checked /> Show reflections</label>
+            <label class="check"><input id="showReflWaves" type="checkbox" checked /> Reflected sound</label>
+            <label class="check"><input id="grain" type="checkbox" checked /> Tone and grain</label>
+            <label class="check"><input id="showReach" type="checkbox" /> Reach map</label>
+            <label>Reach view <select id="reachMode"><option value="snr">SNR over noise</option><option value="level">Level (dB SPL)</option></select></label>
+            <label class="check"><input id="showHeatmap" type="checkbox" checked /> Heatmap</label>
+            <label>Heatmap mode <select id="heatMode"><option value="pulse">Pulse (at the playhead)</option><option value="peak">Peak-hold</option><option value="level">Level (clip mean)</option></select></label>
+            <label class="check"><input id="heatLevelPeak" type="checkbox" /> Level mode: show peak instead of mean</label>
+            <label>Heatmap band <select id="heatBand"><option value="loc">localisation band</option><option value="low">low (250 Hz)</option><option value="mid">mid (1 kHz)</option><option value="high">high (4 kHz)</option></select></label>
+            <label>Heatmap source <select id="heatSource"><option value="selected">selected source (all if none)</option><option value="all">all sources</option></select></label>
+            <label class="check"><input id="heatAboveNoise" type="checkbox" checked /> Show level above noise (localisation band only; off: dB SPL)</label>
+            <label>Backdrop opacity <input id="s_heatmap_backdrop" class="mono" type="number" step="0.05" min="0" max="1" /></label>
+            <label>Slice height (m) <input id="s_slice_height_m" class="mono" type="number" step="0.5" /></label>
+            <label>z = <span id="sliceLabel" class="mono">1.5 m</span> <input id="sliceSlider" type="range" min="0" max="25" step="0.5" value="1.5" /></label>
+            <div class="menu-head">Height: <button id="zStreet">street 1.5 m</button><button id="zNode">node</button><button id="zRoof">roof</button></div>
+            <div class="menu-head">Nodes shown <span class="grow"></span><button id="nodesAll">all</button><button id="nodesNone">none</button></div>
+            <div id="nodeToggles"></div>
+          </div>
+        </details>
+      </aside>
+      <main id="mapWrap">
+        <canvas id="map"></canvas>
+        <canvas id="map3d" hidden></canvas>
+        <div id="particleLegend" aria-label="Sound sources" hidden></div>
+        <div id="hint"></div>
+        <div id="reachLabel" class="mono" hidden></div>
+        <div id="heatLabel" class="mono" hidden></div>
+      </main>
+      <aside id="inspector"></aside>
+      <footer id="timelineWrap"><canvas id="timeline"></canvas></footer>
+    </div>
+
+    <section id="sectionView" hidden>
+      <header>
+        <strong>Side view</strong>
+        <span id="sectionStatus" class="muted"></span>
+        <span class="grow"></span>
+        <button id="sectionClose">Close</button>
+      </header>
+      <canvas id="sectionCanvas"></canvas>
+    </section>
+
+    <section id="micView" hidden>
+      <header>
+        <strong id="mvTitle">Mic's-eye view</strong>
+        <label class="inline">Show
+          <select id="mvMode"><option value="total">Total</option><option value="by_source">By source</option><option value="by_path">By path</option><option value="noise">Noise only</option><option value="audit">Audit</option></select>
+        </label>
+        <label class="inline">Scale <select id="mvScale"><option value="lin">Linear</option><option value="db">dBFS</option></select></label>
+        <span id="mvStatus" class="muted"></span>
+        <span class="grow"></span>
+        <button id="mvWav" title="Simulated audio only">4-channel WAV</button>
+        <button id="mvCsv">Arrivals CSV</button>
+        <button id="mvExpand">Expand</button>
+        <button id="mvClose">Close</button>
+      </header>
+      <div id="mvBody">
+        <div id="mvLeft"><canvas id="mvTraces"></canvas><canvas id="mvSpec"></canvas></div>
+        <div id="mvRight">
+          <div id="mvLegend"></div>
+          <div id="mvAudit" hidden></div>
+          <h4>Arrivals</h4>
+          <div id="mvArrivals"></div>
+          <h4>Delay view</h4>
+          <div class="mv-row"><label class="inline">Source <select id="mvSrc"></select></label><label class="inline">Pair <select id="mvPair"></select></label></div>
+          <canvas id="mvGcc"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <dialog id="settingsDlg">
+      <h3>Settings</h3>
+      <label>Temperature (&deg;C) <input id="s_temperature_c" class="mono" type="number" step="1" /></label>
+      <label>Humidity (%) <input id="s_humidity_pct" class="mono" type="number" step="1" /></label>
+      <label>Noise floor (dB SPL) <input id="s_noise_floor_db_spl" class="mono" type="number" step="1" /></label>
+      <label>Ground reflectivity (0-1) <input id="s_ground_reflectivity" class="mono" type="number" step="0.1" min="0" max="1" /></label>
+      <label>Random seed <input id="s_seed" class="mono" type="number" step="1" /></label>
+      <label>Minimum SNR to use a node (dB) <input id="s_min_snr_db" class="mono" type="number" step="1" /></label>
+      <label>Reflection order
+        <select id="s_reflection_order"><option value="0">0: ground only (original)</option><option value="1">1: one bounce</option><option value="2">2: two bounces</option></select>
+      </label>
+      <label>Block direct path behind buildings (diffraction order 0 only) <input id="s_block_direct_behind_buildings" type="checkbox" /></label>
+      <label>Diffraction order
+        <select id="s_diffraction_order"><option value="0">0: off (hard block)</option><option value="1">1: one edge</option><option value="2">2: two edges, reflection + edge (default)</option></select>
+      </label>
+      <label>Diffraction model
+        <select id="s_diffraction_model" data-string="1"><option value="wedge">wedge (UTD, default)</option><option value="maekawa">maekawa (old formula, comparison only)</option></select>
+      </label>
+      <label>Path pruning (dB below the strongest path) <input id="s_path_prune_db" class="mono" type="number" step="5" min="10" /></label>
+      <label>Noise (ambient + mic self-noise) <input id="s_noise_enabled" type="checkbox" /></label>
+      <label>Reach map cell size (m) <input id="s_reach_cell_m" class="mono" type="number" step="0.5" min="0.5" /></label>
+      <label>Reach map reflection order
+        <select id="s_reach_reflection_order"><option value="0">0: ground only</option><option value="1">1: one bounce</option><option value="2">2: two bounces (default)</option></select>
+      </label>
+      <label>Picked-path tolerance (°) <input id="s_picked_path_tolerance_deg" class="mono" type="number" step="1" /></label>
+      <label>Sound during playback (1x speed only) <select id="listen"><option value="dry">Sources, as recorded</option><option value="off">Off</option></select></label>
+      <div class="actions"><button id="settingsClose">Done</button></div>
+    </dialog>
+
+    <dialog id="clipDlg">
+      <h3>Choose a sound</h3>
+      <div id="clipList"></div>
+      <div class="actions">
+        <label class="upload">Upload WAV&hellip; <input id="clipUpload" type="file" accept="audio/wav,audio/*" hidden /></label>
+        <button id="clipCancel">Cancel</button>
+      </div>
+    </dialog>
+
+    <dialog id="infoDlg">
+      <h3>Limits of this simulation</h3>
+      <ul>
+        <li>Free field plus the ground and any buildings you add. Buildings are flat, axis-aligned concrete boxes with one placeholder absorption coefficient (0.03, not measured) for every surface. Only the vertical faces and the ground reflect; roofs block sound but do not reflect.</li>
+        <li>Diffraction is on by default (order 2). Each building edge (4 vertical corners, 4 roof edges) is a rigid 90&deg; wedge and uses the uniform theory of diffraction (Kouyoumjian and Pathak 1974) with a complex, frequency-dependent coefficient, so the loss rises with frequency and the diffracted sound arrives no earlier than its path length divided by the speed of sound. The direct and diffracted fields join smoothly at the shadow boundary (about &minus;6 dB on it). Order 1 is one edge; order 2 adds edge to edge (two edges, also round the same building and over its roof), reflection then edge, and edge then reflection. A single edge cannot connect two points on opposite sides of a building, so order 1 gives no path there. Weak paths (more than 50 dB below the strongest at 250 Hz, 1 kHz and 4 kHz) are pruned and listed in the audit. Double diffraction is an engineering approximation, not checked against an exact solution; slope and vertex diffraction are left out.</li>
+        <li><b>Not modelled:</b> facade scattering, and ground effects at edges (the ground still reflects as before). Roofs and building undersides do not reflect. A bearing that follows a diffracted path points at the last edge it bent round (or the reflection point after it), not at the source, and the back-trace works in the horizontal plane only. The wave rings do not diffract; the reach map and the heatmap do. The diffraction constants are design values, not measurements.</li>
+        <li>With diffraction order 0, a building between a source and a node removes the direct path completely (a pessimistic worst case), and there is no transmission through walls. Real facades reflect less cleanly than flat boxes.</li>
+        <li>The wave rings are a loudness display, not true wavelengths: ring brightness follows the clip's 10 ms envelope with 1/r loss, and each ring is the 3D wavefront sphere cut by the slice plane, so rings from sources above or below the slice grow from a point. They do not diffract.</li>
+        <li>The heatmap (on by default) is an incoherent sum over arrivals (no interference). Pulse shows the level reaching each point at the playhead, peak-hold keeps the highest level so far, level is the clip mean (or peak). Diffraction uses the wedge model above, levels depend on the placeholder constants, and the wave rings are a stylised loudness display, not true wavelengths. It is computed for the slice height, from the same path finder as the render, and does not need Create.</li>
+        <li>The reach map and the side view are energetic (incoherent) sums over paths in three octave bands: interference is ignored, so a real microphone can measure several dB more or less, especially for tones. Same air absorption, bounce losses and diffraction as the audio render; the map uses its own reflection order setting (default 2).</li>
+        <li>Uniform air: no wind and no temperature gradients, so rays do not bend. Static sources.</li>
+        <li>Source levels, ground reflectivity and the SPL-to-dBFS constant are placeholders until confirmed.</li>
+        <li>Ambient noise is independent per mic, which is pessimistic for localisation.</li>
+        <li>Mic timing has no hardware jitter, clock drift or mismatch.</li>
+        <li>A flat-square node cannot tell above from below and assumes the source is below it.</li>
+      </ul>
+      <div class="actions"><button id="infoClose">Close</button></div>
+    </dialog>
+
+    <dialog id="sweepDlg">
+      <h3>Repeats and sweeps</h3>
+      <label>Vary
+        <select id="sweepParam">
+          <option value="">Nothing (repeat only)</option>
+          <option value="distance_scale">Distance scale (about node centroid)</option>
+          <option value="noise_floor_db_spl">Noise floor dB SPL</option>
+          <option value="node_count">Node count</option>
+        </select>
+      </label>
+      <label>Values <input id="sweepValues" value="0.5, 1, 2, 4" /></label>
+      <label>Seeds <input id="sweepSeeds" class="mono" type="number" value="50" min="1" /></label>
+      <div class="actions"><button id="sweepRun" class="primary">Run</button> <button id="sweepClose">Close</button> <progress id="sweepProgress" value="0" max="1" hidden></progress></div>
+      <div id="sweepOut"></div>
+      <canvas id="sweepPlot" width="520" height="200" hidden></canvas>
+      <p class="note">Each seed re-renders every mic, so large runs take minutes. Fix rate is the share of sounds that got a position.</p>
+    </dialog>
+
+    <dialog id="simSaveDlg">
+      <form id="simSaveForm">
+        <h3 id="simSaveTitle">Save simulation</h3>
+        <label id="simSaveNameRow">Name <input id="simSaveName" maxlength="200" required /></label>
+        <label id="simSaveDescRow">Description <textarea id="simSaveDesc" maxlength="2000" rows="2"></textarea></label>
+        <label>Note for this version <input id="simSaveNote" maxlength="500" placeholder="optional, e.g. moved n3 north" /></label>
+        <label class="check"><input id="simSaveResults" type="checkbox" /> Include current results</label>
+        <p class="note">Nodes, sources, buildings, map area and settings are saved. Rendered audio is not: press Create after opening to hear it again. Sounds you uploaded yourself are not stored.</p>
+        <p id="simSaveError" class="error" role="alert"></p>
+        <div class="actions"><button class="primary" type="submit">Save</button> <button id="simSaveCancel" type="button">Cancel</button></div>
+      </form>
+    </dialog>
+
+    <dialog id="simOpenDlg" class="wide">
+      <div id="simListView">
+        <h3>Saved simulations</h3>
+        <label>Search <input id="simSearch" type="search" placeholder="name" /></label>
+        <p id="simListError" class="error" role="alert"></p>
+        <table class="sim-table"><tbody id="simList"></tbody></table>
+      </div>
+      <div id="simVersionsView" hidden>
+        <h3 id="simVersionsTitle">Version history</h3>
+        <table class="sim-table"><tbody id="simVersions"></tbody></table>
+        <div class="actions"><button id="simVersionsBack" type="button">Back to list</button></div>
+      </div>
+      <div class="actions"><button id="simOpenClose" type="button">Close</button></div>
+    </dialog>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
