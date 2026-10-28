@@ -8,6 +8,8 @@
     "apps/*"
   ],
   "scripts": {
+    "build": "node scripts/service.mjs build",
+    "start": "node scripts/service.mjs start",
     "dev": "node scripts/dev.mjs",
     "test": "npm test --workspaces --if-present",
     "build:backend": "echo 'backend has no build step'",
@@ -16,5 +18,8 @@
     "start:backend": "npm start -w @echo/backend",
     "start:echo": "npm start -w @echo/echo",
     "start:sim": "npm start -w @echo/sim"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

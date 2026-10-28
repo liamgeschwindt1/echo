@@ -76,6 +76,8 @@ All services build from the repository root (do not set a root directory; the ap
 | `sim` | `/apps/sim/railway.json` | `BACKEND_URL=http://${{backend-.RAILWAY_PRIVATE_DOMAIN}}:${{backend-.PORT}}` |
 | `echo` | `/apps/echo/railway.json` | `BACKEND_URL=http://${{backend-.RAILWAY_PRIVATE_DOMAIN}}:${{backend-.PORT}}` |
 
+Without a config file, Railway runs the root `npm run build` and `npm start`. These pick the app from `RAILWAY_SERVICE_NAME` (a name starting with `backend`, `sim` or `echo`). If a service has another name, set `ECHO_APP=backend|sim|echo` on it. The config file is still recommended because it also sets the health check and watch paths, which stop a push to one app from redeploying the others.
+
 The backend needs no public domain; the frontends reach it over the private network. `SIM_ENABLED` is no longer used. Health checks use `/healthz` on every service.
 
 Optional backend variables: `GEMINI_MODEL` (default `gemini-3.8-flash`), `GEMINI_THINKING_LEVEL` (default `medium`), `MAX_BODY_BYTES` (default 2 MB, report API), `RATE_LIMIT_PER_MIN` (default 10, report API), `PGSSL=1` (TLS to Postgres, not needed on Railway's private network).
