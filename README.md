@@ -8,7 +8,7 @@ npm workspaces monorepo. Four Railway services:
 
 | Service | Code | What it does |
 |---|---|---|
-| `backend-` | [apps/backend](apps/backend) | Express API: `/api/report` (Gemini), `/api/osm` (OpenStreetMap proxy), `/api/simulations` (saved simulations), `/healthz`. No static files. |
+| `backend` | [apps/backend](apps/backend) | Express API: `/api/report` (Gemini), `/api/osm` (OpenStreetMap proxy), `/api/simulations` (saved simulations), `/healthz`. No static files. |
 | `sim` | [apps/sim](apps/sim) | Acoustic simulator frontend, served at `/`. Proxies `/api/*` to the backend. |
 | `echo` | [apps/echo](apps/echo) | Phone sound labeller frontend, served at `/`. Proxies `/api/*` to the backend. |
 | `Postgres` | Railway plugin | Stores saved simulations and their versions. |
@@ -68,15 +68,25 @@ npm run start:backend                           # PORT default 8787
 
 ## Deploy to Railway
 
-All services build from the repository root (do not set a root directory; the apps need `packages/`). For each service, set **Settings → Config-as-code** to its file:
+Railway settings live in [.railway/railway.ts](.railway/railway.ts) (Railway Infrastructure as Code; per-service `railway.json` config-as-code is deprecated). It declares the `Postgres` database and the `backend`, `sim` and `echo` services with their build and start commands, `/healthz` health checks, watch paths and variables. All services build from the repository root (no root directory; the apps need `packages/`).
 
-| Service | Config file | Variables |
-|---|---|---|
-| `backend-` | `/apps/backend/railway.json` | `DATABASE_URL=${{Postgres.DATABASE_URL}}`, `PORT=8787`, `NODE_ENV=production`, `GEMINI_API_KEY` |
-| `sim` | `/apps/sim/railway.json` | `BACKEND_URL=http://${{backend-.RAILWAY_PRIVATE_DOMAIN}}:${{backend-.PORT}}` |
-| `echo` | `/apps/echo/railway.json` | `BACKEND_URL=http://${{backend-.RAILWAY_PRIVATE_DOMAIN}}:${{backend-.PORT}}` |
+Apply it with the [Railway CLI](https://docs.railway.com/cli) (5.42.1 or newer) from the repository root:
 
-Without a config file, Railway runs the root `npm run build` and `npm start`. These pick the app from `RAILWAY_SERVICE_NAME` (a name starting with `backend`, `sim` or `echo`). If a service has another name, set `ECHO_APP=backend|sim|echo` on it. The config file is still recommended because it also sets the health check and watch paths, which stop a push to one app from redeploying the others.
+```bash
+railway login
+railway link            # pick the project and the production environment
+railway config plan     # preview; check nothing is marked for deletion
+railway config apply
+```
+
+Railway does not read `.railway/` during deploys, so run `plan`/`apply` again after editing it. A whole-project apply deletes services and variables that the file leaves out: review the plan first, and add any extra variables to the file (`preserve()` keeps a value already set in Railway, as for `GEMINI_API_KEY`).
+
+| Service | Variables |
+|---|---|
+| `backend` | `DATABASE_URL=${{Postgres.DATABASE_URL}}`, `PORT=8787`, `NODE_ENV=production`, `GEMINI_API_KEY` (set in Railway) |
+| `sim`, `echo` | `BACKEND_URL=http://${{backend.RAILWAY_PRIVATE_DOMAIN}}:${{backend.PORT}}` |
+
+Without these settings, Railway runs the root `npm run build` and `npm start`. These pick the app from `RAILWAY_SERVICE_NAME` (a name starting with `backend`, `sim` or `echo`); on a service with another name, set `ECHO_APP=backend|sim|echo`.
 
 The backend needs no public domain; the frontends reach it over the private network. `SIM_ENABLED` is no longer used. Health checks use `/healthz` on every service.
 
