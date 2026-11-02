@@ -8,6 +8,13 @@ export const MAX_COORD_MM = 2000;
 
 const r1 = (v) => Math.round(v * 10) / 10;
 
+const BALL_MICS = {
+  A1: [54.6, 0, 71.5], A2: [-27.3, 47.3, 71.5], A3: [-27.3, -47.3, 71.5],
+  B1: [44.2, 76.6, 16.9], B2: [-88.4, 0, 16.9], B3: [44.2, -76.6, 16.9],
+  C1: [88.4, 0, -16.9], C2: [-44.2, 76.6, -16.9], C3: [-44.2, -76.6, -16.9],
+  D1: [27.3, 47.3, -71.5], D2: [-54.6, 0, -71.5], D3: [27.3, -47.3, -71.5]
+};
+
 export const BUILTIN_ARRAYS = Object.freeze([
   {
     id: 'flat4_100',
@@ -31,6 +38,33 @@ export const BUILTIN_ARRAYS = Object.freeze([
       C1: [88.4, 0, -16.9], C2: [-44.2, 76.6, -16.9], C3: [-44.2, -76.6, -16.9],
       D1: [27.3, 47.3, -71.5], D2: [-54.6, 0, -71.5], D3: [27.3, -47.3, -71.5]
     }
+  },
+  ...[4, 6, 8].map((n) => ({
+    id: `ball12_d180_sub${n}`,
+    name: `${n}-mic subset of the D180 ball`,
+    status: 'Open item 3 test array. Subset chosen by farthest-point spread, not from the design sheet',
+    source: 'subset of ball12_d180',
+    assumed: true,
+    notes: 'Same mic positions as ball12_d180, fewer channels.',
+    mics: farthestSubset(BALL_MICS, n)
+  })),
+  {
+    id: 'dome12_d230',
+    name: '12-mic downward dome, D230 (assumed)',
+    status: 'Candidate from designs/node_geometry_designs.py. Coordinates assumed, replace with the design file',
+    source: 'micarrays.md candidate',
+    assumed: true,
+    notes: 'Two rings of 6 on a downward-facing dome; ring latitudes -20 and -55 degrees are a guess.',
+    mics: dome(230, 6)
+  },
+  {
+    id: 'puck12_d210',
+    name: '12-mic squat puck, D210 (assumed)',
+    status: 'Candidate from designs/node_geometry_designs.py. Coordinates assumed, replace with the design file',
+    source: 'micarrays.md candidate',
+    assumed: true,
+    notes: 'Three rings of 4; ring gap 40 mm is a guess.',
+    mics: puck(210, 4, 40)
   }
 ]);
 
@@ -79,8 +113,53 @@ export function icosaBall(diameter = 180) {
   return out;
 }
 
+// Downward-facing dome: two rings of n mics on a sphere at -20 and -55 degrees latitude, half a step apart.
+export function dome(diameter = 230, perRing = 6) {
+  const R = diameter / 2;
+  const out = {};
+  [['U', -20, 0], ['L', -55, 0.5]].forEach(([name, lat, phase]) => {
+    const la = (lat * Math.PI) / 180;
+    for (let k = 0; k < perRing; k++) {
+      const az = (2 * Math.PI * (k + phase)) / perRing;
+      out[`${name}${k + 1}`] = [r1(R * Math.cos(la) * Math.cos(az)), r1(R * Math.cos(la) * Math.sin(az)), r1(R * Math.sin(la))];
+    }
+  });
+  return out;
+}
+
+// Squat cylinder: three rings of n mics, the middle ring offset by half a step.
+export function puck(diameter = 210, perRing = 4, ringGap = 40) {
+  const out = {};
+  ['T', 'M', 'B'].forEach((name, i) => {
+    for (let k = 0; k < perRing; k++) {
+      const az = (2 * Math.PI * (k + (i === 1 ? 0.5 : 0))) / perRing;
+      out[`${name}${k + 1}`] = [r1((diameter / 2) * Math.cos(az)), r1((diameter / 2) * Math.sin(az)), (1 - i) * ringGap];
+    }
+  });
+  return out;
+}
+
+// Deterministic spread-out subset: keep the first mic, then repeatedly add the mic farthest from those chosen.
+export function farthestSubset(mics, count) {
+  const names = Object.keys(mics);
+  const chosen = [names[0]];
+  while (chosen.length < Math.min(count, names.length)) {
+    let best = null;
+    let bestD = -1;
+    for (const n of names) {
+      if (chosen.includes(n)) continue;
+      const d = Math.min(...chosen.map((c) => Math.hypot(...mics[n].map((v, i) => v - mics[c][i]))));
+      if (d > bestD + 1e-9) [best, bestD] = [n, d];
+    }
+    chosen.push(best);
+  }
+  return Object.fromEntries(names.filter((n) => chosen.includes(n)).map((n) => [n, [...mics[n]]]));
+}
+
 export const GENERATORS = Object.freeze({
   flat_square: { label: 'Flat square', params: [['side_mm', 'Side (mm)', 100]], build: (p) => flatSquare(p.side_mm) },
+  dome: { label: 'Downward dome (2 rings)', params: [['diameter_mm', 'Diameter (mm)', 230], ['per_ring', 'Mics per ring', 6]], build: (p) => dome(p.diameter_mm, p.per_ring) },
+  puck: { label: 'Squat puck (3 rings)', params: [['diameter_mm', 'Diameter (mm)', 210], ['per_ring', 'Mics per ring', 4], ['gap_mm', 'Ring gap (mm)', 40]], build: (p) => puck(p.diameter_mm, p.per_ring, p.gap_mm) },
   ring: { label: 'Ring', params: [['count', 'Mics', 6], ['radius_mm', 'Radius (mm)', 60]], build: (p) => ring(p.count, p.radius_mm) },
   stagger: {
     label: 'Two staggered rings',

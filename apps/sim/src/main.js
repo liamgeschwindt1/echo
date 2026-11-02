@@ -18,6 +18,7 @@ import { createArrayLibrary } from './ui/arrays.js';
 import { createSoundLibrary } from './ui/sounds.js';
 import { createModelApi } from './ui/modelapi.js';
 import { applyArrayToNode } from '@echo/sim-core/arrays.js';
+import { nodeShares } from '@echo/sim-core/attribution.js';
 import { drawLocalisationTrack } from './ui/tracking.js';
 import { drawParticles, sourceColor, waveParticles } from './ui/particles.js';
 
@@ -1928,7 +1929,8 @@ function nodeResultPanel(rn) {
   cv.style.height = '120px';
   const g = cv.getContext('2d');
   rn.mics.forEach((m, k) => {
-    const y = 15 + k * 30;
+    const rowH = cv.height / rn.mics.length;
+    const y = rowH / 2 + k * rowH;
     const per = Math.ceil(m.length / cv.width);
     g.strokeStyle = k === 0 ? '#fff' : '#888';
     g.beginPath();
@@ -1939,8 +1941,8 @@ function nodeResultPanel(rn) {
         if (m[i] < lo) lo = m[i];
         if (m[i] > hi) hi = m[i];
       }
-      g.moveTo(x, y - Math.min(1, hi) * 14);
-      g.lineTo(x, y - Math.max(-1, lo) * 14);
+      g.moveTo(x, y - Math.min(1, hi) * (rowH / 2 - 1));
+      g.lineTo(x, y - Math.max(-1, lo) * (rowH / 2 - 1));
     }
     g.stroke();
   });
@@ -1962,6 +1964,19 @@ function nodeResultPanel(rn) {
     }
   });
   box.append(sc);
+  const shares = results && lastCreate ? nodeShares(lastCreate.scenario, results, rn.id) : null;
+  if (shares?.length) {
+    box.append(Object.assign(document.createElement('h3'), { textContent: 'Contribution per source at this node' }));
+    const table = document.createElement('table');
+    table.innerHTML = '<tr><th>source</th><th>level dB</th><th>share %</th><th>true %</th></tr>';
+    const f = (v) => (v === null ? '-' : v.toFixed(0));
+    for (const s of shares) {
+      const tr = document.createElement('tr');
+      for (const text of [s.source_id, f(s.measured_db), s.heard ? f(s.measured_share_pct) : 'not heard', f(s.true_share_pct)]) tr.append(Object.assign(document.createElement('td'), { textContent: text }));
+      table.append(tr);
+    }
+    box.append(table, Object.assign(document.createElement('div'), { className: 'muted', textContent: 'Measured from in-band SNR over the noise floor. True share is free-field direct path only, so reflections and diffraction make the two differ. Unvalidated: treat as indicative.' }));
+  }
   return box;
 }
 
