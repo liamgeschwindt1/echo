@@ -1,0 +1,195 @@
+// Mic array library: layouts in mm (origin at array centre, z up), figures derived from the layout.
+// Seed data and method follow micarrays.md.
+import { speedOfSound } from './physics.js';
+
+export const TIMING_SIGMA_S = 10.4e-6; // one sample at 96 kHz
+export const MAX_ARRAY_MICS = 64;
+export const MAX_COORD_MM = 2000;
+
+const r1 = (v) => Math.round(v * 10) / 10;
+
+export const BUILTIN_ARRAYS = Object.freeze([
+  {
+    id: 'flat4_100',
+    name: 'Flat 4-mic square, 100 mm',
+    status: 'Current simulator array. Layout assumed, confirm',
+    source: 'simulator',
+    assumed: true,
+    notes: 'Gave biased, steep elevations and positions below ground (unvalidated).',
+    mics: { M1: [50, 50, 0], M2: [-50, 50, 0], M3: [-50, -50, 0], M4: [50, -50, 0] }
+  },
+  {
+    id: 'ball12_d180',
+    name: '12-mic icosahedral ball, D180',
+    status: 'Baseline node, draft rev A (30 Oct 2026)',
+    source: 'node_design_sheet_d180.pdf rev A',
+    assumed: false,
+    notes: 'Diffraction around the shell is not modelled; mics act as free-field points.',
+    mics: {
+      A1: [54.6, 0, 71.5], A2: [-27.3, 47.3, 71.5], A3: [-27.3, -47.3, 71.5],
+      B1: [44.2, 76.6, 16.9], B2: [-88.4, 0, 16.9], B3: [44.2, -76.6, 16.9],
+      C1: [88.4, 0, -16.9], C2: [-44.2, 76.6, -16.9], C3: [-44.2, -76.6, -16.9],
+      D1: [27.3, 47.3, -71.5], D2: [-54.6, 0, -71.5], D3: [27.3, -47.3, -71.5]
+    }
+  }
+]);
+
+// ---------- generators (mm) ----------
+
+export function flatSquare(side = 100) {
+  const h = side / 2;
+  return { M1: [h, h, 0], M2: [-h, h, 0], M3: [-h, -h, 0], M4: [h, -h, 0] };
+}
+
+export function ring(n = 6, radius = 60, z = 0) {
+  const count = Math.max(2, Math.round(n));
+  const out = {};
+  for (let k = 0; k < count; k++) {
+    const az = (2 * Math.PI * k) / count;
+    out[`M${k + 1}`] = [r1(radius * Math.cos(az)), r1(radius * Math.sin(az)), z];
+  }
+  return out;
+}
+
+export function staggerRings(n = 4, lower = 60, upper = 120, height = 60) {
+  const count = Math.max(2, Math.round(n));
+  const out = {};
+  for (let k = 0; k < count; k++) {
+    const a = (2 * Math.PI * k) / count;
+    const b = (2 * Math.PI * (k + 0.5)) / count;
+    out[`L${k + 1}`] = [r1(lower * Math.cos(a)), r1(lower * Math.sin(a)), 0];
+    out[`U${k + 1}`] = [r1(upper * Math.cos(b)), r1(upper * Math.sin(b)), height];
+  }
+  return out;
+}
+
+// Four layers A..D from the top; A, D at +-0.7946545 R and B, C at +-0.1875925 R (see micarrays.md).
+export function icosaBall(diameter = 180) {
+  const R = diameter / 2;
+  const layers = [['A', 0.7946545, 0], ['B', 0.1875925, 60], ['C', -0.1875925, 0], ['D', -0.7946545, 60]];
+  const out = {};
+  for (const [name, f, phase] of layers) {
+    const z = f * R;
+    const rr = Math.sqrt(R * R - z * z);
+    for (let k = 0; k < 3; k++) {
+      const az = ((phase + 120 * k) * Math.PI) / 180;
+      out[`${name}${k + 1}`] = [r1(rr * Math.cos(az)), r1(rr * Math.sin(az)), r1(z)];
+    }
+  }
+  return out;
+}
+
+export const GENERATORS = Object.freeze({
+  flat_square: { label: 'Flat square', params: [['side_mm', 'Side (mm)', 100]], build: (p) => flatSquare(p.side_mm) },
+  ring: { label: 'Ring', params: [['count', 'Mics', 6], ['radius_mm', 'Radius (mm)', 60]], build: (p) => ring(p.count, p.radius_mm) },
+  stagger: {
+    label: 'Two staggered rings',
+    params: [['per_ring', 'Mics per ring', 4], ['lower_mm', 'Lower radius (mm)', 60], ['upper_mm', 'Upper radius (mm)', 120], ['height_mm', 'Upper height (mm)', 60]],
+    build: (p) => staggerRings(p.per_ring, p.lower_mm, p.upper_mm, p.height_mm)
+  },
+  icosa_ball: { label: 'Icosahedral ball (12)', params: [['diameter_mm', 'Diameter (mm)', 180]], build: (p) => icosaBall(p.diameter_mm) }
+});
+
+// ---------- validation ----------
+
+const ID_RE = /^[a-z0-9][a-z0-9_-]{0,63}$/;
+const MIC_NAME_RE = /^[A-Za-z0-9_-]{1,12}$/;
+
+export function validateArrayModel(m) {
+  if (!m || typeof m !== 'object') throw new Error('array: not an object');
+  if (typeof m.id !== 'string' || !ID_RE.test(m.id)) throw new Error('array: id must be lowercase letters, digits, - or _ (max 64)');
+  if (typeof m.name !== 'string' || !m.name.trim() || m.name.length > 120) throw new Error('array: name is required (max 120 characters)');
+  const entries = Object.entries(m.mics && typeof m.mics === 'object' ? m.mics : {});
+  if (entries.length < 2 || entries.length > MAX_ARRAY_MICS) throw new Error(`array: needs 2 to ${MAX_ARRAY_MICS} mics`);
+  const mics = {};
+  for (const [name, p] of entries) {
+    if (!MIC_NAME_RE.test(name)) throw new Error(`array: bad mic name "${name}"`);
+    if (!Array.isArray(p) || p.length !== 3 || !p.every((v) => Number.isFinite(v) && Math.abs(v) <= MAX_COORD_MM)) throw new Error(`array: mic ${name} needs three numbers within +-${MAX_COORD_MM} mm`);
+    mics[name] = [p[0], p[1], p[2]];
+  }
+  const text = (v, max) => (typeof v === 'string' ? v.slice(0, max) : '');
+  return { id: m.id, name: m.name.trim(), status: text(m.status, 200), source: text(m.source, 200), notes: text(m.notes, 2000), assumed: m.assumed !== false, mics };
+}
+
+export const micList = (model) => Object.values(model.mics);
+
+export const offsetsM = (model) => micList(model).map(([x, y, z]) => [x / 1000, y / 1000, z / 1000]);
+
+// Copies the layout into the node, so a saved scenario renders without the library.
+export function applyArrayToNode(node, model) {
+  node.mic_layout = 'custom';
+  node.mic_array = model.id;
+  node.mic_array_name = model.name;
+  node.mic_offsets_m = offsetsM(model);
+  return node;
+}
+
+// ---------- derived figures ----------
+
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const dist = (a, b) => Math.hypot(...sub(a, b));
+
+function inv3(m) {
+  const [[a, b, c], [d, e, f], [g, h, i]] = m;
+  const A = e * i - f * h, B = -(d * i - f * g), C = d * h - e * g;
+  const det = a * A + b * B + c * C;
+  if (Math.abs(det) < 1e-12) return null;
+  return [[A / det, -(b * i - c * h) / det, (b * f - c * e) / det], [B / det, (a * i - c * g) / det, -(a * f - c * d) / det], [C / det, -(a * h - b * g) / det, (a * e - b * d) / det]];
+}
+
+/**
+ * 1-sigma bearing error (deg) from timing noise alone: least-squares fit of arrival time against position
+ * with independent noise per mic. Azimuth is reported at elevation `elDeg`; a layout with no vertical
+ * extent cannot observe elevation, so its error comes from the horizontal fit and the unit-length constraint.
+ */
+export function bearingError(mics, elDeg = 0, { sigmaS = TIMING_SIGMA_S, c = speedOfSound(20) } = {}) {
+  const n = mics.length;
+  const mean = [0, 1, 2].map((k) => mics.reduce((s, p) => s + p[k], 0) / n);
+  const S = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  for (const p of mics) {
+    const d = sub(p, mean);
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) S[i][j] += d[i] * d[j];
+  }
+  const k = (sigmaS * c * 1000) ** 2; // sigma in mm, covariance of the unit direction = k * S^-1
+  const el = (elDeg * Math.PI) / 180;
+  const az = [0, 1, 0]; // azimuth axis for a source on +x
+  const eEl = [-Math.sin(el), 0, Math.cos(el)];
+  const rad = (v) => (v * 180) / Math.PI;
+  const flat = S[2][2] < 1e-9 * Math.max(S[0][0], S[1][1], 1);
+  if (flat) {
+    const Sxy = [[S[0][0], S[0][1]], [S[1][0], S[1][1]]];
+    const det = Sxy[0][0] * Sxy[1][1] - Sxy[0][1] * Sxy[1][0];
+    if (Math.abs(det) < 1e-9) return { az_deg: Infinity, el_deg: Infinity };
+    const I = [[Sxy[1][1] / det, -Sxy[0][1] / det], [-Sxy[1][0] / det, Sxy[0][0] / det]];
+    const sTan = Math.sqrt(k * I[1][1]);
+    const sRad = Math.sqrt(k * I[0][0]);
+    return { az_deg: rad(sTan / Math.max(Math.cos(el), 1e-6)), el_deg: Math.abs(Math.sin(el)) < 1e-6 ? Infinity : rad(sRad / Math.abs(Math.sin(el))) };
+  }
+  const Si = inv3(S);
+  if (!Si) return { az_deg: Infinity, el_deg: Infinity };
+  const quad = (e) => Math.sqrt(k * e.reduce((s, ei, i) => s + ei * e.reduce((t, ej, j) => t + Si[i][j] * ej, 0), 0));
+  return { az_deg: rad(quad(az) / Math.max(Math.cos(el), 1e-6)), el_deg: rad(quad(eEl)) };
+}
+
+export function arrayMetrics(mics, { tempC = 20 } = {}) {
+  const spacings = [];
+  for (let i = 0; i < mics.length; i++) for (let j = i + 1; j < mics.length; j++) spacings.push(dist(mics[i], mics[j]));
+  const nearest = Math.min(...spacings);
+  const longest = Math.max(...spacings);
+  const zs = mics.map((p) => p[2]);
+  const c = speedOfSound(tempC);
+  const groups = new Map();
+  for (const s of spacings) {
+    const key = r1(s);
+    groups.set(key, (groups.get(key) || 0) + 1);
+  }
+  return {
+    count: mics.length,
+    nearest_mm: nearest,
+    longest_mm: longest,
+    spacing_groups: [...groups].sort((a, b) => a[0] - b[0]).map(([mm, pairs]) => ({ mm, pairs })),
+    vertical_baseline_mm: Math.max(...zs) - Math.min(...zs),
+    aliasing_hz: nearest > 0 ? c / (2 * (nearest / 1000)) : Infinity,
+    bearing: [0, 20, 40, 60].map((el) => ({ at_el_deg: el, ...bearingError(mics, el, { c }) }))
+  };
+}

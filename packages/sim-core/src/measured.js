@@ -2,7 +2,7 @@
 // It never reads per-source rendered signals, source positions, start times or any other ground truth.
 // SIMULATED use only; ground model is idealised and the diffraction model is unvalidated.
 import { windowTdoas } from './localise.js';
-import { MIC_PAIRS } from './mics.js';
+import { micPairs } from './mics.js';
 import { rfft, irfft } from './dsp.js';
 import { bandWeight } from './activity.js';
 import { distance } from './physics.js';
@@ -76,10 +76,11 @@ export function detectOnsets(frames, { riseDb, frameS = FRAME_S }) {
 
 /** Plane-wave bearing of one window (flat array, horizontal azimuth) with quality figures from the correlation itself. */
 export function windowBearing(mics, positions, startSample, endSample, { fs, c, band }) {
-  const spacing = Math.max(...MIC_PAIRS.map(([i, j]) => distance(positions[i], positions[j])));
+  const pairs = micPairs(positions.length);
+  const spacing = Math.max(...pairs.map(([i, j]) => distance(positions[i], positions[j])));
   const t = windowTdoas(mics, startSample, endSample, { fs, band, maxLagS: spacing / c });
   let a = 0, b = 0, d = 0, p = 0, q = 0;
-  const rows = MIC_PAIRS.map(([i, j], k) => {
+  const rows = pairs.map(([i, j], k) => {
     const dx = positions[j][0] - positions[i][0];
     const dy = positions[j][1] - positions[i][1];
     const r = c * t[k].tdoa_s;

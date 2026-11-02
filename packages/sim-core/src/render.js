@@ -345,7 +345,7 @@ export function renderScenario(scenario, clips, { lengthS, onProgress, profile =
   const nodes = [];
   const activity = [];
   const audit = [];
-  const jobs = scenario.nodes.length * 4;
+  const jobs = scenario.nodes.reduce((a, node) => a + micPositions(node).length, 0);
   let done = 0;
   scenario.nodes.forEach((node, ni) => {
     const common = commonNoise(ctx, ni);

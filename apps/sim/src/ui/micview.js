@@ -1,6 +1,6 @@
 import { spectrogram } from '@echo/sim-core/spectro.js';
 import { gccCurve } from '@echo/sim-core/localise.js';
-import { MIC_PAIRS } from '@echo/sim-core/mics.js';
+import { micPairs, micPositions } from '@echo/sim-core/mics.js';
 import { airAbsorptionDbPerM, distance, speedOfSound } from '@echo/sim-core/physics.js';
 import { findPaths, pathPressure } from '@echo/sim-core/geometry.js';
 import { isMoving, positionAt } from '@echo/sim-core/motion.js';
@@ -217,14 +217,15 @@ export function createMicView(host) {
       return;
     }
     const { fs } = info;
-    const rowH = (H - LANE_PX * dpr) / 4;
+    const rows = Math.max(4, ...series.map((s) => s.mics.length));
+    const rowH = (H - LANE_PX * dpr) / rows;
     const span = view.t1 - view.t0;
     const spp = (span * fs) / W;
     let peak = 0;
     for (const s of series) for (const m of s.mics) peak = Math.max(peak, peakOf(m));
     peak = peak || 1;
     tctx.font = `${10 * dpr}px monospace`;
-    for (let mi = 0; mi < 4; mi++) {
+    for (let mi = 0; mi < rows; mi++) {
       const top = mi * rowH;
       const mid = top + rowH / 2;
       tctx.strokeStyle = '#222';
@@ -236,6 +237,7 @@ export function createMicView(host) {
       tctx.fillText(`mic ${mi + 1}`, 4 * dpr, top + 12 * dpr);
       series.forEach((s, si) => {
         const arr = s.mics[mi];
+        if (!arr) return;
         tctx.strokeStyle = tctx.fillStyle = colourFor(s, si);
         tctx.lineWidth = dpr;
         if (spp < 1.5) {
@@ -398,7 +400,7 @@ export function createMicView(host) {
     const results = host.getResults();
     if (!info || !results) return (gccState = null);
     const si = Number($('mvSrc').value);
-    const [i, j] = MIC_PAIRS[Number($('mvPair').value)];
+    const [i, j] = micPairs(info.node.mics.length)[Number($('mvPair').value)];
     const nr = results[si]?.nodes[info.ni];
     if (!nr) return (gccState = null);
     const a = Math.round(nr.window_s[0] * info.fs);
@@ -531,7 +533,8 @@ export function createMicView(host) {
   function fillSelectors() {
     const scn = host.getScenario();
     $('mvSrc').innerHTML = (scn?.sources || []).map((s, i) => `<option value="${i}">${s.id}</option>`).join('');
-    $('mvPair').innerHTML = MIC_PAIRS.map(([a, b], i) => `<option value="${i}">mic ${a + 1}-${b + 1}</option>`).join('');
+    const micCount = Math.max(4, ...(scn?.nodes || []).map((n) => micPositions(n).length));
+    $('mvPair').innerHTML = micPairs(micCount).map(([a, b], i) => `<option value="${i}">mic ${a + 1}-${b + 1}</option>`).join('');
   }
 
   function renderLegend() {

@@ -9,11 +9,15 @@ import { buildingFootprint, importOsm, mapArea } from '@echo/sim-core/osm.js';
 import { bindOsmLoader } from './ui/osm.js';
 import { bindSimulationLibrary } from './ui/library.js';
 import { createHeatmap } from './ui/heatmap.js';
-import { micPositions } from '@echo/sim-core/mics.js';
+import { micPositions, staggerParams } from '@echo/sim-core/mics.js';
 import { loadManifest, fetchClip, decodeToMono, clipAvailable } from '@echo/sim-core/clips.js';
 import { spectrogram } from '@echo/sim-core/spectro.js';
 import { createMicView } from './ui/micview.js';
 import { createView3d } from './ui/view3d.js';
+import { createArrayLibrary } from './ui/arrays.js';
+import { createSoundLibrary } from './ui/sounds.js';
+import { createModelApi } from './ui/modelapi.js';
+import { applyArrayToNode } from '@echo/sim-core/arrays.js';
 import { drawLocalisationTrack } from './ui/tracking.js';
 import { drawParticles, sourceColor, waveParticles } from './ui/particles.js';
 
@@ -86,7 +90,7 @@ async function ensureClip(id) {
   if (clips.has(id)) return;
   const entry = library.find((c) => c.id === id);
   if (!entry) throw new Error(`unknown clip ${id}`);
-  const samples = await fetchClip(entry, FS);
+  const samples = entry.load ? await entry.load(FS) : await fetchClip(entry, FS);
   clips.set(id, samples);
   analyses.set(id, analyseClip(samples, FS));
 }
@@ -117,6 +121,7 @@ async function init() {
   renderInspector();
   requestAnimationFrame(frame);
   await simLibrary.start();
+  await Promise.all([arrayLib.start(), soundLib.start()]);
 }
 
 // ---------- clip picker ----------
@@ -183,8 +188,7 @@ function fitMenu(m) {
   const body = m.querySelector('.menu-body');
   if (!body) return;
   const r = m.querySelector('summary').getBoundingClientRect();
-  const up = !!m.closest('#tools');
-  const room = up ? r.top : window.innerHeight - r.bottom;
+  const room = window.innerHeight - r.bottom;
   body.style.maxHeight = `${Math.max(120, room - 20)}px`;
 }
 for (const m of document.querySelectorAll('details.menu')) m.addEventListener('toggle', () => m.open && fitMenu(m));
@@ -224,8 +228,6 @@ $('nodesNone').addEventListener('click', () => {
   toggleSig = '';
   renderNodeToggles();
 });
-$('settingsBtn').addEventListener('click', () => $('settingsDlg').showModal());
-$('settingsClose').addEventListener('click', () => $('settingsDlg').close());
 $('infoBtn').addEventListener('click', () => $('infoDlg').showModal());
 $('infoClose').addEventListener('click', () => $('infoDlg').close());
 
@@ -369,7 +371,18 @@ setInterval(() => {
 }, 1500);
 $('exportBtn').addEventListener('click', () => {
   if (!results) return;
-  download('results.json', JSON.stringify({ app: 'echo-sim', schema: '0.2', constants: simConstants(), scenario, results }, null, 2));
+  // Schema 0.3 adds `nodes`: layout and the mic positions used (world metres). Readers of 0.2 ignore it; 0.2 files have no `nodes`.
+  const nodes = scenario.nodes.map((n) => {
+    const rn = rendered?.nodes.find((x) => x.id === n.id);
+    return {
+      id: n.id,
+      mic_layout: n.mic_layout,
+      mic_params: n.mic_layout === 'stagger_8' ? { ...staggerParams(n) } : { mic_spacing_m: n.mic_spacing_m },
+      mic_positions_assumed: rn ? rn.mic_positions : micPositions(n),
+      mic_positions_rendered: rn ? rn.mic_positions_true : null
+    };
+  });
+  download('results.json', JSON.stringify({ app: 'echo-sim', schema: '0.3', constants: simConstants(), scenario, nodes, results }, null, 2));
 });
 
 async function fetchOsm(area, signal) {
@@ -421,7 +434,7 @@ bindOsmLoader({
     heatmap.schedule(0);
     $('banner').hidden = false;
     renderInspector();
-    $('environmentMenu').open = false;
+    setView('scene');
   }
 });
 $('osmClear').addEventListener('click', () => {
@@ -1797,18 +1810,43 @@ function renderInspector() {
     el.append(h(`Node ${o.id}`));
     el.append(numField('x (m)', o.position[0], (v) => (o.position[0] = v)), numField('y (m)', o.position[1], (v) => (o.position[1] = v)));
     const layout = document.createElement('label');
-    layout.textContent = 'Layout';
+    layout.textContent = 'Mic array';
     const sel = document.createElement('select');
-    sel.innerHTML = '<option value="flat_square">flat square</option><option value="tetrahedron">tetrahedron</option>';
-    sel.value = o.mic_layout;
-    sel.addEventListener('change', () => { o.mic_layout = sel.value; markEdited(); });
+    sel.innerHTML = '<optgroup label="Simple layouts"><option value="flat_square">flat square</option><option value="tetrahedron">tetrahedron</option><option value="stagger_8">stagger 8 (two rings)</option></optgroup>';
+    const group = document.createElement('optgroup');
+    group.label = 'Array library';
+    const models = arrayLib.list();
+    for (const m of models) group.append(Object.assign(document.createElement('option'), { value: `arr:${m.id}`, textContent: m.name }));
+    if (o.mic_layout === 'custom' && !models.some((m) => m.id === o.mic_array)) group.append(Object.assign(document.createElement('option'), { value: 'arr:', textContent: `${o.mic_array_name || 'custom'} (copy in this scenario)` }));
+    sel.append(group);
+    sel.value = o.mic_layout === 'custom' ? `arr:${models.some((m) => m.id === o.mic_array) ? o.mic_array : ''}` : o.mic_layout;
+    sel.addEventListener('change', () => {
+      if (sel.value.startsWith('arr:')) {
+        const m = arrayLib.get(sel.value.slice(4));
+        if (m) applyArrayToNode(o, m);
+      } else {
+        o.mic_layout = sel.value;
+        for (const k of ['mic_array', 'mic_array_name', 'mic_offsets_m']) delete o[k];
+      }
+      markEdited();
+    });
     layout.append(sel);
     el.append(advanced(
       numField('height z (m)', o.position[2], (v) => (o.position[2] = v)),
       numField('rotation (\u00b0)', o.rotation_deg, (v) => (o.rotation_deg = v), 1),
-      numField('mic spacing (m)', o.mic_spacing_m, (v) => (o.mic_spacing_m = v), 0.01),
+      ...(o.mic_layout === 'stagger_8'
+        ? [
+            numField('lower ring radius (m)', staggerParams(o).lower, (v) => (o.mic_radius_lower_m = v), 0.01),
+            numField('upper ring radius (m)', staggerParams(o).upper, (v) => (o.mic_radius_upper_m = v), 0.01),
+            numField('upper ring height (m)', staggerParams(o).height, (v) => (o.mic_ring_height_m = v), 0.01),
+            numField('mics per ring', staggerParams(o).n, (v) => (o.mic_per_ring = Math.max(2, Math.round(v))), 1)
+          ]
+        : o.mic_layout === 'custom'
+          ? []
+          : [numField('mic spacing (m)', o.mic_spacing_m, (v) => (o.mic_spacing_m = v), 0.01)]),
       layout
     ));
+    if (o.mic_layout === 'stagger_8') el.lastChild.open = true;
     el.append(removeButton());
     const rn = rendered?.nodes.find((n) => n.id === o.id);
     if (rn) {
@@ -2282,7 +2320,7 @@ function syncListen() {
 function refreshListen() {
   const prev = $('listen').value || 'dry';
   const opts = ['<option value="dry">Sources, as recorded</option>'];
-  for (const n of rendered?.nodes || []) for (let m = 0; m < 4; m++) opts.push(`<option value="${n.id}:${m}">${n.id} mic ${m + 1} (rendered)</option>`);
+  for (const n of rendered?.nodes || []) for (let m = 0; m < n.mic_positions.length; m++) opts.push(`<option value="${n.id}:${m}">${n.id} mic ${m + 1} (rendered)</option>`);
   opts.push('<option value="off">Off</option>');
   bufferCache.clear();
   $('listen').innerHTML = opts.join('');
@@ -2347,13 +2385,84 @@ function frame(now) {
   $('timeLabel').textContent = `${t.toFixed(2)} s`;
   syncListen();
   updateParticleLegend();
-  micView.draw();
-  drawMap();
-  draw3d();
-  drawTimeline();
-  drawSection();
+  if (currentView === 'scene') {
+    micView.draw();
+    drawMap();
+    draw3d();
+    drawTimeline();
+    drawSection();
+  } else if (currentView === 'arrays') arrayLib.draw();
+  else if (currentView === 'sounds') soundLib.draw();
   requestAnimationFrame(frame);
 }
+
+// ---------- side menu and workspaces ----------
+
+const VIEWS = ['scene', 'sounds', 'arrays', 'settings'];
+let currentView = 'scene';
+function setView(name) {
+  if (!VIEWS.includes(name)) return;
+  currentView = name;
+  $('app').classList.remove(...VIEWS.map((v) => `view-${v}`));
+  $('app').classList.add(`view-${name}`);
+  for (const b of document.querySelectorAll('.nav-item')) b.classList.toggle('active', b.dataset.view === name);
+  $('panelSounds').hidden = name !== 'sounds';
+  $('panelArrays').hidden = name !== 'arrays';
+  $('panelSettings').hidden = name !== 'settings';
+  if (name !== 'scene') {
+    $('sectionView').hidden = true;
+    $('micView').hidden = true;
+  }
+  if (name === 'sounds') soundLib.show();
+  if (name === 'arrays') arrayLib.show();
+  if (name === 'scene') heatmap?.schedule(0);
+}
+for (const b of document.querySelectorAll('.nav-item')) b.addEventListener('click', () => setView(b.dataset.view));
+function setNavCollapsed(collapsed) {
+  document.body.classList.toggle('nav-collapsed', collapsed);
+  $('navToggle').setAttribute('aria-expanded', String(!collapsed));
+  $('navToggle').title = collapsed ? 'Expand menu' : 'Collapse menu';
+  try {
+    localStorage.setItem('sim.nav.collapsed', collapsed ? '1' : '0');
+  } catch {}
+}
+$('navToggle').addEventListener('click', () => setNavCollapsed(!document.body.classList.contains('nav-collapsed')));
+try {
+  setNavCollapsed(localStorage.getItem('sim.nav.collapsed') === '1');
+} catch {}
+
+const modelApi = createModelApi();
+const arrayLib = createArrayLibrary({
+  $,
+  fit,
+  api: modelApi,
+  useOnNode: (model) => {
+    const node = selected?.type === 'node' ? scenario.nodes.find((n) => n.id === selected.id) : null;
+    if (!node) return 'Select a node in the Scene first.';
+    applyArrayToNode(node, model);
+    markEdited();
+    return `Applied to node ${node.id}.`;
+  }
+});
+const soundLib = createSoundLibrary({
+  $,
+  fit,
+  api: modelApi,
+  getBuiltin: () => library.filter((c) => !c.user),
+  getSamples: async (entry) => {
+    await ensureClip(entry.id);
+    return clips.get(entry.id);
+  },
+  onChange: (entries) => {
+    for (let i = library.length - 1; i >= 0; i--) if (library[i].user) library.splice(i, 1);
+    for (const e of entries) {
+      clips.delete(e.id);
+      analyses.delete(e.id);
+    }
+    library.push(...entries);
+  }
+});
+setView('scene');
 
 init();
 

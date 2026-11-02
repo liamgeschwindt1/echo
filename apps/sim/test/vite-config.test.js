@@ -25,8 +25,9 @@ test('Vite dev server serves the sim with same-origin CSP and forwards /api to t
       assert.equal(response.status, 200, path);
       assert.equal(response.headers.get('content-security-policy'), "connect-src 'self' blob:", path);
       const html = await response.text();
-      assert.match(html, /id="environmentMenu"/);
-      assert.match(html, /<summary>Environment<\/summary>/);
+      assert.match(html, /id="sidenav"/);
+      assert.match(html, /id="osmForm"/);
+      assert.doesNotMatch(html, /id="settingsDlg"|id="displayMenu"|id="environmentMenu"/);
       assert.match(html, /id="osmLoad">Load map<\/button>/);
       assert.match(html, /id="osmCancel" hidden>Cancel loading<\/button>/);
       assert.match(html, /id="osmStatus" role="status"/);

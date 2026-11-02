@@ -1,5 +1,5 @@
 import { fft, nextPow2 } from './dsp.js';
-import { MIC_PAIRS } from './mics.js';
+import { micPairs } from './mics.js';
 import { distance } from './physics.js';
 
 const UPSAMPLE = 4;
@@ -160,10 +160,12 @@ export function windowTdoas(mics, startSample, endSample, { fs, band, maxLagS })
   const hi = Math.min(n / 2 - 1, Math.floor((band[1] * n) / fs));
   const fsUp = fs * UPSAMPLE;
   const maxLag = Math.ceil(maxLagS * fsUp) + UPSAMPLE;
-  const p01 = pairSpectra(mics[0], mics[1], startSample, endSample, n, lo, hi);
-  const p23 = pairSpectra(mics[2], mics[3], startSample, endSample, n, lo, hi);
-  const spec = [p01.A, p01.B, p23.A, p23.B];
-  return MIC_PAIRS.map(([i, j]) => peakTdoa(bandCorrelation(spec[i], spec[j], { n, fs, band, lo, hi, maxLag: maxLag + 1 }), maxLag, fsUp));
+  const spec = [];
+  for (let m = 0; m < mics.length; m += 2) {
+    const p = pairSpectra(mics[m], mics[m + 1] ?? mics[m], startSample, endSample, n, lo, hi);
+    spec.push(p.A, p.B);
+  }
+  return micPairs(mics.length).map(([i, j]) => peakTdoa(bandCorrelation(spec[i], spec[j], { n, fs, band, lo, hi, maxLag: maxLag + 1 }), maxLag, fsUp));
 }
 
 function solve3(m, v) {
@@ -189,15 +191,16 @@ function solve3(m, v) {
 
 /**
  * Far-field bearing for one node and one event window.
- * mics: 4 Float32Arrays; positions: 4 [x,y,z]. Direction points toward the source.
+ * mics: N Float32Arrays; positions: N [x,y,z] (N = 4 or 8 here). Direction points toward the source.
  * A coplanar array cannot resolve up/down, so the source is assumed below the node.
  */
 export function estimateBearing({ mics, positions, startSample, endSample, fs, c, band }) {
-  const spacing = Math.max(...MIC_PAIRS.map(([i, j]) => distance(positions[i], positions[j])));
+  const pairs = micPairs(positions.length);
+  const spacing = Math.max(...pairs.map(([i, j]) => distance(positions[i], positions[j])));
   const rows = [];
   const rhs = [];
   const tdoas = windowTdoas(mics, startSample, endSample, { fs, band, maxLagS: spacing / c });
-  for (const [pairIdx, [i, j]] of MIC_PAIRS.entries()) {
+  for (const [pairIdx, [i, j]] of pairs.entries()) {
     const { tdoa_s } = tdoas[pairIdx];
     // t_i - t_j = -(p_i - p_j).u / c  =>  (p_j - p_i).u = c * tdoa
     rows.push([positions[j][0] - positions[i][0], positions[j][1] - positions[i][1], positions[j][2] - positions[i][2]]);

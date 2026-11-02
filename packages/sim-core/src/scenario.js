@@ -86,7 +86,10 @@ export function validateScenario(s) {
   if (!LOADABLE_VERSIONS.includes(s.version)) throw new Error(`unsupported scenario version ${s.version}`);
   const settings = { ...DEFAULT_SETTINGS, ...s.settings };
   const vec3 = (v) => Array.isArray(v) && v.length === 3 && v.every(Number.isFinite);
-  for (const n of s.nodes || []) if (!vec3(n.position)) throw new Error(`node ${n.id}: bad position`);
+  for (const n of s.nodes || []) {
+    if (!vec3(n.position)) throw new Error(`node ${n.id}: bad position`);
+    if (n.mic_layout === 'custom' && !(Array.isArray(n.mic_offsets_m) && n.mic_offsets_m.length >= 2 && n.mic_offsets_m.length <= 64 && n.mic_offsets_m.every(vec3))) throw new Error(`node ${n.id}: bad custom mic layout`);
+  }
   for (const src of s.sources || []) {
     if (!Array.isArray(src.keyframes) || !src.keyframes.length || !src.keyframes.every((k) => vec3(k.position))) throw new Error(`source ${src.id}: needs at least one keyframe with a position`);
     if (src.keyframes.length > 1 && !src.keyframes.every((k, i) => Number.isFinite(k.t) && (i === 0 || k.t > src.keyframes[i - 1].t))) {

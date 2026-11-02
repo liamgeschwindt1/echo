@@ -9,6 +9,7 @@ import { fallbackReport, validateReport } from '@echo/shared/report-core.js';
 import { callGemini } from './gemini.js';
 import { createOsmApp } from './osm.js';
 import { simulationsRouter } from './simulations.js';
+import { libraryRouter } from './library.js';
 
 const configDir = fileURLToPath(new URL('../../../packages/assets/public/config/', import.meta.url));
 const readJson = (name) => JSON.parse(readFileSync(configDir + name, 'utf8'));
@@ -117,6 +118,7 @@ export function createApp({ store, env = process.env, osmOptions } = {}) {
 
   app.use('/api/osm', sameOrigin, rateLimit, createOsmApp(osmOptions));
   app.use('/api/simulations', sameOrigin, rateLimiter(SIM_RATE_LIMIT_PER_MIN), simulationsRouter(store, { maxBodyBytes: SIM_MAX_BODY_BYTES }));
+  app.use('/api/library', sameOrigin, rateLimiter(SIM_RATE_LIMIT_PER_MIN), libraryRouter(store, { maxBodyBytes: SIM_MAX_BODY_BYTES }));
 
   app.use('/api', (req, res) => res.status(404).json({ error: 'not_found' }));
 

@@ -112,6 +112,22 @@ export function createPgStore(pool) {
     async remove(id) {
       const { rowCount } = await pool.query('DELETE FROM simulations WHERE id = $1', [id]);
       if (!rowCount) throw new NotFoundError('simulation not found');
+    },
+    async listModels(kind) {
+      const { rows } = await pool.query('SELECT body FROM library_models WHERE kind = $1 ORDER BY name', [kind]);
+      return rows.map((r) => r.body);
+    },
+    async putModel(kind, model) {
+      await pool.query(
+        `INSERT INTO library_models (kind, id, name, body) VALUES ($1, $2, $3, $4::jsonb)
+         ON CONFLICT (kind, id) DO UPDATE SET name = EXCLUDED.name, body = EXCLUDED.body, updated_at = now()`,
+        [kind, model.id, model.name, JSON.stringify(model)]
+      );
+      return model;
+    },
+    async removeModel(kind, id) {
+      const { rowCount } = await pool.query('DELETE FROM library_models WHERE kind = $1 AND id = $2', [kind, id]);
+      if (!rowCount) throw new NotFoundError('model not found');
     }
   };
 }
@@ -132,8 +148,20 @@ export function createMemoryStore() {
   const now = () => new Date((last = Math.max(Date.now(), last + 1)));
   const makeVersion = (version, v) => ({ version, scenario: clone(v.scenario), results: clone(v.results) ?? null, note: v.note, summary: clone(v.summary), size_bytes: v.size_bytes, created_at: now() });
 
+  const models = new Map(); // `${kind}/${id}` -> model
+
   return {
     kind: 'memory',
+    async listModels(kind) {
+      return [...models].filter(([k]) => k.startsWith(`${kind}/`)).map(([, m]) => clone(m)).sort((a, b) => a.name.localeCompare(b.name));
+    },
+    async putModel(kind, model) {
+      models.set(`${kind}/${model.id}`, clone(model));
+      return model;
+    },
+    async removeModel(kind, id) {
+      if (!models.delete(`${kind}/${id}`)) throw new NotFoundError('model not found');
+    },
     async ping() {},
     async list({ limit = 100, offset = 0, q = '' } = {}) {
       const needle = q.toLowerCase();

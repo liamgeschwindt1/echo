@@ -11,12 +11,12 @@
   <body>
     <div id="app">
       <header id="top">
-        <button id="createBtn" class="primary">Create</button>
-        <button id="playBtn">Play</button>
-        <label class="inline">Speed <input id="speed" type="range" min="-4.32" max="2" step="0.01" value="0" /> <span id="speedLabel" class="mono">1x</span></label>
-        <span id="timeLabel" class="mono">0.00 s</span>
-        <span id="statusLabel" class="muted"></span>
-        <progress id="progress" value="0" max="1" hidden></progress>
+        <button id="createBtn" class="primary scene-only">Create</button>
+        <button id="playBtn" class="scene-only">Play</button>
+        <label class="inline scene-only">Speed <input id="speed" type="range" min="-4.32" max="2" step="0.01" value="0" /> <span id="speedLabel" class="mono">1x</span></label>
+        <span id="timeLabel" class="mono scene-only">0.00 s</span>
+        <span id="statusLabel" class="muted scene-only"></span>
+        <progress id="progress" class="scene-only" value="0" max="1" hidden></progress>
         <span class="grow"></span>
         <span id="simTitle" class="sim-title">Unsaved simulation</span>
         <details class="menu" id="fileMenu">
@@ -33,66 +33,26 @@
             <button id="sweepBtn">Repeats / sweep</button>
           </div>
         </details>
-        <details class="menu" id="environmentMenu">
-          <summary>Environment</summary>
-          <div class="menu-body">
-            <fieldset id="osmForm">
-              <legend>OpenStreetMap area</legend>
-              <label>Name <input id="osmName" value="Battersea Power Station" /></label>
-              <label>Latitude <input id="osmLat" type="number" step="any" value="51.4818" /></label>
-              <label>Longitude <input id="osmLon" type="number" step="any" value="-0.1446" /></label>
-              <label>Tile size (m) <input id="osmSize" type="number" min="200" max="1000" step="50" value="600" /></label>
-              <button id="osmLoad">Load map</button>
-              <button id="osmCancel" hidden>Cancel loading</button>
-              <p id="osmStatus" role="status" aria-live="polite"></p>
-              <button id="osmClear">Remove map</button>
-            </fieldset>
-            <p class="muted">Load real buildings, roads, water and parks. Replaces current buildings. Internet access required.</p>
-          </div>
-        </details>
-        <button id="settingsBtn" class="icon" title="Settings" aria-label="Settings">&#9881;</button>
         <button id="infoBtn" class="icon" title="Limits of this simulation" aria-label="Limits">i</button>
         <input id="loadFile" type="file" accept="application/json" hidden />
       </header>
       <div id="banner" hidden>Out of date, press Create</div>
       <div id="loadNotice" hidden></div>
-      <aside id="tools">
-        <button data-tool="select" class="active">Move</button>
-        <button data-tool="node">Add node</button>
-        <button data-tool="source">Add source</button>
-        <button data-tool="building">Add building</button>
-        <button data-tool="section">Side view</button>
-        <span class="grow"></span>
-        <details class="menu up" id="displayMenu">
-          <summary>Display</summary>
-          <div class="menu-body">
-            <label>Sound display <select id="soundDisplay"><option value="field">Heatmap / waves</option><option value="particles">Particles</option></select></label>
-            <label class="check"><input id="show3d" type="checkbox" /> 3D view</label>
-            <label class="check"><input id="showWaves3d" type="checkbox" checked /> Waves in 3D view</label>
-            <label class="check"><input id="showCones" type="checkbox" checked /> Direction cones</label>
-            <label class="check"><input id="showBacktrace" type="checkbox" checked /> Back-trace candidates (select a node)</label>
-            <label class="check"><input id="showAllTraces" type="checkbox" /> Back-trace lines for all nodes</label>
-            <label class="check"><input id="showMics" type="checkbox" /> Mic arrays</label>
-            <label class="check"><input id="showPaths" type="checkbox" checked /> Show reflections</label>
-            <label class="check"><input id="showReflWaves" type="checkbox" checked /> Reflected sound</label>
-            <label class="check"><input id="grain" type="checkbox" checked /> Tone and grain</label>
-            <label class="check"><input id="showReach" type="checkbox" /> Reach map</label>
-            <label>Reach view <select id="reachMode"><option value="snr">SNR over noise</option><option value="level">Level (dB SPL)</option></select></label>
-            <label class="check"><input id="showHeatmap" type="checkbox" checked /> Heatmap</label>
-            <label>Heatmap mode <select id="heatMode"><option value="pulse">Pulse (at the playhead)</option><option value="peak">Peak-hold</option><option value="level">Level (clip mean)</option></select></label>
-            <label class="check"><input id="heatLevelPeak" type="checkbox" /> Level mode: show peak instead of mean</label>
-            <label>Heatmap band <select id="heatBand"><option value="loc">localisation band</option><option value="low">low (250 Hz)</option><option value="mid">mid (1 kHz)</option><option value="high">high (4 kHz)</option></select></label>
-            <label>Heatmap source <select id="heatSource"><option value="selected">selected source (all if none)</option><option value="all">all sources</option></select></label>
-            <label class="check"><input id="heatAboveNoise" type="checkbox" checked /> Show level above noise (localisation band only; off: dB SPL)</label>
-            <label>Backdrop opacity <input id="s_heatmap_backdrop" class="mono" type="number" step="0.05" min="0" max="1" /></label>
-            <label>Slice height (m) <input id="s_slice_height_m" class="mono" type="number" step="0.5" /></label>
-            <label>z = <span id="sliceLabel" class="mono">1.5 m</span> <input id="sliceSlider" type="range" min="0" max="25" step="0.5" value="1.5" /></label>
-            <div class="menu-head">Height: <button id="zStreet">street 1.5 m</button><button id="zNode">node</button><button id="zRoof">roof</button></div>
-            <div class="menu-head">Nodes shown <span class="grow"></span><button id="nodesAll">all</button><button id="nodesNone">none</button></div>
-            <div id="nodeToggles"></div>
-          </div>
-        </details>
-      </aside>
+      <nav id="sidenav" aria-label="Simulator sections">
+        <button id="navToggle" class="nav-toggle" aria-expanded="true" title="Collapse menu"><span class="ic">&#9776;</span><span class="tx">Menu</span></button>
+        <button class="nav-item active" data-view="scene"><span class="ic">&#9638;</span><span class="tx">Scene</span></button>
+        <div id="sceneTools" class="nav-sub">
+          <button data-tool="select" class="active" title="Move"><span class="ic">&#10021;</span><span class="tx">Move</span></button>
+          <button data-tool="node" title="Add node"><span class="ic">&#9673;</span><span class="tx">Add node</span></button>
+          <button data-tool="source" title="Add source"><span class="ic">&#9835;</span><span class="tx">Add source</span></button>
+          <button data-tool="building" title="Add building"><span class="ic">&#9645;</span><span class="tx">Add building</span></button>
+          <button data-tool="section" title="Side view"><span class="ic">&#9707;</span><span class="tx">Side view</span></button>
+          <label class="check nav-check" title="3D view"><input id="show3d" type="checkbox" /><span class="tx">3D view</span></label>
+        </div>
+        <button class="nav-item" data-view="sounds"><span class="ic">&#9834;</span><span class="tx">Sound library</span></button>
+        <button class="nav-item" data-view="arrays"><span class="ic">&#8942;&#8942;</span><span class="tx">Mic arrays</span></button>
+        <button class="nav-item" data-view="settings"><span class="ic">&#9881;</span><span class="tx">Settings</span></button>
+      </nav>
       <main id="mapWrap">
         <canvas id="map"></canvas>
         <canvas id="map3d" hidden></canvas>
@@ -102,6 +62,119 @@
         <div id="heatLabel" class="mono" hidden></div>
       </main>
       <aside id="inspector"></aside>
+      <section id="panelSounds" class="panel" hidden>
+        <div class="lib">
+          <div class="lib-list">
+            <div class="lib-head"><h3>Sound library</h3><span class="grow"></span><button id="sndNew">New</button></div>
+            <div id="sndList" class="cards"></div>
+            <p id="sndStatus" class="note" role="status"></p>
+          </div>
+          <div class="lib-view">
+            <canvas id="sndCanvas"></canvas>
+            <div class="view-opts"><label class="check"><input id="sndRings" type="checkbox" checked /> Level contours</label></div>
+          </div>
+          <div class="lib-detail" id="sndDetail"></div>
+        </div>
+      </section>
+      <section id="panelArrays" class="panel" hidden>
+        <div class="lib">
+          <div class="lib-list">
+            <div class="lib-head"><h3>Mic arrays</h3><span class="grow"></span><button id="arrNew">New</button><label class="upload">Import<input id="arrImport" type="file" accept="application/json" hidden /></label></div>
+            <div id="arrList" class="cards"></div>
+            <p id="arrStatus" class="note" role="status"></p>
+          </div>
+          <div class="lib-view">
+            <canvas id="arrCanvas"></canvas>
+            <div class="view-opts">
+              <label class="check"><input id="arrLabels" type="checkbox" checked /> Labels</label>
+              <label class="check"><input id="arrSpans" type="checkbox" /> Nearest pairs</label>
+            </div>
+          </div>
+          <div class="lib-detail" id="arrDetail"></div>
+        </div>
+      </section>
+      <section id="panelSettings" class="panel" hidden>
+        <div class="settings">
+          <section class="set-card">
+            <h3>Map and environment</h3>
+            <fieldset id="osmForm">
+              <legend>OpenStreetMap area</legend>
+              <label>Name <input id="osmName" value="Battersea Power Station" /></label>
+              <label>Latitude <input id="osmLat" type="number" step="any" value="51.4818" /></label>
+              <label>Longitude <input id="osmLon" type="number" step="any" value="-0.1446" /></label>
+              <label>Tile size (m) <input id="osmSize" type="number" min="200" max="1000" step="50" value="600" /></label>
+              <div class="row"><button id="osmLoad">Load map</button><button id="osmCancel" hidden>Cancel loading</button><button id="osmClear">Remove map</button></div>
+              <p id="osmStatus" role="status" aria-live="polite"></p>
+            </fieldset>
+            <p class="note">Load real buildings, roads, water and parks. Replaces current buildings. Internet access required.</p>
+          </section>
+          <section class="set-card">
+            <h3>Air and noise</h3>
+            <label>Temperature (&deg;C) <input id="s_temperature_c" class="mono" type="number" step="1" /></label>
+            <label>Humidity (%) <input id="s_humidity_pct" class="mono" type="number" step="1" /></label>
+            <label>Noise floor (dB SPL) <input id="s_noise_floor_db_spl" class="mono" type="number" step="1" /></label>
+            <label>Ground reflectivity (0-1) <input id="s_ground_reflectivity" class="mono" type="number" step="0.1" min="0" max="1" /></label>
+            <label class="check"><input id="s_noise_enabled" type="checkbox" /> Noise (ambient + mic self-noise)</label>
+            <label>Random seed <input id="s_seed" class="mono" type="number" step="1" /></label>
+          </section>
+          <section class="set-card">
+            <h3>Propagation</h3>
+            <label>Reflection order
+              <select id="s_reflection_order"><option value="0">0: ground only (original)</option><option value="1">1: one bounce</option><option value="2">2: two bounces</option></select>
+            </label>
+            <label>Diffraction order
+              <select id="s_diffraction_order"><option value="0">0: off (hard block)</option><option value="1">1: one edge</option><option value="2">2: two edges, reflection + edge (default)</option></select>
+            </label>
+            <label>Diffraction model
+              <select id="s_diffraction_model" data-string="1"><option value="wedge">wedge (UTD, default)</option><option value="maekawa">maekawa (old formula, comparison only)</option></select>
+            </label>
+            <label>Path pruning (dB below strongest) <input id="s_path_prune_db" class="mono" type="number" step="5" min="10" /></label>
+            <label class="check"><input id="s_block_direct_behind_buildings" type="checkbox" /> Block direct path behind buildings (diffraction order 0 only)</label>
+          </section>
+          <section class="set-card">
+            <h3>Localisation</h3>
+            <label>Minimum SNR to use a node (dB) <input id="s_min_snr_db" class="mono" type="number" step="1" /></label>
+            <label>Picked-path tolerance (&deg;) <input id="s_picked_path_tolerance_deg" class="mono" type="number" step="1" /></label>
+            <label class="check"><input id="showCones" type="checkbox" checked /> Direction cones</label>
+            <label class="check"><input id="showBacktrace" type="checkbox" checked /> Back-trace candidates (select a node)</label>
+            <label class="check"><input id="showAllTraces" type="checkbox" /> Back-trace lines for all nodes</label>
+          </section>
+          <section class="set-card">
+            <h3>Display</h3>
+            <label>Sound display <select id="soundDisplay"><option value="field">Heatmap / waves</option><option value="particles">Particles</option></select></label>
+            <label class="check"><input id="showWaves3d" type="checkbox" checked /> Waves in 3D view</label>
+            <label class="check"><input id="showMics" type="checkbox" /> Mic arrays</label>
+            <label class="check"><input id="showPaths" type="checkbox" checked /> Show reflections</label>
+            <label class="check"><input id="showReflWaves" type="checkbox" checked /> Reflected sound</label>
+            <label class="check"><input id="grain" type="checkbox" checked /> Tone and grain</label>
+            <label>Sound during playback (1x speed only) <select id="listen"><option value="dry">Sources, as recorded</option><option value="off">Off</option></select></label>
+            <div class="menu-head">Nodes shown <span class="grow"></span><button id="nodesAll">all</button><button id="nodesNone">none</button></div>
+            <div id="nodeToggles"></div>
+          </section>
+          <section class="set-card">
+            <h3>Heatmap</h3>
+            <label class="check"><input id="showHeatmap" type="checkbox" checked /> Heatmap</label>
+            <label>Mode <select id="heatMode"><option value="pulse">Pulse (at the playhead)</option><option value="peak">Peak-hold</option><option value="level">Level (clip mean)</option></select></label>
+            <label class="check"><input id="heatLevelPeak" type="checkbox" /> Level mode: show peak instead of mean</label>
+            <label>Band <select id="heatBand"><option value="loc">localisation band</option><option value="low">low (250 Hz)</option><option value="mid">mid (1 kHz)</option><option value="high">high (4 kHz)</option></select></label>
+            <label>Source <select id="heatSource"><option value="selected">selected source (all if none)</option><option value="all">all sources</option></select></label>
+            <label class="check"><input id="heatAboveNoise" type="checkbox" checked /> Show level above noise (localisation band only; off: dB SPL)</label>
+            <label>Backdrop opacity <input id="s_heatmap_backdrop" class="mono" type="number" step="0.05" min="0" max="1" /></label>
+            <label>Slice height (m) <input id="s_slice_height_m" class="mono" type="number" step="0.5" /></label>
+            <label>z = <span id="sliceLabel" class="mono">1.5 m</span> <input id="sliceSlider" type="range" min="0" max="25" step="0.5" value="1.5" /></label>
+            <div class="menu-head">Height: <button id="zStreet">street 1.5 m</button><button id="zNode">node</button><button id="zRoof">roof</button></div>
+          </section>
+          <section class="set-card">
+            <h3>Reach map</h3>
+            <label class="check"><input id="showReach" type="checkbox" /> Reach map</label>
+            <label>View <select id="reachMode"><option value="snr">SNR over noise</option><option value="level">Level (dB SPL)</option></select></label>
+            <label>Cell size (m) <input id="s_reach_cell_m" class="mono" type="number" step="0.5" min="0.5" /></label>
+            <label>Reflection order
+              <select id="s_reach_reflection_order"><option value="0">0: ground only</option><option value="1">1: one bounce</option><option value="2">2: two bounces (default)</option></select>
+            </label>
+          </section>
+        </div>
+      </section>
       <footer id="timelineWrap"><canvas id="timeline"></canvas></footer>
     </div>
 
@@ -142,35 +215,6 @@
         </div>
       </div>
     </section>
-
-    <dialog id="settingsDlg">
-      <h3>Settings</h3>
-      <label>Temperature (&deg;C) <input id="s_temperature_c" class="mono" type="number" step="1" /></label>
-      <label>Humidity (%) <input id="s_humidity_pct" class="mono" type="number" step="1" /></label>
-      <label>Noise floor (dB SPL) <input id="s_noise_floor_db_spl" class="mono" type="number" step="1" /></label>
-      <label>Ground reflectivity (0-1) <input id="s_ground_reflectivity" class="mono" type="number" step="0.1" min="0" max="1" /></label>
-      <label>Random seed <input id="s_seed" class="mono" type="number" step="1" /></label>
-      <label>Minimum SNR to use a node (dB) <input id="s_min_snr_db" class="mono" type="number" step="1" /></label>
-      <label>Reflection order
-        <select id="s_reflection_order"><option value="0">0: ground only (original)</option><option value="1">1: one bounce</option><option value="2">2: two bounces</option></select>
-      </label>
-      <label>Block direct path behind buildings (diffraction order 0 only) <input id="s_block_direct_behind_buildings" type="checkbox" /></label>
-      <label>Diffraction order
-        <select id="s_diffraction_order"><option value="0">0: off (hard block)</option><option value="1">1: one edge</option><option value="2">2: two edges, reflection + edge (default)</option></select>
-      </label>
-      <label>Diffraction model
-        <select id="s_diffraction_model" data-string="1"><option value="wedge">wedge (UTD, default)</option><option value="maekawa">maekawa (old formula, comparison only)</option></select>
-      </label>
-      <label>Path pruning (dB below the strongest path) <input id="s_path_prune_db" class="mono" type="number" step="5" min="10" /></label>
-      <label>Noise (ambient + mic self-noise) <input id="s_noise_enabled" type="checkbox" /></label>
-      <label>Reach map cell size (m) <input id="s_reach_cell_m" class="mono" type="number" step="0.5" min="0.5" /></label>
-      <label>Reach map reflection order
-        <select id="s_reach_reflection_order"><option value="0">0: ground only</option><option value="1">1: one bounce</option><option value="2">2: two bounces (default)</option></select>
-      </label>
-      <label>Picked-path tolerance (°) <input id="s_picked_path_tolerance_deg" class="mono" type="number" step="1" /></label>
-      <label>Sound during playback (1x speed only) <select id="listen"><option value="dry">Sources, as recorded</option><option value="off">Off</option></select></label>
-      <div class="actions"><button id="settingsClose">Done</button></div>
-    </dialog>
 
     <dialog id="clipDlg">
       <h3>Choose a sound</h3>
