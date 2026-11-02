@@ -1,5 +1,5 @@
 // Mic array library workspace: list, 3D preview, and a builder with generators, a coordinate table and derived figures.
-import { BUILTIN_ARRAYS, GENERATORS, arrayMetrics, validateArrayModel } from '@echo/sim-core/arrays.js';
+import { BUILTIN_ARRAYS, GENERATORS, arrayImportTemplate, arrayMetrics, parseArrayImport, validateArrayModel } from '@echo/sim-core/arrays.js';
 import { createObjectView } from './objectview.js';
 import { slug } from './modelapi.js';
 
@@ -207,11 +207,9 @@ export function createArrayLibrary({ $, fit, api, useOnNode }) {
     e.target.value = '';
     if (!file) return;
     try {
-      const data = JSON.parse(await file.text());
-      const entries = data.mics ? [[data.id || slug(data.name || file.name), data]] : Object.entries(data);
+      const models_ = parseArrayImport(JSON.parse(await file.text()), file.name.replace(/\.[^.]+$/, ''));
       let last = null;
-      for (const [id, body] of entries) {
-        const model = validateArrayModel({ ...body, id: /^[a-z0-9][a-z0-9_-]{0,63}$/.test(id) ? id : slug(String(id)) });
+      for (const model of models_) {
         let sessionOnly = false;
         try {
           await api.put('arrays', model);
@@ -221,11 +219,17 @@ export function createArrayLibrary({ $, fit, api, useOnNode }) {
         models.set(model.id, { ...model, sessionOnly });
         last = model.id;
       }
-      status(`Imported ${entries.length} array${entries.length === 1 ? '' : 's'}.`);
+      status(`Imported ${models_.length} array${models_.length === 1 ? '' : 's'}.`);
       if (last) open(models.get(last));
     } catch (err) {
       status(`Could not import: ${err.message}`, true);
     }
+  });
+
+  $('arrTemplate').addEventListener('click', () => {
+    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([JSON.stringify(arrayImportTemplate(), null, 2)], { type: 'application/json' })), download: 'mic-array-import-template.json' });
+    a.click();
+    URL.revokeObjectURL(a.href);
   });
 
   const showLabels = () => $('arrLabels').checked;

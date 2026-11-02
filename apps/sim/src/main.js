@@ -1,4 +1,4 @@
-import { defaultScenario, newNode, newSource, newBuilding, placementErrors, validateScenario, scenarioNotices, scenarioLengthS, renderLengthS, sourcePosition } from '@echo/sim-core/scenario.js';
+import { defaultScenario, DEFAULT_SETTINGS, newNode, newSource, newBuilding, placementErrors, validateScenario, scenarioNotices, scenarioLengthS, renderLengthS, sourcePosition } from '@echo/sim-core/scenario.js';
 import { insideBuilding, insideBox, buildingBox, planRanges, simConstants, segmentBlocked, traceReflection, reflectionImages, FOOTPRINT_SIMPLIFY_M } from '@echo/sim-core/geometry.js';
 import { speedOfSound, dbToPa } from '@echo/sim-core/physics.js';
 import { clipGainPa } from '@echo/sim-core/render.js';
@@ -16,9 +16,11 @@ import { createMicView } from './ui/micview.js';
 import { createView3d } from './ui/view3d.js';
 import { createArrayLibrary } from './ui/arrays.js';
 import { createSoundLibrary } from './ui/sounds.js';
+import { createScenesPanel } from './ui/scenes.js';
 import { createModelApi } from './ui/modelapi.js';
 import { applyArrayToNode } from '@echo/sim-core/arrays.js';
 import { nodeShares } from '@echo/sim-core/attribution.js';
+import { SWEEP_VARIABLES } from '@echo/sim-core/sweep.js';
 import { drawLocalisationTrack } from './ui/tracking.js';
 import { drawParticles, sourceColor, waveParticles } from './ui/particles.js';
 
@@ -36,7 +38,22 @@ $('soundDisplay').addEventListener('change', () => {
   if (!particles) heatmap?.schedule(0);
 });
 
-let scenario = defaultScenario();
+let scenario = freshScenario();
+
+// Settings defaults live in this browser; a scene keeps its own copy of the settings once it exists.
+function storedDefaults() {
+  let raw = {};
+  try {
+    raw = JSON.parse(localStorage.getItem('sim.defaultSettings')) ?? {};
+  } catch {}
+  const keys = [...document.querySelectorAll('[id^="s_"]')].map((e) => e.id.slice(2));
+  return Object.fromEntries(Object.entries(raw).filter(([k, v]) => keys.includes(k) && typeof v === typeof DEFAULT_SETTINGS[k]));
+}
+function freshScenario() {
+  const s = defaultScenario();
+  s.settings = { ...s.settings, ...storedDefaults() };
+  return s;
+}
 const clips = new Map(); // id -> Float32Array at FS
 const analyses = new Map(); // id -> wavefront analysis
 const library = []; // manifest entries plus uploads
@@ -358,7 +375,7 @@ const simLibrary = bindSimulationLibrary({
   getState: () => ({ scenario, results }),
   apply: ({ scenario: raw, results: saved }) => applyScenario(raw, saved),
   reset: () => {
-    applyScenario(defaultScenario());
+    applyScenario(freshScenario());
     $('statusLabel').textContent = '';
   },
   notify: (message, isError = false) => {
@@ -369,6 +386,7 @@ const simLibrary = bindSimulationLibrary({
 });
 setInterval(() => {
   if (!document.hidden) simLibrary.refresh();
+  if (currentView === 'settings') refreshSettingsTitle();
 }, 1500);
 $('exportBtn').addEventListener('click', () => {
   if (!results) return;
@@ -2189,8 +2207,69 @@ tlc.addEventListener('wheel', (e) => {
 
 let sweepWorker = null;
 
-$('sweepBtn').addEventListener('click', () => $('sweepDlg').showModal());
+$('sweepBtn').addEventListener('click', () => {
+  renderSweepVars();
+  $('sweepDlg').showModal();
+});
 $('sweepClose').addEventListener('click', () => $('sweepDlg').close());
+
+const sweepPicked = new Map(); // variable id -> { on, text, arrays:Set }
+
+function renderSweepVars() {
+  const box = $('sweepVars');
+  box.replaceChildren();
+  const arrays = arrayLib.list();
+  for (const v of SWEEP_VARIABLES) {
+    const st = sweepPicked.get(v.id) ?? { on: false, text: v.example ?? '', arrays: new Set(arrays.slice(0, 2).map((a) => a.id)) };
+    sweepPicked.set(v.id, st);
+    const row = document.createElement('div');
+    row.className = 'sweep-var';
+    const on = Object.assign(document.createElement('input'), { type: 'checkbox', checked: st.on });
+    on.addEventListener('change', () => { st.on = on.checked; renderSweepVars(); });
+    const head = document.createElement('label');
+    head.className = 'check';
+    head.append(on, ` ${v.label}`);
+    row.append(head);
+    if (st.on && v.kind === 'array') {
+      const list = document.createElement('div');
+      list.className = 'sweep-arrays';
+      for (const a of arrays) {
+        const l = document.createElement('label');
+        l.className = 'check';
+        const c = Object.assign(document.createElement('input'), { type: 'checkbox', checked: st.arrays.has(a.id) });
+        c.addEventListener('change', () => { c.checked ? st.arrays.add(a.id) : st.arrays.delete(a.id); updateSweepCount(); });
+        l.append(c, ` ${a.name} (${Object.keys(a.mics).length} mics)`);
+        list.append(l);
+      }
+      row.append(list);
+    } else if (st.on) {
+      const input = Object.assign(document.createElement('input'), { value: st.text, placeholder: 'comma-separated values' });
+      input.addEventListener('input', () => { st.text = input.value; updateSweepCount(); });
+      row.append(input);
+    }
+    box.append(row);
+  }
+  updateSweepCount();
+}
+
+function pickedSweepVars() {
+  const out = [];
+  for (const v of SWEEP_VARIABLES) {
+    const st = sweepPicked.get(v.id);
+    if (!st?.on) continue;
+    const values = v.kind === 'array' ? [...st.arrays] : st.text.split(',').map((x) => x.trim()).filter(Boolean).map(Number).filter(Number.isFinite);
+    out.push({ param: v.id, values });
+  }
+  return out;
+}
+
+function updateSweepCount() {
+  const vars = pickedSweepVars();
+  const cases = vars.reduce((n, v) => n * v.values.length, 1);
+  const seeds = Math.max(1, Number($('sweepSeeds').value) || 1);
+  $('sweepCount').textContent = `${cases} combination${cases === 1 ? '' : 's'} x ${seeds} seed${seeds === 1 ? '' : 's'} = ${cases * seeds} renders.`;
+}
+$('sweepSeeds').addEventListener('input', updateSweepCount);
 
 $('sweepRun').addEventListener('click', async () => {
   if (!scenario.nodes.length || !scenario.sources.length) return alert('Add at least one node and one source.');
@@ -2199,9 +2278,8 @@ $('sweepRun').addEventListener('click', async () => {
   } catch (err) {
     return alert(err.message);
   }
-  const param = $('sweepParam').value;
-  const values = $('sweepValues').value.split(',').map(Number).filter(Number.isFinite);
-  if (param && !values.length) return alert('Enter comma-separated values.');
+  const vars = pickedSweepVars();
+  if (vars.some((v) => !v.values.length)) return alert('Every ticked variable needs at least one value.');
   $('sweepRun').disabled = true;
   $('sweepProgress').hidden = false;
   $('sweepOut').textContent = '';
@@ -2213,21 +2291,27 @@ $('sweepRun').addEventListener('click', async () => {
       $('sweepRun').disabled = false;
       $('sweepProgress').hidden = true;
       if (m.type === 'error') $('sweepOut').textContent = `Failed: ${m.message}`;
-      else showSweep(param, m.rows);
+      else showSweep(vars, m.rows);
     }
   };
   const used = [...clips].filter(([id]) => scenario.sources.some((s) => s.clip === id));
-  sweepWorker.postMessage({ scenario, clips: used, durations: [...durations()], param: param || null, values, seeds: Math.max(1, Number($('sweepSeeds').value) || 1) });
+  const arrays = vars.some((v) => v.param === 'mic_array') ? arrayLib.list().map((a) => ({ id: a.id, name: a.name, mics: a.mics })) : [];
+  sweepWorker.postMessage({ scenario, clips: used, durations: [...durations()], vars, arrays, seeds: Math.max(1, Number($('sweepSeeds').value) || 1) });
 });
 
-function showSweep(param, rows) {
+function showSweep(vars, rows) {
   const f = (v, d = 2) => (v == null ? 'n/a' : v.toFixed(d));
-  $('sweepOut').innerHTML = `<table><tr><th>${param || 'repeat'}</th><th>trials</th><th>fix rate</th><th>reflection picked</th><th>err med m</th><th>err p90 m</th><th>bearing med \u00b0</th><th>bearing p90 \u00b0</th></tr>${rows
-    .map((r) => `<tr><td>${r.value ?? '-'}</td><td>${r.trials}</td><td>${f(r.fix_rate)}</td><td>${f(r.picked_not_direct_rate)}</td><td>${f(r.error_3d_median_m)}</td><td>${f(r.error_3d_p90_m)}</td><td>${f(r.bearing_median_deg)}</td><td>${f(r.bearing_p90_deg)}</td></tr>`)
+  const label = (id) => SWEEP_VARIABLES.find((v) => v.id === id)?.label ?? id;
+  const heads = vars.length ? vars.map((v) => `<th>${label(v.param)}</th>`).join('') : '<th>repeat</th>';
+  const cell = (r, v) => `<td>${v.param === 'mic_array' ? (arrayLib.get(r.values[v.param])?.name ?? r.values[v.param]) : r.values[v.param]}</td>`;
+  $('sweepOut').innerHTML = `<table><tr>${heads}<th>trials</th><th>fix rate</th><th>reflection picked</th><th>err med m</th><th>err p90 m</th><th>bearing med \u00b0</th><th>bearing p90 \u00b0</th></tr>${rows
+    .map((r) => `<tr>${vars.length ? vars.map((v) => cell(r, v)).join('') : '<td>-</td>'}<td>${r.trials}</td><td>${f(r.fix_rate)}</td><td>${f(r.picked_not_direct_rate)}</td><td>${f(r.error_3d_median_m)}</td><td>${f(r.error_3d_p90_m)}</td><td>${f(r.bearing_median_deg)}</td><td>${f(r.bearing_p90_deg)}</td></tr>`)
     .join('')}</table>`;
   const cv = $('sweepPlot');
-  cv.hidden = rows.length < 2;
+  const numeric = vars.length === 1 && vars[0].param !== 'mic_array';
+  cv.hidden = !numeric || rows.length < 2;
   if (cv.hidden) return;
+  rows = rows.map((r) => ({ ...r, value: r.values[vars[0].param] }));
   const g = cv.getContext('2d');
   g.fillStyle = '#000';
   g.fillRect(0, 0, cv.width, cv.height);
@@ -2413,7 +2497,7 @@ function frame(now) {
 
 // ---------- side menu and workspaces ----------
 
-const VIEWS = ['scene', 'sounds', 'arrays', 'settings'];
+const VIEWS = ['scenes', 'scene', 'sounds', 'arrays', 'settings'];
 let currentView = 'scene';
 function setView(name) {
   if (!VIEWS.includes(name)) return;
@@ -2421,6 +2505,7 @@ function setView(name) {
   $('app').classList.remove(...VIEWS.map((v) => `view-${v}`));
   $('app').classList.add(`view-${name}`);
   for (const b of document.querySelectorAll('.nav-item')) b.classList.toggle('active', b.dataset.view === name);
+  $('panelScenes').hidden = name !== 'scenes';
   $('panelSounds').hidden = name !== 'sounds';
   $('panelArrays').hidden = name !== 'arrays';
   $('panelSettings').hidden = name !== 'settings';
@@ -2428,11 +2513,47 @@ function setView(name) {
     $('sectionView').hidden = true;
     $('micView').hidden = true;
   }
+  if (name === 'scenes') scenesPanel.show();
+  if (name === 'settings') refreshSettingsTitle();
   if (name === 'sounds') soundLib.show();
   if (name === 'arrays') arrayLib.show();
   if (name === 'scene') heatmap?.schedule(0);
 }
 for (const b of document.querySelectorAll('.nav-item')) b.addEventListener('click', () => setView(b.dataset.view));
+
+const scenesPanel = createScenesPanel({ $, scenes: simLibrary, onOpen: () => setView('scene') });
+
+function refreshSettingsTitle() {
+  const cur = simLibrary.current();
+  $('setSceneName').textContent = cur ? `"${cur.name}"` : 'the unsaved scene';
+}
+const defaultsNote = (text) => {
+  $('defStatus').textContent = text;
+};
+$('defSave').addEventListener('click', () => {
+  const keys = [...document.querySelectorAll('[id^="s_"]')].map((e) => e.id.slice(2));
+  const values = Object.fromEntries(keys.filter((k) => k in scenario.settings).map((k) => [k, scenario.settings[k]]));
+  try {
+    localStorage.setItem('sim.defaultSettings', JSON.stringify(values));
+    defaultsNote('Saved. New scenes will start with these settings.');
+  } catch {
+    defaultsNote('This browser would not store the defaults.');
+  }
+});
+$('defApply').addEventListener('click', () => {
+  Object.assign(scenario.settings, storedDefaults());
+  syncSettingsInputs();
+  syncSliceRange();
+  markEdited();
+  heatmap.schedule(0);
+  defaultsNote('Defaults applied to this scene.');
+});
+$('defReset').addEventListener('click', () => {
+  try {
+    localStorage.removeItem('sim.defaultSettings');
+  } catch {}
+  defaultsNote('Defaults reset. New scenes use the built-in values.');
+});
 function setNavCollapsed(collapsed) {
   document.body.classList.toggle('nav-collapsed', collapsed);
   $('navToggle').setAttribute('aria-expanded', String(!collapsed));
@@ -2453,7 +2574,7 @@ const arrayLib = createArrayLibrary({
   api: modelApi,
   useOnNode: (model) => {
     const node = selected?.type === 'node' ? scenario.nodes.find((n) => n.id === selected.id) : null;
-    if (!node) return 'Select a node in the Scene first.';
+    if (!node) return 'Select a node in the Editor first.';
     applyArrayToNode(node, model);
     markEdited();
     return `Applied to node ${node.id}.`;

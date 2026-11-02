@@ -40,7 +40,8 @@
       <div id="loadNotice" hidden></div>
       <nav id="sidenav" aria-label="Simulator sections">
         <button id="navToggle" class="nav-toggle" aria-expanded="true" title="Collapse menu"><span class="ic">&#9776;</span><span class="tx">Menu</span></button>
-        <button class="nav-item active" data-view="scene"><span class="ic">&#9638;</span><span class="tx">Scene</span></button>
+        <button class="nav-item" data-view="scenes"><span class="ic">&#9776;</span><span class="tx">Scenes</span></button>
+        <button class="nav-item active" data-view="scene"><span class="ic">&#9638;</span><span class="tx">Editor</span></button>
         <div id="sceneTools" class="nav-sub">
           <button data-tool="select" class="active" title="Move"><span class="ic">&#10021;</span><span class="tx">Move</span></button>
           <button data-tool="node" title="Add node"><span class="ic">&#9673;</span><span class="tx">Add node</span></button>
@@ -62,6 +63,13 @@
         <div id="heatLabel" class="mono" hidden></div>
       </main>
       <aside id="inspector"></aside>
+      <section id="panelScenes" class="panel" hidden>
+        <div class="scenes">
+          <div class="lib-head"><h3>Scenes</h3><span class="grow"></span><input id="sceneSearch" type="search" placeholder="Search by name" /></div>
+          <p id="sceneStatus" class="note" role="status"></p>
+          <div id="sceneCards" class="scene-cards"></div>
+        </div>
+      </section>
       <section id="panelSounds" class="panel" hidden>
         <div class="lib">
           <div class="lib-list">
@@ -79,7 +87,7 @@
       <section id="panelArrays" class="panel" hidden>
         <div class="lib">
           <div class="lib-list">
-            <div class="lib-head"><h3>Mic arrays</h3><span class="grow"></span><button id="arrNew">New</button><label class="upload">Import<input id="arrImport" type="file" accept="application/json" hidden /></label></div>
+            <div class="lib-head"><h3>Mic arrays</h3><span class="grow"></span><button id="arrNew">New</button><label class="upload">Import<input id="arrImport" type="file" accept="application/json" hidden /></label><button id="arrTemplate" title="Download an example file to fill in and import">Template</button></div>
             <div id="arrList" class="cards"></div>
             <p id="arrStatus" class="note" role="status"></p>
           </div>
@@ -94,6 +102,17 @@
         </div>
       </section>
       <section id="panelSettings" class="panel" hidden>
+        <div class="set-bar">
+          <div>
+            <h3>Settings for <span id="setSceneName">this scene</span></h3>
+            <p class="note">Physics, noise and heatmap values belong to the open scene and are saved with it. New scenes start from your defaults.</p>
+          </div>
+          <span class="grow"></span>
+          <button id="defSave" title="Use this scene's settings for every new scene">Save as my defaults</button>
+          <button id="defApply" title="Copy your defaults into this scene">Apply defaults to this scene</button>
+          <button id="defReset" title="Forget your defaults and use the built-in ones">Reset defaults</button>
+          <span id="defStatus" class="note" role="status"></span>
+        </div>
         <div class="settings">
           <section class="set-card">
             <h3>Map and environment</h3>
@@ -246,16 +265,10 @@
 
     <dialog id="sweepDlg">
       <h3>Repeats and sweeps</h3>
-      <label>Vary
-        <select id="sweepParam">
-          <option value="">Nothing (repeat only)</option>
-          <option value="distance_scale">Distance scale (about node centroid)</option>
-          <option value="noise_floor_db_spl">Noise floor dB SPL</option>
-          <option value="node_count">Node count</option>
-        </select>
-      </label>
-      <label>Values <input id="sweepValues" value="0.5, 1, 2, 4" /></label>
+      <p class="note">Tick the variables to test. Every combination of the chosen values is run, once per seed. With nothing ticked the scene is only repeated.</p>
+      <div id="sweepVars"></div>
       <label>Seeds <input id="sweepSeeds" class="mono" type="number" value="50" min="1" /></label>
+      <p id="sweepCount" class="note"></p>
       <div class="actions"><button id="sweepRun" class="primary">Run</button> <button id="sweepClose">Close</button> <progress id="sweepProgress" value="0" max="1" hidden></progress></div>
       <div id="sweepOut"></div>
       <canvas id="sweepPlot" width="520" height="200" hidden></canvas>

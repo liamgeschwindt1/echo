@@ -272,3 +272,49 @@ export function arrayMetrics(mics, { tempC = 20 } = {}) {
     bearing: [0, 20, 40, 60].map((el) => ({ at_el_deg: el, ...bearingError(mics, el, { c }) }))
   };
 }
+
+// ---------- import file ----------
+
+const UNIT_TO_MM = { mm: 1, cm: 10, m: 1000 };
+const slugId = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 56) || 'array';
+
+// The file the Import button reads: one entry per array, keyed by id. Keys starting with "_" are ignored.
+export function arrayImportTemplate() {
+  return {
+    _readme: 'Fill in one entry per array and import this file in Mic arrays. Keep the keys. The key (here "my_array") becomes the array id: lowercase letters, digits, - or _. Use a different id for each array. You can add several entries.',
+    _fields: 'name: required. units: mm (default), cm or m, applies to every coordinate. assumed: true if the layout is not confirmed. status, source, notes: free text. mics: mic name -> [x, y, z]. Names are up to 12 letters, digits, - or _. 2 to 64 mics, within 2 m of the centre.',
+    _conventions: 'Origin at the array centre, z up. x east, y north when the node is not rotated. Give the port mouth on the outer surface.',
+    my_array: {
+      name: 'My 4-mic square, 100 mm',
+      units: 'mm',
+      assumed: true,
+      status: 'Draft',
+      source: 'design sheet or file name',
+      notes: 'Anything worth remembering about this array.',
+      mics: {
+        M1: [50, 50, 0],
+        M2: [-50, 50, 0],
+        M3: [-50, -50, 0],
+        M4: [50, -50, 0]
+      }
+    }
+  };
+}
+
+/** Turns an imported JSON file into validated models. A file holding a single array (with "mics") is accepted too. */
+export function parseArrayImport(data, fileName = 'array') {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('the file must hold a JSON object');
+  const entries = data.mics ? [[data.id || slugId(data.name || fileName), data]] : Object.entries(data).filter(([k]) => !k.startsWith('_'));
+  if (!entries.length) throw new Error('the file has no arrays in it');
+  return entries.map(([key, body]) => {
+    const units = body?.units ?? 'mm';
+    if (!Object.hasOwn(UNIT_TO_MM, units)) throw new Error(`${key}: units must be mm, cm or m`);
+    const k = UNIT_TO_MM[units];
+    const mics = Object.fromEntries(Object.entries(body?.mics && typeof body.mics === 'object' ? body.mics : {}).map(([name, p]) => [name, Array.isArray(p) ? p.map((v) => (typeof v === 'number' ? v * k : v)) : p]));
+    try {
+      return validateArrayModel({ ...body, mics, id: ID_RE.test(key) ? key : slugId(key) });
+    } catch (err) {
+      throw new Error(`${key}: ${err.message}`);
+    }
+  });
+}

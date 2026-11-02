@@ -376,6 +376,40 @@ export function bindSimulationLibrary({ $, api = createSimulationApi(), getState
       refreshTitle();
     },
     isDirty,
-    current: () => current
+    current: () => current,
+    list: (q = '') => api.list(q),
+    /** Opens a saved scene (asks before discarding edits). Resolves true when it was opened. */
+    async openScene(id) {
+      if (busy || !confirmDiscard()) return false;
+      busy = true;
+      try {
+        await open(id);
+        return true;
+      } catch (err) {
+        notify(err.message, true);
+        return false;
+      } finally {
+        busy = false;
+      }
+    },
+    /** Starts an empty scene and asks for its name so it is saved straight away. */
+    newScene() {
+      if (!confirmDiscard()) return false;
+      reset();
+      setCurrent(null);
+      openSaveDialog('new');
+      return true;
+    },
+    async removeScene(id, name, versions) {
+      if (!confirm(`Delete "${name}" and all ${versions} version(s)? This cannot be undone.`)) return false;
+      try {
+        await api.remove(id);
+        if (current?.id === id) setCurrent(null, null);
+        return true;
+      } catch (err) {
+        notify(err.message, true);
+        return false;
+      }
+    }
   };
 }

@@ -196,3 +196,22 @@ dialog .error { color: #ff6b6b; font-size: 12px; min-height: 1em; margin: 6px 0;
 .lib-detail .ok { color: #7f7; }
 .lib-detail canvas { width: 100%; height: 90px; display: block; border: 1px solid var(--edge); margin-top: 6px; }
 @media (max-width: 1100px) { .lib { grid-template-columns: 200px minmax(0, 1fr) 320px; } }
+
+.scenes { padding: 18px; }
+.scenes .lib-head input { width: 220px; }
+.scene-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; margin-top: 12px; }
+.scene-card { position: relative; display: flex; flex-direction: column; gap: 6px; min-height: 130px; padding: 14px; border: 1px solid var(--edge); border-radius: 10px; cursor: pointer; text-align: left; background: transparent; color: inherit; }
+.scene-card:hover, .scene-card:focus-visible { border-color: #777; }
+.scene-card.current { border-color: var(--accent); }
+.scene-card .sub { color: var(--dim); font-size: 12px; }
+.scene-card.plus { align-items: center; justify-content: center; border-style: dashed; }
+.scene-card .plus-sign { font-size: 44px; line-height: 1; color: var(--accent); }
+.scene-del { position: absolute; top: 8px; right: 8px; font-size: 11px; padding: 2px 6px; opacity: 0; }
+.scene-card:hover .scene-del, .scene-card:focus-within .scene-del { opacity: 1; }
+.set-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 14px 18px 0; }
+.set-bar h3 { margin: 0 0 4px; font-size: 15px; }
+.set-bar .note { margin: 0; }
+.sweep-var { margin: 8px 0; }
+.sweep-var input:not([type="checkbox"]) { width: 100%; margin-top: 4px; }
+.sweep-arrays { display: flex; flex-direction: column; gap: 2px; margin: 4px 0 0 22px; max-height: 140px; overflow: auto; }
+#sweepVars { max-height: 40vh; overflow: auto; }
