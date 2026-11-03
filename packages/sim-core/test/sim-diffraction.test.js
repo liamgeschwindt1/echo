@@ -74,7 +74,9 @@ test('node behind a building: bearing points at a corner and the picked path is 
   const out2 = renderScenario(withTwo, new Map([['b', burst(60)]]), { lengthS: 1.4 });
   const [r2] = analyseScenario(withTwo, out2, new Map([['b', 0.06]]));
   assert.ok(r2.nodes[0].picked_path_type === 'diffracted');
-  if (r2.fix) assert.equal(r2.fix.fix_suspect, true);
+  // The 0.3 fix_suspect rule (a node picked a non-direct path) reads the true paths; schema 0.4 keeps it as
+  // multipath_suspect and reserves fix_suspect for checks a real system could make.
+  if (r2.fix) assert.equal(r2.fix.multipath_suspect, true);
 });
 
 test('200 Hz loses much less than 3 kHz on the same diffracted path (thin screen)', () => {

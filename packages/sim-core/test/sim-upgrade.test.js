@@ -76,3 +76,93 @@ test('P2: an impulsive onset is localised on a short onset-gated window, a fixed
     assert.ok(n.window_s[1] - n.window_s[0] > 1);
   }
 });
+
+// ---------- P3/P4: robust fix on synthetic rays ----------
+import { robustFix, azimuthDeg } from '../src/fix.js';
+
+const S = DEFAULT_SETTINGS;
+const ray = (id, origin, target, { errDeg = 0, sigma = 1, el = null, trusted = false } = {}) => ({
+  node_id: id,
+  origin,
+  azimuth_deg: azimuthDeg(origin, target) + errDeg,
+  elevation_deg: el ?? 0,
+  elevation_trusted: trusted,
+  sigma_deg: sigma
+});
+const scn5 = { nodes: [[0, 0], [70, 0], [70, 70], [0, 70], [35, -1]].map((p, i) => ({ id: `n${i + 1}`, position: [...p, 5] })), buildings: [] };
+const herr = (fix, t) => Math.hypot(fix.position[0] - t[0], fix.position[1] - t[1]);
+
+test('P3: two bad nodes out of five are rejected with a reason, the fix stays within a few metres', () => {
+  // Off the n1-n3 diagonal: with the source on it, n1 and n3 agree with any point of the diagonal and the case is ambiguous.
+  const t = [40, 28, 1.5];
+  const rays = scn5.nodes.map((n, i) => ray(n.id, n.position, t, { errDeg: i === 3 ? 25 : i === 4 ? -18 : [0.3, -0.4, 0.2][i] }));
+  const all = robustFix(rays.map((r) => ({ ...r, sigma_deg: 90 })).slice(0, 2).concat(rays.slice(2)), { settings: { ...S, fix_inlier_gate_sigma: Infinity }, scenario: scn5 });
+  const fix = robustFix(rays, { settings: S, scenario: scn5 });
+  assert.equal(fix.method, 'ransac_wls');
+  assert.deepEqual(fix.rejected_nodes.map((r) => r.node_id).sort(), ['n4', 'n5']);
+  assert.ok(fix.rejected_nodes.every((r) => r.reason === 'outlier' && r.residual_sigma > S.fix_inlier_gate_sigma));
+  assert.ok(herr(fix, t) < 2, String(herr(fix, t)));
+  assert.ok(herr(all, t) > herr(fix, t));
+  assert.equal(fix.fix_suspect, false);
+});
+
+test('P4: conditioning uses the horizontal crossing angle and z is clamped for flat arrays', () => {
+  const t = [30, 40, 1.5];
+  const fix = robustFix([ray('a', [0, 0, 5], t, { el: -40 }), ray('b', [60, 0, 5], t, { el: -40 })], { settings: S, scenario: scn5 });
+  assert.equal(fix.z_clamped, true);
+  assert.equal(fix.position[2], S.source_height_prior_m);
+  assert.ok(Math.abs(fix.max_crossing_angle_horizontal_deg - (azimuthDeg([60, 0], t) - azimuthDeg([0, 0], t))) < 1e-6);
+  // Two almost parallel horizontal rays are poorly conditioned however steep their elevations are.
+  const par = robustFix([ray('a', [0, 0, 5], [0, 100]), ray('b', [3, 0, 5], [2, 100])], { settings: S, scenario: scn5 });
+  assert.equal(par.poorly_conditioned, true);
+});
+
+test('P4: suspect flags for below ground, behind a node, range ratio and outside the scene', () => {
+  const t = [30, 40, 1.5];
+  // Trusted elevations that point underground: z from the nodes, flagged below_ground.
+  const under = robustFix([ray('a', [0, 0, 5], t, { el: -35, trusted: true }), ray('b', [60, 0, 5], t, { el: -35, trusted: true })], { settings: S, scenario: scn5 });
+  assert.equal(under.z_clamped, false);
+  assert.ok(under.position[2] < 0 && under.suspect_reasons.includes('below_ground'));
+  // Rays that only meet behind a node.
+  const behind = robustFix([ray('a', [0, 0, 5], [-10, -30]), ray('b', [60, 0, 5], [70, -30])], { settings: S, scenario: scn5 });
+  assert.equal(behind.position, null);
+  assert.ok(behind.suspect_reasons.includes('negative_range'));
+  // 19 m against 211 m.
+  const ratio = robustFix([ray('a', [0, 0, 5], [12, 15]), ray('b', [200, 80, 5], [12, 15])], { settings: S, scenario: { nodes: [{ position: [0, 0, 5] }, { position: [200, 80, 5] }], buildings: [] } });
+  assert.ok(ratio.suspect_reasons.includes('range_ratio'), JSON.stringify(ratio.ranges_m));
+  const far = robustFix([ray('a', [0, 0, 5], [400, 400]), ray('b', [70, 0, 5], [400, 400])], { settings: S, scenario: scn5 });
+  assert.ok(far.suspect_reasons.includes('outside_scene'));
+});
+
+test('P4: flags are consistent: small errors are rarely suspect while gross ones are', () => {
+  const rng = mulberry32(17);
+  const t = [35, 30, 1.5];
+  let goodSuspect = 0;
+  for (let k = 0; k < 40; k++) {
+    const rays = scn5.nodes.slice(0, 4).map((n) => ray(n.id, n.position, t, { errDeg: 0.5 * gaussian(rng), sigma: 0.5 }));
+    const fix = robustFix(rays, { settings: S, scenario: scn5 });
+    if (fix.fix_suspect) goodSuspect++;
+    assert.ok(herr(fix, t) < 3);
+  }
+  assert.ok(goodSuspect <= 4, String(goodSuspect));
+  // Rays that all disagree far beyond their stated sigma: whenever the fix is 20 m or more off, it is flagged.
+  let gross = 0;
+  for (let k = 0; k < 40; k++) {
+    const rays = scn5.nodes.slice(0, 4).map((n) => ray(n.id, n.position, t, { errDeg: 15 * gaussian(rng), sigma: 0.5 }));
+    const fix = robustFix(rays, { settings: S, scenario: scn5 });
+    if (!fix.position || fix.poorly_conditioned || herr(fix, t) < 20) continue;
+    gross++;
+    assert.ok(fix.fix_suspect, JSON.stringify({ e: herr(fix, t), r: fix.suspect_reasons, rej: fix.rejected_nodes.length }));
+  }
+  assert.ok(gross > 0);
+  // Known limit: two rays always meet, so a biased two-node fix cannot be detected from the bearings alone.
+});
+
+test('P4: heard_nodes counts heard nodes and usable_nodes counts nodes with a usable bearing', () => {
+  const s1 = { ...newSource('s1', 'g', 25, 25, 110), start_s: 3 };
+  const scn = scene([s1]);
+  const [r] = analyseScenario(scn, renderScenario(scn, new Map([['g', gappedBursts()]]), { lengthS: 6 }), new Map([['g', 1.6]]));
+  assert.equal(r.heard_nodes, r.nodes.filter((n) => n.heard).length);
+  assert.equal(r.usable_nodes, r.nodes.filter((n) => n.usable).length);
+  assert.ok(r.fix.inlier_nodes.length >= 2 && r.fix.method === 'two_ray');
+});

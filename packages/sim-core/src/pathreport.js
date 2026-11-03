@@ -52,15 +52,22 @@ export function pathReport({ centre, node, source, bearing, settings, sourcePos 
   });
   const trueDir = direction(origin, src);
   const trueAz = toDeg(Math.atan2(trueDir[1], trueDir[0]));
+  // Picked path (P5): among paths within the azimuth tolerance, within picked_path_level_window_db of the strongest path
+  // and, when the array resolves elevation, within picked_path_elevation_tol_deg of the bearing's elevation, the strongest.
+  // A flat array only knows |elevation| (its sign is assumed), so the magnitudes are compared.
   let picked = null;
   if (bearing) {
-    let best = Infinity;
+    const strongestDb = paths.length ? Math.max(...paths.map((p) => p.level_db_re_direct)) : 0;
+    const levelWin = settings.picked_path_level_window_db ?? Infinity;
+    const elTol = settings.picked_path_elevation_tol_deg ?? Infinity;
+    const flat = !!bearing.elevation_sign_assumed;
+    const elOk = bearing.elevation_confidence !== 'low';
+    const elOf = (v) => (flat ? Math.abs(v) : v);
     paths.forEach((p, i) => {
-      const e = angDiff(p.arrival_azimuth_deg, bearing.azimuth_deg);
-      if (e < best && e <= settings.picked_path_tolerance_deg) {
-        best = e;
-        picked = i;
-      }
+      if (angDiff(p.arrival_azimuth_deg, bearing.azimuth_deg) > settings.picked_path_tolerance_deg) return;
+      if (p.level_db_re_direct < strongestDb - levelWin) return;
+      if (elOk && Math.abs(elOf(p.arrival_elevation_deg) - elOf(bearing.elevation_deg)) > elTol) return;
+      if (picked === null || p.level_db_re_direct > paths[picked].level_db_re_direct) picked = i;
     });
   }
   const reflected = centre.paths.filter((p) => p.type !== 'direct');
@@ -75,6 +82,7 @@ export function pathReport({ centre, node, source, bearing, settings, sourcePos 
     bearing_error_vs_picked_deg: bearing && picked !== null ? angDiff(bearing.azimuth_deg, paths[picked].arrival_azimuth_deg) : null,
     direct_to_reflected_db: direct && bestReflected ? 20 * Math.log10(amplitude(direct) / amplitude(bestReflected)) : null,
     delay_spread_s: delays.length ? Math.max(...delays) - Math.min(...delays) : 0,
+    reflection_gap_s: bestReflected && delays.length ? bestReflected.delay_s - Math.min(...delays) : null,
     first_path_delay_s: delays.length ? Math.min(...delays) : null,
     direct_distance_m: distance(origin, src)
   };

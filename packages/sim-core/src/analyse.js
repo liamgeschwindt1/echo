@@ -3,9 +3,10 @@ import { estimateBearing, intersectRays } from './localise.js';
 import { backtraceCandidates, scoreAgainstTruth } from './backtrace.js';
 import { pathReport } from './pathreport.js';
 import { timed } from './profile.js';
-import { azimuthUncertaintyDeg } from './uncertainty.js';
+import { azimuthUncertaintyDeg, multipathSigmaDeg, overlapSigmaDeg, reflectorSigmaDeg } from './uncertainty.js';
+import { robustFix } from './fix.js';
 import { FRAME_S } from './activity.js';
-import { adaptiveWindow, arrivalSpan, nodeMixtureFrames, reflectionGuardS, triggerType } from './windows.js';
+import { adaptiveWindow, arrivalSpan, nearestReflectorM, nodeMixtureFrames, reflectionGuardS, triggerType } from './windows.js';
 import { sourcePosition } from './scenario.js';
 import { emittedPosition, isMoving, positionAt } from './motion.js';
 import { buildSourceGraph, buildSurfaces, findPaths } from './geometry.js';
@@ -101,6 +102,8 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
       return w ? [w[0], w[1]] : null;
     })
   );
+
+  const reflectorM = scenario.nodes.map((n) => nearestReflectorM(n.position, scenario.buildings || []));
 
   return scenario.sources.map((src, si) => {
     const moving = isMoving(src);
@@ -255,6 +258,23 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
       const hasDirect = centreUsed.paths.some((p) => p.type === 'direct');
       const reliable = status === 'ok';
 
+      // P5: reported uncertainty = noise-limited term (CRB, plus half the swept angle for a moving source) combined in
+      // quadrature with a multipath floor. P3: the fix weight adds the overlap and near-wall terms on top.
+      let weightTerms = null;
+      if (bearing) {
+        const noise = noiseSigma(bearing, loc);
+        const motion = moving ? angDiff(azAt(loc[0]), azAt(loc[1])) / 2 : 0;
+        const multipath = multipathSigmaDeg({ directToReflectedDb: report.direct_to_reflected_db, delaySpreadS: report.delay_spread_s, reflectionGapS: report.reflection_gap_s, windowS: loc[1] - loc[0], settings });
+        bearing.uncertainty_noise_deg = Math.min(90, Math.hypot(noise, motion));
+        bearing.uncertainty_motion_deg = motion;
+        bearing.uncertainty_multipath_deg = multipath;
+        bearing.uncertainty_deg = Math.min(90, Math.hypot(noise, motion, multipath));
+        const overlapTerm = overlapped ? overlapSigmaDeg(levelDiff, settings) : 0;
+        const reflectorTerm = reflectorSigmaDeg(reflectorM[ni], settings);
+        const total = Math.min(90, Math.hypot(bearing.uncertainty_deg, overlapTerm, reflectorTerm));
+        weightTerms = { uncertainty_deg: bearing.uncertainty_deg, overlap_deg: overlapTerm, reflector_deg: reflectorTerm, total_deg: total };
+      }
+
       // Bearings from growing windows: the wedge is "generated" as the sound accumulates at the node.
       let steps = null;
       if (progressive && bearing) {
@@ -292,6 +312,10 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
         adaptive_stop: adaptive?.stopped ?? null,
         arrival_span_s: span,
         reliable,
+        usable: !!bearing,
+        weight: weightTerms ? 1 / weightTerms.total_deg ** 2 : 0,
+        weight_terms: weightTerms,
+        nearest_reflector_m: reflectorM[ni],
         uncertainty_valid: !!bearing && report.picked_path_type === 'direct' && status !== 'unresolved_overlap',
         active_window_s: active,
         window_s: loc,
@@ -305,12 +329,30 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
       };
     });
 
-    // A node leaves the fix if it cannot hear the sound or its window is dominated by another sound.
-    const used = perNode.filter((n) => n.bearing && n.heard && n.reliable);
+    // P3: every node with a usable bearing enters the fix, weighted by its realistic error; outliers are rejected by
+    // consensus and leave-one-out, with a reason. Overlap no longer excludes a node by itself.
+    const used = perNode.filter((n) => n.usable);
     if (moving && used.length) truth = [0, 1, 2].map((k) => used.reduce((a, n) => a + n.true_position[k], 0) / used.length);
-    const rays = used.map((n) => ({ origin: scenario.nodes.find((x) => x.id === n.node_id).position, direction: n.bearing.direction, weight: 10 ** (n.snr_db / 10) }));
-    const fix = intersectRays(rays);
+    const posOf = (id) => scenario.nodes.find((x) => x.id === id).position;
+    const rays = used.map((n) => ({
+      node_id: n.node_id,
+      origin: posOf(n.node_id),
+      azimuth_deg: n.bearing.azimuth_deg,
+      elevation_deg: n.bearing.elevation_deg,
+      elevation_trusted: !n.bearing.elevation_sign_assumed && n.bearing.elevation_confidence === 'ok',
+      sigma_deg: n.weight_terms.total_deg
+    }));
+    const robust = robustFix(rays, { settings, scenario });
+    // The 0.3 solver in 3D, kept for reference: with a flat array its z follows the assumed elevation sign.
+    const fix3d = intersectRays(used.map((n) => ({ origin: posOf(n.node_id), direction: n.bearing.direction, weight: n.weight })));
+    const fix = robust && {
+      ...robust,
+      max_angle_3d_deg: fix3d?.max_angle_deg ?? null,
+      z_3d_raw_m: fix3d?.position?.[2] ?? null,
+      multipath_suspect: used.some((n) => robust.inlier_nodes.includes(n.node_id) && (n.direct_blocked || n.picked_path_type !== 'direct'))
+    };
     const est = fix && !fix.poorly_conditioned ? fix.position : null;
+    const notUsed = perNode.filter((n) => !n.usable).map((n) => ({ node_id: n.node_id, reason: n.localisation_status === 'no_signal' ? (n.window_snr_db === null ? 'no_signal' : 'below_min_snr') : 'no_bearing' }));
     const trackStart = Math.min(...windows.map((row) => row[si]?.[0] ?? Infinity));
     const trackEnd = Math.max(...windows.map((row) => row[si]?.[1] ?? -Infinity));
     const observations = [];
@@ -380,13 +422,13 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
       { reflection_order: settings.backtrace_reflection_order ?? 2 }
     ));
     const btTruth = scoreAgainstTruth(bt.candidates, truth);
-    const suspect = used.some((n) => n.direct_blocked || n.picked_path_type !== 'direct');
     return {
       source_id: src.id,
       true_position: truth,
       nodes: perNode,
       track: { window_s: TRACK_WINDOW_S, interval_s: TRACK_INTERVAL_S, observations, fixes },
-      heard_nodes: rays.length,
+      heard_nodes: perNode.filter((n) => n.heard).length,
+      usable_nodes: used.length,
       excluded_unreliable: perNode.filter((n) => n.heard && !n.reliable).map((n) => n.node_id),
       backtrace: {
         traces: bt.traces,
@@ -395,7 +437,7 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
         ...btTruth,
         intersection_error_m: est ? Math.hypot(est[0] - truth[0], est[1] - truth[1]) : null
       },
-      fix: fix && { ...fix, position: est, fix_suspect: suspect, ready_s: used.length ? Math.max(...used.map((n) => n.window_s[1])) : null },
+      fix: fix && { ...fix, position: est, rejected_nodes: [...fix.rejected_nodes, ...notUsed], ready_s: Math.max(...used.filter((n) => fix.inlier_nodes.includes(n.node_id)).map((n) => n.window_s[1])) },
       error_horizontal_m: est ? Math.hypot(est[0] - truth[0], est[1] - truth[1]) : null,
       error_3d_m: est ? distance(est, truth) : null
     };

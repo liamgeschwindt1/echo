@@ -7,7 +7,15 @@ import { GOLDEN_SCENES, LEGACY_BUILDING_SCENES, WEDGE_SCENES } from '../test/gol
 const args = process.argv.slice(2);
 const setIdx = args.indexOf('--set');
 const set = setIdx >= 0 ? args[setIdx + 1] : 'base';
-const scenes = { base: GOLDEN_SCENES, 'legacy-buildings': LEGACY_BUILDING_SCENES, wedge: WEDGE_SCENES }[set];
+const SETS = { base: GOLDEN_SCENES, 'legacy-buildings': LEGACY_BUILDING_SCENES, wedge: WEDGE_SCENES };
+if (set === 'analysis-0.4') {
+  // Analysis only (schema 0.4), for every scene set; the signal goldens are not touched.
+  const out = Object.fromEntries(Object.entries(SETS).map(([k, sc]) => [k, Object.fromEntries(Object.keys(sc).map((name) => [name, goldenFor(name, sc).analysis]))]));
+  writeFileSync(new URL('../test/golden/golden-analysis-0.4.json', import.meta.url), JSON.stringify(out));
+  console.log('wrote test/golden/golden-analysis-0.4.json');
+  process.exit(0);
+}
+const scenes = SETS[set];
 if (!scenes) throw new Error(`unknown set ${set}`);
 const defaults = { base: 'test/golden/golden.json', 'legacy-buildings': 'test/golden/golden-legacy-buildings.json', wedge: 'test/golden/golden-wedge.json' };
 const out = Object.fromEntries(Object.keys(scenes).map((name) => [name, goldenFor(name, scenes)]));

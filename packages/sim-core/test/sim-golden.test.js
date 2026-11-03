@@ -6,7 +6,11 @@ import { GOLDEN_SCENES, LEGACY_BUILDING_SCENES, WEDGE_SCENES } from './golden-sc
 import { goldenFor } from './golden-lib.js';
 
 const golden = JSON.parse(readFileSync(new URL('./golden/golden.json', import.meta.url), 'utf8'));
-const legacy = JSON.parse(readFileSync(new URL('./golden/golden-phase3.json', import.meta.url), 'utf8'));
+
+// Schema 0.4 changed the analysis on purpose (window containment and policy, in-window SNR gate, robust fix), not the
+// render: the signal fingerprints above and below still come from the older golden files, while every analysis value is
+// compared with golden-analysis-0.4.json (regenerate only on purpose: node scripts/sim-golden.mjs --set analysis-0.4).
+const analysis04 = JSON.parse(readFileSync(new URL('./golden/golden-analysis-0.4.json', import.meta.url), 'utf8'));
 
 const close = (a, b, what) => assert.ok(Math.abs(a - b) <= 1e-6 * Math.max(1, Math.abs(b)) + 1e-9, `${what}: ${a} vs ${b}`);
 
@@ -28,14 +32,15 @@ for (const order of [undefined, 0, 1, 2]) {
   }
 }
 
-// Bearings against the phase 3 baseline. golden-legacy-analysis.json keeps the pre-change values (windows, SNR and uncertainty changed on purpose).
-test('golden bearings (phase 3 baseline)', { skip: process.env.GOLDEN_ANALYSIS === 'off' }, () => {
+// Bearings of the base scenes (the phase 3 values are kept in golden-phase3.json for reference).
+test('golden bearings', { skip: process.env.GOLDEN_ANALYSIS === 'off' }, () => {
   for (const name of Object.keys(GOLDEN_SCENES)) {
     const { results } = runScene(name);
     results.forEach((r, si) =>
       r.nodes.forEach((n, ni) => {
-        const g = legacy[name].analysis[si].nodes[ni];
-        close(n.bearing.azimuth_deg, g.azimuth_deg, `${name} s${si} n${ni} azimuth`);
+        const g = analysis04.base[name][si].nodes[ni];
+        if (g.azimuth_deg === null) assert.equal(n.bearing, null);
+        else close(n.bearing.azimuth_deg, g.azimuth_deg, `${name} s${si} n${ni} azimuth`);
       })
     );
   }
@@ -60,7 +65,7 @@ for (const name of Object.keys(LEGACY_BUILDING_SCENES)) {
   test(`legacy golden (bit-identical): ${name}`, () => {
     const now = JSON.parse(JSON.stringify(goldenFor(name, LEGACY_BUILDING_SCENES)));
     assert.deepEqual(now.mics, legacyBuildings[name].mics); // rendered signals: exactly identical
-    closeDeep(now.analysis, legacyBuildings[name].analysis, name);
+    closeDeep(now.analysis, analysis04['legacy-buildings'][name], name);
   });
 }
 
@@ -76,6 +81,6 @@ for (const name of Object.keys(WEDGE_SCENES)) {
         m.picks.forEach((v, i) => close(v, g.mics[ni][mi].picks[i], `${name} n${ni} m${mi} pick ${i}`));
       })
     );
-    closeDeep(now.analysis, g.analysis, name);
+    closeDeep(now.analysis, analysis04.wedge[name], name);
   });
 }
