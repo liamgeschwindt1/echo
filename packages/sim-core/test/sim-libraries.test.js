@@ -19,7 +19,7 @@ test('ball12_d180 figures match the design sheet', () => {
   near(m.bearing[0].el_deg, 1.14, 0.03);
 });
 
-test('flat4_100 figures match micarrays.md', () => {
+test('flat4_100 figures match the array library (SIM.md §4)', () => {
   const m = arrayMetrics(micList(byId('flat4_100')));
   near(m.nearest_mm, 100, 0.01);
   near(m.longest_mm, 141.4, 0.1);

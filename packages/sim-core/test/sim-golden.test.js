@@ -69,7 +69,7 @@ for (const name of Object.keys(LEGACY_BUILDING_SCENES)) {
   });
 }
 
-// The default model (wedge, order 2) has its own golden set. Regenerate only on purpose (scripts/sim-golden.mjs --set wedge) and say why in NOTES.md.
+// The default model (wedge, order 2) has its own golden set. Regenerate only on purpose (scripts/sim-golden.mjs --set wedge) and say why in SIM.md §10.2.
 const wedgeGolden = JSON.parse(readFileSync(new URL('./golden/golden-wedge.json', import.meta.url), 'utf8'));
 for (const name of Object.keys(WEDGE_SCENES)) {
   test(`wedge golden: ${name}`, () => {

@@ -1,4 +1,4 @@
-// Three scenes for the stage profile (docs/profile-before.md, docs/profile-after.md) and the decimation / sensitivity checks.
+// Three scenes for the stage profile (SIM.md §10.1) and the decimation / sensitivity checks.
 import { defaultScenario, newBuilding, newNode, newSource } from '../src/scenario.js';
 import { gaussian, mulberry32 } from '../src/rng.js';
 

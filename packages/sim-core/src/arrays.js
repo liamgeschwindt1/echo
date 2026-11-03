@@ -1,5 +1,5 @@
 // Mic array library: layouts in mm (origin at array centre, z up), figures derived from the layout.
-// Seed data and method follow micarrays.md.
+// Seed data and method: SIM.md §4.
 import { speedOfSound } from './physics.js';
 
 export const TIMING_SIGMA_S = 10.4e-6; // one sample at 96 kHz
@@ -61,7 +61,7 @@ export const BUILTIN_ARRAYS = Object.freeze([
     id: 'dome12_d230',
     name: '12-mic downward dome, D230 (assumed)',
     status: 'Candidate from designs/node_geometry_designs.py. Coordinates assumed, replace with the design file',
-    source: 'micarrays.md candidate',
+    source: 'array library candidate (SIM.md §4)',
     assumed: true,
     notes: 'Two rings of 6 on a downward-facing dome; ring latitudes -20 and -55 degrees are a guess.',
     mics: dome(230, 6)
@@ -70,7 +70,7 @@ export const BUILTIN_ARRAYS = Object.freeze([
     id: 'puck12_d210',
     name: '12-mic squat puck, D210 (assumed)',
     status: 'Candidate from designs/node_geometry_designs.py. Coordinates assumed, replace with the design file',
-    source: 'micarrays.md candidate',
+    source: 'array library candidate (SIM.md §4)',
     assumed: true,
     notes: 'Three rings of 4; ring gap 40 mm is a guess.',
     mics: puck(210, 4, 40)
@@ -106,7 +106,7 @@ export function staggerRings(n = 4, lower = 60, upper = 120, height = 60) {
   return out;
 }
 
-// Four layers A..D from the top; A, D at +-0.7946545 R and B, C at +-0.1875925 R (see micarrays.md).
+// Four layers A..D from the top; A, D at +-0.7946545 R and B, C at +-0.1875925 R (SIM.md §4.3).
 export function icosaBall(diameter = 180) {
   const R = diameter / 2;
   const layers = [['A', 0.7946545, 0], ['B', 0.1875925, 60], ['C', -0.1875925, 0], ['D', -0.7946545, 60]];

@@ -1,6 +1,6 @@
-// Generates docs/diffraction-validation.md: the numbers behind the wedge diffraction model (brief section B7).
+// Writes the diffraction validation report (reports/diffraction-validation.md; recorded in SIM.md §10.1): the numbers behind the wedge diffraction model (brief section B7).
 // Usage: node scripts/sim-diffraction-validation.mjs [out.md]
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { findPaths } from '../src/geometry.js';
 import { diffractionLossDb } from '../src/geometry.js';
 import { defaultScenario, newBuilding, newNode, newSource } from '../src/scenario.js';
@@ -10,7 +10,7 @@ import { DIFFRACTION_REFERENCES, diffractionResponse } from '../src/diffraction.
 import { C15, PRE_OFFSETS, causalityReport, cornerGeometry, coherentField, db, engineCornerField, exactCornerField, halfPlaneCompare, openSettings } from '../test/wedge-lib.js';
 import { referenceRender, diffDb } from '../test/reference-render.js';
 
-const out = process.argv[2] || 'docs/diffraction-validation.md';
+const out = process.argv[2] || 'reports/diffraction-validation.md';
 const FREQS = [125, 250, 500, 1000, 2000, 4000];
 const lines = [];
 const w = (s = '') => lines.push(s);
@@ -243,6 +243,7 @@ w('- A single wedge cannot connect a source and receiver on opposite sides of a 
 w('- Ground effects at edges, facade scattering, slope diffraction and vertex diffraction are not modelled.');
 w();
 
+mkdirSync(new URL('.', new URL(`../${out}`, import.meta.url)), { recursive: true });
 writeFileSync(new URL(`../${out}`, import.meta.url), lines.join('\n'));
 console.log(`wrote ${out}`);
 void speedOfSound;

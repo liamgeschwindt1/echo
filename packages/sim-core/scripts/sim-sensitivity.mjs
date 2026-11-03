@@ -1,6 +1,6 @@
-// One-at-a-time sensitivity sweep on three reference scenes. Usage: node scripts/sim-sensitivity.mjs [seeds=20] [out=docs/sensitivity.md]
+// One-at-a-time sensitivity sweep on three reference scenes. Usage: node scripts/sim-sensitivity.mjs [seeds=20] [out=reports/sensitivity.md]
 // Effect = change in mean bearing error (deg), mean fix error (m) and heard fraction between the low and high end of each range.
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { defaultScenario, newBuilding, newNode, newSource, renderLengthS } from '../src/scenario.js';
 import { renderScenario } from '../src/render.js';
 import { analyseScenario } from '../src/analyse.js';
@@ -8,7 +8,7 @@ import { angleBetweenDeg } from '../src/localise.js';
 import { gaussian, mulberry32 } from '../src/rng.js';
 
 const seeds = Number(process.argv[2]) || 20;
-const out = process.argv[3] || 'docs/sensitivity.md';
+const out = process.argv[3] || 'reports/sensitivity.md';
 const FS = 48000;
 const rng = mulberry32(3);
 const burst = (s, amp = 1) => Float32Array.from({ length: Math.round(s * FS) }, (_, i) => amp * gaussian(rng) * Math.sin((Math.PI * i) / (s * FS)));
@@ -93,5 +93,6 @@ const md = [
   ...rows.map((r, i) => `| ${i + 1} | ${r.scene} | ${r.name} | ${r.lo} | ${r.hi} | ${f(r.a.bearing)} | ${f(r.b.bearing)} | ${f(r.dBearing)} | ${f(r.a.fix)} | ${f(r.b.fix)} | ${f(r.a.heard)} | ${f(r.b.heard)} |`),
   ''
 ].join('\n');
+mkdirSync(new URL('.', new URL(`../${out}`, import.meta.url)), { recursive: true });
 writeFileSync(new URL(`../${out}`, import.meta.url), md);
 console.log(`wrote ${out}`);

@@ -1,6 +1,6 @@
 // Rigid-wedge edge diffraction: Kouyoumjian-Pathak uniform theory of diffraction (UTD) with the Fresnel transition function.
 // Time convention e^{+j w t}, so a delay tau is the factor e^{-j w tau}, the same as the renderer.
-// Pure and DOM-free. See docs/diffraction-validation.md for the references and the checks against an exact solution.
+// Pure and DOM-free. See SIM.md §5.5 and §10.1 for the references and the checks against an exact solution.
 
 export const DIFFRACTION_REFERENCES = [
   'R. G. Kouyoumjian and P. H. Pathak, "A uniform geometrical theory of diffraction for an edge in a perfectly conducting surface", Proc. IEEE 62(11), 1448-1461, 1974.',
@@ -178,6 +178,6 @@ export const diffractionConstants = () => ({
   roof_reflection: 'roofs do not reflect, so the roof face reflection coefficient is 0 in the wedge coefficient',
   not_modelled: ['facade scattering', 'ground effects at edges', 'slope diffraction', 'corner (vertex) diffraction'],
   placeholder: true,
-  note: 'design tool, not validated against measurements; see docs/diffraction-validation.md',
+  note: 'design tool, not validated against measurements; see SIM.md §10.1',
   references: DIFFRACTION_REFERENCES
 });

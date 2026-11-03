@@ -1,5 +1,5 @@
 // Wedge (UTD) diffraction: defaults, agreement with the exact BTM solution, continuity at the shadow boundary, causality,
-// frequency behaviour, roof and end paths, order 2 chains, pruning and the audit. Numbers are reported in docs/diffraction-validation.md.
+// frequency behaviour, roof and end paths, order 2 chains, pruning and the audit. Numbers are reported in SIM.md §10.1.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { findPaths, simConstants, pathPressure } from '../src/geometry.js';

@@ -1,7 +1,7 @@
 // Stage timing of Create on three scenes. Usage: node scripts/sim-profile.mjs <out.md> [--legacy] [--title "text"]
-//   --legacy   diffraction_order 0 and model maekawa on every scene (the old default), for docs/profile-before.md
+//   --legacy   diffraction_order 0 and model maekawa on every scene (the old default), for the 'before' profile (SIM.md §10.1)
 // Scene 3 uses diffraction_order 0 in the "before" table, as specified; otherwise every scene runs at the default settings.
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { PROFILE_SCENES } from '../test/profile-scenes.js';
 import { renderScenario } from '../src/render.js';
 import { analyseScenario } from '../src/analyse.js';
@@ -10,7 +10,7 @@ import { computeReachField, noiseBandPowerPa2, sourceBandLevels } from '../src/r
 import { speedOfSound } from '../src/physics.js';
 
 const args = process.argv.slice(2);
-const out = args.find((a) => !a.startsWith('--')) || 'docs/profile.md';
+const out = args.find((a) => !a.startsWith('--')) || 'reports/profile.md';
 const legacy = args.includes('--legacy');
 const overrides = legacy ? { diffraction_order: 0, diffraction_model: 'maekawa' } : {};
 
@@ -100,5 +100,6 @@ const md = [
   line('dropped candidates by reason', (r) => Object.entries(r.dropped).map(([k, v]) => `${k} ${v}`).join(', ') || 'none'),
   ''
 ].join('\n');
+mkdirSync(new URL('.', new URL(`../${out}`, import.meta.url)), { recursive: true });
 writeFileSync(new URL(`../${out}`, import.meta.url), md);
 console.log(`wrote ${out}`);
