@@ -193,3 +193,37 @@ test('P6: a moving source gets a track of fixes at common emission times, scored
   assert.ok(errs[Math.floor(errs.length / 2)] < 5, JSON.stringify(errs));
   assert.ok(Number.isInteger(t.rejected_count));
 });
+
+// ---------- P8: detected vs localisable ----------
+import { decimationFor } from '../src/activity.js';
+import { rfft, irfft } from '../src/dsp.js';
+
+test('P8: a 4-8 kHz sound is detected (broadband) but not localisable (200-1600 Hz), and still counts as heard', () => {
+  const rng = mulberry32(31);
+  const n = 1 << 15;
+  const x = new Float64Array(n);
+  for (let i = 0; i < n; i++) x[i] = gaussian(rng);
+  const X = rfft(x, n);
+  for (let k = 0; k < X.re.length; k++) {
+    const f = (k * FS) / n;
+    if (f < 4000 || f > 8000) X.re[k] = X.im[k] = 0;
+  }
+  const hiss = Float32Array.from(irfft(X.re, X.im, n));
+  const s = scene([{ ...newSource('s1', 'h', 20, 20, 95), start_s: 3 }]);
+  const [r] = analyseScenario(s, renderScenario(s, new Map([['h', hiss]]), { lengthS: 4.5 }), new Map([['h', n / FS]]));
+  for (const nr of r.nodes) {
+    assert.equal(nr.detected_broadband, true, String(nr.snr_detection_db));
+    assert.equal(nr.localisable, false, String(nr.snr_db));
+    assert.equal(nr.heard, true);
+    assert.ok(nr.aliasing_limit_hz > 1600 && nr.aliasing_limit_hz < 1800);
+  }
+  assert.equal(r.heard_nodes, 2);
+  assert.equal(r.usable_nodes, 0);
+});
+
+test('P8: the activity decimation follows the band (default band unchanged, wider bands are not cut off)', () => {
+  assert.equal(decimationFor([200, 1600], 48000), 8);
+  assert.equal(decimationFor([200, 3000], 48000), 4);
+  assert.equal(decimationFor([50, 9000], 48000), 2);
+  for (const band of [[200, 1600], [200, 3000], [50, 9000]]) assert.ok(band[1] * 1.2 < 48000 / (2 * decimationFor(band, 48000)));
+});

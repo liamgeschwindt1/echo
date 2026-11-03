@@ -3,7 +3,15 @@ import { irfft, rfft } from './dsp.js';
 import { addSourceSpectrum, commonNoise, micGainFor, noiseForMic } from './render.js';
 
 export const FRAME_S = 0.01;
-const DEC = 8;
+const MAX_DEC = 8;
+
+// Largest power-of-two decimation (at most 8) that keeps the band's upper raised-cosine edge below the decimated Nyquist.
+// The default 200-1600 Hz band at 48 kHz gives 8, as before; a wider band or the detection band decimates less.
+export function decimationFor(band, fs) {
+  let dec = MAX_DEC;
+  while (dec > 1 && band[1] * 1.2 >= (0.95 * fs) / (2 * dec)) dec /= 2;
+  return dec;
+}
 
 // Raised-cosine band edges (20% wide) so a hard cut-off does not ring for seconds and stretch the active windows.
 export function bandWeight(f, band) {
@@ -16,10 +24,10 @@ export function bandWeight(f, band) {
   return 1;
 }
 
-// Own-contribution power per 10 ms frame in the localisation band: all paths, and the direct path alone.
-export function computeActivity(ctx, ni) {
-  const { settings, n, fs, bins, scenario, total } = ctx;
-  const band = settings.localisation_band_hz;
+// Own-contribution power per 10 ms frame in one band (all paths, or the paths pathFilter keeps), and the noise power in it.
+function bandActivity(ctx, ni, band, filters) {
+  const { n, fs, bins, scenario, total } = ctx;
+  const DEC = decimationFor(band, fs);
   const m = n / DEC;
   const kMax = m / 2;
   const frameLen = Math.round((FRAME_S * fs) / DEC);
@@ -53,7 +61,7 @@ export function computeActivity(ctx, ni) {
     return out;
   };
 
-  const perSource = scenario.sources.map((_, si) => ({ all: powerFrames(null, si), direct: powerFrames((p) => p.type === 'direct', si) }));
+  const perSource = scenario.sources.map((_, si) => Object.fromEntries(Object.entries(filters).map(([k, f]) => [k, powerFrames(f, si)])));
 
   // Noise power in the same band, measured on the generated noise itself.
   const { amb, self } = noiseForMic(ctx, ni, 0, commonNoise(ctx, ni));
@@ -67,5 +75,23 @@ export function computeActivity(ctx, ni) {
     const w = bandWeight((k * fs) / n, band);
     acc += w * w * (X.re[k] * X.re[k] + X.im[k] * X.im[k]);
   }
-  return { frame_s: FRAME_S, per_source: perSource, noise_band_power: (2 * acc) / (n * total) };
+  return { perSource, noise: (2 * acc) / (n * total) };
+}
+
+/**
+ * Own-contribution power per 10 ms frame at mic 1: in the localisation band (all paths, and the direct path alone), and
+ * in the detection band (all paths), plus the noise power in each band. Detection band SNR is the 'detected' gate,
+ * localisation band SNR the 'localisable' one (P8).
+ */
+export function computeActivity(ctx, ni) {
+  const loc = bandActivity(ctx, ni, ctx.settings.localisation_band_hz, { all: null, direct: (p) => p.type === 'direct' });
+  const detBand = ctx.settings.detection_band_hz || [50, 9000];
+  const det = bandActivity(ctx, ni, detBand, { all: null });
+  return {
+    frame_s: FRAME_S,
+    per_source: loc.perSource.map((x, si) => ({ ...x, detection: det.perSource[si].all })),
+    noise_band_power: loc.noise,
+    noise_detection_power: det.noise,
+    detection_band_hz: detBand
+  };
 }

@@ -104,6 +104,13 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
     })
   );
 
+  // Spatial aliasing limit of each array, c / (2 x nearest mic spacing).
+  const aliasingHz = rendered.nodes.map((rn) => {
+    let dmin = Infinity;
+    const P = rn.mic_positions;
+    for (let i = 0; i < P.length; i++) for (let j = i + 1; j < P.length; j++) dmin = Math.min(dmin, distance(P[i], P[j]));
+    return c / (2 * dmin);
+  });
   const reflectorM = scenario.nodes.map((n) => nearestReflectorM(n.position, scenario.buildings || []));
 
   return scenario.sources.map((src, si) => {
@@ -256,6 +263,7 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
       }
       const report = timed(profile, 'path_report', () => pathReport({ centre: centreUsed, node, source: src, bearing, settings, sourcePos: nodeTruth }));
       const snr = toDb(meanPower(own.all, active[0], active[1]), noiseP);
+      const snrDetection = own.detection ? toDb(meanPower(own.detection, active[0], active[1]), act.noise_detection_power) : null;
       const hasDirect = centreUsed.paths.some((p) => p.type === 'direct');
       const reliable = status === 'ok';
 
@@ -298,7 +306,14 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
         snr_db: snr,
         snr_direct_db: hasDirect ? toDb(meanPower(own.direct, active[0], active[1]), noiseP) : null,
         snr_broadband_db: snrBroadbandDb(rn.mics[0], ...toSamples(active), settings),
-        heard: snr >= settings.min_snr_db,
+        // P8: detected (own broadband SNR) and localisable (own in-band SNR, over the active or the chosen window) are
+        // separate; heard means either. snr_broadband_db above is the legacy whole-mixture value.
+        snr_detection_db: snrDetection,
+        detected_broadband: snrDetection !== null && snrDetection >= settings.min_snr_db,
+        localisable: snr >= settings.min_snr_db || (window_snr_db !== null && window_snr_db >= settings.min_snr_db),
+        heard: (snrDetection !== null && snrDetection >= settings.min_snr_db) || snr >= settings.min_snr_db || (window_snr_db !== null && window_snr_db >= settings.min_snr_db),
+        aliasing_limit_hz: aliasingHz[ni],
+        band_above_aliasing: settings.localisation_band_hz[1] > aliasingHz[ni],
         bearing,
         overlapped_with: others.map((x) => x.o.id),
         overlap_s: overlapS,
