@@ -17,7 +17,7 @@ import { speedOfSound } from './physics.js';
 export const LABELLING_NOTE =
   'Sim audio is synthetic: clip plus modelled propagation and air absorption, with no wind, rain, housing scattering or coloured noise. Classifier accuracy measured here is not a prediction of real-world accuracy.';
 export const ASSOCIATION_RULE =
-  'A labelled period belongs to a source at a node when its start lies within label_assoc_tol_s of the expected arrival (source start + first-path delay from the true position); the closest start wins.';
+  'A labelled period belongs to a source at a node when it covers the expected arrival (source start + first-path delay from the true position), starts within label_assoc_tol_s of it, or starts while the source is still sounding there (arrival to arrival + clip length); the closest start wins.';
 
 /** Ground truth of a clip from the editable manifest: { label, group, accept: [labels counted correct] } or null. */
 export function truthFor(manifest, cat, clipId) {
@@ -113,7 +113,9 @@ export async function labelEvents(scenario, rendered, results, { cat, runners, m
         onProgress?.(++done / jobs);
         // Association: period start nearest the expected arrival, within the tolerance.
         const expected = tArr - segStart;
-        const cand = out.periods.filter((p) => Math.abs(p.start_s - expected) <= settings.label_assoc_tol_s || (p.start_s <= expected && p.end_s >= expected));
+        // A clip's first strong sound can come seconds after its arrival (the dog clip barks at 2 s), so a period that
+        // starts while the source is still sounding at this node counts too.
+        const cand = out.periods.filter((p) => Math.abs(p.start_s - expected) <= settings.label_assoc_tol_s || (p.start_s <= expected && p.end_s >= expected) || (p.start_s >= expected && p.start_s <= expected + dur));
         const p = cand.sort((x, y) => Math.abs(x.start_s - expected) - Math.abs(y.start_s - expected))[0];
         const watch = watchlistHits(out.yamnet, expected - 0.5, expected + dur, cat);
         const trigger = { level: !!p, yamnet: watch.length > 0, watchlist: watch, onset: p?.onset ?? null };

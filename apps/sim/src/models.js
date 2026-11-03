@@ -1,6 +1,7 @@
 import { FilesetResolver, AudioClassifier } from '@mediapipe/tasks-audio';
 import { buildCatalogue, promptsHash } from '@echo/shared/catalogue.js';
 import { DEFAULTS } from '@echo/shared/settings.js';
+import { yamnetScores } from '@echo/shared/clap.js';
 
 let cat = null;
 let labelsRaw = null;
@@ -51,9 +52,7 @@ export async function loadRunners(onStatus) {
     cat,
     runners: {
       yamnet: async (samples) => {
-        const cats = yamnet.classify(samples, 16000)[0]?.classifications?.[0]?.categories || [];
-        const scores = {};
-        for (const c of cats) if (c.score >= 0.001) scores[c.categoryName || c.displayName] = Math.round(c.score * 1e4) / 1e4;
+        const scores = yamnetScores(yamnet.classify(samples, 16000)[0]?.classifications?.[0]?.categories);
         // Yield so the progress bar and timeline stay responsive.
         await new Promise((r) => setTimeout(r));
         return scores;

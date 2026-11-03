@@ -1,4 +1,4 @@
-// P9: labelling in the simulator with the echo app's stack. Models are stubbed (YAMNet is MediaPipe/WASM, browser only),
+// P9: labelling in the simulator with the echo app's stack. Models are stubbed here (real models: sim-labelling-models.test.js),
 // so these tests check the wiring, the association, the scoring and the export rules, not classifier accuracy.
 import test from 'node:test';
 import assert from 'node:assert/strict';

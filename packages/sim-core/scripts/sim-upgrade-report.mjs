@@ -1,18 +1,22 @@
 // Per-scene table for the schema 0.4 upgrade: horizontal and 3D fix error, per-node azimuth error, usable nodes,
 // flags, track fixes and 1/2-sigma calibration. Renders once per scene and caches the audio, so the analysis
 // can be compared between two copies of the core (e.g. `--core .before/src` against the working tree).
-//   node scripts/sim-upgrade-report.mjs [--core src] [--json out.json] [--scenes a,b] [--set key=value ...]
+//   node scripts/sim-upgrade-report.mjs [--suite upgrade|exports] [--core src] [--json out.json] [--scenes a,b] [--set key=value ...]
+// --suite exports runs the seven exported 0.3 runs (test/export-scenes.js) instead of the six upgrade scenes.
 // SIMULATED results only. Not a real-world accuracy claim.
 import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { SCENE_IDS, upgradeScenario } from '../test/upgrade-scenes.js';
+import { EXPORT_IDS, exportScenario } from '../test/export-scenes.js';
 import { readWavMono48k } from './lib-wav.mjs';
 
 const args = process.argv.slice(2);
 const opt = (k, d) => (args.includes(k) ? args[args.indexOf(k) + 1] : d);
 const coreDir = resolve(opt('--core', 'src'));
-const scenes = opt('--scenes', SCENE_IDS.join(',')).split(',');
+const exportsSuite = opt('--suite', 'upgrade') === 'exports';
+const buildScene = exportsSuite ? exportScenario : upgradeScenario;
+const scenes = opt('--scenes', (exportsSuite ? EXPORT_IDS : SCENE_IDS).join(',')).split(',');
 const settings = {};
 args.forEach((a, i) => {
   if (args[i - 1] !== '--set') return;
@@ -33,7 +37,7 @@ const durations = new Map([...clips].map(([k, v]) => [k, v.length / 48000]));
 const f = (v, d = 1) => (v === null || v === undefined || !Number.isFinite(v) ? '-' : v.toFixed(d));
 const out = [];
 for (const id of scenes) {
-  const scn = upgradeScenario(id, settings);
+  const scn = buildScene(id, settings);
   const used = new Map(scn.sources.map((s) => [s.clip, clips.get(s.clip)]));
   const rendered = renderScenario(scn, used, { lengthS: renderLengthS(scn, durations) });
   const t0 = Date.now();

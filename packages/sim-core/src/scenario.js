@@ -108,11 +108,11 @@ export const ANALYSIS_THRESHOLDS = Object.freeze({
   detection_band_hz: "band of the 'detected' (broadband) SNR; kept below fs/4 / 1.2 so the activity pass can decimate by 2",
   localisation_band_hz: 'band of the bearing estimate (default 200-1600 Hz). Above the array aliasing limit c / (2 d_min) (about 1.7-1.9 kHz at 9-10 cm spacing) phase-based methods alias; GCC-PHAT time delays do not, but sidelobes grow',
   label_clap_mode: "'clap5' (5 s window, 1.25 s hop, the app's event mode) or 'clap10' (10 s window, 2.5 s hop, the app's ambient mode)",
-  labelling_enabled: 'run the echo app labelling stack after localisation (browser only: needs the YAMNet and CLAP runners)',
+  labelling_enabled: 'run the echo app labelling stack after localisation (needs the YAMNet and CLAP runners: the browser loader in apps/sim, or src/node-models.js in Node)',
   labelling_mode: "'model' runs the models; 'oracle' substitutes the true labels from the manifest",
   label_pre_roll_s: 'audio before the arrival given to the labelling stack (the detector needs about 2 s to learn the floor)',
   label_cosine_min: 'per-label CLAP cosine threshold for the multi-label output when the manifest gives none',
-  label_assoc_tol_s: 'largest gap between a labelled period start and the expected arrival for association'
+  label_assoc_tol_s: 'largest gap between a labelled period start and the expected arrival for association (periods starting while the source is still sounding also count)'
 });
 
 export function defaultScenario() {

@@ -1188,8 +1188,9 @@ Each fix: `t_emit_s` (the fix time), `t_s` (when the fix is available: the last 
 | Period detection, pooling, agreement, confidence, target share, decoy floor, YAMNet corroboration, priorities | [packages/shared/src/periods.js](packages/shared/src/periods.js), [catalogue.js](packages/shared/src/catalogue.js), [settings.js](packages/shared/src/settings.js) `DEFAULTS` | echo app and sim |
 | Labels, prompts, groups, corroboration thresholds, YAMNet mapping | [labels.json](packages/assets/public/config/labels.json), [priorities.json](packages/assets/public/config/priorities.json) | both |
 | CLAP text embeddings | [clap_text_embeddings.json](packages/assets/public/config/clap_text_embeddings.json), made by `npm run clap:embed -w @echo/assets` (prompts hash checked) | both |
-| CLAP audio tower | [apps/echo/src/clapWorker.js](apps/echo/src/clapWorker.js) (`Xenova/clap-htsat-unfused`, quantised ONNX, 48 kHz, 10 s input, 5 s windows tiled, logit scale `DEFAULTS.clap_logit_scale` = 18.66) | both (the sim starts the echo worker) |
-| YAMNet | MediaPipe tasks-audio 1.1.0, `/model/yamnet.tflite`, 16 kHz, 0.975 s window | both ([apps/sim/src/models.js](apps/sim/src/models.js) mirrors the echo runner) |
+| CLAP input handling and scoring | [packages/shared/src/clap.js](packages/shared/src/clap.js): resampling, tiling a 5 s window to the 10 s input, text-embedding check against the prompts hash, cosine and softmax at the logit scale (`DEFAULTS.clap_logit_scale` = 18.66, **placeholder**), YAMNet score rounding | echo CLAP worker, sim browser runners, sim Node runners |
+| CLAP audio tower | `Xenova/clap-htsat-unfused`, quantised ONNX ([packages/assets/public/models](packages/assets/public/models)), 48 kHz, 10 s input. Browser: [apps/echo/src/clapWorker.js](apps/echo/src/clapWorker.js) (the sim starts the echo worker). Node: [node-models.js](packages/sim-core/src/node-models.js) on onnxruntime-node | both |
+| YAMNet | MediaPipe tasks-audio 1.1.0 on [packages/assets/public/model/yamnet.tflite](packages/assets/public/model/yamnet.tflite), 16 kHz, 0.975 s window. Browser: [apps/sim/src/models.js](apps/sim/src/models.js). Node: [node-models.js](packages/sim-core/src/node-models.js) (MediaPipe's worker loading path, WASM read from disk) | both |
 | App window schedule as an adapter | [label.js](packages/sim-core/src/label.js) `classify()`: YAMNet every 0.5 s and CLAP every hop over the given audio, then `detectPeriods` (the app's `PeriodDetector` on 100 ms RMS/peak dBFS) and `labelPeriods` | sim |
 
 **Per heard node and source** (`labelEvents`):
@@ -1197,7 +1198,7 @@ Each fix: `t_emit_s` (the fix time), `t_s` (when the fix is available: the last 
 1. **Segment**: from the rendered node audio, `[first_arrival − label_pre_roll_s, max(first_arrival + D + 1, start + clap window + 0.5)]`. The 3 s pre-roll lets the detector learn the floor; its history minimum is 2 s.
 2. **Inputs**: `omni` (mic 1) and, when the node has a bearing, `beamformed`. The beamformer is a far-field delay-and-sum towards the bearing: each mic is delayed by `d_m = (p_m − p̄)·u / c` with `X_m(f) e^{−j2πf d_m}`, and the mics are averaged. It passes a plane wave from `u` unchanged and attenuates others; with `stagger_8` at 1.5 kHz the opposite direction drops below 50 % energy (unit test). Classification uses the full band, not the localisation band (`band_hz: [0, fs/2]`).
 3. **Stage 2**: `classify(segment, 48000, label_clap_mode)`. `clap5` (default) is the app's event mode, 5 s window, 1.25 s hop; `clap10` is the ambient mode, 10 s, 2.5 s. Resampling: YAMNet gets `resampleSinc` to 16 kHz. CLAP gets 48 kHz audio, the checkpoint's own rate (from `preprocessor_config.json`: `sampling_rate 48000`, `max_length_s 10`), so the worker's resampler is a no-op.
-4. **Stage 1 trigger and association**: `trigger.level` = the app's level detector produced a period associated with the event. Association: the period whose start is nearest the expected arrival, within `label_assoc_tol_s` (1 s) or containing it. `trigger.yamnet` = a watchlist hit in `[arrival − 0.5 s, arrival + D]`; the watchlist is the corroboration rules of the `labels.json` groups (Screaming ≥ 0.2; Glass, Shatter, Breaking ≥ 0.4; Gunshot ≥ 0.2). No associated period means `detected: false` (Stage 1 missed it).
+4. **Stage 1 trigger and association**: `trigger.level` = the app's level detector produced a period associated with the event. Association: among the periods that contain the expected arrival, start within `label_assoc_tol_s` (1 s) of it, or start while the source is still sounding at that node (arrival to arrival + clip length D), the one whose start is nearest the arrival. The last case was added after the real-model sanity check: the dog clip's first bark is 2.2 s into the clip, so its period started outside the 1 s tolerance and the event was dropped although both paths labelled it `dog_barking`. `trigger.yamnet` = a watchlist hit in `[arrival − 0.5 s, arrival + D]`; the watchlist is the corroboration rules of the `labels.json` groups (Screaming ≥ 0.2; Glass, Shatter, Breaking ≥ 0.4; Gunshot ≥ 0.2). No associated period means `detected: false` (Stage 1 missed it).
 5. **Event output**: `label, label_text, group, confidence, agreement, priority (default_priority), target_share, group_shares, yamnet_corroboration, rule_flags, yamnet_top, clap_top, first_detection_s, lag_s, period_s, input, band_hz, true_label, true_group, correct (top-1), correct_top3` (true label among the winner and the CLAP top 3), plus `overlapped`, `n_overlapping`, `node_snr_db`, `localisation_status`, `direct_blocked` and `nearest_reflector_m` for the breakdowns.
 6. **Multi-label (labelling doc §4, route 1)**: for each class, the peak CLAP *cosine* over the windows overlapping the period. Classes at or above their own threshold (manifest `cosine_min`, else `label_cosine_min` = 0.15) are listed highest first, so overlapped sources can carry several labels alongside the dominant one.
 
@@ -1209,9 +1210,11 @@ Each fix: `t_emit_s` (the fix time), `t_s` (when the fix is available: the last 
 
 **Oracle mode** (`labelling_mode: 'oracle'`) substitutes the true labels without running models. A failure can then be put on the classifier or the localiser.
 
-**Sanity check** (`labellingSanityCheck`, Settings → Labelling → *Run sanity check*): the app path (classify on the clean glass clip with 3 s pre-roll) against the sim path (the same clip rendered 2 m from a node at 1.5 m height, high SNR, omni). If the labels differ, the UI says not to use labelling results.
+**Sanity check** (`labellingSanityCheck`, Settings → Labelling → *Run sanity check*, and `sim-labelling-models.test.js` with the real models on the glass, horn and dog clips): the app path (classify on the clean clip with 3 s pre-roll) against the sim path (the same clip rendered 2 m from a node at 1.5 m height, high SNR, omni). If the labels differ, the UI says not to use labelling results.
 
-**Engineering**: `labelling_enabled` is off by default. The models load once, are cached, and are served from the frontend's own origin: YAMNet ≈ 4.1 MB, CLAP audio tower ≈ 34 MB, then offline. Labelling runs on the main thread after the render worker returns, outside the render loop. With fixed seeds the render is deterministic; the models are deterministic for a given input. The export records the models, catalogue version and logit scale (`labelling.models`). **Not run in this repository's tests**: real YAMNet and CLAP. YAMNet needs the browser (MediaPipe WASM), so the Node tests use stub runners and check wiring, association, scoring and the export rules, not accuracy.
+**Engineering**: `labelling_enabled` is off by default. The models are committed files (YAMNet ≈ 4.1 MB, CLAP audio tower ≈ 34 MB) and run offline. In the browser they are served from the frontend's own origin and load once; labelling runs on the main thread after the render worker returns, outside the render loop.
+
+**In the simulator core (Node)**: [node-models.js](packages/sim-core/src/node-models.js) `loadNodeRunners()` returns `{ cat, runners, models }` with the same runner contract as the browser (`runners.yamnet(samples16k)`, `runners.clap(samples48k, windowS)`), so `labelEvents` runs unchanged in tests, scripts and batch runs. YAMNet goes through MediaPipe's worker loading path (`importScripts` evaluates the Emscripten loader as CommonJS and the WASM is read from disk). CLAP runs on onnxruntime-node with local files only (`allowRemoteModels = false`). Measured here: about 1.6 s to load both, YAMNet under 0.1 s per 0.975 s window, CLAP about 0.2 s per window. Models load once per process; `closeNodeRunners()` frees the YAMNet graph so the process can exit. With fixed seeds the render is deterministic, and the models are deterministic for a given input. The export records the models, catalogue version and logit scale (`labelling.models`).
 
 **Privacy**: the labelling output holds labels, scores, confidences and times only. `buildExport` also scrubs any `mics`, `audio`, `samples`, `embedding(s)`, `spectrogram` or `audio_embeds` key, and every typed array.
 
@@ -1999,6 +2002,7 @@ Next steps: define pass/fail targets for localisation and attribution; run the s
 | `sim-suite.test.js` | the fixed-seed A–E suite runs and reports (`suite-lib.js`) |
 | `sim-upgrade.test.js` | 0.4 analysis: P1 silent-window regression and containment; P2 onset-gated vs fixed; P3 two of five bad rays rejected with reasons; P4 horizontal conditioning, z clamp, each suspect reason, flag consistency, `heard_nodes`/`usable_nodes`; P6 moving-source track at common emission times; P7 corner (order 2) edge support of the true candidate and visibility; P8 detected but not localisable, band-following decimation |
 | `sim-labelling.test.js` | P9 with stub runners: manifest truth; omni and beamformed labelling with the app stack, bearings untouched, required fields, no audio-derived arrays; oracle mode; delay-and-sum steering; sanity check; export schema 0.4 |
+| `sim-labelling-models.test.js` | P9 with the real YAMNet and CLAP (Node runners): the app path and the sim path agree on the clean glass, horn and dog clips. Skipped without the model files or the ESC-50 clips |
 | `sim-upgrade-regression.test.js` | the six upgrade scenes against `test/fixtures/upgrade-0.4.json`: fails if any fix, node azimuth or track error gets worse beyond tolerance, or fewer nodes are heard/usable (skipped without the ESC-50 clips) |
 
 Helpers: `reference-render.js` (independent slow renderer), `btm-reference.js` (exact BTM wedge, Svensson et al. closed form, transformed numerically), `wedge-lib.js` (coherent field of a path list and the exact wedge field), `golden-lib.js` and `golden-scenes.js` (fingerprints and fixed synthetic scenes), `profile-scenes.js` (the three profile scenes), `backtrace-scene.js`, `suite-lib.js` and `upgrade-scenes.js` (see §7), and `scenarios/*.json` (one-wall mirror and horn/fireworks overlap inputs).
@@ -2016,7 +2020,8 @@ Helpers: `reference-render.js` (independent slow renderer), `btm-reference.js` (
 | `sim-overlap-check.mjs` | overlap and SNR check with the real ESC-50 clips |
 | `sim-stagger-compare.mjs [--seed] [--json]` | flat_square vs stagger_8 (σ 0 and 1 mm) on a car horn, engine and glass scene |
 | `sim-heading-sweep.mjs [--seeds] [--label]` | fix error vs heading σ on suite scenario A |
-| `sim-upgrade-report.mjs [--core dir] [--json out] [--scenes a,b] [--set k=v]` | per-scene table of the six upgrade scenes (fix error, node azimuth errors and policies, heard/usable, flags, track fixes, 1σ/2σ calibration); `--core .before/src` runs an older copy of the core on the same render for before/after |
+| `sim-labelling-report.mjs [--suite exports\|upgrade] [--scenes a,b] [--json out]` | labelling with the real models: sanity check on three clean clips, then per scene, node and source the omni and beamformed labels, multi-labels, oracle run and summary metrics, with totals by overlap, SNR and blocked direct path |
+| `sim-upgrade-report.mjs [--suite upgrade\|exports] [--core dir] [--json out] [--scenes a,b] [--set k=v]` | per-scene table of the six upgrade scenes, or of the seven exported runs ([export-scenes.js](packages/sim-core/test/export-scenes.js)) (fix error, node azimuth errors and policies, heard/usable, flags, track fixes, 1σ/2σ calibration); `--core .before/src` runs an older copy of the core on the same render for before/after |
 | `sim-experiments.mjs overlap\|standoff\|arrays\|range-angle\|realism` | the five brief experiments (§13.5) |
 | `sim-golden.mjs --set analysis-0.4` | regenerates `test/golden/golden-analysis-0.4.json` (analysis values only; signal goldens untouched) |
 | `sim-uncertainty-calibration.mjs` | empirical azimuth spread against the stated uncertainty, 10 scenes × seeds |
@@ -2071,7 +2076,7 @@ Helpers: `reference-render.js` (independent slow renderer), `btm-reference.js` (
   - Two sustained sources within about 6 dB blend into one bearing between them; this is flagged, not separated.
   - An edge hypothesis constrains a region, so blocked nodes add support but rarely pin a point alone. A node hearing a blend of corner and roof arrivals matches no single hypothesis.
   - Same-class sources cannot be separated by label.
-  - Labelling accuracy has not been measured with the real models in this repository (the Node tests stub YAMNet and CLAP); run the sanity check and the oracle comparison in the browser.
+  - Labelling with the real models is correct on clean, close clips but falls apart with range on rendered audio (§13.7): glass holds to about 10 m, a horn to about 20 m. Treat sim labelling metrics as a lower bound shaped by the render, not a prediction for real nodes.
 
 ---
 
@@ -2164,11 +2169,11 @@ Acceptance items of the brief:
 | P6 s8 > 3 track fixes, error vs moving truth | `moving`: 50 fixes, median 0.4 m against the true position at the emission time (0.3: 50 fixes with no per-fix error, rays from different times) |
 | P7 s9, s11, s13 blocked nodes produce candidates; true source in top 3 | Exports missing. `blocked`: n3 contributes roof hypotheses (wrong, ranked 2–3); the true source stays rank 1. Corner test: the blocked node supports the true candidate through an order-2 corner chain, rank ≤ 3 |
 | P8 detected vs localisable | Exported; a 4–8 kHz source is detected, not localisable, and still heard |
-| P9 labelling metrics, omni vs beamformed | **Not measured here**: the real YAMNet and CLAP cannot run in Node (MediaPipe WASM). The wiring, association, scoring, oracle mode and export rules are tested with stub runners. Run the in-browser sanity check, then Create with labelling on, for real numbers |
+| P9 labelling metrics, omni vs beamformed | Measured with the real models in Node: see §13.7 |
 
 ### 13.4 Labelling stack location (P9 report)
 
-The echo app's shared labelling code is importable as modules, so nothing was copied: `@echo/shared` (`periods.js`: `PeriodDetector`, `labelPeriods` with group pooling, decoy floor, target share and YAMNet corroboration; `catalogue.js`; `settings.js` `DEFAULTS`, including `clap_logit_scale` 18.66), `packages/assets/public/config` (`labels.json`, `priorities.json`, `clap_text_embeddings.json` from `packages/assets/scripts/clap-embed.mjs`), and `apps/echo/src/clapWorker.js` (the CLAP checkpoint `Xenova/clap-htsat-unfused`). The checkpoint rate and window come from `preprocessor_config.json` (48 kHz, 10 s), not assumed. The YAMNet runner in `apps/sim/src/models.js` mirrors the echo app's own runner (MediaPipe, 16 kHz).
+The echo app's shared labelling code is importable as modules, so nothing was copied: `@echo/shared` (`periods.js`: `PeriodDetector`, `labelPeriods` with group pooling, decoy floor, target share and YAMNet corroboration; `catalogue.js`; `settings.js` `DEFAULTS`, including `clap_logit_scale` 18.66), `packages/assets/public/config` (`labels.json`, `priorities.json`, `clap_text_embeddings.json` from `packages/assets/scripts/clap-embed.mjs`), and `apps/echo/src/clapWorker.js` (the CLAP checkpoint `Xenova/clap-htsat-unfused`). The checkpoint rate and window come from `preprocessor_config.json` (48 kHz, 10 s), not assumed. The YAMNet runner in `apps/sim/src/models.js` mirrors the echo app's own runner (MediaPipe, 16 kHz). Since then the CLAP scoring and YAMNet score rounding have moved into `@echo/shared/clap.js`, so the echo worker, the sim's browser runners and its Node runners ([node-models.js](packages/sim-core/src/node-models.js)) share one copy (§7.12, §13.7).
 
 ### 13.5 Experiments (`scripts/sim-experiments.mjs`; SIMULATED, hypotheses only)
 
@@ -2270,3 +2275,38 @@ From the developer notes and `docs/localisation-todo.md` (both folded in here):
   7. Height from the ground bounce (direct vs ground-reflected delay, never in the 2D solve), with a `ground_type` setting.
   8. Use real building footprints in the suite.
 - **Acceptance targets (simulated, from the todo)**: single isolated source median < 5 m and p90 < 10 m up to 50 m, median < 10 m at 50–100 m. Scenario D engine track coverage > 70 % with median < 10 m. D glass localised on ≥ 70 % of seeds. WBR must not rise against the baseline.
+
+
+### 13.7 Labelling with the real models (Nov 2026)
+
+The real YAMNet and CLAP now run inside the simulator core ([node-models.js](packages/sim-core/src/node-models.js), §7.12). Run with `node scripts/sim-labelling-report.mjs --suite exports|upgrade`. The exports suite is the seven exported runs the brief was written from ([export-scenes.js](packages/sim-core/test/export-scenes.js)); the upgrade suite is the six stand-in scenes. Default settings: `clap5`, logit scale 18.66 (**placeholder**), `label_cosine_min` 0.15. SIMULATED audio throughout.
+
+**Sanity check: passes.** On the clean glass, horn and dog clips the app path and the sim path give the same label (`glass_break`, `car_horn`, `dog_barking`). The dog first disagreed (sim: none). The models agreed, but the bark starts 2.2 s into the clip, so the period fell outside the 1 s association tolerance. The association rule now also accepts a period that starts while the source is still sounding (§7.12).
+
+**Results** (events = heard node × source × input; "scored" excludes clips with no catalogue label, such as engine):
+
+| suite | input | events | scored | top-1 | top-3 |
+|---|---|---|---|---|---|
+| exports (7 runs) | omni | 42 | 30 | 3 % | 3 % |
+| exports | beamformed | 40 | 30 | 0 % | 0 % |
+| upgrade (6 scenes) | omni | 27 | 21 | 24 % | 29 % |
+| upgrade | beamformed | 27 | 21 | 24 % | 29 % |
+| both | oracle | – | 51 | 100 % | 100 % |
+
+- **The localiser is not the cause.** Oracle labels score 100 % on the same events, and the failures happen on clean, non-overlapped, high-SNR nodes too.
+- **The classifier fails with range.** Glass at 14–130 m in the exports is labelled `angle_grinder` at every node, and `bottle_bank` in the upgrade scenes. Car horns at 20–60 m in `seven_source` come out as `reversing_beeps` or `bin_lorry`. The only consistently correct source is the dog in `five_node` (5 of 5 nodes, 21–26 dB).
+- **Range sweep** (one node, open field, 100 dB source):
+
+| clip | 2 m | 5 m | 10 m | 20 m | 40 m | 80 m |
+|---|---|---|---|---|---|---|
+| glass, noise 30 dB | glass_break | glass_break | glass_break | bottle_bank | bottle_bank | angle_grinder |
+| glass, noise 45 dB | glass_break | glass_break | glass_break | bottle_bank | bottle_bank | angle_grinder |
+| horn, noise 30 dB | car_horn | car_horn | car_horn | car_horn | metal_bang | unexplained_impact |
+| horn, noise 45 dB | car_horn | car_horn | car_horn | car_alarm | metal_bang | none |
+
+  Air absorption off gives the same labels. With no noise the glass still flips (to `bottle_bank`, then `angle_grinder`). With no noise and no ground reflection it reads `bottle_smash` at 10–80 m, which is the right family but the wrong label. So noise is not the driver. The likely causes are the lower input level (a 100 dB source at 80 m reaches the classifier at about −58 dBFS) and the ground-reflection comb filter. **Unverified**: the input level was not varied on its own.
+- **Beamforming does not help.** Beamformed equals omni on the upgrade scenes and is slightly worse on the exports. A gain at the classifier would need correct labels first.
+- **Overlap**: in `seven_source` every horn and the glass are `unresolved_overlap` with 3–6 overlapping sources (three engines). Labels there are dominated by engine-like classes. The three horns are reported as same-class sources and are not separated.
+- **Multi-labels** at cosine 0.15 list two or three classes for almost every event. The true label appears among them only for the dog, the footsteps and one horn (`s13` at n3). The threshold is a **placeholder** and is too low to be informative.
+
+**What would change this** (not done): test level normalisation at the classifier input (for example a fixed RMS before YAMNet and CLAP) against the range sweep, and check the app on real recordings at 10–80 m. The real-world question is whether real nodes at these ranges show the same drop. The sim cannot answer it, since its render has no housing, wind or facade scattering.

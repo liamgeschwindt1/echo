@@ -61,7 +61,7 @@ Not in scope: direction finding, flight-data matching, push notifications, user 
 |---|---|
 | [apps/echo/index.html](apps/echo/index.html) | Main screen, live graph overlay, settings overlay, results overlay. CSP meta tag. |
 | [apps/echo/src/main.js](apps/echo/src/main.js) | App controller: session state, capture start/stop, YAMNet calls, CLAP worker messages, level handling, settings UI, export, results, sample test UI. |
-| [apps/echo/src/clapWorker.js](apps/echo/src/clapWorker.js) | Web Worker: CLAP audio tower, resampling, tiling, cosine and softmax. |
+| [apps/echo/src/clapWorker.js](apps/echo/src/clapWorker.js) | Web Worker: CLAP audio tower. Resampling, tiling, the text-embedding check, cosine and softmax come from [packages/shared/src/clap.js](packages/shared/src/clap.js), which the simulator's runners also use. |
 | [apps/echo/src/graph.js](apps/echo/src/graph.js) | `LiveGraph`: canvas level and score graphs. |
 | [apps/echo/src/report.js](apps/echo/src/report.js) | `reportApp` (results report renderer), `REPORT_CSS`, `buildStandaloneHtml`. |
 | [apps/echo/src/db.js](apps/echo/src/db.js) | `SessionStore`: IndexedDB persistence of rows and session state. |
