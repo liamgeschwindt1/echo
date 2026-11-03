@@ -5,6 +5,7 @@ import { pathReport } from './pathreport.js';
 import { timed } from './profile.js';
 import { azimuthUncertaintyDeg } from './uncertainty.js';
 import { FRAME_S } from './activity.js';
+import { adaptiveWindow, arrivalSpan, nodeMixtureFrames, reflectionGuardS, triggerType } from './windows.js';
 import { sourcePosition } from './scenario.js';
 import { emittedPosition, isMoving, positionAt } from './motion.js';
 import { buildSourceGraph, buildSurfaces, findPaths } from './geometry.js';
@@ -132,36 +133,44 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
         levelDiff = 10 * Math.log10(Math.max(theirs, 1e-30) / Math.max(mine, 1e-30));
       }
 
+      // P1: the window must lie inside the source's arrival span at this node (emission interval + propagation delay).
+      const span = arrivalSpan(src, node.position, clipDurations?.get?.(src.clip) ?? null, c, centre.paths.map((p) => p.delay_s));
+      const contained = win ? intersect(win, [span[0] - padS, span[1] + padS]) : null;
+      const windowSnr = (w) => toDb(meanPower(own.all, w[0], w[1]), noiseP);
+      const widen = (w) => {
+        if (w[1] - w[0] >= minS) return w;
+        const mid = (w[0] + w[1]) / 2;
+        return [Math.max(0, mid - minS / 2), Math.min(lengthS, mid + minS / 2)];
+      };
+
       let status = 'ok';
-      let loc = active;
+      let loc = contained || active;
       let localisedOn = 'active_window';
-      if (!win) status = 'no_signal';
+      let overlapped = false;
+      if (!contained) status = 'no_signal';
       else if (others.length) {
-        const best = subtract(active, others.map((x) => x.w)).sort((x, y) => y[1] - y[0] - (x[1] - x[0]))[0];
-        if (best && best[1] - best[0] >= minS) {
+        // Longest non-overlapped piece that is long enough and actually carries the source.
+        const free = subtract(loc, others.map((x) => x.w)).filter((w) => w[1] - w[0] >= minS && windowSnr(w) >= settings.min_snr_db);
+        const best = free.sort((x, y) => y[1] - y[0] - (x[1] - x[0]))[0];
+        if (best) {
           loc = best;
           localisedOn = 'non_overlapped_part';
-        } else status = 'unresolved_overlap';
+        } else {
+          status = 'unresolved_overlap';
+          overlapped = true;
+        }
       }
-      if (loc[1] - loc[0] < minS) {
-        const mid = (loc[0] + loc[1]) / 2;
-        loc = [Math.max(0, mid - minS / 2), Math.min(lengthS, mid + minS / 2)];
-      }
+      loc = widen(loc);
       const toSamples = (w) => [Math.max(0, Math.round(w[0] * fs)), Math.min(rendered.length, Math.max(Math.round(w[0] * fs) + 64, Math.round(w[1] * fs)))];
-      const [a, b] = toSamples(loc);
-      const bearingFor = (s0, s1, stage = 'localise_final') => timed(profile, stage, () => estimateBearing({ mics: rn.mics, positions: rn.mic_positions, startSample: s0, endSample: s1, fs, c, band: settings.localisation_band_hz }));
-      const nodeTruth = moving ? emittedPosition(src, node.position, (loc[0] + loc[1]) / 2, c) : truth;
-      const nodeRange = moving ? distance(nodeTruth, node.position) : r;
-      const trueAz = toDeg(Math.atan2(nodeTruth[1] - node.position[1], nodeTruth[0] - node.position[0]));
+      const bearingFor = (w, stage = 'localise_final') => timed(profile, stage, () => estimateBearing({ mics: rn.mics, positions: rn.mic_positions, startSample: toSamples(w)[0], endSample: toSamples(w)[1], fs, c, band: settings.localisation_band_hz }));
+      const midTruth = (w) => (moving ? emittedPosition(src, node.position, (w[0] + w[1]) / 2, c) : truth);
       const azAt = (tArr) => {
         const q = emittedPosition(src, node.position, tArr, c);
         return toDeg(Math.atan2(q[1] - node.position[1], q[0] - node.position[0]));
       };
-      // A moving source sweeps across the window: half the swept angle is added (in quadrature) to the noise-limited spread.
-      const sigmaFor = (bearing, w) => (moving ? Math.hypot(noiseSigma(bearing, w), angDiff(azAt(w[0]), azAt(w[1])) / 2) : noiseSigma(bearing, w));
       const noiseSigma = (bearing, w) =>
         azimuthUncertaintyDeg({
-          snrDb: toDb(meanPower(own.all, w[0], w[1]), noiseP),
+          snrDb: windowSnr(w),
           windowS: w[1] - w[0],
           band: settings.localisation_band_hz,
           positions: rn.mic_positions,
@@ -170,9 +179,66 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
           c,
           fs
         });
+      // A moving source sweeps across the window: half the swept angle is added (in quadrature) to the noise-limited spread.
+      const sigmaFor = (bearing, w) => (moving ? Math.hypot(noiseSigma(bearing, w), angDiff(azAt(w[0]), azAt(w[1])) / 2) : noiseSigma(bearing, w));
+      const bearingWithSigma = (w, stage) => {
+        const b = bearingFor(w, stage);
+        if (b) b.uncertainty_deg = sigmaFor(b, w);
+        return b;
+      };
 
-      const bearing = bearingFor(a, b);
-      if (bearing) bearing.uncertainty_deg = sigmaFor(bearing, loc);
+      // P2: window policy from the trigger type (mixture level rise at the onset), never from a classifier.
+      let policy = 'fixed';
+      let trigger = null;
+      let guard = null;
+      let adaptive = null;
+      let bearing = null;
+      let w = loc;
+      if (status !== 'no_signal' && settings.window_policy !== 'fixed') {
+        const frames = nodeMixtureFrames(rn, settings.localisation_band_hz, fs, FRAME_S);
+        trigger = triggerType(frames, loc[0], FRAME_S, { riseDb: settings.trigger_rise_db, riseS: settings.trigger_rise_ms / 1000 });
+        const atOnset = Math.abs(loc[0] - (contained?.[0] ?? loc[0])) < 1e-9;
+        if (trigger.type === 'impulsive' && atOnset) {
+          // Short window from the onset; end it before the first strong wall reflection where possible.
+          const pre = bearingWithSigma([loc[0], Math.min(loc[1], loc[0] + padS + settings.onset_window_ms / 1000)], 'localise_onset');
+          guard = pre ? reflectionGuardS(node.position, pre.direction, scenario.buildings || [], c, settings.reflector_search_m) : null;
+          const lenS = Math.max(settings.onset_min_ms / 1000, Math.min(settings.onset_window_ms / 1000, guard ? guard.delay_s : Infinity));
+          const onsetW = [loc[0], Math.min(loc[1], loc[0] + padS + lenS)];
+          if (onsetW[1] - onsetW[0] >= settings.onset_min_ms / 1000 && windowSnr(onsetW) >= settings.min_snr_db) {
+            policy = 'onset_gated';
+            w = onsetW;
+            bearing = lenS === settings.onset_window_ms / 1000 && pre ? pre : bearingWithSigma(w);
+          }
+        }
+        if (policy === 'fixed') {
+          adaptive = adaptiveWindow(loc, {
+            bearingAt: (x) => bearingWithSigma(x, 'localise_progressive'),
+            snrAt: windowSnr,
+            minS,
+            minSnrDb: settings.min_snr_db,
+            firstS: PROGRESSIVE_FIRST_S,
+            driftDeg: settings.adaptive_drift_deg,
+            sigmaRise: settings.adaptive_sigma_rise
+          });
+          if (adaptive.chosen) {
+            policy = 'adaptive_long';
+            w = adaptive.chosen.window;
+            bearing = adaptive.chosen.bearing;
+          }
+        }
+      }
+      if (policy === 'fixed' && status !== 'no_signal') bearing = bearingWithSigma(w);
+      // P1: SNR on the window actually used. Below min_snr_db the bearing is not usable.
+      const window_snr_db = status === 'no_signal' && !contained ? null : windowSnr(w);
+      if (window_snr_db === null || window_snr_db < settings.min_snr_db) {
+        status = 'no_signal';
+        bearing = null;
+      }
+      loc = w;
+      const nodeTruth = midTruth(loc);
+      const nodeRange = moving ? distance(nodeTruth, node.position) : r;
+      const trueAz = toDeg(Math.atan2(nodeTruth[1] - node.position[1], nodeTruth[0] - node.position[0]));
+
       let centreUsed = centre;
       if (moving) {
         // Diagnose against the paths from where the localised sound left the source. They replace the reference-position
@@ -191,17 +257,18 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
 
       // Bearings from growing windows: the wedge is "generated" as the sound accumulates at the node.
       let steps = null;
-      if (progressive && bearing && win) {
-        steps = [];
-        for (let tau = PROGRESSIVE_FIRST_S; tau < loc[1] - loc[0]; tau *= 2) {
-          const w = [loc[0], loc[0] + tau];
-          const [s0, s1] = toSamples(w);
-          const bb = bearingFor(s0, s1, 'localise_progressive');
-          if (!bb) continue;
-          bb.uncertainty_deg = sigmaFor(bb, w);
-          steps.push({ t_end_s: w[1], azimuth_deg: bb.azimuth_deg, direction: bb.direction, uncertainty_deg: bb.uncertainty_deg, azimuth_error_deg: angDiff(bb.azimuth_deg, trueAz), snr_db: toDb(meanPower(own.all, w[0], w[1]), noiseP) });
+      if (progressive && bearing) {
+        const stepOf = (win, bb, snrDb) => ({ t_end_s: win[1], azimuth_deg: bb.azimuth_deg, direction: bb.direction, uncertainty_deg: bb.uncertainty_deg, azimuth_error_deg: angDiff(bb.azimuth_deg, trueAz), snr_db: snrDb });
+        if (adaptive?.steps.length) steps = adaptive.steps.filter((x) => !x.rejected && x.window[1] <= loc[1] + 1e-9).map((x) => stepOf(x.window, x.bearing, x.snr_db));
+        else {
+          steps = [];
+          for (let tau = PROGRESSIVE_FIRST_S; tau < loc[1] - loc[0]; tau *= 2) {
+            const x = [loc[0], loc[0] + tau];
+            const bb = bearingWithSigma(x, 'localise_progressive');
+            if (bb) steps.push(stepOf(x, bb, windowSnr(x)));
+          }
         }
-        steps.push({ t_end_s: loc[1], azimuth_deg: bearing.azimuth_deg, direction: bearing.direction, uncertainty_deg: bearing.uncertainty_deg, azimuth_error_deg: angDiff(bearing.azimuth_deg, trueAz), snr_db: toDb(meanPower(own.all, loc[0], loc[1]), noiseP) });
+        if (!steps.length || steps[steps.length - 1].t_end_s < loc[1] - 1e-9) steps.push(stepOf(loc, bearing, window_snr_db));
       }
 
       return {
@@ -217,6 +284,13 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
         level_diff_db: levelDiff,
         localisation_status: status,
         localised_on: localisedOn,
+        overlapped,
+        window_snr_db,
+        window_policy: policy,
+        trigger: trigger && { ...trigger, onset_s: loc[0] },
+        reflection_guard: guard,
+        adaptive_stop: adaptive?.stopped ?? null,
+        arrival_span_s: span,
         reliable,
         uncertainty_valid: !!bearing && report.picked_path_type === 'direct' && status !== 'unresolved_overlap',
         active_window_s: active,
