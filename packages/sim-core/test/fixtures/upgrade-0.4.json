@@ -1,0 +1,140 @@
+{
+ "note": "Schema 0.4 results on test/upgrade-scenes.js (stand-ins for the six exported runs, which are not in the repository). Regenerate on purpose: node scripts/sim-upgrade-report.mjs --json <file>, then copy these fields.",
+ "calibration": {
+  "n": 27,
+  "within_1sigma": 0.7777777777777778,
+  "within_2sigma": 0.8518518518518519
+ },
+ "rows": [
+  {
+   "scene": "near_wall",
+   "source_id": "s1",
+   "error_horizontal_m": 0.10421745896894412,
+   "usable_nodes": 3,
+   "heard_nodes": 3,
+   "track_fixes": 16,
+   "track_median_error_m": 0.1551684987764625,
+   "node_azimuth_error_deg": {
+    "n1": 0.0018753325057332404,
+    "n2": 0.04638584560200343,
+    "n3": 0.22552731087330358
+   }
+  },
+  {
+   "scene": "overlap",
+   "source_id": "s1",
+   "error_horizontal_m": 0.7814751861751444,
+   "usable_nodes": 3,
+   "heard_nodes": 3,
+   "track_fixes": 4,
+   "track_median_error_m": 0.2557175836813606,
+   "node_azimuth_error_deg": {
+    "n1": 0.22648866667282164,
+    "n2": 0.8167114373367212,
+    "n3": 0.11254610994353698
+   }
+  },
+  {
+   "scene": "overlap",
+   "source_id": "s2",
+   "error_horizontal_m": 0.08632795292049562,
+   "usable_nodes": 3,
+   "heard_nodes": 3,
+   "track_fixes": 15,
+   "track_median_error_m": 1.5885901288666613,
+   "node_azimuth_error_deg": {
+    "n1": 0.07714907644026425,
+    "n2": 0.003673624027101141,
+    "n3": 0.06080703612042271
+   }
+  },
+  {
+   "scene": "continuous",
+   "source_id": "s1",
+   "error_horizontal_m": 0.6227958053582641,
+   "usable_nodes": 3,
+   "heard_nodes": 3,
+   "track_fixes": 4,
+   "track_median_error_m": 1.2280841800423572,
+   "node_azimuth_error_deg": {
+    "n1": 0.2415204295333524,
+    "n2": 0.44926962276508675,
+    "n3": 1.4102432703997465
+   }
+  },
+  {
+   "scene": "continuous",
+   "source_id": "s2",
+   "error_horizontal_m": 0.24126651456298837,
+   "usable_nodes": 3,
+   "heard_nodes": 3,
+   "track_fixes": 6,
+   "track_median_error_m": 1.088165447361909,
+   "node_azimuth_error_deg": {
+    "n1": 0.2515980323519216,
+    "n2": 0.27453908955749284,
+    "n3": 0.05286005459856824
+   }
+  },
+  {
+   "scene": "moving",
+   "source_id": "s1",
+   "error_horizontal_m": 1.077098599391805,
+   "usable_nodes": 3,
+   "heard_nodes": 3,
+   "track_fixes": 50,
+   "track_median_error_m": 0.3781456582298133,
+   "node_azimuth_error_deg": {
+    "n1": 1.108156454982577,
+    "n2": 0.9350874374144951,
+    "n3": 0.9993267619275912
+   }
+  },
+  {
+   "scene": "blocked",
+   "source_id": "s1",
+   "error_horizontal_m": 0.07516149159763602,
+   "usable_nodes": 3,
+   "heard_nodes": 3,
+   "track_fixes": 18,
+   "track_median_error_m": 0.3579878563429564,
+   "node_azimuth_error_deg": {
+    "n1": 0.07768112391079285,
+    "n2": 0.06535158101769412,
+    "n3": 15.846766632760477
+   }
+  },
+  {
+   "scene": "five_node",
+   "source_id": "s1",
+   "error_horizontal_m": 0.34876460340711635,
+   "usable_nodes": 5,
+   "heard_nodes": 5,
+   "track_fixes": 2,
+   "track_median_error_m": 1.6222470508042561,
+   "node_azimuth_error_deg": {
+    "n1": 0.026736026479284192,
+    "n2": 0.4537370065078221,
+    "n3": 0.9550559410141659,
+    "n4": 1.2872872168078402,
+    "n5": 0.2882928900268098
+   }
+  },
+  {
+   "scene": "five_node",
+   "source_id": "s2",
+   "error_horizontal_m": null,
+   "usable_nodes": 1,
+   "heard_nodes": 1,
+   "track_fixes": 0,
+   "track_median_error_m": null,
+   "node_azimuth_error_deg": {
+    "n1": null,
+    "n2": null,
+    "n3": null,
+    "n4": 96.27673887861152,
+    "n5": null
+   }
+  }
+ ]
+}

@@ -49,6 +49,15 @@ export const BUILTIN_ARRAYS = Object.freeze([
     mics: farthestSubset(BALL_MICS, n)
   })),
   {
+    id: 'planar12_d180',
+    name: '12-mic planar control array, D180 (two flat rings)',
+    status: 'Control for the array experiment: same mic count and aperture as ball12_d180, no vertical baseline',
+    source: 'simulator experiment (sim-upgrade brief, experiment 3)',
+    assumed: true,
+    notes: 'Inner ring of 6 at r 47.3 mm, outer ring of 6 at r 90 mm offset 30 degrees, all at z = 0. Separates mic count and aperture from shape.',
+    mics: planarRings(180)
+  },
+  {
     id: 'dome12_d230',
     name: '12-mic downward dome, D230 (assumed)',
     status: 'Candidate from designs/node_geometry_designs.py. Coordinates assumed, replace with the design file',
@@ -109,6 +118,18 @@ export function icosaBall(diameter = 180) {
       const az = ((phase + 120 * k) * Math.PI) / 180;
       out[`${name}${k + 1}`] = [r1(rr * Math.cos(az)), r1(rr * Math.sin(az)), r1(z)];
     }
+  }
+  return out;
+}
+
+// Flat control array: inner ring of 6 at 0.2628 D (47.3 mm at D180) and outer ring of 6 at D/2, offset 30 degrees, z = 0.
+export function planarRings(diameter = 180) {
+  const out = {};
+  for (let k = 0; k < 6; k++) {
+    const a = (k * 60 * Math.PI) / 180;
+    const b = ((k * 60 + 30) * Math.PI) / 180;
+    out[`I${k + 1}`] = [r1(0.2628 * diameter * Math.cos(a)), r1(0.2628 * diameter * Math.sin(a)), 0];
+    out[`O${k + 1}`] = [r1((diameter / 2) * Math.cos(b)), r1((diameter / 2) * Math.sin(b)), 0];
   }
   return out;
 }
