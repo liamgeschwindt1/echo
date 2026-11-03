@@ -5,6 +5,7 @@ import { pathReport } from './pathreport.js';
 import { timed } from './profile.js';
 import { azimuthUncertaintyDeg, multipathSigmaDeg, overlapSigmaDeg, reflectorSigmaDeg } from './uncertainty.js';
 import { robustFix } from './fix.js';
+import { commonTimeTrack } from './track.js';
 import { FRAME_S } from './activity.js';
 import { adaptiveWindow, arrivalSpan, nearestReflectorM, nodeMixtureFrames, reflectionGuardS, triggerType } from './windows.js';
 import { sourcePosition } from './scenario.js';
@@ -353,69 +354,19 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
     };
     const est = fix && !fix.poorly_conditioned ? fix.position : null;
     const notUsed = perNode.filter((n) => !n.usable).map((n) => ({ node_id: n.node_id, reason: n.localisation_status === 'no_signal' ? (n.window_snr_db === null ? 'no_signal' : 'below_min_snr') : 'no_bearing' }));
-    const trackStart = Math.min(...windows.map((row) => row[si]?.[0] ?? Infinity));
-    const trackEnd = Math.max(...windows.map((row) => row[si]?.[1] ?? -Infinity));
-    const observations = [];
-    const fixes = [];
-    if (Number.isFinite(trackStart) && Number.isFinite(trackEnd)) {
-      for (let tEnd = trackStart + TRACK_WINDOW_S; tEnd <= Math.min(lengthS, trackEnd + TRACK_WINDOW_S) + 1e-9; tEnd += TRACK_INTERVAL_S) {
-        const window = [tEnd - TRACK_WINDOW_S, tEnd];
-        const atTime = [];
-        for (let ni = 0; ni < scenario.nodes.length; ni++) {
-          const activeWindow = windows[ni][si];
-          if (!activeWindow || window[0] < activeWindow[0] - 1e-9 || window[1] > activeWindow[1] + TRACK_WINDOW_S + 1e-9) continue;
-          const overlaps = scenario.sources.some((_, oi) => {
-            const otherWindow = windows[ni][oi];
-            return oi !== si && otherWindow && intersect(window, otherWindow);
-          });
-          if (overlaps) continue;
-          const own = rendered.activity[ni].per_source[si];
-          const snrDb = toDb(meanPower(own.all, window[0], window[1]), rendered.activity[ni].noise_band_power);
-          if (snrDb < settings.min_snr_db) continue;
-          const startSample = Math.max(0, Math.round(window[0] * fs));
-          const endSample = Math.min(rendered.length, Math.max(startSample + 64, Math.round(window[1] * fs)));
-          const rn = rendered.nodes[ni];
-          const bearing = estimateBearing({ mics: rn.mics, positions: rn.mic_positions, startSample, endSample, fs, c, band: settings.localisation_band_hz });
-          if (!bearing) continue;
-          const node = scenario.nodes[ni];
-          const nodeTruth = moving ? emittedPosition(src, node.position, (window[0] + window[1]) / 2, c) : truth;
-          const trueAz = toDeg(Math.atan2(nodeTruth[1] - node.position[1], nodeTruth[0] - node.position[0]));
-          const sigma = azimuthUncertaintyDeg({
-            snrDb,
-            windowS: TRACK_WINDOW_S,
-            band: settings.localisation_band_hz,
-            positions: rn.mic_positions,
-            azimuthDeg: bearing.azimuth_deg,
-            elevationDeg: bearing.elevation_deg,
-            c,
-            fs
-          });
-          bearing.uncertainty_deg = moving
-            ? Math.hypot(
-                sigma,
-                angDiff(azAtForWindow(src, node.position, [window[0], window[0]], c), azAtForWindow(src, node.position, [window[1], window[1]], c)) / 2
-              )
-            : sigma;
-          const observation = {
-            t_s: tEnd,
-            node_id: node.id,
-            direction: bearing.direction,
-            azimuth_deg: bearing.azimuth_deg,
-            uncertainty_deg: bearing.uncertainty_deg,
-            azimuth_error_deg: angDiff(bearing.azimuth_deg, trueAz),
-            snr_db: snrDb
-          };
-          observations.push(observation);
-          atTime.push({ node, observation });
-        }
-        const trackFix = intersectRays(atTime.map(({ node, observation }) => ({
-          origin: node.position,
-          direction: observation.direction,
-          weight: 10 ** (observation.snr_db / 10)
-        })));
-        if (trackFix && !trackFix.poorly_conditioned) fixes.push({ t_s: tEnd, position: trackFix.position });
-      }
-    }
+    // P6: common emission time across nodes, motion-compensated windows, alpha-beta filtered.
+    const track = timed(profile, 'track', () => commonTimeTrack({
+      scenario, rendered, si, settings, c, fs, lengthS,
+      windowS: TRACK_WINDOW_S,
+      intervalS: TRACK_INTERVAL_S,
+      activeWindows: perNode.map((n) => (n.active_window_s && n.localisation_status !== 'no_signal' ? [Math.max(n.active_window_s[0], n.arrival_span_s[0] - padS), Math.min(n.active_window_s[1], n.arrival_span_s[1] + padS)] : null)),
+      perNode,
+      longFix: est,
+      durationS: clipDurations?.get?.(src.clip) ?? null,
+      reflectorM,
+      meanPower,
+      toDb
+    }));
     const bt = timed(profile, 'backtrace', () => backtraceCandidates(
       used.map((n) => ({ node_id: n.node_id, position: scenario.nodes.find((x) => x.id === n.node_id).position, azimuth_deg: n.bearing.azimuth_deg, uncertainty_deg: n.bearing.uncertainty_deg })),
       scenario.buildings || [],
@@ -426,7 +377,7 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
       source_id: src.id,
       true_position: truth,
       nodes: perNode,
-      track: { window_s: TRACK_WINDOW_S, interval_s: TRACK_INTERVAL_S, observations, fixes },
+      track,
       heard_nodes: perNode.filter((n) => n.heard).length,
       usable_nodes: used.length,
       excluded_unreliable: perNode.filter((n) => n.heard && !n.reliable).map((n) => n.node_id),
@@ -444,7 +395,3 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
   });
 }
 
-function azAtForWindow(source, nodePosition, window, c) {
-  const p = emittedPosition(source, nodePosition, (window[0] + window[1]) / 2, c);
-  return toDeg(Math.atan2(p[1] - nodePosition[1], p[0] - nodePosition[0]));
-}

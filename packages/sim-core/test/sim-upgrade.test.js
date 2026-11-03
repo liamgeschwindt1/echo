@@ -166,3 +166,30 @@ test('P4: heard_nodes counts heard nodes and usable_nodes counts nodes with a us
   assert.equal(r.usable_nodes, r.nodes.filter((n) => n.usable).length);
   assert.ok(r.fix.inlier_nodes.length >= 2 && r.fix.method === 'two_ray');
 });
+
+// ---------- P6: common-time track ----------
+import { positionAt } from '../src/motion.js';
+
+test('P6: a moving source gets a track of fixes at common emission times, scored against the moving truth', () => {
+  const rng = mulberry32(21);
+  const noise = new Float32Array(Math.round(3 * FS));
+  for (let i = 0; i < noise.length; i++) noise[i] = gaussian(rng) * 0.3;
+  const src = { ...newSource('s1', 'n', 5, 25, 104), start_s: 3, keyframes: [{ t: 3, position: [5, 25, 1.5] }, { t: 6, position: [45, 30, 1.5] }] };
+  const scn = defaultScenario();
+  scn.nodes = [newNode('n1', 0, 0), newNode('n2', 60, 0), newNode('n3', 30, 55)];
+  scn.sources = [src];
+  scn.settings = { ...scn.settings, noise_floor_db_spl: 40 };
+  const [r] = analyseScenario(scn, renderScenario(scn, new Map([['n', noise]]), { lengthS: 7 }), new Map([['n', 3]]));
+  const t = r.track;
+  assert.equal(t.alignment, 'common_emission_time');
+  assert.ok(t.fixes.length > 3, String(t.fixes.length));
+  for (const f of t.fixes) {
+    // Fix time is the emission time; the fix becomes available when the last inlier window has arrived.
+    assert.ok(f.t_s > f.t_emit_s);
+    const truth = positionAt(src, f.t_emit_s + t.window_s / 2);
+    assert.ok(Math.abs(f.error_m - Math.hypot(f.position[0] - truth[0], f.position[1] - truth[1])) < 1e-9);
+  }
+  const errs = t.fixes.map((f) => f.error_m).sort((a, b) => a - b);
+  assert.ok(errs[Math.floor(errs.length / 2)] < 5, JSON.stringify(errs));
+  assert.ok(Number.isInteger(t.rejected_count));
+});
