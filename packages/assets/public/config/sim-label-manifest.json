@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "note": "Ground truth for simulator labelling scores: clip id -> catalogue label (labels.json). Edit freely. group is taken from labels.json unless given here; cosine_min overrides the per-label multi-label threshold (settings.label_cosine_min). A clip with label null is not scored.",
+  "clips": {
+    "gunshot": {
+      "label": "gunshot"
+    },
+    "glass_breaking": {
+      "label": "glass_break"
+    },
+    "scream": {
+      "label": "scream"
+    },
+    "car_horn": {
+      "label": "car_horn"
+    },
+    "dog": {
+      "label": "dog_barking"
+    },
+    "door_wood_knock": {
+      "label": null,
+      "note": "No exact priority label; do not equate a knock with forced entry or a slam."
+    },
+    "chainsaw": {
+      "label": "drill_saw",
+      "note": "Broad tool proxy for drill_saw; YAMNet Chainsaw has no direct app label."
+    },
+    "engine": {
+      "label": null,
+      "note": "Generic engine has no exact priority; idling and revving differ."
+    },
+    "airplane": {
+      "label": "plane_flyover",
+      "also": [
+        "plane_landing_takeoff"
+      ]
+    },
+    "rain": {
+      "label": "rain"
+    },
+    "footsteps": {
+      "label": "footsteps"
+    },
+    "fireworks": {
+      "label": "fireworks_bang",
+      "also": [
+        "fireworks_crackle"
+      ]
+    },
+    "thunderstorm": {
+      "label": "thunder"
+    },
+    "crying_baby": {
+      "label": null,
+      "note": "No exact app label. Must not escalate to a distress alert."
+    },
+    "laughing": {
+      "label": "laughter"
+    }
+  }
+}

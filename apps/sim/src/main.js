@@ -1,5 +1,5 @@
 import { defaultScenario, DEFAULT_SETTINGS, newNode, newSource, newBuilding, placementErrors, validateScenario, scenarioNotices, scenarioLengthS, renderLengthS, sourcePosition } from '@echo/sim-core/scenario.js';
-import { insideBuilding, insideBox, buildingBox, planRanges, simConstants, segmentBlocked, traceReflection, reflectionImages, FOOTPRINT_SIMPLIFY_M } from '@echo/sim-core/geometry.js';
+import { insideBuilding, insideBox, buildingBox, planRanges, segmentBlocked, traceReflection, reflectionImages, FOOTPRINT_SIMPLIFY_M } from '@echo/sim-core/geometry.js';
 import { speedOfSound, dbToPa } from '@echo/sim-core/physics.js';
 import { clipGainPa } from '@echo/sim-core/render.js';
 import { isMoving, keyframesAlong, motionSpan, pathLength, pathSpeed, positionAt, retime, setPathHeight, shiftTimes, translatePath, MIN_MOTION_S } from '@echo/sim-core/motion.js';
@@ -22,6 +22,11 @@ import { applyArrayToNode } from '@echo/sim-core/arrays.js';
 import { nodeShares } from '@echo/sim-core/attribution.js';
 import { SWEEP_VARIABLES } from '@echo/sim-core/sweep.js';
 import { drawLocalisationTrack } from './ui/tracking.js';
+import { buildExport } from '@echo/sim-core/export.js';
+import { labelEvents, labellingSanityCheck } from '@echo/sim-core/labelling.js';
+import { renderScenario } from '@echo/sim-core/render.js';
+import { analyseScenario } from '@echo/sim-core/analyse.js';
+import { loadCatalogue, loadRunners } from './models.js';
 import { drawParticles, sourceColor, waveParticles } from './ui/particles.js';
 
 const $ = (id) => document.getElementById(id);
@@ -60,6 +65,7 @@ const library = []; // manifest entries plus uploads
 let status = 'edit'; // edit | rendering | ready | stale
 let rendered = null;
 let results = null;
+let labelling = null; // { results, out }: labels for exactly that results object (P9)
 const hiddenNodes = new Set(); // nodes hidden from the map only; they still take part in the simulation
 let tool = 'select';
 let selected = null; // { type: 'node'|'source'|'building', id }
@@ -280,7 +286,16 @@ for (const el of document.querySelectorAll('[id^="s_"]')) {
   });
 }
 
+// The localisation band is an array setting, so it has its own select.
+$('locBand').addEventListener('change', () => {
+  scenario.settings.localisation_band_hz = $('locBand').value.split(',').map(Number);
+  markEdited();
+});
+
 function syncSettingsInputs() {
+  const band = (scenario.settings.localisation_band_hz || [200, 1600]).join(',');
+  if (![...$('locBand').options].some((o) => o.value === band)) $('locBand').append(new Option(`${band.replace(',', '-')} Hz (from file)`, band));
+  $('locBand').value = band;
   for (const [k, v] of Object.entries(scenario.settings)) {
     const el = $(`s_${k}`);
     if (!el) continue;
@@ -390,7 +405,7 @@ setInterval(() => {
 }, 1500);
 $('exportBtn').addEventListener('click', () => {
   if (!results) return;
-  // Schema 0.3 adds `nodes`: layout and the mic positions used (world metres). Readers of 0.2 ignore it; 0.2 files have no `nodes`.
+  // Schema 0.4 (see EXPORT_CHANGELOG in sim-core export.js); `nodes` (0.3): layout and the mic positions used (world metres).
   const nodes = scenario.nodes.map((n) => {
     const rn = rendered?.nodes.find((x) => x.id === n.id);
     return {
@@ -401,7 +416,8 @@ $('exportBtn').addEventListener('click', () => {
       mic_positions_rendered: rn ? rn.mic_positions_true : null
     };
   });
-  download('results.json', JSON.stringify({ app: 'echo-sim', schema: '0.3', constants: simConstants(), scenario, nodes, results }, null, 2));
+  const lab = labelling?.results === results ? labelling.out : null;
+  download('results.json', JSON.stringify(buildExport({ scenario, nodes, results, labelling: lab }), null, 2));
 });
 
 async function fetchOsm(area, signal) {
@@ -512,6 +528,7 @@ $('createBtn').addEventListener('click', async () => {
       refreshListen();
       renderInspector();
       if (micView.isOpen()) micView.open(micView.nodeId());
+      if (scenario.settings.labelling_enabled) runLabelling(results).catch((err) => ($('labelStatus').textContent = `Labelling failed: ${err.message}`));
     } else if (m.type === 'error') {
       status = 'edit';
       $('progress').hidden = true;
@@ -521,6 +538,77 @@ $('createBtn').addEventListener('click', async () => {
   const used = [...clips].filter(([id]) => scenario.sources.some((s) => s.clip === id));
   lastCreate = { scenario: structuredClone(scenario), clips: used, lengthS: renderLengthS(scenario, durations()) };
   worker.postMessage({ scenario, clips: used, lengthS: lastCreate.lengthS, durations: [...durations()] });
+});
+
+// ---------- labelling (P9): the echo app's YAMNet + CLAP stack, after localisation ----------
+
+let labelManifest = null;
+const fetchJson = async (url) => {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`${url}: HTTP ${r.status}`);
+  return r.json();
+};
+const modelInfo = (cat) => ({
+  yamnet: 'yamnet.tflite via @mediapipe/tasks-audio 1.1.0 (16 kHz, 0.975 s window)',
+  clap: 'Xenova/clap-htsat-unfused, audio tower, quantised ONNX (48 kHz, 10 s input; 5 s windows tiled)',
+  clap_logit_scale: DEFAULTS_LOGIT_SCALE,
+  catalogue_version: cat.version,
+  runner: 'apps/echo/src/clapWorker.js (same worker as the echo app)'
+});
+let DEFAULTS_LOGIT_SCALE = null;
+
+async function runLabelling(forResults) {
+  const st = $('labelStatus');
+  const oracle = scenario.settings.labelling_mode === 'oracle';
+  st.textContent = oracle ? 'Labelling (oracle)...' : 'Loading models...';
+  labelManifest ??= await fetchJson('/config/sim-label-manifest.json');
+  const { cat, runners } = oracle ? { cat: await loadCatalogue(), runners: null } : await loadRunners((m) => (st.textContent = m));
+  DEFAULTS_LOGIT_SCALE ??= (await import('@echo/shared/settings.js')).DEFAULTS.clap_logit_scale;
+  const out = await labelEvents(lastCreate.scenario, rendered, forResults, {
+    cat,
+    runners,
+    manifest: labelManifest,
+    settings: lastCreate.scenario.settings,
+    clipDurations: durations(),
+    models: oracle ? null : modelInfo(cat),
+    onProgress: (p) => (st.textContent = `Labelling ${Math.round(p * 100)}%`)
+  });
+  if (results !== forResults) return; // a new Create or an edit replaced these results
+  labelling = { results: forResults, out };
+  const s = out.summary[oracle ? 'oracle' : 'beamformed'] || out.summary.omni;
+  st.textContent = `Labelled ${out.events.length} node events. Top-1 ${s?.all.top1 == null ? 'n/a' : Math.round(s.all.top1 * 100) + '%'} (${oracle ? 'oracle' : 'beamformed'}).`;
+  renderInspector();
+}
+
+$('labelSanity').addEventListener('click', async () => {
+  const st = $('labelStatus');
+  try {
+    await ensureClip('glass_breaking');
+    const clip = clips.get('glass_breaking');
+    const { cat, runners } = await loadRunners((m) => (st.textContent = m));
+    st.textContent = 'Running sanity check...';
+    const res = await labellingSanityCheck({
+      clip,
+      clipId: 'glass_breaking',
+      fs: FS,
+      cat,
+      runners,
+      renderOne: async (id) => {
+        const s = defaultScenario();
+        s.settings = { ...s.settings, noise_floor_db_spl: 30 };
+        s.nodes = [{ ...newNode('n1', 0, 0), position: [0, 0, 1.5] }];
+        s.sources = [{ ...newSource('s1', id, 2, 0, 100), start_s: 3 }];
+        const lengthS = renderLengthS(s, new Map([[id, clip.length / FS]])) + 3;
+        const r = renderScenario(s, new Map([[id, clip]]), { lengthS });
+        return { scenario: s, rendered: r, results: analyseScenario(s, r, new Map([[id, clip.length / FS]])) };
+      }
+    });
+    st.textContent = res.agree
+      ? `Sanity check passed: app and sim both label the clean clip ${res.app_label}.`
+      : `Sanity check FAILED: app ${res.app_label ?? 'none'}, sim ${res.sim_label ?? 'none'}. Do not use labelling results until this is fixed.`;
+  } catch (err) {
+    st.textContent = `Sanity check failed to run: ${err.message}`;
+  }
 });
 
 // ---------- map ----------
@@ -2009,25 +2097,35 @@ function resultPanel(r) {
       n.overlapped_with?.length ? `overlap ${n.overlapped_with.join(',')}` : '',
       n.uncertainty_valid === false ? '\u00b1 invalid' : '',
       n.reliable === false ? n.localisation_status : '',
-      n.direct_blocked ? 'direct blocked' : ''
+      n.direct_blocked ? 'direct blocked' : '',
+      n.window_policy && n.window_policy !== 'fixed' ? n.window_policy.replace('_', ' ') : '',
+      r.fix?.rejected_nodes?.find((x) => x.node_id === n.node_id) ? `rejected: ${r.fix.rejected_nodes.find((x) => x.node_id === n.node_id).reason}` : '',
+      n.heard && !n.localisable ? 'detected, not localisable' : ''
     ].filter(Boolean).join(', ');
     const focus = pathFocus?.nodeId === n.node_id && pathFocus?.sourceId === r.source_id ? ' class="focus"' : '';
-    return `<tr data-node="${n.node_id}"${focus}><td>${n.node_id}</td><td>${f(n.range_m, 0)}</td><td>${f(n.snr_db)}</td><td>${n.heard ? 'yes' : 'no'}</td><td>${f(b?.uncertainty_deg, 0)}</td><td>${f(n.azimuth_error_deg)}</td><td>${n.picked_path_type ?? '-'}</td><td>${flags}</td></tr>`;
+    return `<tr data-node="${n.node_id}"${focus}><td>${n.node_id}</td><td>${f(n.range_m, 0)}</td><td>${f(n.snr_db)}</td><td>${n.usable && r.fix?.inlier_nodes?.includes(n.node_id) ? 'yes' : n.heard ? 'heard' : 'no'}</td><td>${f(b?.uncertainty_deg, 0)}</td><td>${f(n.azimuth_error_deg)}</td><td>${n.picked_path_type ?? '-'}</td><td>${flags}</td></tr>`;
   });
   const positionText = r.fix?.position
     ? r.fix.position.map((v) => v.toFixed(1)).join(', ')
     : r.heard_nodes === 0
       ? 'not heard by any node'
-      : r.heard_nodes === 1
-        ? 'heard by one node: direction only'
-        : 'poorly conditioned (directions nearly parallel)';
+      : (r.usable_nodes ?? r.heard_nodes) <= 1
+        ? `heard by ${r.heard_nodes} node${r.heard_nodes === 1 ? '' : 's'}, usable bearing from ${r.usable_nodes ?? 0}: no position`
+        : r.fix?.negative_range
+          ? 'no position (the directions only meet behind a node)'
+          : 'poorly conditioned (directions nearly parallel)';
+  const lab = labelling?.results === results ? labelling.out : null;
+  const labRows = lab ? lab.events.filter((e) => e.source_id === r.source_id).map((e) => `<tr><td>${e.node_id}</td><td>${e.input}</td><td>${e.label ?? (e.detected ? '-' : 'missed')}</td><td>${f(e.confidence, 2)}</td><td>${e.priority ?? '-'}</td><td>${e.correct == null ? '' : e.correct ? 'ok' : 'wrong'}</td></tr>`) : [];
+  const labSource = lab?.sources.find((x) => x.source_id === r.source_id);
   box.innerHTML = `<h3>Result</h3>
     <table><tr><th>node</th><th>m</th><th>SNR dB</th><th>used</th><th>\u00b1\u00b0</th><th>az err \u00b0</th><th>path</th><th></th></tr>${rows.join('')}</table>
     <p class="muted">Click a row to draw that node's paths on the map.</p>
     ${r.track ? `<p class="muted">Rolling localisation: ${r.track.window_s * 1000} ms microphone windows, every ${r.track.interval_s * 1000} ms; ${r.track.observations.length} node bearings and ${r.track.fixes.length} combined fixes.</p>` : ''}
-    <p>Whole-event summary position (not live tracking): <span class="accent">${positionText}</span>${r.fix?.fix_suspect ? ' <b>(suspect: a contributing node picked a reflection or has its direct path blocked)</b>' : ''}<br>
+    <p>Whole-event summary position (not live tracking): <span class="accent">${positionText}</span>${r.fix?.fix_suspect ? ` <b>(suspect: ${r.fix.suspect_reasons.join(', ').replaceAll('_', ' ')})</b>` : ''}${r.fix?.z_clamped ? ' <span class="muted">(height assumed)</span>' : ''}<br>
     Error: ${f(r.error_horizontal_m, 2)} m horizontal, ${f(r.error_3d_m, 2)} m 3D<br>
-    Ray angle: ${f(r.fix?.max_angle_deg, 0)}\u00b0</p>`;
+    Ray angle: ${f(r.fix?.max_angle_deg, 0)}\u00b0 horizontal${r.fix ? `; ${r.fix.method}, ${r.fix.inlier_nodes.length} node${r.fix.inlier_nodes.length === 1 ? '' : 's'} used` : ''}${r.fix?.multipath_suspect ? '; a node used a reflected or diffracted path' : ''}</p>
+    ${lab ? `<h3>Labels</h3><p>Source: <span class="accent">${labSource?.label ?? 'none'}</span>${labSource?.true_label ? ` (true ${labSource.true_label})` : ''}${labSource?.same_class_sources?.length ? `; same class as ${labSource.same_class_sources.join(', ')}: label cannot separate them` : ''}</p>
+    <table><tr><th>node</th><th>input</th><th>label</th><th>conf</th><th>priority</th><th></th></tr>${labRows.join('')}</table>` : ''}`;
   for (const tr of box.querySelectorAll('tr[data-node]')) tr.style.color = nodeColor(tr.dataset.node);
   for (const tr of box.querySelectorAll('tr[data-node]')) {
     tr.addEventListener('click', () => {

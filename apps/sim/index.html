@@ -154,9 +154,30 @@
             <h3>Localisation</h3>
             <label>Minimum SNR to use a node (dB) <input id="s_min_snr_db" class="mono" type="number" step="1" /></label>
             <label>Picked-path tolerance (&deg;) <input id="s_picked_path_tolerance_deg" class="mono" type="number" step="1" /></label>
+            <label>Window policy
+              <select id="s_window_policy" data-string="1"><option value="auto">auto: onset-gated or adaptive (default)</option><option value="fixed">fixed: whole active window (schema 0.3)</option></select>
+            </label>
+            <label>Localisation band
+              <select id="locBand"><option value="200,1600">200-1600 Hz (default)</option><option value="200,3000">200-3000 Hz (wide)</option><option value="100,4000">100-4000 Hz (wider)</option></select>
+            </label>
+            <div class="muted" id="locBandNote">Above about 1.7-1.9 kHz a 9-10 cm array aliases spatially: phase methods break, GCC-PHAT side lobes grow.</div>
+            <label>Source height prior (m) <input id="s_source_height_prior_m" class="mono" type="number" step="0.5" /></label>
             <label class="check"><input id="showCones" type="checkbox" checked /> Direction cones</label>
             <label class="check"><input id="showBacktrace" type="checkbox" checked /> Back-trace candidates (select a node)</label>
             <label class="check"><input id="showAllTraces" type="checkbox" /> Back-trace lines for all nodes</label>
+          </section>
+          <section class="set-card">
+            <h3>Labelling</h3>
+            <label class="check"><input id="s_labelling_enabled" type="checkbox" /> Label events with the echo app's YAMNet + CLAP (after Create)</label>
+            <label>Mode
+              <select id="s_labelling_mode" data-string="1"><option value="model">models</option><option value="oracle">oracle (true labels)</option></select>
+            </label>
+            <label>CLAP window
+              <select id="s_label_clap_mode" data-string="1"><option value="clap5">5 s, 1.25 s hop (events)</option><option value="clap10">10 s, 2.5 s hop (ambient)</option></select>
+            </label>
+            <label>Pre-roll (s) <input id="s_label_pre_roll_s" class="mono" type="number" step="0.5" min="2" /></label>
+            <button id="labelSanity">Run sanity check (glass clip, 2 m)</button>
+            <div class="muted" id="labelStatus">Models download once (YAMNet about 4 MB, CLAP audio tower about 33 MB quantised) and then work offline. Sim audio is synthetic: accuracy here does not predict real-world accuracy.</div>
           </section>
           <section class="set-card">
             <h3>Display</h3>
