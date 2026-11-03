@@ -128,20 +128,30 @@ test('P9: sanity check compares the app path on the clean clip with the sim path
   assert.equal(res.app_label, 'glass_break');
 });
 
-test('export schema 0.4: changelog, placeholder thresholds, notes, labels only', async () => {
+test('export schema 0.5: changelog, placeholder thresholds, notes, labels only', async () => {
   const { buildExport, EXPORT_SCHEMA } = await import('../src/export.js');
   const { s, rendered, durations, results } = glassScene();
   const labelling = await labelEvents(s, rendered, results, { cat, runners: glassRunners, manifest, settings: s.settings, clipDurations: durations });
   const ex = JSON.parse(JSON.stringify(buildExport({ scenario: s, nodes: [], results, labelling })));
-  assert.equal(ex.schema, '0.4');
-  assert.equal(EXPORT_SCHEMA, '0.4');
-  assert.equal(ex.changelog[0].schema, '0.4');
+  assert.equal(ex.schema, '0.5');
+  assert.equal(EXPORT_SCHEMA, '0.5');
+  assert.equal(ex.changelog[0].schema, '0.5');
   assert.ok(Object.values(ex.thresholds).every((t) => t.placeholder === true && 'value' in t));
   assert.ok(ex.notes.some((n) => /synthetic/.test(n)));
   for (const k of ['usable_nodes', 'heard_nodes', 'track', 'fix']) assert.ok(k in ex.results[0], k);
   for (const k of ['window_snr_db', 'window_policy', 'weight']) assert.ok(k in ex.results[0].nodes[0], k);
-  for (const k of ['method', 'inlier_nodes', 'rejected_nodes', 'z_clamped']) assert.ok(k in ex.results[0].fix, k);
+  for (const k of ['method', 'inlier_nodes', 'rejected_nodes', 'z_clamped', 'max_angle_3d_deg', 'z_3d_raw_m']) assert.ok(k in ex.results[0].fix, k);
   assert.ok('rejected_count' in ex.results[0].track);
+  assert.ok(ex.thresholds.track_pre_fix_elevation_gate_deg.placeholder);
   assert.ok(!/"(mics|embedding|embeddings|spectrogram|audio_embeds)"/.test(JSON.stringify(ex)));
   assert.ok(ex.labelling.events.length > 0);
+});
+
+test('labelling_enabled without completed labels does not emit a labelling block', async () => {
+  const { buildExport } = await import('../src/export.js');
+  const { s, results } = glassScene();
+  s.settings.labelling_enabled = true;
+  const ex = buildExport({ scenario: s, nodes: [], results });
+  assert.equal(ex.scenario.settings.labelling_enabled, true);
+  assert.equal('labelling' in ex, false);
 });

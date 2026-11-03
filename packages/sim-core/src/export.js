@@ -1,13 +1,27 @@
-// The results export ("Export results" in the sim). Schema 0.4: see EXPORT_CHANGELOG.
+// The results export ("Export results" in the sim). Schema 0.5: see EXPORT_CHANGELOG.
 // Node output is limited to bearings, levels, times, uncertainties, labels, scores and confidences: no audio, spectra or
 // embeddings, and every unmeasured constant or threshold is marked placeholder.
 import { simConstants } from './geometry.js';
 import { ANALYSIS_THRESHOLDS } from './scenario.js';
 import { LABELLING_NOTE } from './labelling.js';
 
-export const EXPORT_SCHEMA = '0.4';
+export const EXPORT_SCHEMA = '0.5';
 
 export const EXPORT_CHANGELOG = [
+  {
+    schema: '0.5',
+    added: [
+      'fix.method: 3d_two_ray | 3d_ransac_wls when trusted elevations rescue a poorly conditioned horizontal fix',
+      'fix.max_angle_3d_deg and fix.z_3d_raw_m from the trusted-elevation 3D solver; 3D fixes use 3D ranges and leave-one-out residuals',
+      'track_pre_fix_elevation_gate_deg (90° placeholder) and its value in thresholds'
+    ],
+    changed: [
+      'fix.rejected_nodes[].reason adds untrusted_elevation for usable nodes omitted from a 3D fix',
+      "track uses each node's recent accepted bearing and the wide pre-fix gate for trusted positive elevations; ground and flat-array bearings keep the prior gate",
+      'labelling is included only after labelEvents completes for the exported results; labelling_enabled alone does not create a labelling block'
+    ],
+    removed: []
+  },
   {
     schema: '0.4',
     added: [
@@ -22,7 +36,7 @@ export const EXPORT_CHANGELOG = [
       'fix.z_clamped, fix.z_from_nodes, fix.z_3d_raw_m, fix.max_crossing_angle_horizontal_deg, fix.max_angle_3d_deg, fix.suspect_reasons, fix.multipath_suspect',
       'track.alignment, track.filter, track.rejected_count, track.dominated_count; track.fixes[].t_emit_s, raw_position, velocity_mps, error_m, raw_error_m, true_position, inlier_nodes, overlapped; track.observations[].t_emit_s, window_s',
       'backtrace.edge_hypotheses; backtrace candidates[].hypotheses and support[].hypothesis (direct | reflection | edge)',
-      'labelling (when labelling_enabled): events, sources, summary, models, association_rule, notes',
+      'labelling (when labelling completes): events, sources, summary, models, association_rule, notes',
       'thresholds: every analysis threshold with its value and placeholder: true; notes'
     ],
     changed: [
@@ -60,7 +74,7 @@ function scrub(v) {
   return ArrayBuffer.isView(v) ? undefined : v;
 }
 
-/** The export object. nodes: per node layout (0.3); labelling: labelEvents output or null. */
+/** The export object. nodes: per node layout (0.3); labelling: completed labelEvents output or null. */
 export function buildExport({ scenario, nodes, results, labelling = null }) {
   return {
     app: 'echo-sim',

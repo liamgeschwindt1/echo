@@ -21,6 +21,7 @@ Contents:
 - 11. Tests and scripts
 - 12. Known limits
 - 13. Schema 0.4 localisation upgrade (Nov 2026): brief, verification and results
+- 13.8. Schema 0.5 trusted-elevation fixes and aerial tracking
 
 ---
 
@@ -1137,20 +1138,30 @@ so each ray counts by the metres of error it implies at the fix.
 3. The set is refitted, and rays that agree with the refit are re-admitted.
 4. **Leave-one-out**: while three or more rays remain, drop the ray whose residual against the fit of the others is largest, if that exceeds the gate. A fit of the others counts only if those others still cross at ≥ 10°. Two near-parallel rays prove nothing: without this rule, LOO dropped good rays in the `overlap` and `continuous` scenes.
 
-Each rejected node gets `{ node_id, reason: 'outlier' | 'behind_node', residual_sigma }`. Nodes without a usable bearing are listed with `no_signal`, `below_min_snr` or `no_bearing`. Two rays: `method: 'two_ray'`, the exact intersection.
+Each rejected node gets `{ node_id, reason: 'outlier' | 'behind_node' | 'untrusted_elevation', residual_sigma }`. The 3D path excludes usable rays without trusted elevation and marks them `untrusted_elevation`. Nodes without a usable bearing are listed with `no_signal`, `below_min_snr` or `no_bearing`. Two horizontal rays use `method: 'two_ray'`; two trusted rays use `3d_two_ray` only when the horizontal fix is poorly conditioned.
 
-**Conditioning.** `max_crossing_angle_horizontal_deg` = largest pairwise horizontal crossing angle among the inliers (as lines, 0–90°). `max_angle_deg` is now this horizontal value. `poorly_conditioned` = negative range, or angle below 10°. A poorly conditioned fix has `position: null`. The 0.3 3D solver (`intersectRays`) still runs for reference: `max_angle_3d_deg` and `z_3d_raw_m`, where a flat array's z follows the assumed elevation sign (the 0.3 underground fixes).
+**3D fallback and conditioning.** The horizontal solver remains the default. If its inliers have a negative range or cross below `fix_min_crossing_deg` (10°), trusted-elevation rays are fitted in 3D with weighted closest-ray least squares:
 
-**Height.** If any inlier has a trusted elevation, `z = Σ w_i (o_i,z + h_i tan el_i) / Σ w_i`, with `h_i` the horizontal range and `w_i = 1/(h_i σ_i)²`. Otherwise `z = source_height_prior_m` (1.5 m, ground-event prior) and `z_clamped: true`. `z_from_nodes` lists the nodes used.
+```
+Σ_i w_i (I − u_i u_iᵀ)(p − o_i) = 0
+u_i = (cos el_i cos az_i, cos el_i sin az_i, sin el_i)
+w_i = 1/σ_i², then twice w_i = 1 / (max(t_i, 1) · σ_i)²
+```
+
+The 3D path is used only when at least two trusted rays cross at 10° or more and every inlier range is positive. Three or more rays use 3D RANSAC and 3D leave-one-out residuals. `method` reports `3d_two_ray` or `3d_ransac_wls`; otherwise it remains `two_ray`, `ransac_wls` or `wls`. `max_crossing_angle_horizontal_deg` and `max_angle_deg` report the horizontal angle; `max_angle_3d_deg` reports 3D conditioning. `poorly_conditioned` uses the conditioning and ranges of the solver actually selected. A failed 3D fallback leaves the horizontal result poorly conditioned.
+
+**Residuals.** Both solvers normalize the perpendicular miss by `max(t, 1) · tan σ`, with `z = ∞` for `t ≤ 0`. The 3D path measures perpendicular distance and range in 3D; its consensus and leave-one-out checks use that residual, not the horizontal projection. `z_3d_raw_m` reports the trusted-elevation 3D solution when available.
+
+**Height.** If any inlier has a trusted elevation, the height comes from those elevations: the 2D path uses `z = Σ w_i (o_i,z + h_i tan el_i) / Σ w_i`, with `h_i` the horizontal range and `w_i = 1/(h_i σ_i)²`; the 3D path uses its fitted z. `source_height_prior_m` (1.5 m, ground-event prior) is used and `z_clamped: true` only when no inlier resolves elevation. `z_from_nodes` lists the nodes used.
 
 **Suspect checks** (`fix_suspect`, `suspect_reasons`). These use measured quantities only:
 
 | reason | test |
 |---|---|
 | `below_ground` | z < −0.5 m |
-| `negative_range` | the rays only meet behind a node |
-| `range_ratio` | max/min inlier range > `fix_range_ratio_max` (6) |
-| `loo_residual` | any inlier's leave-one-out residual > `fix_loo_suspect_sigma` (2.5; above 2 because it includes the fit error of the others) |
+| `negative_range` | the rays only meet behind a node (range is 3D for the 3D solver) |
+| `range_ratio` | max/min inlier range > `fix_range_ratio_max` (6; 3D range for the 3D solver) |
+| `loo_residual` | any inlier's leave-one-out residual > `fix_loo_suspect_sigma` (2.5; 3D residual for the 3D solver) |
 | `outside_scene` | outside the node/building bounds + `fix_bounds_margin_m` (50 m) |
 | `weak_consensus` | as many rays rejected as kept |
 
@@ -1165,7 +1176,7 @@ The 0.3 rule (a used node picked a non-direct path or has its direct path blocke
 1. `p` = the filter's prediction, else the whole-event fix, else the node centroid at the height prior.
 2. For each node: `tA = tE + |p − node|/c`, window `[tA, tA + W]`. It must lie in the node's contained active window and have window SNR ≥ `min_snr_db`. The bearing is cached per start sample. `σ = √(σ_noise² + σ_mp(W)²)`, with the multipath term evaluated at window length W.
 3. **Dominance gate** (*simulator-only*): skip the window if the other sources' power in it is more than `track_overlap_max_db` (−6 dB) relative to this one's (`dominated_count`). Within about 6 dB, two sustained sources blend into one GCC-PHAT bearing *between* them. In the `continuous` scene three such blended rays met at a consistent ghost about 20 m from the truth.
-4. **P5 gate** (`rejected_count`). Before the first fix, the reference is the node's long-window bearing. With two or more fixes it is the bearing to the predicted position, plus `atan(|v| · interval / range)` of allowed motion. In between there is no gate. Reject if `|Δaz| > max(track_gate_min_deg, track_gate_sigma · √(σ² + σ_ref²)) + allowance` (5°, 3σ). The floor exists because CRB sigmas (~0.1°) are far below the model mismatch.
+4. **P5 gate** (`rejected_count`). For untrusted or non-positive elevation (including flat arrays and ground sources), retain the prior behavior: before the first fix use the node's long-window bearing; after two fixes use the predicted-position bearing plus `atan(|v| · interval / range)` of allowed motion; between those states do not gate. With trusted positive elevation, before a fix use that node's most recent accepted rolling bearing instead of the stale long-window reference. Apply `track_pre_fix_elevation_gate_deg` (90°, placeholder) as the total wide gate so a moving aerial source can continue through large bearing changes while the fix filter initializes. After two fixes, use the predicted-position gate as before. The standard floor is `max(track_gate_min_deg, track_gate_sigma · √(σ² + σ_ref²))` (5°, 3σ); the floor exists because CRB sigmas (~0.1°) are far below model mismatch. Gate and reference use measured bearings only, not simulator truth.
 5. `robustFix` on the accepted rays (weights with the overlap and reflector terms). If it succeeds, `p` = the fix, and steps 2–5 repeat `track_iterations` (2) times so the windows follow the refined position.
 
 **Filter**: constant-velocity alpha-beta on the horizontal position. Start with `x = z₁`. On the second fix, `v = (z₂ − z₁)/Δt` (two-point start). After that:
@@ -1262,13 +1273,14 @@ An edge hypothesis constrains a region, not a ray: along another node's ray, eve
 | `multipath_floor_deg`, `multipath_spread_ref_ms` | 5, 20 | multipath term |
 | `overlap_sigma_deg` | 10 | overlap weight term at 0 dB |
 | `reflector_sigma_deg`, `reflector_scale_m` | 3, 5 | near-wall weight term |
-| `fix_min_crossing_deg` | 10 | conditioning, RANSAC pairs, LOO |
+| `fix_min_crossing_deg` | 10 | horizontal and 3D conditioning, RANSAC pairs, LOO |
 | `fix_inlier_gate_sigma` | 3 | inlier gate |
 | `fix_loo_suspect_sigma` | 2.5 | `loo_residual` flag |
 | `fix_range_ratio_max` | 6 | `range_ratio` flag |
 | `fix_bounds_margin_m` | 50 | `outside_scene` flag |
 | `source_height_prior_m` | 1.5 | z when no node resolves elevation |
-| `track_gate_sigma`, `track_gate_min_deg` | 3, 5 | track gate |
+| `track_gate_sigma`, `track_gate_min_deg` | 3, 5 | standard track gate |
+| `track_pre_fix_elevation_gate_deg` | 90 | wide pre-fix gate for trusted positive-elevation rolling bearings |
 | `track_overlap_max_db` | −6 | track dominance gate (simulator-only) |
 | `track_iterations` | 2 | window alignment passes |
 | `track_alpha`, `track_beta` | 0.5, 0.2 | alpha-beta filter |
@@ -1278,19 +1290,19 @@ An edge hypothesis constrains a region, not a ray: along another node's ray, eve
 
 Back-trace constants (`BACKTRACE_DEFAULTS`): `min_crossing_angle_deg` 20, `cluster_m` 1, `path_scale_m` 100, `fallback_uncertainty_deg` 5, `min_tolerance_deg` 3, `edge_margin_m` 100, `edges` true, `edge_fan_step_deg` 5, `edge_support_weight` 0.7.
 
-### 7.15 Export (schema 0.4; [export.js](packages/sim-core/src/export.js))
+### 7.15 Export (schema 0.5; [export.js](packages/sim-core/src/export.js))
 
 *File → Export results* writes:
 
 ```
-{ app: 'echo-sim', schema: '0.4', changelog, notes, constants (simConstants, placeholders marked),
+{ app: 'echo-sim', schema: '0.5', changelog, notes, constants (simConstants, placeholders marked),
   thresholds: { key: { value, placeholder: true, note } }, scenario, nodes (layout, mic positions assumed and rendered),
   results: [ per source: source_id, true_position, nodes[], track, heard_nodes, usable_nodes, excluded_unreliable,
              backtrace, fix, error_horizontal_m, error_3d_m ],
   labelling?: { mode, clap_mode, events, sources, summary, models, association_rule, notes } }
 ```
 
-`EXPORT_CHANGELOG` lists every added and changed field since 0.3. No field was removed. Fields whose meaning changed: `heard`, `heard_nodes`, `fix.max_angle_deg`, `fix.fix_suspect`, `fix.position[2]`, `picked_path_index`, `track.fixes[].t_s`. The caveats go into `notes`: simulated, placeholders, no housing scattering, wind, rain, coloured noise or facade scattering, unvalidated diffraction, which fields are simulator-only, and that labelling accuracy here does not predict real-world accuracy.
+`EXPORT_CHANGELOG` lists every added and changed field since 0.3. Schema 0.5 adds trusted-elevation 3D fix methods and `track_pre_fix_elevation_gate_deg`; no field was removed. Fields whose meaning changed: `heard`, `heard_nodes`, `fix.max_angle_deg`, `fix.fix_suspect`, `fix.position[2]`, `picked_path_index`, `track.fixes[].t_s`. `labelling` is included only after label processing completes for the exact exported results; `labelling_enabled: true` is a request to run asynchronously, not proof that a labelling block exists. Exporting before completion or after a failed run leaves the block absent. The caveats go into `notes`: simulated, placeholders, no housing scattering, wind, rain, coloured noise or facade scattering, unvalidated diffraction, which fields are simulator-only, and that labelling accuracy here does not predict real-world accuracy.
 
 ### 7.16 Other analysis modules
 
@@ -1605,7 +1617,7 @@ This is a 2D canvas, not WebGL.
 - **Files on this computer**:
   - **Download scenario file** (`scenario.json`);
   - **Load scenario file** (validates and applies, clears results, detaches from the saved simulation);
-  - **Export results**: after Create, `results.json` = `buildExport(...)`, schema 0.4 (§7.15): `{ app, schema, changelog, notes, constants, thresholds, scenario, nodes: [{ id, mic_layout, mic_params, mic_positions_assumed, mic_positions_rendered }], results, labelling? }`. The results schema is described in §7;
+  - **Export results**: after Create, `results.json` = `buildExport(...)`, schema 0.5 (§7.15): `{ app, schema, changelog, notes, constants, thresholds, scenario, nodes: [{ id, mic_layout, mic_params, mic_positions_assumed, mic_positions_rendered }], results, labelling? }`. The results schema is described in §7;
   - **Repeats / sweep** (8.3).
 - **Applying a scenario** (`applyScenario`) runs validation and notices, replaces the scene, and sets `status = 'ready'` with `rendered = null` when saved results come with it, so the map, fixes and tables show at once and Create re-renders the audio. It also resets playback, hidden nodes and selection, fits the view and loads the clips.
 - **Dirty tracking** compares a JSON snapshot of the scenario with the baseline saved or opened. The title shows `name · vN` (and "(latest vM)" for an older version) with a dirty dot; the document title gets "• ". The **URL** keeps `?sim=<uuid>` and `&v=<n>` when not the latest, so a reload or a shared link reopens it. The title refreshes every 1.5 s.
@@ -2000,8 +2012,8 @@ Next steps: define pass/fail targets for localisation and attribution; run the s
 | `sim-backtrace.test.js` | corner scene unfolds via the right faces and lands on the source; rays branch and stop at the order; crossings behind a node rejected; `intersectRays` negative range and line angle |
 | `sim-label.test.js` | window schedule; event matching; the older detect, label and attach pipeline on a gunshot (stub runners) |
 | `sim-suite.test.js` | the fixed-seed A–E suite runs and reports (`suite-lib.js`) |
-| `sim-upgrade.test.js` | 0.4 analysis: P1 silent-window regression and containment; P2 onset-gated vs fixed; P3 two of five bad rays rejected with reasons; P4 horizontal conditioning, z clamp, each suspect reason, flag consistency, `heard_nodes`/`usable_nodes`; P6 moving-source track at common emission times; P7 corner (order 2) edge support of the true candidate and visibility; P8 detected but not localisable, band-following decimation |
-| `sim-labelling.test.js` | P9 with stub runners: manifest truth; omni and beamformed labelling with the app stack, bearings untouched, required fields, no audio-derived arrays; oracle mode; delay-and-sum steering; sanity check; export schema 0.4 |
+| `sim-upgrade.test.js` | 0.4/0.5 analysis: P1 silent-window regression and containment; P2 onset-gated vs fixed; P3 two of five bad rays rejected with reasons; P4 horizontal and trusted-elevation 3D fixes, z clamp, suspect checks; P6 moving ground and aerial D180 tracks; P7 corner edge support and visibility; P8 detected but not localisable, band-following decimation |
+| `sim-labelling.test.js` | P9 with stub runners: manifest truth; omni and beamformed labelling with the app stack, bearings untouched, required fields, no audio-derived arrays; oracle mode; delay-and-sum steering; sanity check; export schema 0.5 and absent labels before completion |
 | `sim-labelling-models.test.js` | P9 with the real YAMNet and CLAP (Node runners): the app path and the sim path agree on the clean glass, horn and dog clips. Skipped without the model files or the ESC-50 clips |
 | `sim-upgrade-regression.test.js` | the six upgrade scenes against `test/fixtures/upgrade-0.4.json`: fails if any fix, node azimuth or track error gets worse beyond tolerance, or fewer nodes are heard/usable (skipped without the ESC-50 clips) |
 
@@ -2130,7 +2142,7 @@ Contradictions and notes:
 | P7 diffraction-aware back-trace | `backtrace.js` `edgeLegs`, `roofLegs` | §7.13 |
 | P8 detected vs localisable | `activity.js`, `analyse.js` | §7.9 |
 | P9 labelling with the app stack | `labelling.js`, `beamform.js`, `apps/sim/src/main.js`, `config/sim-label-manifest.json` | §7.12 |
-| Export schema 0.4 + changelog | `export.js` | §7.15 |
+| Export schema 0.5 + changelog | `export.js` | §7.15 |
 
 ### 13.3 Before (0.3) and after (0.4) on the six scenes
 
@@ -2310,3 +2322,13 @@ The real YAMNet and CLAP now run inside the simulator core ([node-models.js](pac
 - **Multi-labels** at cosine 0.15 list two or three classes for almost every event. The true label appears among them only for the dog, the footsteps and one horn (`s13` at n3). The threshold is a **placeholder** and is too low to be informative.
 
 **What would change this** (not done): test level normalisation at the classifier input (for example a fixed RMS before YAMNet and CLAP) against the range sweep, and check the app on real recordings at 10–80 m. The real-world question is whether real nodes at these ranges show the same drop. The sim cannot answer it, since its render has no housing, wind or facade scattering.
+
+### 13.8 Schema 0.5 trusted-elevation fixes and aerial tracking
+
+The horizontal solver now falls back to weighted 3D ray fitting when horizontal conditioning fails and trusted elevations have sufficient 3D crossing angle. The track gate for trusted positive elevations follows each node's recent accepted rolling bearing with a 90° placeholder gate; flat arrays and non-positive elevations keep the prior gate. No simulator truth is used by either new path, and the renderer is unchanged.
+
+**D180 orbit fixture** (`sim-upgrade.test.js`): two 12-mic D180 nodes and a synthetic source orbiting at 75 m. The first common-time fix error was 0.09 m; the track produced 96 fixes, median filtered error 1.10 m, and 4 rejected observations. The originally reported drone export/config is not in this repository, so this fixture exercises the stated geometry but is not a byte-for-byte replay of that run.
+
+**Six-scene upgrade report:** all six stand-in scenes are flat-array scenes. Compared with the before-change report, none improved or worsened: all fix errors, track fix counts and median errors stayed the same. Signal goldens remained unchanged; analysis goldens were regenerated with `node scripts/sim-golden.mjs --set analysis-0.4`.
+
+Export schema is 0.5. The 90° gate is in `thresholds` with `placeholder: true`. `labelling_enabled` requests asynchronous labelling; exports include `labelling` only after `labelEvents` completes for the exact results being exported. Exporting early, or after labelling fails, leaves that optional block absent.

@@ -1,4 +1,4 @@
-// Schema 0.4 localisation upgrade (P1-P8): window gating, window policy, robust fix, flags, uncertainty, tracks.
+// Schema 0.4/0.5 localisation checks: windows, robust fixes, flags, uncertainty and tracks.
 // SIMULATED checks of the estimator logic only; nothing here is a real-world accuracy claim.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -6,6 +6,9 @@ import { defaultScenario, newNode, newSource, DEFAULT_SETTINGS } from '../src/sc
 import { renderScenario } from '../src/render.js';
 import { analyseScenario } from '../src/analyse.js';
 import { gaussian, mulberry32 } from '../src/rng.js';
+import { BUILTIN_ARRAYS, offsetsM } from '../src/arrays.js';
+import { commonTimeTrack } from '../src/track.js';
+import { positionAt } from '../src/motion.js';
 
 const FS = 48000;
 
@@ -117,6 +120,41 @@ test('P4: conditioning uses the horizontal crossing angle and z is clamped for f
   assert.equal(par.poorly_conditioned, true);
 });
 
+test('P4: trusted elevations recover a 3D fix when the horizontal rays are parallel', () => {
+  const target = [50, 0, 75];
+  const fix = robustFix([
+    ray('a', [0, 0, 5], target, { trusted: true, el: Math.atan2(70, 50) * (180 / Math.PI) }),
+    ray('b', [100, 4, 5], target, { trusted: true, el: Math.atan2(70, Math.hypot(50, 4)) * (180 / Math.PI) })
+  ], { settings: S, scenario: scn5 });
+  assert.equal(fix.method, '3d_two_ray');
+  assert.equal(fix.poorly_conditioned, false);
+  assert.ok(fix.max_crossing_angle_horizontal_deg < S.fix_min_crossing_deg);
+  assert.ok(fix.max_angle_3d_deg > S.fix_min_crossing_deg);
+  assert.ok(Math.hypot(...fix.position.map((v, i) => v - target[i])) < 1e-6);
+  assert.equal(fix.z_clamped, false);
+  assert.deepEqual(fix.z_from_nodes, ['a', 'b']);
+});
+
+test('P4: the 3D residual rejects a bad elevation and flags a below-ground fix', () => {
+  const target = [50, 0, 75];
+  const fix = robustFix([
+    ray('a', [0, 0, 5], target, { trusted: true, el: Math.atan2(70, 50) * (180 / Math.PI) }),
+    ray('b', [100, 0, 5], target, { trusted: true, el: Math.atan2(70, 50) * (180 / Math.PI) }),
+    ray('c', [30, 0, 5], target, { trusted: true, el: 30 })
+  ], { settings: S, scenario: scn5 });
+  assert.equal(fix.method, '3d_two_ray');
+  assert.deepEqual(fix.inlier_nodes, ['a', 'b']);
+  assert.equal(fix.rejected_nodes[0].node_id, 'c');
+  assert.ok(fix.rejected_nodes[0].residual_sigma > S.fix_inlier_gate_sigma);
+  const below = [0, 0, -10];
+  const under = robustFix([
+    ray('a', [0, 0, 5], below, { trusted: true, el: Math.atan2(-15, 50) * (180 / Math.PI) }),
+    ray('b', [100, 4, 5], below, { trusted: true, el: Math.atan2(-15, Math.hypot(50, 4)) * (180 / Math.PI) })
+  ], { settings: S, scenario: scn5 });
+  assert.equal(under.method, '3d_two_ray');
+  assert.ok(under.suspect_reasons.includes('below_ground'));
+});
+
 test('P4: suspect flags for below ground, behind a node, range ratio and outside the scene', () => {
   const t = [30, 40, 1.5];
   // Trusted elevations that point underground: z from the nodes, flagged below_ground.
@@ -168,7 +206,6 @@ test('P4: heard_nodes counts heard nodes and usable_nodes counts nodes with a us
 });
 
 // ---------- P6: common-time track ----------
-import { positionAt } from '../src/motion.js';
 
 test('P6: a moving source gets a track of fixes at common emission times, scored against the moving truth', () => {
   const rng = mulberry32(21);
@@ -192,6 +229,105 @@ test('P6: a moving source gets a track of fixes at common emission times, scored
   const errs = t.fixes.map((f) => f.error_m).sort((a, b) => a - b);
   assert.ok(errs[Math.floor(errs.length / 2)] < 5, JSON.stringify(errs));
   assert.ok(Number.isInteger(t.rejected_count));
+});
+
+test('P6: an elevated D180 source orbiting two nodes keeps rolling observations and fixes', () => {
+  const fs = FS;
+  const c = 343;
+  const durationS = 10;
+  const startS = 3;
+  const center = [50, 0];
+  const radius = 70;
+  const nodes = [newNode('n1', 0, 0), newNode('n2', 100, 0)];
+  const source = {
+    ...newSource('drone', 'noise', center[0], center[1], 145),
+    start_s: startS,
+    keyframes: Array.from({ length: 17 }, (_, i) => {
+      const angle = (2 * Math.PI * i) / 16;
+      return { t: startS + (durationS * i) / 16, position: [center[0] + radius * Math.cos(angle), center[1] + radius * Math.sin(angle), 75] };
+    })
+  };
+  const scenario = { ...defaultScenario(), nodes, sources: [source] };
+  const model = BUILTIN_ARRAYS.find((x) => x.id === 'ball12_d180');
+  assert.ok(model);
+  const sampleCount = Math.ceil((startS + durationS + 1) * fs);
+  const rng = mulberry32(321);
+  const sourceNoise = new Float32Array(sampleCount + 128);
+  let filtered = 0;
+  for (let i = 0; i < sourceNoise.length; i++) {
+    filtered = 0.3 * gaussian(rng) + 0.7 * filtered;
+    sourceNoise[i] = filtered;
+  }
+  const renderedNodes = nodes.map((node) => {
+    const offsets = offsetsM(model);
+    const micPositions = offsets.map((o) => [node.position[0] + o[0], node.position[1] + o[1], node.position[2] + o[2]]);
+    const directions = [new Float32Array(sampleCount), new Float32Array(sampleCount), new Float32Array(sampleCount)];
+    for (let i = 0; i < sampleCount; i++) {
+      const arrivalS = i / fs;
+      let target = positionAt(source, arrivalS);
+      for (let it = 0; it < 5; it++) target = positionAt(source, arrivalS - Math.hypot(target[0] - node.position[0], target[1] - node.position[1], target[2] - node.position[2]) / c);
+      const d = [target[0] - node.position[0], target[1] - node.position[1], target[2] - node.position[2]];
+      const range = Math.hypot(...d);
+      for (let k = 0; k < 3; k++) directions[k][i] = d[k] / range;
+    }
+    const mics = offsets.map((offset) => {
+      const audio = new Float32Array(sampleCount);
+      for (let i = 0; i < sampleCount; i++) {
+        const delaySamples = ((offset[0] * directions[0][i] + offset[1] * directions[1][i] + offset[2] * directions[2][i]) / c) * fs;
+        const at = i + delaySamples + 32;
+        const lo = Math.floor(at);
+        const frac = at - lo;
+        audio[i] = sourceNoise[lo] * (1 - frac) + sourceNoise[lo + 1] * frac;
+      }
+      return audio;
+    });
+    return { id: node.id, mics, mic_positions: micPositions };
+  });
+  const frames = new Float32Array(Math.ceil(sampleCount / (fs * 0.01))).fill(1);
+  const rendered = {
+    length: sampleCount,
+    nodes: renderedNodes,
+    activity: nodes.map(() => ({ per_source: [{ all: frames }], noise_band_power: 0.001 }))
+  };
+  const perNode = nodes.map((node) => {
+    const p0 = positionAt(source, startS);
+    return {
+      bearing: {
+        azimuth_deg: azimuthDeg(node.position, p0),
+        uncertainty_deg: 1,
+        elevation_sign_assumed: false,
+        elevation_confidence: 'ok'
+      },
+      direct_to_reflected_db: 30,
+      delay_spread_s: 0,
+      reflection_gap_s: 0
+    };
+  });
+  const track = commonTimeTrack({
+    scenario,
+    rendered,
+    si: 0,
+    settings: { ...S, track_iterations: 2 },
+    c,
+    fs,
+    lengthS: startS + durationS + 1,
+    windowS: 0.1,
+    intervalS: 0.1,
+    activeWindows: nodes.map(() => [startS, startS + durationS + 1]),
+    perNode,
+    longFix: null,
+    durationS,
+    reflectorM: nodes.map(() => null),
+    meanPower: () => 1,
+    toDb: () => 30
+  });
+  const errors = track.fixes.map((f) => f.error_m).sort((a, b) => a - b);
+  const firstFixError = track.fixes[0]?.raw_error_m;
+  assert.ok(track.fixes.length > 10, `track fixes: ${track.fixes.length}; rejected: ${track.rejected_count}`);
+  assert.ok(track.rejected_count < 20, String(track.rejected_count));
+  assert.ok(track.observations.length > 40, `observations: ${track.observations.length}`);
+  assert.ok(Number.isFinite(firstFixError) && firstFixError < 10, String(firstFixError));
+  assert.ok(errors[Math.floor(errors.length / 2)] < 10, JSON.stringify(errors));
 });
 
 // ---------- P8: detected vs localisable ----------

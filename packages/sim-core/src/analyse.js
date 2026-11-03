@@ -363,8 +363,8 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
     const fix3d = intersectRays(used.map((n) => ({ origin: posOf(n.node_id), direction: n.bearing.direction, weight: n.weight })));
     const fix = robust && {
       ...robust,
-      max_angle_3d_deg: fix3d?.max_angle_deg ?? null,
-      z_3d_raw_m: fix3d?.position?.[2] ?? null,
+      max_angle_3d_deg: robust.max_angle_3d_deg ?? fix3d?.max_angle_deg ?? null,
+      z_3d_raw_m: robust.z_3d_raw_m ?? fix3d?.position?.[2] ?? null,
       multipath_suspect: used.some((n) => robust.inlier_nodes.includes(n.node_id) && (n.direct_blocked || n.picked_path_type !== 'direct'))
     };
     const est = fix && !fix.poorly_conditioned ? fix.position : null;
@@ -410,4 +410,3 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
     };
   });
 }
-

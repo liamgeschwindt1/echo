@@ -405,7 +405,7 @@ setInterval(() => {
 }, 1500);
 $('exportBtn').addEventListener('click', () => {
   if (!results) return;
-  // Schema 0.4 (see EXPORT_CHANGELOG in sim-core export.js); `nodes` (0.3): layout and the mic positions used (world metres).
+  // Schema 0.5 (see EXPORT_CHANGELOG in sim-core export.js); `nodes` (0.3): layout and the mic positions used (world metres).
   const nodes = scenario.nodes.map((n) => {
     const rn = rendered?.nodes.find((x) => x.id === n.id);
     return {

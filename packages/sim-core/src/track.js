@@ -11,6 +11,7 @@ import { emittedPosition, isMoving, positionAt } from './motion.js';
 const toDeg = (r) => (r * 180) / Math.PI;
 const angDiff = (a, b) => Math.abs(((a - b + 540) % 360) - 180);
 const azFrom = (o, p) => toDeg(Math.atan2(p[1] - o[1], p[0] - o[0]));
+const hasTrustedAerialElevation = (bearing) => !bearing.elevation_sign_assumed && bearing.elevation_confidence === 'ok' && bearing.elevation_deg > 0;
 
 /**
  * ctx: { scenario, rendered, si, settings, c, fs, lengthS, windowS, intervalS, activeWindows (per node [t0,t1] or null),
@@ -44,6 +45,7 @@ export function commonTimeTrack(ctx) {
   const tEnd = ctx.durationS != null ? src.start_s + ctx.durationS : Math.max(...activeWindows.map((w) => w?.[1] ?? -Infinity)) - nearest;
   const centroid = [0, 1].map((k) => nodes.reduce((a, n) => a + n.position[k], 0) / nodes.length);
   let state = null; // { x: [x, y], v: [vx, vy], t, n (fixes so far) }
+  const recentBearing = new Map();
 
   for (let tE = src.start_s; tE + W <= tEnd + 1e-9; tE += intervalS) {
     const pred = state ? [state.x[0] + state.v[0] * (tE - state.t), state.x[1] + state.v[1] * (tE - state.t)] : null;
@@ -89,9 +91,8 @@ export function commonTimeTrack(ctx) {
         const sigma = Math.min(90, Math.hypot(noise, multipath));
         const total = Math.min(90, Math.hypot(sigma, ovTerm, reflectorSigmaDeg(reflectorM[ni], settings)));
         // P5 gate, bearing sigmas only (the overlap term would widen the gate exactly when another source takes over).
-        // Reference: the bearing to the filter's predicted position once it has a velocity (two fixes or more), allowing
-        // one step of travel at the filtered speed; before the first fix the node's long-window bearing; in between (one
-        // fix, no velocity yet) no gate. Truth-free either way.
+        // A trusted positive elevation makes the last accepted rolling bearing a truth-free reference before a fix
+        // exists. This lets that reference follow an aerial source instead of pinning it to the whole-event bearing.
         let ref = null;
         let refSigma = 0;
         let allow = 0;
@@ -99,7 +100,12 @@ export function commonTimeTrack(ctx) {
           ref = azFrom(node.position, pred);
           refSigma = nr.bearing?.uncertainty_deg ?? sigma;
           allow = toDeg(Math.atan2(Math.hypot(...state.v) * intervalS, Math.max(Math.hypot(pred[0] - node.position[0], pred[1] - node.position[1]), 1)));
-        } else if (!state && nr.bearing) {
+        } else if (hasTrustedAerialElevation(bearing) && recentBearing.has(node.id)) {
+          const previous = recentBearing.get(node.id);
+          ref = previous.azimuth_deg;
+          refSigma = previous.uncertainty_deg;
+          allow = Math.max(0, settings.track_pre_fix_elevation_gate_deg - Math.max(settings.track_gate_min_deg, settings.track_gate_sigma * Math.hypot(sigma, refSigma)));
+        } else if (!state && nr.bearing && !hasTrustedAerialElevation(bearing)) {
           ref = nr.bearing.azimuth_deg;
           refSigma = nr.bearing.uncertainty_deg;
         }
@@ -119,6 +125,11 @@ export function commonTimeTrack(ctx) {
       })), { settings, scenario });
       if (!fix?.position || fix.poorly_conditioned) break;
       p = fix.position;
+    }
+    for (const o of atTime) {
+      if (hasTrustedAerialElevation(o.bearing)) {
+        recentBearing.set(o.node.id, { azimuth_deg: o.bearing.azimuth_deg, uncertainty_deg: o.sigma });
+      }
     }
     rejected += gated;
     dominatedCount += dominated;

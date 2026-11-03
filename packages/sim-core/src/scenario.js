@@ -37,7 +37,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   noise_enabled: true, // test switch: false renders silence apart from the sources
   reach_cell_m: 2,
   reach_reflection_order: 2,
-  // Localisation thresholds added in export schema 0.4. Every one is a placeholder: see ANALYSIS_THRESHOLDS.
+  // Localisation thresholds added in export schema 0.4 and 0.5. Every one is a placeholder: see ANALYSIS_THRESHOLDS.
   window_policy: 'auto',
   onset_window_ms: 25,
   onset_min_ms: 10,
@@ -61,6 +61,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   source_height_prior_m: 1.5,
   track_gate_sigma: 3,
   track_gate_min_deg: 5,
+  track_pre_fix_elevation_gate_deg: 90,
   track_overlap_max_db: -6,
   track_iterations: 2,
   track_alpha: 0.5,
@@ -101,6 +102,7 @@ export const ANALYSIS_THRESHOLDS = Object.freeze({
   source_height_prior_m: 'height z is clamped to when no node resolves elevation (ground-event prior)',
   track_gate_sigma: 'track observations further than this many combined sigma from the reference bearing are rejected',
   track_gate_min_deg: 'smallest track gate: CRB sigmas are far below the model mismatch, so 3 sigma alone rejects good bearings',
+  track_pre_fix_elevation_gate_deg: 'minimum total angular gate before the first fix when positive elevation is trusted; wide gate avoids pinning an aerial source to its initial bearing',
   track_overlap_max_db: 'a track window is skipped unless this source is at least -track_overlap_max_db dB above the others in it: within about 6 dB two sustained sources blend into one GCC-PHAT bearing (simulator-only: uses per-source levels)',
   track_iterations: 'passes of the common-emission-time window alignment per track step',
   track_alpha: 'position gain of the constant-velocity (alpha-beta) track filter',

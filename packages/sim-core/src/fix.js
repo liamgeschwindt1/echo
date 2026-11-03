@@ -1,9 +1,8 @@
 // Position fix from node bearings (P3, P4 of the 0.4 upgrade).
-// Horizontal first: each node gives a ray in the ground plane; the fix is the weighted least-squares point closest to the
-// rays, with weights 1 / (range * sigma)^2 so a ray counts by the metres of error it implies there. With three or more
-// rays, every pair proposes a point and the one most rays agree with seeds the inlier set (exhaustive RANSAC), then
-// leave-one-out residuals drop rays the others contradict. Height comes from nodes that resolve elevation, otherwise it
-// is clamped to a prior. Every check that marks a fix suspect uses the bearings and the site only, never ground truth.
+// Horizontal first: each node gives a ray in the ground plane, weighted by the metres of error implied at the fix.
+// Consensus and leave-one-out reject contradictory rays. When horizontal conditioning fails, trusted elevations enable
+// a 3D weighted fit. Height comes from resolved elevations, otherwise it is clamped to a prior. Suspect checks use
+// bearings and site bounds only, never ground truth.
 import { mapBounds } from './backtrace.js';
 
 const toRad = (d) => (d * Math.PI) / 180;
@@ -72,6 +71,114 @@ function maxCrossing(rays) {
   return m;
 }
 
+function angle3dDeg(a, b) {
+  const dot = Math.abs(a.u3[0] * b.u3[0] + a.u3[1] * b.u3[1] + a.u3[2] * b.u3[2]);
+  return toDeg(Math.acos(Math.max(-1, Math.min(1, dot))));
+}
+
+function maxCrossing3d(rays) {
+  let m = 0;
+  for (let i = 0; i < rays.length; i++) for (let j = i + 1; j < rays.length; j++) m = Math.max(m, angle3dDeg(rays[i], rays[j]));
+  return m;
+}
+
+function solveLinear3(a, b) {
+  const m = a.map((row, i) => [...row, b[i]]);
+  const scale = Math.max(...a.flat().map(Math.abs), 1);
+  for (let col = 0; col < 3; col++) {
+    let pivot = col;
+    for (let row = col + 1; row < 3; row++) if (Math.abs(m[row][col]) > Math.abs(m[pivot][col])) pivot = row;
+    if (Math.abs(m[pivot][col]) <= 1e-12 * scale) return null;
+    [m[col], m[pivot]] = [m[pivot], m[col]];
+    const d = m[col][col];
+    for (let j = col; j < 4; j++) m[col][j] /= d;
+    for (let row = 0; row < 3; row++) {
+      if (row === col) continue;
+      const f = m[row][col];
+      for (let j = col; j < 4; j++) m[row][j] -= f * m[col][j];
+    }
+  }
+  return m.map((row) => row[3]);
+}
+
+function solve3(rays, weights) {
+  const a = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  const b = [0, 0, 0];
+  rays.forEach((r, i) => {
+    const w = weights[i];
+    for (let j = 0; j < 3; j++) {
+      for (let k = 0; k < 3; k++) {
+        const q = w * ((j === k ? 1 : 0) - r.u3[j] * r.u3[k]);
+        a[j][k] += q;
+        b[j] += q * r.o[k];
+      }
+    }
+  });
+  return solveLinear3(a, b);
+}
+
+const rangeAlong3 = (r, p) => (p[0] - r.o[0]) * r.u3[0] + (p[1] - r.o[1]) * r.u3[1] + (p[2] - r.o[2]) * r.u3[2];
+const perpDist3 = (r, p) => {
+  const d = [p[0] - r.o[0], p[1] - r.o[1], p[2] - r.o[2]];
+  const t = rangeAlong3(r, p);
+  return Math.hypot(d[0] - t * r.u3[0], d[1] - t * r.u3[1], d[2] - t * r.u3[2]);
+};
+const zScore3 = (r, p) => {
+  const t = rangeAlong3(r, p);
+  return t > 0 ? perpDist3(r, p) / (Math.max(t, 1) * Math.tan(toRad(Math.min(r.sigma_deg, 60)))) : Infinity;
+};
+
+function weightedFit3(rays) {
+  let w = rays.map((r) => 1 / toRad(r.sigma_deg) ** 2);
+  let p = solve3(rays, w);
+  for (let it = 0; p && it < 2; it++) {
+    w = rays.map((r) => 1 / (Math.max(rangeAlong3(r, p), 1) * toRad(r.sigma_deg)) ** 2);
+    p = solve3(rays, w) || p;
+  }
+  return p;
+}
+
+function looScore3(r, set, settings) {
+  const rest = set.filter((x) => x !== r);
+  if (rest.length < 2 || maxCrossing3d(rest) < settings.fix_min_crossing_deg) return null;
+  const p = weightedFit3(rest);
+  return p ? zScore3(r, p) : null;
+}
+
+function consensus3d(rays, settings) {
+  let inliers = rays;
+  const gate = settings.fix_inlier_gate_sigma;
+  if (rays.length >= 3) {
+    let best = null;
+    for (let i = 0; i < rays.length; i++) {
+      for (let j = i + 1; j < rays.length; j++) {
+        if (angle3dDeg(rays[i], rays[j]) < settings.fix_min_crossing_deg) continue;
+        const p = solve3([rays[i], rays[j]], [1, 1]);
+        if (!p || !(rangeAlong3(rays[i], p) > 0) || !(rangeAlong3(rays[j], p) > 0)) continue;
+        const z = rays.map((r) => zScore3(r, p));
+        const set = rays.filter((r, k) => z[k] <= gate || k === i || k === j);
+        const cost = set.reduce((s, r) => s + Math.min(zScore3(r, p), gate) ** 2, 0);
+        if (!best || set.length > best.set.length || (set.length === best.set.length && cost < best.cost)) best = { set, cost };
+      }
+    }
+    if (best) {
+      inliers = best.set;
+      const p = weightedFit3(inliers);
+      if (p) inliers = rays.filter((r) => inliers.includes(r) || zScore3(r, p) <= gate);
+    }
+    while (inliers.length >= 3) {
+      let worst = null;
+      for (const r of inliers) {
+        const z = looScore3(r, inliers, settings);
+        if (z !== null && (!worst || z > worst.z)) worst = { r, z };
+      }
+      if (!worst || !(worst.z > gate)) break;
+      inliers = inliers.filter((r) => r !== worst.r);
+    }
+  }
+  return inliers;
+}
+
 /**
  * rays: [{ node_id, origin [x,y,z], azimuth_deg, elevation_deg, elevation_trusted, sigma_deg, direction (3D, optional) }].
  * opts: settings (fix_* thresholds, source_height_prior_m), scenario (for the scene bounds).
@@ -80,7 +187,16 @@ function maxCrossing(rays) {
 export function robustFix(rays, { settings, scenario }) {
   if (rays.length < 2) return null;
   const gate = settings.fix_inlier_gate_sigma;
-  const R = rays.map((r) => ({ ...r, o: r.origin, u: [Math.cos(toRad(r.azimuth_deg)), Math.sin(toRad(r.azimuth_deg))] }));
+  const R = rays.map((r) => {
+    const az = toRad(r.azimuth_deg);
+    const el = toRad(r.elevation_deg);
+    return {
+      ...r,
+      o: r.origin,
+      u: [Math.cos(az), Math.sin(az)],
+      u3: [Math.cos(el) * Math.cos(az), Math.cos(el) * Math.sin(az), Math.sin(el)]
+    };
+  });
   const rejected = [];
   let inliers = R;
   let method = 'wls';
@@ -125,16 +241,50 @@ export function robustFix(rays, { settings, scenario }) {
   } else method = 'two_ray';
 
   const xy = weightedFit(inliers);
-  const ranges = xy ? inliers.map((r) => rangeAlong(r, xy)) : [];
-  const negative_range = !xy || ranges.some((t) => !(t > 0));
+  const ranges2d = xy ? inliers.map((r) => rangeAlong(r, xy)) : [];
+  const negative2d = !xy || ranges2d.some((t) => !(t > 0));
   const crossH = maxCrossing(inliers);
-  const poorly_conditioned = negative_range || crossH < settings.fix_min_crossing_deg;
+  const poorlyConditioned2d = negative2d || crossH < settings.fix_min_crossing_deg;
+  const trusted = R.filter((r) => r.elevation_trusted && Number.isFinite(r.elevation_deg));
+  let inliers3d = [];
+  let p3d = null;
+  let cross3d = trusted.length >= 2 ? maxCrossing3d(trusted) : 0;
+  const attempted3d = poorlyConditioned2d && trusted.length >= 2 && cross3d >= settings.fix_min_crossing_deg;
+  let negative3d = false;
+  if (attempted3d) {
+    inliers3d = consensus3d(trusted, settings);
+    cross3d = inliers3d.length >= 2 ? maxCrossing3d(inliers3d) : 0;
+    p3d = inliers3d.length >= 2 && cross3d >= settings.fix_min_crossing_deg ? weightedFit3(inliers3d) : null;
+    if (p3d && inliers3d.some((r) => !(rangeAlong3(r, p3d) > 0))) {
+      negative3d = true;
+      p3d = null;
+    }
+  }
+  const use3d = !!p3d;
+  if (use3d) {
+    inliers = inliers3d;
+    method = inliers3d.length >= 3 ? '3d_ransac_wls' : '3d_two_ray';
+    rejected.length = 0;
+    for (const r of R) {
+      if (inliers.includes(r)) continue;
+      const z = r.elevation_trusted && Number.isFinite(r.elevation_deg) && p3d ? zScore3(r, p3d) : null;
+      rejected.push({
+        node_id: r.node_id,
+        reason: !r.elevation_trusted ? 'untrusted_elevation' : p3d && !(rangeAlong3(r, p3d) > 0) ? 'behind_node' : 'outlier',
+        residual_sigma: Number.isFinite(z) ? z : null
+      });
+    }
+  }
 
   // Height: from nodes that resolve elevation (not sign-assumed, confidence ok), otherwise the ground-event prior.
   let z = settings.source_height_prior_m;
   let z_clamped = true;
   let zFrom = [];
-  if (xy && !negative_range) {
+  if (use3d) {
+    z = p3d[2];
+    z_clamped = false;
+    zFrom = inliers;
+  } else if (xy && !negative2d) {
     zFrom = inliers.filter((r) => r.elevation_trusted && Number.isFinite(r.elevation_deg));
     if (zFrom.length) {
       let sw = 0;
@@ -149,14 +299,19 @@ export function robustFix(rays, { settings, scenario }) {
       z_clamped = false;
     }
   }
-  const position = xy && !negative_range ? [xy[0], xy[1], z] : null;
+  const position = use3d ? p3d : !negative3d && xy && !negative2d ? [xy[0], xy[1], z] : null;
+  const ranges = use3d ? inliers.map((r) => rangeAlong3(r, p3d)) : ranges2d;
+  const negative_range = use3d ? false : negative2d || negative3d;
+  const poorly_conditioned = use3d ? cross3d < settings.fix_min_crossing_deg : negative_range || crossH < settings.fix_min_crossing_deg;
+  const finalCrossH = maxCrossing(inliers);
 
   // Leave-one-out residuals on the final inliers (only defined for three or more).
   const loo = [];
   if (position && inliers.length >= 3) {
-    for (const r of inliers) loo.push({ node_id: r.node_id, residual_sigma: looScore(r, inliers, settings) });
+    for (const r of inliers) loo.push({ node_id: r.node_id, residual_sigma: use3d ? looScore3(r, inliers, settings) : looScore(r, inliers, settings) });
   }
   const looMax = loo.reduce((m, x) => (Number.isFinite(x.residual_sigma) ? Math.max(m, x.residual_sigma) : m), 0);
+  const raw3d = trusted.length >= 2 ? weightedFit3(trusted) : null;
 
   const reasons = [];
   if (position) {
@@ -178,8 +333,10 @@ export function robustFix(rays, { settings, scenario }) {
     poorly_conditioned,
     negative_range,
     ranges_m: ranges,
-    max_angle_deg: crossH,
-    max_crossing_angle_horizontal_deg: crossH,
+    max_angle_deg: finalCrossH,
+    max_crossing_angle_horizontal_deg: finalCrossH,
+    max_angle_3d_deg: use3d ? cross3d : trusted.length >= 2 ? maxCrossing3d(trusted) : null,
+    z_3d_raw_m: use3d ? p3d[2] : raw3d?.[2] ?? null,
     inlier_nodes: inliers.map((r) => r.node_id),
     rejected_nodes: rejected,
     loo_residuals: loo,
