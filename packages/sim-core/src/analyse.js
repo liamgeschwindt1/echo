@@ -398,6 +398,7 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
       excluded_unreliable: perNode.filter((n) => n.heard && !n.reliable).map((n) => n.node_id),
       backtrace: {
         traces: bt.traces,
+        edge_hypotheses: bt.edge_hypotheses,
         candidates: bt.candidates.slice(0, 10),
         top: bt.candidates.slice(0, 3),
         ...btTruth,

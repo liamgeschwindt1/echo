@@ -227,3 +227,41 @@ test('P8: the activity decimation follows the band (default band unchanged, wide
   assert.equal(decimationFor([50, 9000], 48000), 2);
   for (const band of [[200, 1600], [200, 3000], [50, 9000]]) assert.ok(band[1] * 1.2 < 48000 / (2 * decimationFor(band, 48000)));
 });
+
+// ---------- P7: diffraction-aware backtrace ----------
+import { newBuilding } from '../src/scenario.js';
+import { backtraceCandidates } from '../src/backtrace.js';
+
+test('P7: a node blocked by a long wall supports the true candidate through the corner (edge hypothesis)', () => {
+  // Wall from y = -3 to y = 697 at x = 45..55: n1 at (100, 30) cannot see the source at (0, 0) and hears it round the
+  // corner (55, -3). n2 and n3 see the source directly.
+  const s = defaultScenario();
+  Object.assign(s.settings, { air_absorption: false, ground_reflectivity: 0, noise_floor_db_spl: 30, mic_self_noise_db_spl: 10, reflection_order: 0, diffraction_order: 1, diffraction_model: 'maekawa' });
+  s.buildings = [newBuilding('b1', 50, 347, 10, 700, 100)];
+  s.nodes = [newNode('n1', 100, 30), newNode('n2', 100, -60), newNode('n3', -30, -50)];
+  s.sources = [{ ...newSource('s1', 'b', 0, 0, 125), start_s: 0.2 }];
+  const rng = mulberry32(3);
+  const b = new Float32Array(Math.round(0.06 * FS));
+  for (let i = 0; i < b.length; i++) b[i] = gaussian(rng) * Math.sin((Math.PI * i) / b.length);
+  const [r] = analyseScenario(s, renderScenario(s, new Map([['b', b]]), { lengthS: 1.4 }), new Map([['b', 0.06]]));
+  const n1 = r.nodes[0];
+  assert.equal(n1.direct_blocked, true);
+  assert.ok(r.backtrace.edge_hypotheses.n1.some((id) => /b1:/.test(id)), JSON.stringify(r.backtrace.edge_hypotheses));
+  const near = r.backtrace.candidates.filter((c) => Math.hypot(c.position[0], c.position[1]) < 3);
+  assert.ok(near.length, JSON.stringify(r.backtrace.top.map((c) => c.position)));
+  const best = near[0];
+  assert.ok(best.rank <= 3, String(best.rank));
+  assert.equal(best.support.find((x) => x.node_id === 'n1')?.hypothesis, 'edge');
+  assert.ok(best.hypotheses.includes('edge') && best.hypotheses.includes('direct'));
+});
+
+test('P7: edge hypotheses never come from a corner the node cannot see, and reflections still unfold as before', () => {
+  const buildings = [newBuilding('b1', 0, 30, 20, 10, 15), newBuilding('b2', 0, 60, 40, 10, 15)];
+  // From (0,0) looking north, b2's corners are hidden behind b1.
+  const out = backtraceCandidates([{ node_id: 'a', position: [0, 0, 5], azimuth_deg: 90, uncertainty_deg: 30 }], buildings);
+  assert.ok(out.edge_hypotheses.a.every((id) => !id.startsWith('b2:') || id === 'b2:roof'), JSON.stringify(out.edge_hypotheses));
+  assert.ok(out.edge_hypotheses.a.some((id) => id.startsWith('b1:')));
+  const off = backtraceCandidates([{ node_id: 'a', position: [0, 0, 5], azimuth_deg: 90, uncertainty_deg: 30 }], buildings, { edges: false });
+  assert.deepEqual(off.edge_hypotheses.a, []);
+  assert.deepEqual(off.traces, out.traces);
+});
