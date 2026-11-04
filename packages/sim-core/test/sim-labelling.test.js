@@ -128,14 +128,14 @@ test('P9: sanity check compares the app path on the clean clip with the sim path
   assert.equal(res.app_label, 'glass_break');
 });
 
-test('export schema 0.10: changelog, placeholder thresholds, notes, labels only', async () => {
+test('export schema 0.11: changelog, placeholder thresholds, notes, labels only', async () => {
   const { buildExport, EXPORT_SCHEMA } = await import('../src/export.js');
   const { s, rendered, durations, results } = glassScene();
   const labelling = await labelEvents(s, rendered, results, { cat, runners: glassRunners, manifest, settings: s.settings, clipDurations: durations });
   const ex = JSON.parse(JSON.stringify(buildExport({ scenario: s, nodes: [], results, labelling, rendered })));
-  assert.equal(ex.schema, '0.10');
-  assert.equal(EXPORT_SCHEMA, '0.10');
-  assert.equal(ex.changelog[0].schema, '0.10');
+  assert.equal(ex.schema, '0.11');
+  assert.equal(EXPORT_SCHEMA, '0.11');
+  assert.equal(ex.changelog[0].schema, '0.11');
   assert.equal(ex.rendering.sample_rate_hz, rendered.sample_rate);
   assert.equal(ex.rendering.samples_per_mic, rendered.length);
   assert.equal(ex.rendering.duration_s, rendered.length / rendered.sample_rate);

@@ -79,6 +79,16 @@ Node count and spacing cross two variables. Threshold tuning varies legacy gates
 Overlapping sources varies count and level differences. Realism on vs off pairs
 identical scenes/seeds. Full regression uses the whole library and no parameter
 sweeps. Presets are editable experiments, not tuned accuracy claims.
+The library includes opt-in `ball12_d180_sub4_maxvol` (A1/C1/C2/C3), a
+maximum-volume noncoplanar four-mic alternative. Legacy `ball12_d180_sub4`
+remains coplanar for compatibility and is marked accordingly. Select the new
+model explicitly; no editor/benchmark default changes. Held-out random sites
+pin their original array choices even when the library grows.
+
+`npm run benchmark -- --experiment docs/experiments/array-pilot.json --out baselines/array-pilot.json`
+runs a predeclared two-site pilot across every library array, both pipelines,
+both realism profiles and seeds 1/101. Its limited scene coverage cannot
+establish a hardware winner.
 
 ## Reading results
 

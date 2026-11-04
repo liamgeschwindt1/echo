@@ -56,6 +56,10 @@ source revisions reuse audio without reusing inference. A provenance sidecar
 preserves the actual producer across revisions. Legacy migration is explicit,
 with graph/input/runtime/PCM checks and a cold control; dirty historical source
 remains an acknowledged audit assumption.
+Seeded random sites use a frozen list of original array IDs/order, not the
+current library length. Library additions therefore cannot alter held-out
+geometry. The opt-in maximum-volume four-mic layout is an exact geometry-only
+choice; its independent golden does not replace legacy signal fixtures.
 
 `testing.js` builds forms with existing app design classes and renders shared
 report components. `testing-view.js` is a display adapter for saved inference,

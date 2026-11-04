@@ -1,4 +1,4 @@
-// The results export ("Export results" in the sim). Schema 0.10: see EXPORT_CHANGELOG.
+// The results export ("Export results" in the sim). Schema 0.11: see EXPORT_CHANGELOG.
 // Node output is limited to bearings, levels, times, uncertainties, labels, scores and confidences: no audio, spectra or
 // embeddings, and every unmeasured constant or threshold is marked placeholder.
 import { simConstants } from './geometry.js';
@@ -7,9 +7,14 @@ import { LABELLING_NOTE } from './labelling.js';
 import { nextPow2 } from './dsp.js';
 import { MEASURED_DEFAULTS } from './measured.js';
 
-export const EXPORT_SCHEMA = '0.10';
+export const EXPORT_SCHEMA = '0.11';
 
 export const EXPORT_CHANGELOG = [
+  {
+    schema: '0.11',
+    added: ['Opt-in library ID ball12_d180_sub4_maxvol: exact maximum-volume noncoplanar four-mic subset, with its own new signal golden. No default array changes.'],
+    changed: ['Legacy coplanar ball12_d180_sub4 coordinates and name remain unchanged, but status/notes warn of rank deficiency. Seeded benchmark sites pin the original eight array IDs/order so library additions cannot change held-out inputs.']
+  },
   {
     schema: '0.10',
     added: ['Benchmark scores.fixes contains every assigned measured episode; manifests identify scoring_version and explicit re-scoring provenance. Failure atlas includes every wrong episode and counts unmatched hypotheses separately without inventing their spatial errors.'],

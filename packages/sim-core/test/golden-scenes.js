@@ -1,6 +1,7 @@
 // Fixed scenes for regression: synthetic clips only, so no audio files are needed.
 import { defaultScenario, newBuilding, newNode, newSource } from '../src/scenario.js';
 import { gaussian, mulberry32 } from '../src/rng.js';
+import { applyArrayToNode, BUILTIN_ARRAYS } from '../src/arrays.js';
 
 export const FS = 48000;
 
@@ -23,6 +24,18 @@ const make = (nodes, sources, settings = {}) => {
   s.nodes = nodes;
   s.sources = sources;
   return s;
+};
+
+export const ARRAY_VOLUME_SCENES = {
+  maximum_volume_four: () => ({
+    scenario: make(
+      [applyArrayToNode(newNode('n1', 0, 0), BUILTIN_ARRAYS.find((a) => a.id === 'ball12_d180_sub4_maxvol'))],
+      [{ ...newSource('s1', 'click', 25, 15, 120), start_s: 0.2, keyframes: [{ t: 0, position: [25, 15, 12] }] }],
+      { ground_reflectivity: 0, noise_enabled: false }
+    ),
+    clips: { click: click(7) },
+    lengthS: 1.2
+  })
 };
 
 export const GOLDEN_SCENES = {

@@ -21,6 +21,7 @@ export const SCENES = Object.freeze([
 ]);
 export const DEFAULT_SEEDS = [1, 2, 101];
 export const HELD_OUT_SEEDS = [101];
+const RANDOM_ARRAY_IDS = Object.freeze(['flat4_100', 'ball12_d180', 'ball12_d180_sub4', 'ball12_d180_sub6', 'ball12_d180_sub8', 'planar12_d180', 'dome12_d230', 'puck12_d210']);
 
 export function randomScene(siteSeed) {
   const rng = mulberry32(siteSeed);
@@ -30,7 +31,10 @@ export function randomScene(siteSeed) {
   s.nodes = Array.from({ length: count }, (_, i) => {
     const az = 2 * Math.PI * i / count;
     const n = newNode(`n${i + 1}`, radius * Math.cos(az), radius * Math.sin(az));
-    return applyArrayToNode(n, BUILTIN_ARRAYS[Math.floor(rng() * BUILTIN_ARRAYS.length)]);
+    const id = RANDOM_ARRAY_IDS[Math.floor(rng() * RANDOM_ARRAY_IDS.length)];
+    const model = BUILTIN_ARRAYS.find((a) => a.id === id);
+    if (!model) throw new Error(`Frozen random-scene array is unavailable: ${id}`);
+    return applyArrayToNode(n, model);
   });
   const az = rng() * Math.PI * 2;
   const range = 20 + rng() * 180;

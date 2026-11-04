@@ -6,7 +6,7 @@ The one reference document for the **sim** frontend ([apps/sim](apps/sim)) and i
 
 Coordinates: metres, x east, y north, z up. Time: seconds of scenario time. Inside the physics, pressure is in pascals; digital floats appear only at the microphone output. Angles in the code are in radians unless the name ends in `_deg`.
 
-## Reproducible Testing engine (schema 0.10)
+## Reproducible Testing engine (schema 0.11)
 
 `npm run benchmark -- --experiment smoke --out baselines/smoke.json` runs the shared
 `packages/sim-core/src/benchmark/` engine. CLI and Testing use identical experiment
@@ -71,6 +71,29 @@ explicitly recomputes scores from stored inference without rendering, changing
 inference or overwriting the original. It records both producers and clears the
 obsolete whole-result cache reference. Re-score both sides before regression
 comparison. This is a measurement correction, not an algorithm accuracy gain.
+
+### Noncoplanar four-mic alternative (schema 0.11)
+
+`ball12_d180_sub4` remains unchanged for compatibility: A1/B2/C1/D2 all have
+y = 0. Its nonzero vertical baseline does not provide full 3D rank.
+Select **4-mic maximum-volume D180 ball subset**
+(`ball12_d180_sub4_maxvol`) explicitly to use A1/C1/C2/C3 instead.
+Exhaustive enumeration of all 495 subsets maximises the absolute tetrahedral
+determinant, equivalently the determinant of the centred geometry Gram matrix.
+Tetrahedral volume is **299297.648 mm3**. Integer tenths-of-mm arithmetic gives
+exact ties, resolved by original mic order. This is a geometry choice, not
+evidence of acoustic superiority or calibrated hardware.
+
+No default array changes. The opt-in layout has its own new signal golden:
+`node scripts/sim-golden.mjs --set array-max-volume`. All older signal and
+analysis golden files are unchanged. Random benchmark sites pin the original
+eight array IDs/order; a SHA-256 regression verifies all eight held-out inputs
+remain identical after extending the library.
+
+`docs/experiments/array-pilot.json` predeclares a 144-run, two-site/two-seed,
+all-nine-array off/on comparison in both pipelines. This is a bounded pilot,
+not the requested full-scene hardware ranking. It reserves 50% of scene IDs
+and seeds as held out and does not tune algorithm thresholds.
 
 ### Simulated, measured and assumed
 
