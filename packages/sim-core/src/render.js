@@ -271,14 +271,20 @@ function movingSignal(ctx, si, at, pathFilter) {
     const used = pathFilter ? paths.filter(pathFilter) : paths;
     if (!used.length) continue;
     const tA = S + a / fs;
-    const seg = new Float32Array(b - a);
-    for (let i = a; i < b; i++) seg[i - a] = clip[i] * hatWeight(knots, j, S + i / fs);
     // Late echoes spread the delays far beyond one piece: rather than one transform long enough for all of them,
     // paths are grouped by delay so each group fits a transform of size m (one forward FFT, one inverse per group).
     const m = nextPow2(b - a + 2 * MOVING_PAD + 1 + MOVING_SPREAD);
     const room = m - (b - a) - 2 * MOVING_PAD - 1;
     const piece = pieceContext(ctx, m);
-    const X = rfft(seg, m);
+    ctx.movingPieceSpectra ??= new Map();
+    const spectrumKey = `${si}:${j}:${m}`;
+    let X = ctx.movingPieceSpectra.get(spectrumKey);
+    if (!X) {
+      const seg = new Float32Array(b - a);
+      for (let i = a; i < b; i++) seg[i - a] = clip[i] * hatWeight(knots, j, S + i / fs);
+      X = rfft(seg, m);
+      ctx.movingPieceSpectra.set(spectrumKey, X);
+    }
     const sorted = [...used].sort((p, q) => p.delay_s - q.delay_s);
     for (let g0 = 0; g0 < sorted.length; ) {
       const minTau = sorted[g0].delay_s;
