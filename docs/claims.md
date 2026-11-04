@@ -14,7 +14,7 @@ The final round-two report links the frozen sealed-test figures.
 | Multi-node global assignment improves the product | Simulated, rejected | Complete global/global-uncertainty trial reports | Calibration and/or paired improvement guards failed |
 | Two nodes have discriminative deployed confidence | Not validated | B1 trial can discriminate; retained legacy flags cannot | Useful-rate zero can coexist with zero silent-wrong rate |
 | The measured localiser estimates elevation/3D | Not validated | No retained measured elevation implementation | Editor truth-assisted 3D must not be presented as measured-only |
-| A particular array is the best hardware | Not validated | Round-one complete array/sensitivity evidence | Endpoint flips, algorithm failures and no real measurements; no robust winner |
+| A particular array is the best hardware | Not validated | Complete2052-case archived regrading and fresh150-case retained-solver check | Old inference, not a new improved-engine rerender; useful-rate ties, endpoint flips and no real measurements |
 | Realism settings represent measured hardware | Not validated | Placeholder ledger and `prototype-plan.md` | Heading, position, noise, reflection and correlation need recording calibration |
 | Scalar gain robustness proves phase robustness | Not validated | Scalar gain cancels ideal PHAT | Frequency/phase mismatch is a different, unbuilt model |
 | Identical render optimisations preserve audio | Simulated | Preregistered full-render/audio/inference hash comparison | Only the exact profiled populations and unchanged goldens support this |
@@ -24,8 +24,10 @@ The final round-two report links the frozen sealed-test figures.
 | Browser and Node resolve consensus ties alike | Simulated | Actual Chromium/Node pair/fix parity regression | Numerical determinism is not field localisation accuracy |
 | ESC-50 labelling accuracy generalises to a site | Not validated | Separate real-model range/noise/normalisation study | One clip per class; propagation/noise remain synthetic |
 | Real WAV/CSV ingestion works | Simulated | Synthetic multichannel round-trip and CLI tests | No real recording evaluated; recording constraints documented |
-| Per-zone noise shares are accurate | Not validated | No attribution experiment completed | A phone level recording is not contribution ground truth |
-| Prototype hardware tolerances meet targets | Not validated | Proposed rigs/sample sizes/imports in `prototype-plan.md` | No derived hardware requirement or measured tolerance claim |
+| Per-zone noise shares are accurate | Simulated prototype only | Complete36-render known-POI study;3-node mean share error3.00pp off/9.24pp on | Synthetic independent noise sources, known points and level assumptions; two-node shares unavailable; no field accuracy claim |
+| More available nodes ensure more accurate fixes | Not validated | Complete60-case count/spacing study | Third-node availability improves coverage in this site, but actual fusion remains two-node and higher counts produce duplicates |
+| The placement map predicts calibrated accuracy | Not validated | Geometry-only view and20 preregistered checks | Missed fixes and biased observed errors disagree with the ideal scale; no mounting safety/detection claim |
+| Prototype hardware tolerances meet targets | Not validated | Ideal9x360-direction component budgets and `prototype-plan.md` | Separate full-budget ceilings are not sufficient specifications; self-noise/sync requirements remain null |
 
 Only independently acquired, sealed real recordings may move an accuracy claim
 to **validated**, with exact conditions and uncertainty attached. Passing CI,

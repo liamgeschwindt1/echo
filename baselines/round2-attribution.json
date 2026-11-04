@@ -1,0 +1,2526 @@
+{
+  "kind": "echo-noise-attribution-prototype",
+  "schema": 1,
+  "manifest": {
+    "complete": true,
+    "registration_sha256": "ae94d5e05fcbd3bdbac5d0c94d6a472ac43a94f9743a9e854c845a35228c7ce1",
+    "implementation_sha256": "5d4ad64b48043c190aabb8ef4bf0a5c2f0d1f8a888d68fad1a30e817967160e9",
+    "producer": {
+      "git_hash": "87a968729a4dd06b2b6dab4fd35d3d9c0fecd258",
+      "code_version": "2f7230fc50b341ad0c3fbd147bad728cc9fe6bb92e2fbc748bc25cf7c1a1bf38",
+      "render_code_version": "39d44f7b80a96220844fabdc2b11bff172055a20a311c35a84603f308f2ffbe4",
+      "render_source_files": [
+        {
+          "name": "activity.js",
+          "sha256": "9965a16c9ddd57877f04dceecda489f9f6e52c32be2599ed171ca5024c3b863c"
+        },
+        {
+          "name": "diffraction.js",
+          "sha256": "1fcb78ec1986de677d0e7aa7ab14a9166705df036747e11a1e32882bfffeb0d9"
+        },
+        {
+          "name": "dsp.js",
+          "sha256": "2893fe2c7da6591e182d0618bac7fbc38a31a11bfecc445fa65ef14d4cda4c3f"
+        },
+        {
+          "name": "edges.js",
+          "sha256": "f455cfe3d9eacfba321cfb0fbc2a540628f40b5bbf3f3f6c7823a4fac7cc8d5d"
+        },
+        {
+          "name": "geometry.js",
+          "sha256": "53c46891257f5e03fc6151e919b9ee39afa247422bed1084ed5df79787c430b1"
+        },
+        {
+          "name": "mics.js",
+          "sha256": "dae01b073fc21e68de3e412d466913be669f66a8d59b9757b130e15e286c0a97"
+        },
+        {
+          "name": "motion.js",
+          "sha256": "64d63bc9cfb75f265015391f44b99fb7c446de6c5f6a3e796a5a66f831ee8c4c"
+        },
+        {
+          "name": "physics.js",
+          "sha256": "d99e4e86b406fa2a0617fba14008cbcad2d90db65d8efedab04e035cbb429b7b"
+        },
+        {
+          "name": "profile.js",
+          "sha256": "25b69e19ce39b56e287ee0e03f821ff5679bc81010fbdd9c7c64ac9605e37291"
+        },
+        {
+          "name": "realism.js",
+          "sha256": "ad2b98407c3ff6bd5688eb5323abf3a86b1f1496de6491040f55afcc6f8575fd"
+        },
+        {
+          "name": "render.js",
+          "sha256": "0edc46d44c0a7072d764fde43ca51c45c9439f7c87dc7299592b6797101ff4f3"
+        },
+        {
+          "name": "rng.js",
+          "sha256": "f40eda0168b4025902bc848c4ce1e0c1721641459fb3c449071a724b22215ca3"
+        }
+      ],
+      "schema": "0.16",
+      "dirty": true,
+      "scoring": "benchmark score.js; post-inference truth only",
+      "audio_source": "repository test-audio recordings, PCM float32 mono at 48000 Hz",
+      "targets": {
+        "schema": 1,
+        "placeholder": true,
+        "scope": "Starting design targets, not validated acceptance limits. Error targets apply to scenes with source reference range up to 50 m; mixed-range tables are indicative only.",
+        "max_reference_range_m": 50,
+        "metrics": {
+          "horizontal_median_m": {
+            "max": 5,
+            "unit": "m"
+          },
+          "horizontal_p90_m": {
+            "max": 10,
+            "unit": "m"
+          },
+          "useful_fix_rate": {
+            "min": 0.8,
+            "unit": "fraction"
+          },
+          "unflagged_wrong_fix_rate": {
+            "max": 0.01,
+            "unit": "fraction"
+          },
+          "risk_coverage_area": {
+            "max": 0.2,
+            "unit": "fraction"
+          },
+          "within_1sigma": {
+            "min": 0.63,
+            "max": 0.73,
+            "unit": "fraction"
+          },
+          "within_2sigma": {
+            "min": 0.9,
+            "max": 0.99,
+            "unit": "fraction"
+          }
+        }
+      }
+    },
+    "started_at": "2026-11-04T13:49:28.892Z",
+    "render_count": 36,
+    "finished_at": "2026-11-04T13:51:27.328Z"
+  },
+  "spec": {
+    "name": "Separate noise-first point-of-interest attribution prototype",
+    "registered_before": "Any attribution fixture or mixture-study outcomes",
+    "seeds": [
+      1,
+      101
+    ],
+    "node_counts": [
+      2,
+      3,
+      6
+    ],
+    "realism": [
+      "off",
+      "on"
+    ],
+    "recipes": [
+      [
+        0.6,
+        0.25,
+        0.15
+      ],
+      [
+        0.2,
+        0.7,
+        0.1
+      ]
+    ],
+    "pois": [
+      {
+        "id": "traffic",
+        "position": [
+          -35,
+          20,
+          1.5
+        ]
+      },
+      {
+        "id": "venue",
+        "position": [
+          30,
+          25,
+          1.5
+        ]
+      },
+      {
+        "id": "hvac",
+        "position": [
+          -10,
+          -35,
+          1.5
+        ]
+      }
+    ],
+    "nodes": "Evenly spaced on a25m radius ring, heading0, height1.5m, flat4_100 nominal geometry.",
+    "audio": "Independent Rademacher white-noise clips from mulberry32((seed+10000+1000*poi_index)>>>0), sample=-1 when draw<0.5 else+1; four seconds at48kHz, source start1s; semantic POI names are not realistic traffic/music/HVAC recordings. Render5.5s, no buildings/ground/reflections/diffraction; original realism off/on hardware/noise profiles only.",
+    "source_level": "Nominal total70dBSPL at receptor[0,0,1.5], per-source1m level=70+10log10(recipe_share*distance_to_receptor_squared). Actual reference powers include propagation filtering, so recipe is not substituted for scored truth.",
+    "observations": "First mic per node; mean-square power over[2,4]s minus measured quiet power over[0,0.5]s, clamped nonnegative. Estimator receives first-mic nominal coordinates from declared geometry, POI coordinates and levels, never component audio, source powers or true mic positions.",
+    "estimator": "Nonnegative least squares with inverse-square transfer, enumerating all active subsets of three declared POIs. Require at least three nodes and full-rank normalized transfer matrix (Gram pivot tolerance1e-8); otherwise shares/error are null with an explicit reason. Report receptor energy shares, not emission-power fractions.",
+    "localiser": "Run the unchanged measured pipeline on every mixture. Associate final fixes to nearest declared POI within10m for diagnostics only. All positions are declared map priors, not inferred truth; no reliable-fix claim or localisation-based position refinement.",
+    "truth": "Isolated source-only, noise-free single-mic renders at the receptor; energy over[2,4]s. Twelve unique seed/recipe/source renders, reused across node-count and realism conditions because reference geometry/physics is identical. Finite-mixture cross terms are not attributed; independent-source energy additivity is an assumption.",
+    "population": {
+      "mixture_renders": 24,
+      "isolated_reference_renders": 12,
+      "total_renders": 36
+    },
+    "metrics": "Mean absolute share error across three POIs, percentage points; per-POI signed error; nonidentifiable rate; actual fix/association counts. Preserve two-node nulls. Equal complete seed/recipe population per node-count/realism condition.",
+    "intervals": "Exact two observed seed-cluster values and their range; no reliable population95%CI from two clusters. No ranking from partial data.",
+    "unit_fixtures": "Three sources with known nonnegative powers on noncollinear3/6-node geometries recover noiseless shares;2nodes and rank-deficient geometries return explicit null; invalid/nonfinite inputs throw.",
+    "assumptions": "Every POI location is known; stationary uncorrelated point sources, inverse-square transfer, measured stationary background, no unknown contributors, ground or occlusion. All are placeholders. Not a validated road/bar percentage product and not a localiser replacement."
+  },
+  "references": {
+    "1:0": [
+      {
+        "source_id": "traffic",
+        "power": 0.0000019060200097264435,
+        "audio_sha256": "e92fff583f57d0965b1233d016d683b40a8eff1caa4c04ecf29cf54f2f931eb4"
+      },
+      {
+        "source_id": "venue",
+        "power": 8.058833899913357e-7,
+        "audio_sha256": "a423c6e3fffe33a224beedfeaa332d5cc86e673a882102aa0c792d0151dcae56"
+      },
+      {
+        "source_id": "hvac",
+        "power": 5.026579753689786e-7,
+        "audio_sha256": "1abfd0dc14fd0df0efc7a42289ff4033950c772fc82e4c21e80191e5fe8a0907"
+      }
+    ],
+    "1:1": [
+      {
+        "source_id": "traffic",
+        "power": 6.353400773810152e-7,
+        "audio_sha256": "194bca284cf97b44f2e9212f922349d802bd21baebecaf07d79af27261c45a22"
+      },
+      {
+        "source_id": "venue",
+        "power": 0.000002256473525529595,
+        "audio_sha256": "38b109ae9ac3f4f33306d31c52949dae9ca7fe77f0bb8525f8cb60f2db76fe0f"
+      },
+      {
+        "source_id": "hvac",
+        "power": 3.3510533540182084e-7,
+        "audio_sha256": "6148b517b64837f34b9f3393939bf1ffb4726f40fe53d54a8505b6638f57faa6"
+      }
+    ],
+    "101:0": [
+      {
+        "source_id": "traffic",
+        "power": 0.0000019082247748171463,
+        "audio_sha256": "8092e5a638a2126bc171ab1862c1a17941e71b13f676ba60c3fd635d1cf97329"
+      },
+      {
+        "source_id": "venue",
+        "power": 8.019511233373989e-7,
+        "audio_sha256": "094ad408ac2c7df7f285309aca17af2240e28a68d4ca99bb627fe8111dbfe55b"
+      },
+      {
+        "source_id": "hvac",
+        "power": 4.962951362653244e-7,
+        "audio_sha256": "a106777e230474ed06d41d9ee60ce82b22d72078142b14a27953e6f499387ed1"
+      }
+    ],
+    "101:1": [
+      {
+        "source_id": "traffic",
+        "power": 6.360749990469716e-7,
+        "audio_sha256": "8a84bbe72c39fce8be04298e85d0249482b9d23b3f8b40009416a7d2bb6df5d3"
+      },
+      {
+        "source_id": "venue",
+        "power": 0.0000022454631786941223,
+        "audio_sha256": "29f7802cff6879be9703e51da1ca02f326f88d8bb133c83dad9db0fd467f7e56"
+      },
+      {
+        "source_id": "hvac",
+        "power": 3.3086344202171843e-7,
+        "audio_sha256": "daf3c6a53751f12c6af0986ec534b34df9fffac09906c97c2a56c76c981cfd05"
+      }
+    ]
+  },
+  "summary": [
+    {
+      "node_count": 2,
+      "realism": "off",
+      "n": 4,
+      "estimated": 0,
+      "seed_means": [
+        {
+          "seed": 1,
+          "mean_absolute_share_error_pp": null
+        },
+        {
+          "seed": 101,
+          "mean_absolute_share_error_pp": null
+        }
+      ],
+      "mean_absolute_share_error_pp": null,
+      "fix_count": 2,
+      "associated_fixes": 2
+    },
+    {
+      "node_count": 2,
+      "realism": "on",
+      "n": 4,
+      "estimated": 0,
+      "seed_means": [
+        {
+          "seed": 1,
+          "mean_absolute_share_error_pp": null
+        },
+        {
+          "seed": 101,
+          "mean_absolute_share_error_pp": null
+        }
+      ],
+      "mean_absolute_share_error_pp": null,
+      "fix_count": 1,
+      "associated_fixes": 1
+    },
+    {
+      "node_count": 3,
+      "realism": "off",
+      "n": 4,
+      "estimated": 4,
+      "seed_means": [
+        {
+          "seed": 1,
+          "mean_absolute_share_error_pp": 2.961666961812235
+        },
+        {
+          "seed": 101,
+          "mean_absolute_share_error_pp": 3.0415656049604793
+        }
+      ],
+      "mean_absolute_share_error_pp": 3.0016162833863573,
+      "fix_count": 4,
+      "associated_fixes": 4
+    },
+    {
+      "node_count": 3,
+      "realism": "on",
+      "n": 4,
+      "estimated": 4,
+      "seed_means": [
+        {
+          "seed": 1,
+          "mean_absolute_share_error_pp": 7.209057660853109
+        },
+        {
+          "seed": 101,
+          "mean_absolute_share_error_pp": 11.26096086057533
+        }
+      ],
+      "mean_absolute_share_error_pp": 9.23500926071422,
+      "fix_count": 3,
+      "associated_fixes": 3
+    },
+    {
+      "node_count": 6,
+      "realism": "off",
+      "n": 4,
+      "estimated": 4,
+      "seed_means": [
+        {
+          "seed": 1,
+          "mean_absolute_share_error_pp": 2.4223311266085172
+        },
+        {
+          "seed": 101,
+          "mean_absolute_share_error_pp": 2.4592095067257542
+        }
+      ],
+      "mean_absolute_share_error_pp": 2.4407703166671357,
+      "fix_count": 16,
+      "associated_fixes": 15
+    },
+    {
+      "node_count": 6,
+      "realism": "on",
+      "n": 4,
+      "estimated": 4,
+      "seed_means": [
+        {
+          "seed": 1,
+          "mean_absolute_share_error_pp": 15.847201825650476
+        },
+        {
+          "seed": 101,
+          "mean_absolute_share_error_pp": 4.772554972703928
+        }
+      ],
+      "mean_absolute_share_error_pp": 10.309878399177201,
+      "fix_count": 12,
+      "associated_fixes": 11
+    }
+  ],
+  "cases": [
+    {
+      "seed": 1,
+      "recipe_index": 0,
+      "node_count": 2,
+      "realism": "off",
+      "estimated": {
+        "status": "unavailable",
+        "reason": "Fewer independent node levels than unknown POI powers",
+        "shares": null,
+        "powers_at_1m": null,
+        "residual_squared": null
+      },
+      "truth_shares": [
+        0.5929331524040359,
+        0.2506977767595387,
+        0.15636907083642548
+      ],
+      "signed_share_error_pp": null,
+      "mean_absolute_share_error_pp": null,
+      "observed_excess_powers": [
+        0.000003228829324821556,
+        0.000009300302478621232
+      ],
+      "source_levels_1m_db": [
+        99.89004615698536,
+        95.81209852354843,
+        92.98307137328507
+      ],
+      "audio_sha256": [
+        [
+          "4730965f4f01efc2ae79eeeb251c87ea39b5034d6f83e7072e3c80860adf3735",
+          "e16eaf6da43b725518e9e0f4b317228f5527324b971d71a9467a9e30df60348c",
+          "9bf549ee5fe74eb65bba2d5faf64cb385b95140b042bcf6ce7f1fde82545ce6e",
+          "f785942e9165114daae5cfde8f683371991daf4c48a61227ac1c88b820ee25e3"
+        ],
+        [
+          "760a8ddb68ab2a431079e78bf6ed25a1487539e80489586ea305259815eded81",
+          "9e906d8cb0e1f515394573751de733d0de436f7f122377e913dcaa71199fa01a",
+          "2ac93e5cb62789c1520c65e5d36e747baf3034a5ea69d9cbd38e6038566b61fc",
+          "c41521cff985a55dcc6850db443baf5688387f1b764c9c8e4cf966d6ccbc7393"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "7b2491946197e111842517a262c2defd729bc54084f80f0ffc6e74b5320fa509"
+        },
+        {
+          "id": "venue",
+          "sha256": "efd378c9e409aa789ccb535f69d0b0f45e14be933170bf98097c920d52ea5f87"
+        },
+        {
+          "id": "hvac",
+          "sha256": "2e7c73f8647762b08ea10d805e562d59fecaac4da0ebdf17fe57356bb831644c"
+        }
+      ],
+      "fix_count": 0,
+      "associations": [],
+      "elapsed_ms": 4149.522959
+    },
+    {
+      "seed": 1,
+      "recipe_index": 0,
+      "node_count": 2,
+      "realism": "on",
+      "estimated": {
+        "status": "unavailable",
+        "reason": "Fewer independent node levels than unknown POI powers",
+        "shares": null,
+        "powers_at_1m": null,
+        "residual_squared": null
+      },
+      "truth_shares": [
+        0.5929331524040359,
+        0.2506977767595387,
+        0.15636907083642548
+      ],
+      "signed_share_error_pp": null,
+      "mean_absolute_share_error_pp": null,
+      "observed_excess_powers": [
+        0.0000053362417967594746,
+        0.000014487456164462361
+      ],
+      "source_levels_1m_db": [
+        99.89004615698536,
+        95.81209852354843,
+        92.98307137328507
+      ],
+      "audio_sha256": [
+        [
+          "368e7e44179db474bd7a244c96e015f71c9836661a6134e93f765eb4b32ed05d",
+          "8b7519d219d5c7a7c2e6e824347bc0d14f1201957394ff115113d64d57a82c08",
+          "88b516bb48624be8b9354e063859f5f712a06cd7e6985d9913576c20a57421fc",
+          "19c676e60456536836c6523e2c392513b41e785c8360fdef65b5ca69f69e3b74"
+        ],
+        [
+          "9a193503adc73908e3240bb8bc33097d93acea5fe56df81f9d845a94dd6af7fc",
+          "6b1de9ef86627b3f41dbce2f6881afc1754204d543adeaa39d061be5a7575e13",
+          "9532da25aa8323f34e719df947ca8214b277f6f6927d6b296a2ab34771f22df0",
+          "5d42687b4fbb97c09e11f727c72eb75ecdee0c0b727582c92edfc1a70abc3919"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "7b2491946197e111842517a262c2defd729bc54084f80f0ffc6e74b5320fa509"
+        },
+        {
+          "id": "venue",
+          "sha256": "efd378c9e409aa789ccb535f69d0b0f45e14be933170bf98097c920d52ea5f87"
+        },
+        {
+          "id": "hvac",
+          "sha256": "2e7c73f8647762b08ea10d805e562d59fecaac4da0ebdf17fe57356bb831644c"
+        }
+      ],
+      "fix_count": 0,
+      "associations": [],
+      "elapsed_ms": 2802.994788
+    },
+    {
+      "seed": 1,
+      "recipe_index": 0,
+      "node_count": 3,
+      "realism": "off",
+      "estimated": {
+        "status": "estimated",
+        "reason": null,
+        "shares": [
+          0.6335692287428452,
+          0.1855371847308412,
+          0.1808935865263136
+        ],
+        "powers_at_1m": [
+          0.004197300117205228,
+          0.0011535153764303167,
+          0.0009771508848749383
+        ],
+        "residual_squared": 3.587324068671532e-42
+      },
+      "truth_shares": [
+        0.5929331524040359,
+        0.2506977767595387,
+        0.15636907083642548
+      ],
+      "signed_share_error_pp": [
+        4.0636076338809275,
+        -6.516059202869751,
+        2.4524515689888116
+      ],
+      "mean_absolute_share_error_pp": 4.3440394685798305,
+      "observed_excess_powers": [
+        0.000003228829324821556,
+        0.00000914721372200168,
+        0.00000743119680169392
+      ],
+      "source_levels_1m_db": [
+        99.89004615698536,
+        95.81209852354843,
+        92.98307137328507
+      ],
+      "audio_sha256": [
+        [
+          "4730965f4f01efc2ae79eeeb251c87ea39b5034d6f83e7072e3c80860adf3735",
+          "e16eaf6da43b725518e9e0f4b317228f5527324b971d71a9467a9e30df60348c",
+          "9bf549ee5fe74eb65bba2d5faf64cb385b95140b042bcf6ce7f1fde82545ce6e",
+          "f785942e9165114daae5cfde8f683371991daf4c48a61227ac1c88b820ee25e3"
+        ],
+        [
+          "cb6d77eae597ddda1190de5bcdace9776b8d339afed4f39f09a886adfefdd1a9",
+          "c56d698f0f5b0559c5e460beae56aa6d482cbaac07ab0f9f53730dba3d8b1542",
+          "8c390310bc62b119d982c2b89fe84c2dca9ff482b956bda441e798705eb36822",
+          "094c9dc59d834a7cdeb21e9c4f1fdf1dac91b6ddb35cf111069505a90586a1ea"
+        ],
+        [
+          "4d570bc8e870e1710de6b88a7bb73a561e5dc74228d88856363e23c4cf73dbf3",
+          "a2cd6181eb4a536d3487982a6e6a228f70f17ca0fd9a8a49e07cd346e5ce608c",
+          "6c27a9793e1b1724d82dd6e5cd3667cb2eef829c9b9880d71cf7b739ac7981a9",
+          "3bd7c5607fb1998c2e704dd8f8affe6d50f7493bdb5951967bcf8f5109d9e059"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "7b2491946197e111842517a262c2defd729bc54084f80f0ffc6e74b5320fa509"
+        },
+        {
+          "id": "venue",
+          "sha256": "efd378c9e409aa789ccb535f69d0b0f45e14be933170bf98097c920d52ea5f87"
+        },
+        {
+          "id": "hvac",
+          "sha256": "2e7c73f8647762b08ea10d805e562d59fecaac4da0ebdf17fe57356bb831644c"
+        }
+      ],
+      "fix_count": 1,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "traffic",
+          "distance_m": 1.2113969454978257,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 3968.1951370000006
+    },
+    {
+      "seed": 1,
+      "recipe_index": 0,
+      "node_count": 3,
+      "realism": "on",
+      "estimated": {
+        "status": "estimated",
+        "reason": null,
+        "shares": [
+          0.698721847026301,
+          0.2592763359680713,
+          0.04200181700562766
+        ],
+        "powers_at_1m": [
+          0.006604845950781455,
+          0.0023000523944038316,
+          0.00032373448316884066
+        ],
+        "residual_squared": 3.587324068671532e-42
+      },
+      "truth_shares": [
+        0.5929331524040359,
+        0.2506977767595387,
+        0.15636907083642548
+      ],
+      "signed_share_error_pp": [
+        10.578869462226514,
+        0.8578559208532621,
+        -11.436725383079782
+      ],
+      "mean_absolute_share_error_pp": 7.624483588719852,
+      "observed_excess_powers": [
+        0.0000053362417967594746,
+        0.000014284590812021418,
+        0.000005273358747565156
+      ],
+      "source_levels_1m_db": [
+        99.89004615698536,
+        95.81209852354843,
+        92.98307137328507
+      ],
+      "audio_sha256": [
+        [
+          "368e7e44179db474bd7a244c96e015f71c9836661a6134e93f765eb4b32ed05d",
+          "8b7519d219d5c7a7c2e6e824347bc0d14f1201957394ff115113d64d57a82c08",
+          "88b516bb48624be8b9354e063859f5f712a06cd7e6985d9913576c20a57421fc",
+          "19c676e60456536836c6523e2c392513b41e785c8360fdef65b5ca69f69e3b74"
+        ],
+        [
+          "4762fb24fc870e83b4ad587542983342f904fb4b531b7a13b65b4572fd403aeb",
+          "bc11bf89899a083b2883f3864c1922c4b171faef990068544efecfbebe172265",
+          "54bb8f0ce8acf60b0aa8899c2e759b2cb03b4891bf10436efd7fcdacf83b1a0d",
+          "1ff69a0ec3a8ef9bb55b15a198a2f990190606aa49b08a8e163e452e14b2fd2a"
+        ],
+        [
+          "c74ba149cff58b3ca50baed46ce3ae818df6a1109293f38326da3048e76c7b47",
+          "b15d68c5c38eb6992190c11edb118a92ab37123f47dac5a31d584e928fcc8a24",
+          "54a862c9e25cf032e3ffea9bf50c45f26ab4218ffdefddd97fb83963dd477879",
+          "740580764e979b8ebf3c8f5fc89ba4a3670d1d77b5904f7bb7c7f96037e0a5a6"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "7b2491946197e111842517a262c2defd729bc54084f80f0ffc6e74b5320fa509"
+        },
+        {
+          "id": "venue",
+          "sha256": "efd378c9e409aa789ccb535f69d0b0f45e14be933170bf98097c920d52ea5f87"
+        },
+        {
+          "id": "hvac",
+          "sha256": "2e7c73f8647762b08ea10d805e562d59fecaac4da0ebdf17fe57356bb831644c"
+        }
+      ],
+      "fix_count": 0,
+      "associations": [],
+      "elapsed_ms": 3938.312645
+    },
+    {
+      "seed": 1,
+      "recipe_index": 0,
+      "node_count": 6,
+      "realism": "off",
+      "estimated": {
+        "status": "estimated",
+        "reason": null,
+        "shares": [
+          0.5944616687430987,
+          0.24111537192083055,
+          0.1644229593360708
+        ],
+        "powers_at_1m": [
+          0.004089666504332174,
+          0.0015567017570149435,
+          0.0009223356848964311
+        ],
+        "residual_squared": 1.1566538741197229e-12
+      },
+      "truth_shares": [
+        0.5929331524040359,
+        0.2506977767595387,
+        0.15636907083642548
+      ],
+      "signed_share_error_pp": [
+        0.15285163390628131,
+        -0.9582404838708147,
+        0.8053888499645306
+      ],
+      "mean_absolute_share_error_pp": 0.6388269892472089,
+      "observed_excess_powers": [
+        0.000003228829324821556,
+        0.000007348934907215657,
+        0.000009149001810271984,
+        0.000009291330155313913,
+        0.000007425941476946006,
+        0.0000021930244577008386
+      ],
+      "source_levels_1m_db": [
+        99.89004615698536,
+        95.81209852354843,
+        92.98307137328507
+      ],
+      "audio_sha256": [
+        [
+          "4730965f4f01efc2ae79eeeb251c87ea39b5034d6f83e7072e3c80860adf3735",
+          "e16eaf6da43b725518e9e0f4b317228f5527324b971d71a9467a9e30df60348c",
+          "9bf549ee5fe74eb65bba2d5faf64cb385b95140b042bcf6ce7f1fde82545ce6e",
+          "f785942e9165114daae5cfde8f683371991daf4c48a61227ac1c88b820ee25e3"
+        ],
+        [
+          "e220f4978e0b91d6520f3a0fb9bd9cf564250cc67107862bf7e9f0ef1484941a",
+          "c3aafa26ae6c99e3ca31dbcb45f6578c90fe5bafcef721ecd435c7b581178387",
+          "2b015f192c5f63d2da84dce7e83d8777e1a49fc62b49caf8c8daaa24af594862",
+          "a5305fb0f76dcb844c86e77c285e72d7aa44a6e490aaae19e6afa7a5418e50a2"
+        ],
+        [
+          "48cabeb05feb1c3665228457e4ba570abfb62c4f3a0bca95e95bb248f4f95fe1",
+          "cbbde7ee5862c29dc01b3ff8c415fc322db1c0603a22e1fd1d8b34283e435178",
+          "e4ad06c12fccb83d6f9db60ff2821227889ab32c8ff8a3524fbe01f4326a43fb",
+          "e3d96d8c93f26bc990027a6d2f773147ccc9d3aeff032e34a6aa6de1cfa5d0a6"
+        ],
+        [
+          "c1a027aab9857a7458f15eee191ab59b6f5fa2686e24a4d3f00c3a33d72e8df4",
+          "cbdcd75d355c01058d96b7e763a042434d2ac6c2b8b35ac4550a44486509bdd2",
+          "842526b8c44fecef72fe0f8c9cf0693f5c665522fa3629183f38e0fa999cf25a",
+          "ee5dca336520b66c5c2ee96a0702c44f99622637deca29ccdeb290883e696228"
+        ],
+        [
+          "1c83d2bf241700d027e3bca9ed58a1fffa78dc9cf2e22caa017efac2011abd1b",
+          "69793f070751a72c792846f507fb5d2adb2ef5324f01af22271e66031c64c9ef",
+          "465ec36fc528c19c1c9c2972f31ab7a62d89fa2fbab90fc7a7b0f901f1932a07",
+          "abbed16c4ba8ff71ad3b148e27711bb602f04956a7ecbacd6dd08849c83f3387"
+        ],
+        [
+          "a0ea4ffd143514da6f62d3faa502143394d9e61f6b623cdd0dc973f45617cf6c",
+          "e30c2d51653bb88c80b05174c8597f033f348a851e6149cd564476555de80dfb",
+          "824171f4dab04c527e1105486d6a3411e05b11541be57ac7f61cad6547d8ac46",
+          "528ed33a8240fd5cc0bd07657ce80000220e044d09dbbe2f443c1a5297217dd5"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "7b2491946197e111842517a262c2defd729bc54084f80f0ffc6e74b5320fa509"
+        },
+        {
+          "id": "venue",
+          "sha256": "efd378c9e409aa789ccb535f69d0b0f45e14be933170bf98097c920d52ea5f87"
+        },
+        {
+          "id": "hvac",
+          "sha256": "2e7c73f8647762b08ea10d805e562d59fecaac4da0ebdf17fe57356bb831644c"
+        }
+      ],
+      "fix_count": 4,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "hvac",
+          "distance_m": 0.07685193222138835,
+          "suspect": true
+        },
+        {
+          "fix_index": 1,
+          "poi": "traffic",
+          "distance_m": 1.0548613206400443,
+          "suspect": true
+        },
+        {
+          "fix_index": 2,
+          "poi": "traffic",
+          "distance_m": 2.650111104164806,
+          "suspect": true
+        },
+        {
+          "fix_index": 3,
+          "poi": "venue",
+          "distance_m": 0.6430521557915443,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 7853.389073
+    },
+    {
+      "seed": 1,
+      "recipe_index": 0,
+      "node_count": 6,
+      "realism": "on",
+      "estimated": {
+        "status": "estimated",
+        "reason": null,
+        "shares": [
+          0.4567515399946497,
+          0.45571762345374056,
+          0.08753083655160972
+        ],
+        "powers_at_1m": [
+          0.0032164979671942926,
+          0.003011726728268105,
+          0.0005026050559443332
+        ],
+        "residual_squared": 5.9665459349773786e-12
+      },
+      "truth_shares": [
+        0.5929331524040359,
+        0.2506977767595387,
+        0.15636907083642548
+      ],
+      "signed_share_error_pp": [
+        -13.618161240938619,
+        20.501984669420185,
+        -6.883823428481577
+      ],
+      "mean_absolute_share_error_pp": 13.667989779613459,
+      "observed_excess_powers": [
+        0.0000053362417967594746,
+        0.000011491361956130166,
+        0.000006490489406546494,
+        0.000009222258488206038,
+        0.000004991175798214937,
+        0.0000020320768124858024
+      ],
+      "source_levels_1m_db": [
+        99.89004615698536,
+        95.81209852354843,
+        92.98307137328507
+      ],
+      "audio_sha256": [
+        [
+          "368e7e44179db474bd7a244c96e015f71c9836661a6134e93f765eb4b32ed05d",
+          "8b7519d219d5c7a7c2e6e824347bc0d14f1201957394ff115113d64d57a82c08",
+          "88b516bb48624be8b9354e063859f5f712a06cd7e6985d9913576c20a57421fc",
+          "19c676e60456536836c6523e2c392513b41e785c8360fdef65b5ca69f69e3b74"
+        ],
+        [
+          "c7bdf1b63c31683e9153e6471531ab19dc4a083f64455420eeff0e595db62c28",
+          "d70849d81e81dbbee41434051dbd2a46770996712e4b39aa0574cfaf9fef9056",
+          "0080f6c76f191e2332eff65ea6b8bd50570352c8406e9ba694187f6b133564e4",
+          "bf844d5b00b00d95dc97e67c19e6546a114b82cfa0f30b97d0c64154ac50a7e0"
+        ],
+        [
+          "729949bfdf7b690f121f04db68a03d41c73e074ee584e485e74425225b78df77",
+          "8b481507b1caea4f9df63a58019952bbcacc7d3ece071bda9570f210cc9dfce0",
+          "c593250a42442d0f2ca19caa0da32dc4069e5e8469caaacf3c45553230c529fd",
+          "0a75b4c2272bcc7df390b0f1bc03792ca96d502514c7bc9f21f64d4069a88dad"
+        ],
+        [
+          "faa4020196e643cab7ccf1f6942884dd2e71e3b1938a9cc416e35145b7e86235",
+          "b5d81a5a5a58bd5b211adf465b5ca808054a64051e3a8759050486d210822383",
+          "b05b6aa17b3a63056dfbd577cf8f2fe6ee5210e9af98065db4da8dd5c58fabee",
+          "054b65e9ec25cdec237c33c74de69c1f299f11f45caacc3896578ac57292bd7e"
+        ],
+        [
+          "81cfaec609c21c0029d77ed234b5aac1e486ce57db6dfacf5413032262926b41",
+          "24b0fd4db0cc49208d086496a03365e4eea68f6a42352cb4c911e65b1a3b4413",
+          "31bc6851407bb27d34ea437a0644f0e6cd0945eac77429340a799fa7cf3e6592",
+          "aa099501ae6bf6216d023a6800a54cdba6b2af1c273966c0c56d52d7c3e64e30"
+        ],
+        [
+          "48ca6d24b4c2a23b40e57b8662fb0f7a50a3c9acd96e1a8a2d2d44a78413989f",
+          "6fc405c1279074cb5afccc18d27af01e2f629720371d3c246ecc5204e97289eb",
+          "43bfa8baaa5ab7136d2010490556b162c4f1ff98302ac24b08d716cf850e9358",
+          "a048274c75e85968f2445ac40fb1de6f6768a31ad0057eec17f0588d7f2aa376"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "7b2491946197e111842517a262c2defd729bc54084f80f0ffc6e74b5320fa509"
+        },
+        {
+          "id": "venue",
+          "sha256": "efd378c9e409aa789ccb535f69d0b0f45e14be933170bf98097c920d52ea5f87"
+        },
+        {
+          "id": "hvac",
+          "sha256": "2e7c73f8647762b08ea10d805e562d59fecaac4da0ebdf17fe57356bb831644c"
+        }
+      ],
+      "fix_count": 4,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "hvac",
+          "distance_m": 2.4183256819269143,
+          "suspect": true
+        },
+        {
+          "fix_index": 1,
+          "poi": "traffic",
+          "distance_m": 8.145333141086954,
+          "suspect": true
+        },
+        {
+          "fix_index": 2,
+          "poi": "venue",
+          "distance_m": 1.2528116773856715,
+          "suspect": true
+        },
+        {
+          "fix_index": 3,
+          "poi": "traffic",
+          "distance_m": 2.9057869390189386,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 8832.515795
+    },
+    {
+      "seed": 1,
+      "recipe_index": 1,
+      "node_count": 2,
+      "realism": "off",
+      "estimated": {
+        "status": "unavailable",
+        "reason": "Fewer independent node levels than unknown POI powers",
+        "shares": null,
+        "powers_at_1m": null,
+        "residual_squared": null
+      },
+      "truth_shares": [
+        0.1968875232153419,
+        0.69926563656094,
+        0.10384684022371803
+      ],
+      "signed_share_error_pp": null,
+      "mean_absolute_share_error_pp": null,
+      "observed_excess_powers": [
+        0.000007075823574129437,
+        0.000003904667733545205
+      ],
+      "source_levels_1m_db": [
+        95.11883360978874,
+        100.28367883697061,
+        91.22215878272826
+      ],
+      "audio_sha256": [
+        [
+          "6e8874c9c79af9170ae9a642a61a58a7b51506bdb0f12aaf8b2affc9e76edca1",
+          "83e3df19887744abab14e6658afcb1f1fa2c9a2de662483c41f859314e0da8de",
+          "848e127cb9dbbd7a84a04ef8dab3575cca84d40ace5a7b4308e463b6645e4045",
+          "243d93fdffe36833524e170b829eee05964e2bd37cf7adbc4f3122aa6f7caa9b"
+        ],
+        [
+          "8482e316f8edbe2b6b866024480c7fa6df95afbeb7c55f6b495aaeb5609f35a8",
+          "ef1cbdfe5ac01269f96d82483fdc3f4f674c4987c05d551fb5e47e43793b0671",
+          "0436990e964d48e62bbc23b519f147635707081a256581575f3637f2b9cfd7d4",
+          "2f1dcb46f0977b147073a61f65ed32837ea1a070804f1c54bcaba6afe6e15456"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "7b2491946197e111842517a262c2defd729bc54084f80f0ffc6e74b5320fa509"
+        },
+        {
+          "id": "venue",
+          "sha256": "efd378c9e409aa789ccb535f69d0b0f45e14be933170bf98097c920d52ea5f87"
+        },
+        {
+          "id": "hvac",
+          "sha256": "2e7c73f8647762b08ea10d805e562d59fecaac4da0ebdf17fe57356bb831644c"
+        }
+      ],
+      "fix_count": 1,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "venue",
+          "distance_m": 0.7068378296653434,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 3313.881150000001
+    },
+    {
+      "seed": 1,
+      "recipe_index": 1,
+      "node_count": 2,
+      "realism": "on",
+      "estimated": {
+        "status": "unavailable",
+        "reason": "Fewer independent node levels than unknown POI powers",
+        "shares": null,
+        "powers_at_1m": null,
+        "residual_squared": null
+      },
+      "truth_shares": [
+        0.1968875232153419,
+        0.69926563656094,
+        0.10384684022371803
+      ],
+      "signed_share_error_pp": null,
+      "mean_absolute_share_error_pp": null,
+      "observed_excess_powers": [
+        0.000011700539138573586,
+        0.0000060883648118365835
+      ],
+      "source_levels_1m_db": [
+        95.11883360978874,
+        100.28367883697061,
+        91.22215878272826
+      ],
+      "audio_sha256": [
+        [
+          "db0db425e802092b1de8bbca59b2aa826dc91d277d8e2c0d7adfd862100345c1",
+          "fabf827a5a8355b9ed5c16fa3322a5587c737269befcac1ef01de243588495ce",
+          "c6c96e137c99aec212a5ff4394ddc66c2e06ce48dd268e20a66a7962a29b78f3",
+          "93a9a911242dc977ab4c38f4cb08b113a781fb20a7208e122bd4644f54c1ff99"
+        ],
+        [
+          "451fdc6aca0e0e0b5e3b19a640242daa17274bb566617da38f27b23ee91fca31",
+          "98397715104dda85818ec2bd31e965bf46766db763d7fdda393cc06f07a81b08",
+          "4e9ed1ee79f573016c76b13820f3d1525f8bbe8b486b3b10e0e95c8934b408d4",
+          "f21764d888a4820f7f241c63d0ff81258469df59f1b8ddfa3c5dae13eb7bff02"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "7b2491946197e111842517a262c2defd729bc54084f80f0ffc6e74b5320fa509"
+        },
+        {
+          "id": "venue",
+          "sha256": "efd378c9e409aa789ccb535f69d0b0f45e14be933170bf98097c920d52ea5f87"
+        },
+        {
+          "id": "hvac",
+          "sha256": "2e7c73f8647762b08ea10d805e562d59fecaac4da0ebdf17fe57356bb831644c"
+        }
+      ],
+      "fix_count": 1,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "venue",
+          "distance_m": 0.748585473195358,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 2661.9911349999966
+    },
+    {
+      "seed": 1,
+      "recipe_index": 1,
+      "node_count": 3,
+      "realism": "off",
+      "estimated": {
+        "status": "estimated",
+        "reason": null,
+        "shares": [
+          0.17319810638967237,
+          0.7030062741063864,
+          0.12379561950394129
+        ],
+        "powers_at_1m": [
+          0.0011100427189376484,
+          0.004228362693100747,
+          0.0006469405054180061
+        ],
+        "residual_squared": 2.152394441202919e-42
+      },
+      "truth_shares": [
+        0.1968875232153419,
+        0.69926563656094,
+        0.10384684022371803
+      ],
+      "signed_share_error_pp": [
+        -2.3689416825669523,
+        0.37406375454464014,
+        1.994877928022326
+      ],
+      "mean_absolute_share_error_pp": 1.5792944550446395,
+      "observed_excess_powers": [
+        0.000007075823574129437,
+        0.000004703861627912379,
+        0.000005046553637159964
+      ],
+      "source_levels_1m_db": [
+        95.11883360978874,
+        100.28367883697061,
+        91.22215878272826
+      ],
+      "audio_sha256": [
+        [
+          "6e8874c9c79af9170ae9a642a61a58a7b51506bdb0f12aaf8b2affc9e76edca1",
+          "83e3df19887744abab14e6658afcb1f1fa2c9a2de662483c41f859314e0da8de",
+          "848e127cb9dbbd7a84a04ef8dab3575cca84d40ace5a7b4308e463b6645e4045",
+          "243d93fdffe36833524e170b829eee05964e2bd37cf7adbc4f3122aa6f7caa9b"
+        ],
+        [
+          "c727647d3a0ceacd6028290a0b669fe82721e97413d9c96156cb324a5a858f33",
+          "a5dc1b596d4d1a89f289ade01aec22dd8b3437f92ed5e5e1b99af6cf13896e64",
+          "e04dfe3721b44906c39b9b35ecd7ead15f11833f1f17dbf900acaf9445954506",
+          "7c7c4f5589572926cbf1442c4b406d3003082bab3e995e53261392f570ce64f6"
+        ],
+        [
+          "fb70e1163708db8dcb527ed0a91e42c1e6385d2f4b1163809127470a810120e5",
+          "0eed437c5769537d17c3250597f00692dc9be88b2ab8544eabc2d357406284af",
+          "f89ac9fd285d66c5fc35d193a0a675b16d5195ffbf152f58e6668a45f7353f5b",
+          "29642878227e12950244e700f22c6993e96aad44580953c2c07739e6e3af4b78"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "7b2491946197e111842517a262c2defd729bc54084f80f0ffc6e74b5320fa509"
+        },
+        {
+          "id": "venue",
+          "sha256": "efd378c9e409aa789ccb535f69d0b0f45e14be933170bf98097c920d52ea5f87"
+        },
+        {
+          "id": "hvac",
+          "sha256": "2e7c73f8647762b08ea10d805e562d59fecaac4da0ebdf17fe57356bb831644c"
+        }
+      ],
+      "fix_count": 1,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "venue",
+          "distance_m": 3.0755477274672436,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 3847.078951999996
+    },
+    {
+      "seed": 1,
+      "recipe_index": 1,
+      "node_count": 3,
+      "realism": "on",
+      "estimated": {
+        "status": "estimated",
+        "reason": null,
+        "shares": [
+          0.1751260303671003,
+          0.8011701125557354,
+          0.02370385707716411
+        ],
+        "powers_at_1m": [
+          0.00168831412677329,
+          0.007248426991921331,
+          0.00018633055765703775
+        ],
+        "residual_squared": 1.2196901833483208e-41
+      },
+      "truth_shares": [
+        0.1968875232153419,
+        0.69926563656094,
+        0.10384684022371803
+      ],
+      "signed_share_error_pp": [
+        -2.176149284824158,
+        10.190447599479546,
+        -8.014298314655392
+      ],
+      "mean_absolute_share_error_pp": 6.793631732986365,
+      "observed_excess_powers": [
+        0.000011700539138573586,
+        0.000007357516631828517,
+        0.0000035823767928184777
+      ],
+      "source_levels_1m_db": [
+        95.11883360978874,
+        100.28367883697061,
+        91.22215878272826
+      ],
+      "audio_sha256": [
+        [
+          "db0db425e802092b1de8bbca59b2aa826dc91d277d8e2c0d7adfd862100345c1",
+          "fabf827a5a8355b9ed5c16fa3322a5587c737269befcac1ef01de243588495ce",
+          "c6c96e137c99aec212a5ff4394ddc66c2e06ce48dd268e20a66a7962a29b78f3",
+          "93a9a911242dc977ab4c38f4cb08b113a781fb20a7208e122bd4644f54c1ff99"
+        ],
+        [
+          "edfca95c4628f3f535288f7ce42ef3361a0abec359ed1b8c95cdaf4aa8c45cd9",
+          "97e437b8829b1da9d43bea8c15573cd0d503eb1da8a496bf2c42f480aa55d5b1",
+          "e6b15e365d86fa979ae77e42f4d10e7a4fb0776d8bfac450411234eccc4a6bd6",
+          "7b6b1107fcff0fa37a405bce3943efecedf27cbbaca31e7db7347f179884ff16"
+        ],
+        [
+          "a727b62d8ee2c9a73d7ac3364a94b937ce8f147f8677e5c1b42a210fe0a266d1",
+          "82be236b18639b338cb8a3c762ee9fa18df471d696d387a4ed3b33a37839bece",
+          "cff3eb38f569b4a794349c7d099e19b1d87058808454a529c16b00fc019f1a75",
+          "ea79181cb01c4688dd029e17952735862be31ee2b80a1d3dfb2b7f193b85eeb6"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "7b2491946197e111842517a262c2defd729bc54084f80f0ffc6e74b5320fa509"
+        },
+        {
+          "id": "venue",
+          "sha256": "efd378c9e409aa789ccb535f69d0b0f45e14be933170bf98097c920d52ea5f87"
+        },
+        {
+          "id": "hvac",
+          "sha256": "2e7c73f8647762b08ea10d805e562d59fecaac4da0ebdf17fe57356bb831644c"
+        }
+      ],
+      "fix_count": 1,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "venue",
+          "distance_m": 2.8983604084835886,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 3924.9675990000032
+    },
+    {
+      "seed": 1,
+      "recipe_index": 1,
+      "node_count": 6,
+      "realism": "off",
+      "estimated": {
+        "status": "estimated",
+        "reason": null,
+        "shares": [
+          0.1384246148934735,
+          0.7623531655204875,
+          0.09922221958603915
+        ],
+        "powers_at_1m": [
+          0.0009713684367724968,
+          0.005020458135785816,
+          0.0005677303538433503
+        ],
+        "residual_squared": 2.7475498837283778e-12
+      },
+      "truth_shares": [
+        0.1968875232153419,
+        0.69926563656094,
+        0.10384684022371803
+      ],
+      "signed_share_error_pp": [
+        -5.84629083218684,
+        6.3087528959547505,
+        -0.4624620637678878
+      ],
+      "mean_absolute_share_error_pp": 4.205835263969826,
+      "observed_excess_powers": [
+        0.000007075823574129437,
+        0.000017165740971021217,
+        0.000004707578288064577,
+        0.000003898217260116578,
+        0.0000050418256056863205,
+        0.00000218416608028552
+      ],
+      "source_levels_1m_db": [
+        95.11883360978874,
+        100.28367883697061,
+        91.22215878272826
+      ],
+      "audio_sha256": [
+        [
+          "6e8874c9c79af9170ae9a642a61a58a7b51506bdb0f12aaf8b2affc9e76edca1",
+          "83e3df19887744abab14e6658afcb1f1fa2c9a2de662483c41f859314e0da8de",
+          "848e127cb9dbbd7a84a04ef8dab3575cca84d40ace5a7b4308e463b6645e4045",
+          "243d93fdffe36833524e170b829eee05964e2bd37cf7adbc4f3122aa6f7caa9b"
+        ],
+        [
+          "dda66399c8e35f003e3bb9744a12282528b8be557bda5b05274ec349f7c83bf9",
+          "3f2af8e0409f2ec3f86e65ebc1f32029b59a019f50b23464a059584b3e3c1f22",
+          "7aeccac7f3cad26c2eef647b6174cc0ca184decee9c56e4384fca4b7b88c5ddd",
+          "eda766c41f341427d9072e450cbe5a8cead02054ef2c05181738cee62b4393d8"
+        ],
+        [
+          "b7a912fe933eaeb20f3b208916ce01017c2544b165b99ed418e1b8c439b97e0e",
+          "77e543595d0c5b82782ffd1e33923590ccc49c15e226f750d6d98b102f1c08dd",
+          "d7eeacc257601569329d0688d83b3906712d5d8283812a9c12e035b7e69f2025",
+          "29aa52a789f350e77dd39d178f23afad00aadc8e7fa8c7d26bbe2c99994167ed"
+        ],
+        [
+          "41d1a1fdadcc07318cae788123594860ab41477371013a1f3f2721504a35a0c1",
+          "8b35eeb74f6a50f8938bfe7d0cd2ad2be038aa30db450862ed89f11136efd511",
+          "13319c637c967bae3de35641f2ad36e83fa85398fb6b92dd1f7d52ae4f69d517",
+          "92f141c88b54399d30481318038fef012ce9dcf64adab13387190d999a4ba9be"
+        ],
+        [
+          "cfcbec84c7ad457e716bd82edd443a4e3a322c72cf1efffec43a2c8164cc7e7a",
+          "9662dd28586bf10e49c2c3101c7dd3ddb568bdf69fd55a5299b6a4e66bd73aff",
+          "5a34db4fb4db6bac0d747ad452a74114f7d509536d825add3371a747c32dbcd0",
+          "bde8ce35e0b9a3495b726377041c8f2a249ad4e7a2923d446db5c71cc9c07945"
+        ],
+        [
+          "6ce965fab189f0e9156b76ab400bddf1dfa437be175faaa0fcc0007e82bc6286",
+          "9a05db2cda5cb5f6430ff9539d7bc645642ec811263db39270be308410ce7a95",
+          "ac0b46f42018ba5510559a4440f94c586a2dd19c5cade32ab51237e6e8d90f56",
+          "8ddc255424b7000b624ea1a95c7ec27a544b0130ba1770e1f41cef401621703c"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "7b2491946197e111842517a262c2defd729bc54084f80f0ffc6e74b5320fa509"
+        },
+        {
+          "id": "venue",
+          "sha256": "efd378c9e409aa789ccb535f69d0b0f45e14be933170bf98097c920d52ea5f87"
+        },
+        {
+          "id": "hvac",
+          "sha256": "2e7c73f8647762b08ea10d805e562d59fecaac4da0ebdf17fe57356bb831644c"
+        }
+      ],
+      "fix_count": 3,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "venue",
+          "distance_m": 2.5567251292623103,
+          "suspect": true
+        },
+        {
+          "fix_index": 1,
+          "poi": "venue",
+          "distance_m": 2.9988494424617884,
+          "suspect": true
+        },
+        {
+          "fix_index": 2,
+          "poi": "traffic",
+          "distance_m": 0.47179001379868696,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 7011.410498000005
+    },
+    {
+      "seed": 1,
+      "recipe_index": 1,
+      "node_count": 6,
+      "realism": "on",
+      "estimated": {
+        "status": "estimated",
+        "reason": null,
+        "shares": [
+          0.006615703207346499,
+          0.9696618446362524,
+          0.023722452156401008
+        ],
+        "powers_at_1m": [
+          0.00005951948525816516,
+          0.00818690852904637,
+          0.0001740224366396178
+        ],
+        "residual_squared": 7.955412266441054e-12
+      },
+      "truth_shares": [
+        0.1968875232153419,
+        0.69926563656094,
+        0.10384684022371803
+      ],
+      "signed_share_error_pp": [
+        -19.027182000799538,
+        27.03962080753124,
+        -8.012438806731701
+      ],
+      "mean_absolute_share_error_pp": 18.02641387168749,
+      "observed_excess_powers": [
+        0.000011700539138573586,
+        0.000026821011074106824,
+        0.0000033416586216621712,
+        0.000003868617496200343,
+        0.000003383196989405556,
+        0.000002022632334533739
+      ],
+      "source_levels_1m_db": [
+        95.11883360978874,
+        100.28367883697061,
+        91.22215878272826
+      ],
+      "audio_sha256": [
+        [
+          "db0db425e802092b1de8bbca59b2aa826dc91d277d8e2c0d7adfd862100345c1",
+          "fabf827a5a8355b9ed5c16fa3322a5587c737269befcac1ef01de243588495ce",
+          "c6c96e137c99aec212a5ff4394ddc66c2e06ce48dd268e20a66a7962a29b78f3",
+          "93a9a911242dc977ab4c38f4cb08b113a781fb20a7208e122bd4644f54c1ff99"
+        ],
+        [
+          "dadca8cdeb04c78cf9626e8db927abb7b2047e5b3b12114fa98dbde92f907f62",
+          "6f7611ab8e9a324aa2c9fd047d8a39f1cbb447372c5caa74e76edf3b43a81a1c",
+          "c6607fb98b074e3673cfc6651df307f482d42e6e14ba1024aeb280bb58f1290d",
+          "0a2227b436bd18ba9a9e1e284ed9efeaf7595cd0b18fc8cebf6d57b5dd2c722e"
+        ],
+        [
+          "d46472de0a4bad4c4ac295174ad908451f177c1453402a5779a3235104ee73ad",
+          "c69da912511f2ae65b619e7a6a4c4ddd9f1b3c8967be6b6932ec445fa6d49b89",
+          "67be1e65d0bd656d7a346c3a4f2eea91926c0d3f0a843329f9fbbf2f4d647c49",
+          "63f1d3de9f12aa61e798e3a5d0745ee4307ac78e117df77ee51a5d24c0aab01c"
+        ],
+        [
+          "78a3e614f838ee964ddfc5b6cfe2c46c7617e8d71c3b944195acaba9ed525bc8",
+          "23184b448334f4e3106e644fed95607dcbf1b038fe9aa520d24d43d7fde95ed9",
+          "57b16a72b315ba995e167c501e3117b8e6db16e973f2cd8decc8d7b00af19d0d",
+          "07089d58fb24bd17685e1ef9aba7c9130e1bdedad6ca48ddddcd8aea9aff7bd2"
+        ],
+        [
+          "39d033da10e38a47f61f7eaf005deb02b6fe99cd3b24a6f6a429feab859bb131",
+          "140d7db61d28b4443f36162bf253ec40b959f4e01ad5599b876bf9d441bd7995",
+          "735888f36ff8a9a5b7a45e89066446acb10291efdbcf3474dc2f1de112d910dd",
+          "34a213056233bba0e3fe5f89169f811374d9452f9391de3e3297c4eb5ae61b67"
+        ],
+        [
+          "cafbbdcce0634e647180f434475e4e30d98adb2c287267fdfe401835adc2e75b",
+          "1ffdd3d238b35bd472c3b91866982d818613ce2d4bc55b7c7b8cec417b4ab165",
+          "779f4c8b613c4250a424b931ce7bb081d585b7e2188d02be5a1c62e91d8f4d9e",
+          "32a32eb6c287de5849099960dc62ac2d0094cecdbbb8fa23e0ec2c285077c68f"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "7b2491946197e111842517a262c2defd729bc54084f80f0ffc6e74b5320fa509"
+        },
+        {
+          "id": "venue",
+          "sha256": "efd378c9e409aa789ccb535f69d0b0f45e14be933170bf98097c920d52ea5f87"
+        },
+        {
+          "id": "hvac",
+          "sha256": "2e7c73f8647762b08ea10d805e562d59fecaac4da0ebdf17fe57356bb831644c"
+        }
+      ],
+      "fix_count": 3,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "hvac",
+          "distance_m": 2.4006247448946745,
+          "suspect": true
+        },
+        {
+          "fix_index": 1,
+          "poi": "traffic",
+          "distance_m": 3.871844222886716,
+          "suspect": true
+        },
+        {
+          "fix_index": 2,
+          "poi": "venue",
+          "distance_m": 0.7207525185747877,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 7796.4293039999975
+    },
+    {
+      "seed": 101,
+      "recipe_index": 0,
+      "node_count": 2,
+      "realism": "off",
+      "estimated": {
+        "status": "unavailable",
+        "reason": "Fewer independent node levels than unknown POI powers",
+        "shares": null,
+        "powers_at_1m": null,
+        "residual_squared": null
+      },
+      "truth_shares": [
+        0.5951167979792437,
+        0.25010396623853853,
+        0.15477923578221767
+      ],
+      "signed_share_error_pp": null,
+      "mean_absolute_share_error_pp": null,
+      "observed_excess_powers": [
+        0.000003208724327842381,
+        0.000009281319816748203
+      ],
+      "source_levels_1m_db": [
+        99.89004615698536,
+        95.81209852354843,
+        92.98307137328507
+      ],
+      "audio_sha256": [
+        [
+          "b4b908d127e8a6170ad544365fd5b9e5d4e59a5108d9a0b3f96f5e6fb29023a3",
+          "49f069db52eb7cb89737a359cfa8b9ab2f0b33a4afef9238cd5160746d3f0df8",
+          "f98e579440b8760bbdfe40ac21449872f032f03830a8c9febe2ace35f2481f1d",
+          "fb93cbbec5bce4a868f0597bcf618c60f222771f44dbd20da51286eee859b1ad"
+        ],
+        [
+          "e97161897db595dee49290a97ca5779b960a106700d195597ba1a5286c81bc3b",
+          "64a1a33aa46235f84d4a201de0b374184775678e8e9df0465cfcec3c1c9a83cf",
+          "681d3e8e5bfe2840d8a9711ac4f66849f1e2ead3d7bff37d293a1bb89224746f",
+          "ac4c49b85c9cc46e5d66db574740e2357c72eaabfff77690b8e66dd2d0df329e"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "fb44ce5a7c88e5eebac6679ae97a9c9c0a8887e6da42bd934a026b4a9719a094"
+        },
+        {
+          "id": "venue",
+          "sha256": "3bbce1b02dacfa264603716e298436c316bedcd15e03edaaefab49afb1039e78"
+        },
+        {
+          "id": "hvac",
+          "sha256": "b4a0fbd0b7780d855026be91f87445c17fa2bea52e347ccce5ad39402c31581c"
+        }
+      ],
+      "fix_count": 0,
+      "associations": [],
+      "elapsed_ms": 3368.2745179999984
+    },
+    {
+      "seed": 101,
+      "recipe_index": 0,
+      "node_count": 2,
+      "realism": "on",
+      "estimated": {
+        "status": "unavailable",
+        "reason": "Fewer independent node levels than unknown POI powers",
+        "shares": null,
+        "powers_at_1m": null,
+        "residual_squared": null
+      },
+      "truth_shares": [
+        0.5951167979792437,
+        0.25010396623853853,
+        0.15477923578221767
+      ],
+      "signed_share_error_pp": null,
+      "mean_absolute_share_error_pp": null,
+      "observed_excess_powers": [
+        0.000005318284411127326,
+        0.000009118425464924529
+      ],
+      "source_levels_1m_db": [
+        99.89004615698536,
+        95.81209852354843,
+        92.98307137328507
+      ],
+      "audio_sha256": [
+        [
+          "8bb6630251d0bc1c900efbf020e989200b7acb05a23a65ccb3921fa03a748712",
+          "3a53a3fc70dda38e929639bfc5614c99d15076e484cb756d818a42966e8cb824",
+          "bad091504c13d9fbfbeae1e51faa51ba0cc0364d5fc62b7db69d5872f9811917",
+          "4317ac6f2778d7f504325dc0efa73ae0a32aad6c76ea6bb9fb6bb9f1137e5dec"
+        ],
+        [
+          "fcf2c45cc8488ac4c118dba5f0bcab73aff431e607b0dd831b3136e4482b8dbf",
+          "33789a8a79d6173984fd555fc002bae405b2e8c350f24916db110eb073565b27",
+          "d09ef07df5cf7efc42579aeb61b88a04d5f800857090594ae6f6d0b7944df5be",
+          "bd48b32d31fba91352780e6d2b2f4595b5450ea45f871f43f03a411474e61037"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "fb44ce5a7c88e5eebac6679ae97a9c9c0a8887e6da42bd934a026b4a9719a094"
+        },
+        {
+          "id": "venue",
+          "sha256": "3bbce1b02dacfa264603716e298436c316bedcd15e03edaaefab49afb1039e78"
+        },
+        {
+          "id": "hvac",
+          "sha256": "b4a0fbd0b7780d855026be91f87445c17fa2bea52e347ccce5ad39402c31581c"
+        }
+      ],
+      "fix_count": 0,
+      "associations": [],
+      "elapsed_ms": 2643.6268659999987
+    },
+    {
+      "seed": 101,
+      "recipe_index": 0,
+      "node_count": 3,
+      "realism": "off",
+      "estimated": {
+        "status": "estimated",
+        "reason": null,
+        "shares": [
+          0.6329856456663578,
+          0.18496209179357304,
+          0.1820522625400692
+        ],
+        "powers_at_1m": [
+          0.004172419682043713,
+          0.001144177308538204,
+          0.0009784817220497898
+        ],
+        "residual_squared": 1.6142958309021893e-42
+      },
+      "truth_shares": [
+        0.5951167979792437,
+        0.25010396623853853,
+        0.15477923578221767
+      ],
+      "signed_share_error_pp": [
+        3.786884768711418,
+        -6.5141874444965495,
+        2.727302675785154
+      ],
+      "mean_absolute_share_error_pp": 4.342791629664374,
+      "observed_excess_powers": [
+        0.000003208724327842381,
+        0.00000909382384620064,
+        0.000007424907627671155
+      ],
+      "source_levels_1m_db": [
+        99.89004615698536,
+        95.81209852354843,
+        92.98307137328507
+      ],
+      "audio_sha256": [
+        [
+          "b4b908d127e8a6170ad544365fd5b9e5d4e59a5108d9a0b3f96f5e6fb29023a3",
+          "49f069db52eb7cb89737a359cfa8b9ab2f0b33a4afef9238cd5160746d3f0df8",
+          "f98e579440b8760bbdfe40ac21449872f032f03830a8c9febe2ace35f2481f1d",
+          "fb93cbbec5bce4a868f0597bcf618c60f222771f44dbd20da51286eee859b1ad"
+        ],
+        [
+          "95b980afc7ba0c11d7b475aac7d9dbd73eb92babdc12dc587eac49c6d525744b",
+          "9adce21e1ba8b01665d75137a4f1b3d07020246b2f3fe7d846ef2392bf4e69c8",
+          "a53cb041793958ba40207b35cfac22732a24a69e69c653c39204ba6793497176",
+          "45b0e0864662daaa39e4a8aa9ea54597ad2ea055f6b017c28b4e8a50278ed5d0"
+        ],
+        [
+          "a6e068df129366de7406e4b726075c6110f2b521b03c131e6d7d832bbc1a273b",
+          "d9ca07fa3654c7d0c4701527a53d9c3ad43963e8a8dd9926867e3810eafb81c0",
+          "a376553c504b110c8fda392016621cc7d0f5f67c63ab51bbf115cb4ef51f32b7",
+          "8c6813ba36561876ccfb8f983f14cafae7cd2cc270af51cd837d37aee55daf56"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "fb44ce5a7c88e5eebac6679ae97a9c9c0a8887e6da42bd934a026b4a9719a094"
+        },
+        {
+          "id": "venue",
+          "sha256": "3bbce1b02dacfa264603716e298436c316bedcd15e03edaaefab49afb1039e78"
+        },
+        {
+          "id": "hvac",
+          "sha256": "b4a0fbd0b7780d855026be91f87445c17fa2bea52e347ccce5ad39402c31581c"
+        }
+      ],
+      "fix_count": 1,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "traffic",
+          "distance_m": 2.135850020749997,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 3637.2963020000025
+    },
+    {
+      "seed": 101,
+      "recipe_index": 0,
+      "node_count": 3,
+      "realism": "on",
+      "estimated": {
+        "status": "estimated",
+        "reason": null,
+        "shares": [
+          0.4953875022780331,
+          0.3748738444657386,
+          0.1297386532562284
+        ],
+        "powers_at_1m": [
+          0.0037079965285552545,
+          0.0026332730317026264,
+          0.0007918194608373203
+        ],
+        "residual_squared": 7.174648137343064e-43
+      },
+      "truth_shares": [
+        0.5951167979792437,
+        0.25010396623853853,
+        0.15477923578221767
+      ],
+      "signed_share_error_pp": [
+        -9.972929570121059,
+        12.476987822720009,
+        -2.504058252598926
+      ],
+      "mean_absolute_share_error_pp": 8.317991881813331,
+      "observed_excess_powers": [
+        0.000005318284411127326,
+        0.00000894911545579655,
+        0.000006586220255434725
+      ],
+      "source_levels_1m_db": [
+        99.89004615698536,
+        95.81209852354843,
+        92.98307137328507
+      ],
+      "audio_sha256": [
+        [
+          "8bb6630251d0bc1c900efbf020e989200b7acb05a23a65ccb3921fa03a748712",
+          "3a53a3fc70dda38e929639bfc5614c99d15076e484cb756d818a42966e8cb824",
+          "bad091504c13d9fbfbeae1e51faa51ba0cc0364d5fc62b7db69d5872f9811917",
+          "4317ac6f2778d7f504325dc0efa73ae0a32aad6c76ea6bb9fb6bb9f1137e5dec"
+        ],
+        [
+          "67bd0dbc38e1fbc4a10df0ae8cc079402d8d66c82afc012d120fdffdc36de835",
+          "452b0166edddcc08cc32447fbc839836dbfc377926419e592e6138a6b8f76f4e",
+          "354906963e99ac99a3f1051f55d6de1b8dca509da3628b9eac1caf931b797d41",
+          "916e04ef8c847a8597b293061f42a2b09183baac33d65fa8c8cf6eb45c599d0e"
+        ],
+        [
+          "2cc89951cd66c444cc61eb2866d27ec335e67bac9da70597d2bd8bf5664ac6ac",
+          "8ebb0f4078635fe6d2ea18a9605f1ca42140d01f754f167aa252b1ac59f117a1",
+          "e391971bfa25add65dff5c63bd47a16d6c3516c5641f7dad38da38ed863460c8",
+          "89b328efc67b733ee773a894a8a6b6c660102e940921c87beb4f58f47b225e3d"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "fb44ce5a7c88e5eebac6679ae97a9c9c0a8887e6da42bd934a026b4a9719a094"
+        },
+        {
+          "id": "venue",
+          "sha256": "3bbce1b02dacfa264603716e298436c316bedcd15e03edaaefab49afb1039e78"
+        },
+        {
+          "id": "hvac",
+          "sha256": "b4a0fbd0b7780d855026be91f87445c17fa2bea52e347ccce5ad39402c31581c"
+        }
+      ],
+      "fix_count": 1,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "traffic",
+          "distance_m": 1.1230869469928333,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 4181.4013140000025
+    },
+    {
+      "seed": 101,
+      "recipe_index": 0,
+      "node_count": 6,
+      "realism": "off",
+      "estimated": {
+        "status": "estimated",
+        "reason": null,
+        "shares": [
+          0.5948476136758224,
+          0.23967554266108032,
+          0.1654768436630972
+        ],
+        "powers_at_1m": [
+          0.004077097659768369,
+          0.0015416492940351714,
+          0.0009247942740367204
+        ],
+        "residual_squared": 1.151219124735923e-12
+      },
+      "truth_shares": [
+        0.5951167979792437,
+        0.25010396623853853,
+        0.15477923578221767
+      ],
+      "signed_share_error_pp": [
+        -0.026918430342126598,
+        -1.0428423577458212,
+        1.0697607880879534
+      ],
+      "mean_absolute_share_error_pp": 0.7131738587253004,
+      "observed_excess_powers": [
+        0.000003208724327842381,
+        0.000007295729389175377,
+        0.00000909625927395328,
+        0.000009283684052459529,
+        0.0000074280542984593825,
+        0.0000021873710285183392
+      ],
+      "source_levels_1m_db": [
+        99.89004615698536,
+        95.81209852354843,
+        92.98307137328507
+      ],
+      "audio_sha256": [
+        [
+          "b4b908d127e8a6170ad544365fd5b9e5d4e59a5108d9a0b3f96f5e6fb29023a3",
+          "49f069db52eb7cb89737a359cfa8b9ab2f0b33a4afef9238cd5160746d3f0df8",
+          "f98e579440b8760bbdfe40ac21449872f032f03830a8c9febe2ace35f2481f1d",
+          "fb93cbbec5bce4a868f0597bcf618c60f222771f44dbd20da51286eee859b1ad"
+        ],
+        [
+          "0c34c8210d234db21789a0635fcc85aab00175a771f19b06676be9886eabbd5d",
+          "60f957b66ea25f2dcdd2a7a0b2b079499a4d1e0cc5f5884156521d0a56ae7dd1",
+          "2c82e87eae63ed4c62d10e4878a5f3968f03e0ca06731d48030bca7057d4cc85",
+          "9d3c902e4e40b44bacb20c29d782c24177b3686ed2108f17bd0c1853224ed797"
+        ],
+        [
+          "281c700a83ec8e5011cca196ba18f4b906d243a9aa47d2a1fc0084a830e12e90",
+          "cdf0206055cb3f3ee498153f4d11969ea35534231d079a7bb07afc82a9b7ae03",
+          "67663577bbe7e2b1b5c759ed0bd873ebdfe13c8e5df27d0d67d2c059ea3cc77a",
+          "7faf5805e21db31f6690aeb5ae40d4d8582e30835b7ae42f6d0412376bf08f12"
+        ],
+        [
+          "c3fd58ff829c7cf2c96e0bfe8ac0605c545dcff1a3b282e8e4c2f97db007c96a",
+          "7f646e3d78b82b25381ead779a16bbd8fb0181216673661b97cfee42f1c744f4",
+          "8fde4ac2dd2ac603d26b2cbd301a42117037e8781ab8f0afcc74a4126f16cc76",
+          "17894d55ec3ba410bb13299aa75d1f5485d62242d6fcef6fa71829aee6d35326"
+        ],
+        [
+          "606396cf6bc172c90a7c3a25169d70c241aa3090745317525640b890d42b89a8",
+          "e2f5f99bc971b548894aabb43c07b45389a4abfaaf25ade2e36f5943fd4b3ef2",
+          "e986b887d94b9d1e7a1bf9a5c7b66e86a4961b628320452a76c50740095948dd",
+          "d42afc73dc9f99fb61cf583fbc304da4a02753695eb2f957d4cd45a5afe54356"
+        ],
+        [
+          "9e5845a54d03d91e7f894c643c7ca3e5b6daf5cbe40548c4b6e78a7426f0ce6b",
+          "dbdc4808529caedde9392cfbf26fb74c202de8a6fa366ab1f970b8844c72835b",
+          "4134ce89d64f6afa45e3e0c86b3b6ad76acd3e7229777bc497e9949d71685dc7",
+          "65381afb41cac1addac1956f04a1248b6ecd0419d7996b77fd50c51e1111a2e3"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "fb44ce5a7c88e5eebac6679ae97a9c9c0a8887e6da42bd934a026b4a9719a094"
+        },
+        {
+          "id": "venue",
+          "sha256": "3bbce1b02dacfa264603716e298436c316bedcd15e03edaaefab49afb1039e78"
+        },
+        {
+          "id": "hvac",
+          "sha256": "b4a0fbd0b7780d855026be91f87445c17fa2bea52e347ccce5ad39402c31581c"
+        }
+      ],
+      "fix_count": 5,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "traffic",
+          "distance_m": 1.0527169518626542,
+          "suspect": true
+        },
+        {
+          "fix_index": 1,
+          "poi": "hvac",
+          "distance_m": 0.07421395356596135,
+          "suspect": true
+        },
+        {
+          "fix_index": 2,
+          "poi": null,
+          "distance_m": 22.518265950794376,
+          "suspect": true
+        },
+        {
+          "fix_index": 3,
+          "poi": "traffic",
+          "distance_m": 1.983024202945344,
+          "suspect": true
+        },
+        {
+          "fix_index": 4,
+          "poi": "venue",
+          "distance_m": 0.7095307421422561,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 7503.4988719999965
+    },
+    {
+      "seed": 101,
+      "recipe_index": 0,
+      "node_count": 6,
+      "realism": "on",
+      "estimated": {
+        "status": "estimated",
+        "reason": null,
+        "shares": [
+          0.5462559394056706,
+          0.24649003944062206,
+          0.20725402115370734
+        ],
+        "powers_at_1m": [
+          0.004024629106650489,
+          0.0017042980392896433,
+          0.0012450740172030544
+        ],
+        "residual_squared": 5.796718007693918e-12
+      },
+      "truth_shares": [
+        0.5951167979792437,
+        0.25010396623853853,
+        0.15477923578221767
+      ],
+      "signed_share_error_pp": [
+        -4.886085857357303,
+        -0.36139267979164724,
+        5.247478537148967
+      ],
+      "mean_absolute_share_error_pp": 3.498319024765973,
+      "observed_excess_powers": [
+        0.000005318284411127326,
+        0.000007192525198810642,
+        0.000008079375557091448,
+        0.000010525820969657909,
+        0.000009139325990484952,
+        0.0000021869117836495877
+      ],
+      "source_levels_1m_db": [
+        99.89004615698536,
+        95.81209852354843,
+        92.98307137328507
+      ],
+      "audio_sha256": [
+        [
+          "8bb6630251d0bc1c900efbf020e989200b7acb05a23a65ccb3921fa03a748712",
+          "3a53a3fc70dda38e929639bfc5614c99d15076e484cb756d818a42966e8cb824",
+          "bad091504c13d9fbfbeae1e51faa51ba0cc0364d5fc62b7db69d5872f9811917",
+          "4317ac6f2778d7f504325dc0efa73ae0a32aad6c76ea6bb9fb6bb9f1137e5dec"
+        ],
+        [
+          "bf8ba8cfc6462a1a6c604e350eaa6d780a5106e5ab04b691f102d6c47fd641fe",
+          "a2288f4016850c1c4c66f6d2f8de18dbd8f5c330ae73725893ee4ce91a10c098",
+          "627fb5195835cc6b28cc68f939ea059de09868025c60d2d3a7a18bcabff011d1",
+          "0e74e9e09c03e77aa89f4c1f6251e2a6992284504985b897e91d47d51bc5966c"
+        ],
+        [
+          "59c6991b53353570e442ecf9ff520c9b35eb08233da8fae0837ccc555c2f172c",
+          "6962b1e62091db56f2b95acf852926f7997e636e193354a2c5f2ed0a858f1951",
+          "79e13c2f74742921ec3c76098d4df6ae2a6eb03693f0700f966932b28d8a84bd",
+          "5783177f46e9b22aa2300b00cdb161e2ba9a7a8f5319cce93b00a83ecb3e3a41"
+        ],
+        [
+          "0d31b7d56e44817895d27e75d50466dd168a5b863651bd4f61170c3ad7d00ab7",
+          "ae08f3be75c04a6939d3b45b53929f421130893819f949e841bd40e6249c2a69",
+          "38fa5dfa6e2844cb082ef54115e428281cf372ddc0dd2bff71e940a84f0dbeab",
+          "935c80ef5df84ccb1d032afe12cb94c2c1d996785bbc5541ee0bd37186c0192c"
+        ],
+        [
+          "cdf54d25ac5c2a4c78804a383da6b0b21cca34913708b857173107f05cad3916",
+          "49e81dbde6df164d13aafa6b2eb038299058f79773e4da9b85b5ac3336dc8a7d",
+          "3780eb4111ed7a66cfa08d7d456c0f324c547ce9165cd12e9e0140274790eb82",
+          "d0558068697c245761ed15247dff9bd4ccd85681d10fc40e1356badcd410fde0"
+        ],
+        [
+          "2a1b50d5be4e908267d2ecf66dc3c7811947aaa82018532d7727eb3b7650ffbf",
+          "f98b29fd0efd4f615b7837cf169b37ca14a3688eb3f98f0b1ad81de38a090711",
+          "b565363e98d42429c0fe02946269c4f9582ded208b75639a178a28c80f9aa7e8",
+          "4a79dd6957a3d2b105eee70ac01a9b316dc8bf12081f91e605353a63288e8854"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "fb44ce5a7c88e5eebac6679ae97a9c9c0a8887e6da42bd934a026b4a9719a094"
+        },
+        {
+          "id": "venue",
+          "sha256": "3bbce1b02dacfa264603716e298436c316bedcd15e03edaaefab49afb1039e78"
+        },
+        {
+          "id": "hvac",
+          "sha256": "b4a0fbd0b7780d855026be91f87445c17fa2bea52e347ccce5ad39402c31581c"
+        }
+      ],
+      "fix_count": 3,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": null,
+          "distance_m": 22.532608327259577,
+          "suspect": true
+        },
+        {
+          "fix_index": 1,
+          "poi": "traffic",
+          "distance_m": 4.5691473487608905,
+          "suspect": true
+        },
+        {
+          "fix_index": 2,
+          "poi": "venue",
+          "distance_m": 0.5769649513471409,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 8212.643853000001
+    },
+    {
+      "seed": 101,
+      "recipe_index": 1,
+      "node_count": 2,
+      "realism": "off",
+      "estimated": {
+        "status": "unavailable",
+        "reason": "Fewer independent node levels than unknown POI powers",
+        "shares": null,
+        "powers_at_1m": null,
+        "residual_squared": null
+      },
+      "truth_shares": [
+        0.19800606348029925,
+        0.6989982712248526,
+        0.10299566529484808
+      ],
+      "signed_share_error_pp": null,
+      "mean_absolute_share_error_pp": null,
+      "observed_excess_powers": [
+        0.000007037059990180804,
+        0.000003891377825182564
+      ],
+      "source_levels_1m_db": [
+        95.11883360978874,
+        100.28367883697061,
+        91.22215878272826
+      ],
+      "audio_sha256": [
+        [
+          "417be1dab2d2c44136e0a0b99923c3cef6a70df5721df6036ca517e55ef773b9",
+          "316bc51bc85544c888b9b1634a33192200e16fa77f3132bf1c747449e6c58a9a",
+          "3ffa7288e3f9bdfb88c08a33559a41bd4b5125462dc3267c03c4334c43f94a6f",
+          "4090f9fb34c6e675b2e2bfe44866992d4bba20b8616a0dd875d9f729105f8771"
+        ],
+        [
+          "265d5bfefb08125034a8533cf1ac66cd8c000c1d99a6403d4405542ee966be18",
+          "0a768fbe3092c23e58e11b8a15cb597150f5eb630f168dc1254a5232288e7f8b",
+          "cf9109fedeb86f968dd37d521e1309e4350e83ad333bc3cf0b02ac066372c7cb",
+          "4f3793d69a5f57c3a098398a1f214ddcb53eac2b63bf12c7dd9c4092e5859604"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "fb44ce5a7c88e5eebac6679ae97a9c9c0a8887e6da42bd934a026b4a9719a094"
+        },
+        {
+          "id": "venue",
+          "sha256": "3bbce1b02dacfa264603716e298436c316bedcd15e03edaaefab49afb1039e78"
+        },
+        {
+          "id": "hvac",
+          "sha256": "b4a0fbd0b7780d855026be91f87445c17fa2bea52e347ccce5ad39402c31581c"
+        }
+      ],
+      "fix_count": 1,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "venue",
+          "distance_m": 1.228265919193196,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 3484.0616249999875
+    },
+    {
+      "seed": 101,
+      "recipe_index": 1,
+      "node_count": 2,
+      "realism": "on",
+      "estimated": {
+        "status": "unavailable",
+        "reason": "Fewer independent node levels than unknown POI powers",
+        "shares": null,
+        "powers_at_1m": null,
+        "residual_squared": null
+      },
+      "truth_shares": [
+        0.19800606348029925,
+        0.6989982712248526,
+        0.10299566529484808
+      ],
+      "signed_share_error_pp": null,
+      "mean_absolute_share_error_pp": null,
+      "observed_excess_powers": [
+        0.00001166216266774815,
+        0.000003823577520780512
+      ],
+      "source_levels_1m_db": [
+        95.11883360978874,
+        100.28367883697061,
+        91.22215878272826
+      ],
+      "audio_sha256": [
+        [
+          "bf318fa2e6afee4eb019db86b7ddb17721d00bccf43e0bf6de3cd772a1b94fa6",
+          "f0bb7c84f48529d24a187823b8a411714a1987f18055d192396fae4e664424e3",
+          "235b6d889cc360d6dd77606f4a55806b4781b696af13ad6f1748fcc1e4358512",
+          "c5a32f94a41b57e371556612b86f53df3e33c1bb372b4d6001306ed35e43c11c"
+        ],
+        [
+          "3913de55bd8a558ebd7d356b9eab66db859540c32ee43f90e2acca44677aa372",
+          "6d49913bc292068222d942f6566af8df1172c82bf98d399554adf37bfc5c9aec",
+          "f36bbb451fc4df84d02b4beb9880c5d9438f1bb2f02dae1854462e1b3791f055",
+          "e808424f4c9fd735503b87cedc47587f615fd8d4c9e69c0cce60eeacab8045ea"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "fb44ce5a7c88e5eebac6679ae97a9c9c0a8887e6da42bd934a026b4a9719a094"
+        },
+        {
+          "id": "venue",
+          "sha256": "3bbce1b02dacfa264603716e298436c316bedcd15e03edaaefab49afb1039e78"
+        },
+        {
+          "id": "hvac",
+          "sha256": "b4a0fbd0b7780d855026be91f87445c17fa2bea52e347ccce5ad39402c31581c"
+        }
+      ],
+      "fix_count": 0,
+      "associations": [],
+      "elapsed_ms": 2701.950807000001
+    },
+    {
+      "seed": 101,
+      "recipe_index": 1,
+      "node_count": 3,
+      "realism": "off",
+      "estimated": {
+        "status": "estimated",
+        "reason": null,
+        "shares": [
+          0.17190096977645053,
+          0.7037844109398883,
+          0.12431461928366117
+        ],
+        "powers_at_1m": [
+          0.0010947249237720752,
+          0.004206131054482651,
+          0.0006455225176977107
+        ],
+        "residual_squared": 7.174648137343064e-43
+      },
+      "truth_shares": [
+        0.19800606348029925,
+        0.6989982712248526,
+        0.10299566529484808
+      ],
+      "signed_share_error_pp": [
+        -2.6105093703848725,
+        0.478613971503572,
+        2.131895398881309
+      ],
+      "mean_absolute_share_error_pp": 1.7403395802565846,
+      "observed_excess_powers": [
+        0.000007037059990180804,
+        0.000004661205304261612,
+        0.000005026475563985262
+      ],
+      "source_levels_1m_db": [
+        95.11883360978874,
+        100.28367883697061,
+        91.22215878272826
+      ],
+      "audio_sha256": [
+        [
+          "417be1dab2d2c44136e0a0b99923c3cef6a70df5721df6036ca517e55ef773b9",
+          "316bc51bc85544c888b9b1634a33192200e16fa77f3132bf1c747449e6c58a9a",
+          "3ffa7288e3f9bdfb88c08a33559a41bd4b5125462dc3267c03c4334c43f94a6f",
+          "4090f9fb34c6e675b2e2bfe44866992d4bba20b8616a0dd875d9f729105f8771"
+        ],
+        [
+          "8e4550c69a13cb52f6e1b4510f8de2b7cac29edb0b00284ad47dbb36d66c2099",
+          "11f0333eed2af77d041da7f9f938f5d9369f40bf9464fb19e53bbd64925e780e",
+          "f5f9da75b0eef3192402c0478a94d313f58fb94e311f3250dd20cb7c5249f004",
+          "63ac6d3f49a31c389f1e1103b7c69a78d6896239e5d8826f630deed9c6e189a4"
+        ],
+        [
+          "7d446269d94cb599fbaa8f751541ab8e93ac608228bcb798716c068ab323649c",
+          "d331aed0c537115a55f33f772d39697043c1ed30879279d37160605ef2568111",
+          "e1cafe4b82832355a2cee5d725907aa0906755a80ad283a18f3cd00a047df747",
+          "5b06e265c92fd7fa900ce98a7c282e8de155137f0f8d4f544761d875ae7fa3d7"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "fb44ce5a7c88e5eebac6679ae97a9c9c0a8887e6da42bd934a026b4a9719a094"
+        },
+        {
+          "id": "venue",
+          "sha256": "3bbce1b02dacfa264603716e298436c316bedcd15e03edaaefab49afb1039e78"
+        },
+        {
+          "id": "hvac",
+          "sha256": "b4a0fbd0b7780d855026be91f87445c17fa2bea52e347ccce5ad39402c31581c"
+        }
+      ],
+      "fix_count": 1,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "venue",
+          "distance_m": 2.459739865963231,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 3804.6081269999995
+    },
+    {
+      "seed": 101,
+      "recipe_index": 1,
+      "node_count": 3,
+      "realism": "on",
+      "estimated": {
+        "status": "estimated",
+        "reason": null,
+        "shares": [
+          0.021703181977894767,
+          0.9120572188149126,
+          0.06623959920719265
+        ],
+        "powers_at_1m": [
+          0.00018744226917565555,
+          0.007392352788209448,
+          0.00046647065730758344
+        ],
+        "residual_squared": 7.174648137343064e-43
+      },
+      "truth_shares": [
+        0.19800606348029925,
+        0.6989982712248526,
+        0.10299566529484808
+      ],
+      "signed_share_error_pp": [
+        -17.630288150240446,
+        21.305894759006005,
+        -3.675606608765543
+      ],
+      "mean_absolute_share_error_pp": 14.203929839337333,
+      "observed_excess_powers": [
+        0.00001166216266774815,
+        0.000004589020690432835,
+        0.000004458119342283382
+      ],
+      "source_levels_1m_db": [
+        95.11883360978874,
+        100.28367883697061,
+        91.22215878272826
+      ],
+      "audio_sha256": [
+        [
+          "bf318fa2e6afee4eb019db86b7ddb17721d00bccf43e0bf6de3cd772a1b94fa6",
+          "f0bb7c84f48529d24a187823b8a411714a1987f18055d192396fae4e664424e3",
+          "235b6d889cc360d6dd77606f4a55806b4781b696af13ad6f1748fcc1e4358512",
+          "c5a32f94a41b57e371556612b86f53df3e33c1bb372b4d6001306ed35e43c11c"
+        ],
+        [
+          "9ef7704a540df3257d9de044792e4a94b45a00a520df72d49addab31ad578366",
+          "bc17105498f454064863c268f1c87145d8a5a4338945da1d0d5168554ebba8a5",
+          "5465f65e749f7f44c9f491811698b49f0eb5d04c8b9b3d8a633dae390bdfaa09",
+          "cd756ac0c49e8aec73f6185305bd44cad71076b9e669b92017e4d3bad0d3b6d3"
+        ],
+        [
+          "61ddb4ee5f838a847d0de70c5eddbf124e49ace15796c9ed4e469b4a809777f4",
+          "8a2534725accd74127fa34a88af489e5cfdb66ff760d42a28c4f57add596c818",
+          "22d1f01aad748ec529d1d9139aaa760b6f6efd50d15eace72324eeb03d2e4842",
+          "bb0a9672d9265e675206f3b4131d473ea6e3750d03459fb1160aaa29d94d22a0"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "fb44ce5a7c88e5eebac6679ae97a9c9c0a8887e6da42bd934a026b4a9719a094"
+        },
+        {
+          "id": "venue",
+          "sha256": "3bbce1b02dacfa264603716e298436c316bedcd15e03edaaefab49afb1039e78"
+        },
+        {
+          "id": "hvac",
+          "sha256": "b4a0fbd0b7780d855026be91f87445c17fa2bea52e347ccce5ad39402c31581c"
+        }
+      ],
+      "fix_count": 1,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "venue",
+          "distance_m": 2.6245653966100244,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 3775.2907910000067
+    },
+    {
+      "seed": 101,
+      "recipe_index": 1,
+      "node_count": 6,
+      "realism": "off",
+      "estimated": {
+        "status": "estimated",
+        "reason": null,
+        "shares": [
+          0.13815432996220237,
+          0.7620769485457457,
+          0.09976872149205182
+        ],
+        "powers_at_1m": [
+          0.0009644588796844998,
+          0.004992689050544785,
+          0.0005679055787001229
+        ],
+        "residual_squared": 2.7405189061505163e-12
+      },
+      "truth_shares": [
+        0.19800606348029925,
+        0.6989982712248526,
+        0.10299566529484808
+      ],
+      "signed_share_error_pp": [
+        -5.985173351809689,
+        6.307867732089312,
+        -0.3226943802796256
+      ],
+      "mean_absolute_share_error_pp": 4.205245154726208,
+      "observed_excess_powers": [
+        0.000007037059990180804,
+        0.00001707338476012232,
+        0.0000046619068293532935,
+        0.000003893176996548429,
+        0.000005030914214420895,
+        0.0000021725759817542834
+      ],
+      "source_levels_1m_db": [
+        95.11883360978874,
+        100.28367883697061,
+        91.22215878272826
+      ],
+      "audio_sha256": [
+        [
+          "417be1dab2d2c44136e0a0b99923c3cef6a70df5721df6036ca517e55ef773b9",
+          "316bc51bc85544c888b9b1634a33192200e16fa77f3132bf1c747449e6c58a9a",
+          "3ffa7288e3f9bdfb88c08a33559a41bd4b5125462dc3267c03c4334c43f94a6f",
+          "4090f9fb34c6e675b2e2bfe44866992d4bba20b8616a0dd875d9f729105f8771"
+        ],
+        [
+          "2e0385799575ec28bb87ced04a1977198cac69f8e989d7311d887cb0bcd38e3a",
+          "64206f98a893d9ab36d7d1e2d966ca6c9f379d574cdfd33749a389b0c7aa1442",
+          "f9036754abf804f45124e7746426c5027d76a56fc6cab6f43767cd3233ce30e3",
+          "ae726b9481cb1728d9723dc849e8567e87ec00b26c12295f01058fa8df7468cd"
+        ],
+        [
+          "f7cf1a49d44450ce40e31e09ae6fe60932b4e86d3d06b0073119e660abf39a45",
+          "ae47e3159d976f3df3c6ab35f3826f4bb7e1a93b62f65ede311efbafc0294eb3",
+          "bb399d79bb49485bda7e82ef50bc0a65b3ea5ee17e9ded42e6da81ad57bba744",
+          "27692ed30b349712aca97fab2783ff98d0d20c050fe6cda63d28d93d93b815df"
+        ],
+        [
+          "2130bf3fa65d22d39a43a0fad8e5fc6ca44cf39f606c58a45c87b7cd7e40aacc",
+          "373b983e0dbde4f6bd21abb15fea0ac6a7b003f6c2385b32c2aae650fc1e3598",
+          "056f51549483c2def739be59e2c9dbba21cd009e98aaa685884e508fbb8139b9",
+          "57fdce40c85584058bd7d5e62a25bb873cffc6d627d28007793aac38f787ab1b"
+        ],
+        [
+          "8a9a120cfd895ea53100cfb5c39d3e7aabd491f08b0f586966be1e553963234b",
+          "195e3ceedf6c3e16791e7ece5b3fc92c4de013dbbe3980c5e1d36174839a6658",
+          "f6513e6726bc514b1a3b0e36855ce87213e3da9057c34229d6febd33ebe2bdd5",
+          "5c3879b0aa32e60ab0c9bf30ba1a60f7ff7956e3eb2d7f4a82890a8d6abbb98b"
+        ],
+        [
+          "c41cbf5637e92e4a8cee04c6036f75b1659177085e7e649b9c3e29d85681b467",
+          "71c7d956be1c1c7e798d6a215d87248639105aeb223c15bd713c7dac5c7d5dbd",
+          "14e9281349bea94166ff05b7b1644b87216d115f39937ca533569352b3c2d732",
+          "0ec786b94aaab1bf7de7a4105f657d90ada0ea292c5daab0b4d223bebed78ffe"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "fb44ce5a7c88e5eebac6679ae97a9c9c0a8887e6da42bd934a026b4a9719a094"
+        },
+        {
+          "id": "venue",
+          "sha256": "3bbce1b02dacfa264603716e298436c316bedcd15e03edaaefab49afb1039e78"
+        },
+        {
+          "id": "hvac",
+          "sha256": "b4a0fbd0b7780d855026be91f87445c17fa2bea52e347ccce5ad39402c31581c"
+        }
+      ],
+      "fix_count": 4,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "venue",
+          "distance_m": 0.8213709073578047,
+          "suspect": true
+        },
+        {
+          "fix_index": 1,
+          "poi": "hvac",
+          "distance_m": 0.03679831649337342,
+          "suspect": true
+        },
+        {
+          "fix_index": 2,
+          "poi": "venue",
+          "distance_m": 2.415693718473372,
+          "suspect": true
+        },
+        {
+          "fix_index": 3,
+          "poi": "traffic",
+          "distance_m": 0.8267271018740474,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 7279.593610000011
+    },
+    {
+      "seed": 101,
+      "recipe_index": 1,
+      "node_count": 6,
+      "realism": "on",
+      "estimated": {
+        "status": "estimated",
+        "reason": null,
+        "shares": [
+          0.10730419967067098,
+          0.7647729893201235,
+          0.12792281100920538
+        ],
+        "powers_at_1m": [
+          0.0008169595248043115,
+          0.005464278675620993,
+          0.0007941349830835076
+        ],
+        "residual_squared": 1.14305797496145e-11
+      },
+      "truth_shares": [
+        0.19800606348029925,
+        0.6989982712248526,
+        0.10299566529484808
+      ],
+      "signed_share_error_pp": [
+        -9.070186380962827,
+        6.577471809527092,
+        2.4927145714357306
+      ],
+      "mean_absolute_share_error_pp": 6.046790920641883,
+      "observed_excess_powers": [
+        0.00001166216266774815,
+        0.00001681255071392018,
+        0.000004146459481378044,
+        0.000004418768591338357,
+        0.000006193819419067405,
+        0.000002172912876041612
+      ],
+      "source_levels_1m_db": [
+        95.11883360978874,
+        100.28367883697061,
+        91.22215878272826
+      ],
+      "audio_sha256": [
+        [
+          "bf318fa2e6afee4eb019db86b7ddb17721d00bccf43e0bf6de3cd772a1b94fa6",
+          "f0bb7c84f48529d24a187823b8a411714a1987f18055d192396fae4e664424e3",
+          "235b6d889cc360d6dd77606f4a55806b4781b696af13ad6f1748fcc1e4358512",
+          "c5a32f94a41b57e371556612b86f53df3e33c1bb372b4d6001306ed35e43c11c"
+        ],
+        [
+          "76ea27f604d434225efe4416f83fd1613afccd5bb2936365e5d1f56d786e13e1",
+          "da3236dccc7af3da595a6c4ffbf9dfbe768def82fe3fce9e9c8b8aa9c2ab8508",
+          "9c521e8dbb4355a02c52f092172180e4c98ca7d5f8700c238d937b8619477dd0",
+          "1af41d9cb9ab5bfdca64df4d2ec781af7f1dda15146747d1d3c5c4425f5aebee"
+        ],
+        [
+          "2f5f5320b24c28755a78cc968e14b97cb0358457dab2950a764de533554685d4",
+          "b7128f154b55bb948a20ff0286d158a500425bc8984e3b3bfe37a7d8e57ec307",
+          "ff2575c027551cd1f17ebd2169e8a76c9ba3fcf1dabbf6ffd98755aa669d3f66",
+          "15f62d90475848cfde2bba819a831194f6c7fa51997a62d493535beb9eeffac6"
+        ],
+        [
+          "7a431d55c3de4bc74dec8ac6bc9f3b0d889541ee1488e851b694f6556a0f03ff",
+          "44b75279fafb290a2aa99da0523a6bf226e513df857773c79524bb1ac24b017a",
+          "ba5aa11ca5abd5c1e54bcc7bb13db7ac30ce4f4a73f7fa3693e193cde92fa30b",
+          "8277177273c040e4ff1ffec33ce0c334a3a2f085a44ae3fbb9ecb485add4c072"
+        ],
+        [
+          "5111d387c0eac1a8c1cfbc67edab2c755307ed67a22f53338eb88ba5468c3db9",
+          "01ebefbad1d9be1484a7b889c6d7710071d8e2b54fbb294220e3ea36ea1ca319",
+          "56031c2eca6d979bbb9f496cc4c4b3d002a67b98b729678979d8e54864df5d24",
+          "c46824b335a7de7a0000fc997abb761f139ca0956d3b3eeb6099d5712ce03ae4"
+        ],
+        [
+          "ea76472ff94b2af47e6080cae18c332ccbd2484aebcb2e1c3c9fab82ef6c36e4",
+          "b059073ecb80569a5caa55a3d6c8cabed8fe1a94a776d74253c955335c0dc0b4",
+          "2b6cbbd9a2a6751551b97dbd2e6886d0e3e9ce8df77e1a7e8eaca499073779b8",
+          "8c0d944dc32f93d7a8374bbdaba926393538a3d90408c2ad6c89c3d8fee3226c"
+        ]
+      ],
+      "clip_sha256": [
+        {
+          "id": "traffic",
+          "sha256": "fb44ce5a7c88e5eebac6679ae97a9c9c0a8887e6da42bd934a026b4a9719a094"
+        },
+        {
+          "id": "venue",
+          "sha256": "3bbce1b02dacfa264603716e298436c316bedcd15e03edaaefab49afb1039e78"
+        },
+        {
+          "id": "hvac",
+          "sha256": "b4a0fbd0b7780d855026be91f87445c17fa2bea52e347ccce5ad39402c31581c"
+        }
+      ],
+      "fix_count": 2,
+      "associations": [
+        {
+          "fix_index": 0,
+          "poi": "venue",
+          "distance_m": 1.0109043421020023,
+          "suspect": true
+        },
+        {
+          "fix_index": 1,
+          "poi": "traffic",
+          "distance_m": 0.27237282546247377,
+          "suspect": true
+        }
+      ],
+      "elapsed_ms": 7611.180101999998
+    }
+  ]
+}
