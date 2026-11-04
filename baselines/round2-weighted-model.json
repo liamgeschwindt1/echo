@@ -1,0 +1,360 @@
+{
+  "id": "round2-weighted-logistic-v1",
+  "regression": {
+    "features": [
+      "log_range_m",
+      "log_range_ratio",
+      "crossing_sine",
+      "bearing_spread_deg",
+      "residual_us",
+      "incoherence",
+      "horizontal_magnitude_deviation",
+      "log_chi2",
+      "log_nis",
+      "onset_skew_s",
+      "onset_missing",
+      "blocked_fraction",
+      "competing_tracks",
+      "reliable_nodes",
+      "declared_heading_sigma_deg",
+      "node_count"
+    ],
+    "means": [
+      3.981620037628506,
+      0.6918801466164289,
+      0.7692215006065658,
+      2.291577720347754,
+      5.896829770449197,
+      0.11032491754869113,
+      0.04166899784719143,
+      0.3874518042301388,
+      0.38388310959253497,
+      0.003523010314211454,
+      0.45871559633027525,
+      0.009174311926605505,
+      0.28134556574923547,
+      1.9357798165137614,
+      1.1697247706422018,
+      2.4954128440366974
+    ],
+    "scales": [
+      0.35373429586513494,
+      0.6201204676683962,
+      0.2506692304875252,
+      1.7705286868675767,
+      2.5174428073518795,
+      0.07801348562731704,
+      0.03206478621433662,
+      0.45150372733696587,
+      0.6571821481973502,
+      0.005929600738574259,
+      0.49829268308257907,
+      0.05453380581078595,
+      0.44222657816495475,
+      1.1355411704048297,
+      1.2474196918245084,
+      0.6298951887622709
+    ],
+    "coefficients": [
+      0.09506032568557081,
+      0.268928097652021,
+      -0.18457358904955504,
+      0.2581765379753997,
+      0.03576885712445389,
+      0.16918750466415702,
+      0.14421108180783518,
+      0.04919700667461756,
+      0.26000598058932833,
+      -0.18645451975602625,
+      0.35604436257363864,
+      -0.12598450016009283,
+      0.4901043403693038,
+      -0.2002282426516204,
+      0.19922827161066445,
+      -0.22247566252146497
+    ],
+    "intercept": -1.1007838292609966,
+    "lambda": 0.1,
+    "iterations": 3000,
+    "learning_rate": 0.05,
+    "calibration": {
+      "intercept": 0.005277616582734127,
+      "slope": 0.9353641483835134
+    }
+  },
+  "radius": {
+    "off": {
+      "quantile": 9.816616155794312,
+      "n": 52,
+      "rank": 48,
+      "target": 0.9
+    },
+    "on": {
+      "quantile": 7.286581603915343,
+      "n": 44,
+      "rank": 41,
+      "target": 0.9
+    }
+  },
+  "flag_threshold": 0.04523974722481527,
+  "training": {
+    "reference_sha256": "4a77f6fca3d99c93aff7253cc288c3c3cd1307d7bd57d0ce88a0c59fc9bff74b",
+    "population": [
+      "c0:near_wall:1:off:measured_only",
+      "c0:near_wall:1:on:measured_only",
+      "c0:near_wall:2:off:measured_only",
+      "c0:near_wall:2:on:measured_only",
+      "c0:overlap:1:off:measured_only",
+      "c0:overlap:1:on:measured_only",
+      "c0:overlap:2:off:measured_only",
+      "c0:overlap:2:on:measured_only",
+      "c0:continuous:1:off:measured_only",
+      "c0:continuous:1:on:measured_only",
+      "c0:continuous:2:off:measured_only",
+      "c0:continuous:2:on:measured_only",
+      "c0:moving:1:off:measured_only",
+      "c0:moving:1:on:measured_only",
+      "c0:moving:2:off:measured_only",
+      "c0:moving:2:on:measured_only",
+      "c0:blocked:1:off:measured_only",
+      "c0:blocked:1:on:measured_only",
+      "c0:blocked:2:off:measured_only",
+      "c0:blocked:2:on:measured_only",
+      "c0:five_node:1:off:measured_only",
+      "c0:five_node:1:on:measured_only",
+      "c0:five_node:2:off:measured_only",
+      "c0:five_node:2:on:measured_only",
+      "c0:seven_source:1:off:measured_only",
+      "c0:seven_source:1:on:measured_only",
+      "c0:seven_source:2:off:measured_only",
+      "c0:seven_source:2:on:measured_only",
+      "c0:drone_2:1:off:measured_only",
+      "c0:drone_2:1:on:measured_only",
+      "c0:drone_2:2:off:measured_only",
+      "c0:drone_2:2:on:measured_only",
+      "c0:drone_3:1:off:measured_only",
+      "c0:drone_3:1:on:measured_only",
+      "c0:drone_3:2:off:measured_only",
+      "c0:drone_3:2:on:measured_only",
+      "c0:sparse_20:1:off:measured_only",
+      "c0:sparse_20:1:on:measured_only",
+      "c0:sparse_20:2:off:measured_only",
+      "c0:sparse_20:2:on:measured_only",
+      "c0:sparse_50:1:off:measured_only",
+      "c0:sparse_50:1:on:measured_only",
+      "c0:sparse_50:2:off:measured_only",
+      "c0:sparse_50:2:on:measured_only",
+      "c0:sparse_100:1:off:measured_only",
+      "c0:sparse_100:1:on:measured_only",
+      "c0:sparse_100:2:off:measured_only",
+      "c0:sparse_100:2:on:measured_only",
+      "c0:simultaneous_0:1:off:measured_only",
+      "c0:simultaneous_0:1:on:measured_only",
+      "c0:simultaneous_0:2:off:measured_only",
+      "c0:simultaneous_0:2:on:measured_only",
+      "c0:simultaneous_6:1:off:measured_only",
+      "c0:simultaneous_6:1:on:measured_only",
+      "c0:simultaneous_6:2:off:measured_only",
+      "c0:simultaneous_6:2:on:measured_only",
+      "c0:simultaneous_10:1:off:measured_only",
+      "c0:simultaneous_10:1:on:measured_only",
+      "c0:simultaneous_10:2:off:measured_only",
+      "c0:simultaneous_10:2:on:measured_only",
+      "c0:corner:1:off:measured_only",
+      "c0:corner:1:on:measured_only",
+      "c0:corner:2:off:measured_only",
+      "c0:corner:2:on:measured_only",
+      "c0:bad_geometry:1:off:measured_only",
+      "c0:bad_geometry:1:on:measured_only",
+      "c0:bad_geometry:2:off:measured_only",
+      "c0:bad_geometry:2:on:measured_only"
+    ],
+    "n_episodes": 109,
+    "n_wrong": 34,
+    "scene_folds": {
+      "bad_geometry": 0,
+      "blocked": 1,
+      "continuous": 2,
+      "corner": 3,
+      "drone_2": 4,
+      "drone_3": 0,
+      "five_node": 1,
+      "moving": 2,
+      "near_wall": 3,
+      "overlap": 4,
+      "seven_source": 0,
+      "simultaneous_0": 1,
+      "simultaneous_10": 2,
+      "simultaneous_6": 3,
+      "sparse_100": 4,
+      "sparse_20": 0,
+      "sparse_50": 1
+    },
+    "hyperparameters": {
+      "name": "B1 interpretable train-only confidence",
+      "population": "Exactly all 150 measured_only runs in baselines/final-1.json, as partitioned by round2-evaluation.json. No rendering or detection/position changes.",
+      "training": "68 train runs, 17 scene IDs with seed 1 or 2 and both realism profiles. Every matched fix episode and unmatched emitted fix is a binary training label; misses are not fabricated labels.",
+      "validation": "82 remaining runs, seen round-one held-out data; accept/reject only.",
+      "features": [
+        "log_range_m",
+        "log_range_ratio",
+        "crossing_sine",
+        "bearing_spread_deg",
+        "residual_us",
+        "incoherence",
+        "horizontal_magnitude_deviation",
+        "log_chi2",
+        "log_nis",
+        "onset_skew_s",
+        "onset_missing",
+        "blocked_fraction",
+        "competing_tracks",
+        "reliable_nodes",
+        "declared_heading_sigma_deg",
+        "node_count"
+      ],
+      "unavailable_features": [
+        "window SNR in dB (not stored in round-one inference)",
+        "true overlap",
+        "true path identity",
+        "true heading",
+        "true mic offsets"
+      ],
+      "logistic": {
+        "lambda": 0.1,
+        "iterations": 3000,
+        "learning_rate": 0.05,
+        "standardise_on_training_only": true,
+        "sample_unit": "fix episode, unweighted"
+      },
+      "cross_fitting": "Five folds by lexically sorted training scene ID index modulo five; all seeds and realism variants of a scene stay together.",
+      "probability_calibration": {
+        "method": "Platt intercept and slope fit only on train-site out-of-fold logits",
+        "iterations": 2000,
+        "learning_rate": 0.05,
+        "slope_l2": 0.1,
+        "slope_target": 1
+      },
+      "flag_threshold": "Half the minimum predicted probability among wrong train fixes across full-fit and out-of-fold predictions. If no wrong train fixes, threshold 0 (flag all; insufficient labels). No validation threshold search.",
+      "radius": "Per realism profile, finite-sample corrected empirical 90th percentile of training horizontal error divided by geometric scale = max_range * radians(hypot(declared_heading_sigma, bearing_sigma)) / max(0.05, crossing_sine), floored at 0.1 m. Unmatched fixes have unknown error and do not enter radius fitting. Quantile unavailable if ceil(0.9*(n+1)) exceeds n.",
+      "acceptance": "Mission rule 4 on all four train/validation by realism partitions. Exact paired bootstrap aggregate deltas, 1000 draws, 95% CI. No promotion if any partition fails.",
+      "limitations": "Cross-conformal-style empirical radius only; correlated episodes/sites and synthetic propagation invalidate a guaranteed real-world coverage claim. Report reliability bins, Brier score, flags and radius coverage per partition."
+    },
+    "study_registration": {
+      "path": "docs/experiments/round2-consensus.json",
+      "sha256": "cebf7d32fcfa7bc2ff93117c47844022e8e5c7cc2f633ac60723740719b95155",
+      "method": {
+        "name": "B2/B4 measured-track weighted forward and predictive consensus",
+        "population_reference": "docs/experiments/round2-evaluation.json",
+        "runs_per_candidate": 150,
+        "candidates_in_order": [
+          "weighted",
+          "predictive"
+        ],
+        "relationship_to_rejected_trials": "Not a repeat of the rejected truth-assisted solver. Adapt the weighted-forward and predictive ideas to the measured global proposal family, using only stored measured windows and nominal geometry. Retrain the original B1 model on train only and evaluate rule four. Do not claim a changed verdict for the old legacy-only trial.",
+        "proposals": "Reuse preregistered global pair/static multi-node proposals and exact disjoint assignment. Moving pairs unchanged. Robustify only static groups of three or more; retained robust sets with fewer than three defer to the existing pair proposal pool.",
+        "node_sigma": "sqrt(legacy bearing_sigma_deg^2 + declared heading_sigma_deg^2 + (sqrt(2)*declared mic-position sigma / maximum nominal mic baseline * 180/pi)^2). Scalar gain contributes zero to ideal PHAT. Add measured circular window-spread variance and plane-wave residual angular variance for consensus weights only.",
+        "reliability": "Reliable if mean accepted-window PHAT coherence >=0.5 and median plane-wave residual <= half the existing maximum; otherwise support scaled by 0.1.",
+        "weighted": "All forward pair seeds above the existing crossing gate. Maximise sum(reliability scale / sigma_deg^2) of gate-consistent rays, then minimise weighted clipped residual, then canonical pair IDs; costs/support quantised at 1e-10. Weighted refit. LOO may reject only if remaining support >=2 times held-out support.",
+        "predictive": "Same weighted seed/refit. LOO denominator adds held-out perpendicular variance and projected 2D fit covariance of surviving rays. Uncertain low-weight survivors therefore cannot confidently reject a high-weight ray. No validation fitting.",
+        "refined_group_gate": "For robustified groups, recompute mean squared residual and 3-sigma gate with those per-ray consensus sigmas. Legacy pair gates and initial compatible-node proposal gates remain unchanged.",
+        "calibration": "Apply the analytic declared-hardware node sigma and twice sigma in scoring, not the rejected condition-wise empirical intervals. This is a new physical uncertainty candidate, not an accepted default.",
+        "acceptance": "Original rule four in all train/validation off/on partitions, 1000 paired whole-run draws, 95% CI. If both pass choose lower train-on risk area only. Otherwise reject and retain evidence offline.",
+        "unit_checks": "Reconstruct the exact round-one n1/n3 high-weight versus n2/n7 low-weight geometry; keep both high-weight rays, deterministic reversed input, forward validity, and finite predictive covariance. Never read scoring truth in the solver."
+      }
+    },
+    "producer": {
+      "git_hash": "ef2442da1f8af9ae454e7fe2c4788b6799d34cf0",
+      "code_version": "628a7338482c6ba5f55a0287b613cad834f99e949c0163dc110af29ae9144880",
+      "render_code_version": "d94f0f638bcff86b28ce410324e994dcd8836186d2a8b0d3fad9bb89f2198a55",
+      "render_source_files": [
+        {
+          "name": "activity.js",
+          "sha256": "9965a16c9ddd57877f04dceecda489f9f6e52c32be2599ed171ca5024c3b863c"
+        },
+        {
+          "name": "diffraction.js",
+          "sha256": "1fcb78ec1986de677d0e7aa7ab14a9166705df036747e11a1e32882bfffeb0d9"
+        },
+        {
+          "name": "dsp.js",
+          "sha256": "2893fe2c7da6591e182d0618bac7fbc38a31a11bfecc445fa65ef14d4cda4c3f"
+        },
+        {
+          "name": "edges.js",
+          "sha256": "f455cfe3d9eacfba321cfb0fbc2a540628f40b5bbf3f3f6c7823a4fac7cc8d5d"
+        },
+        {
+          "name": "geometry.js",
+          "sha256": "53c46891257f5e03fc6151e919b9ee39afa247422bed1084ed5df79787c430b1"
+        },
+        {
+          "name": "mics.js",
+          "sha256": "dae01b073fc21e68de3e412d466913be669f66a8d59b9757b130e15e286c0a97"
+        },
+        {
+          "name": "motion.js",
+          "sha256": "64d63bc9cfb75f265015391f44b99fb7c446de6c5f6a3e796a5a66f831ee8c4c"
+        },
+        {
+          "name": "physics.js",
+          "sha256": "d99e4e86b406fa2a0617fba14008cbcad2d90db65d8efedab04e035cbb429b7b"
+        },
+        {
+          "name": "profile.js",
+          "sha256": "25b69e19ce39b56e287ee0e03f821ff5679bc81010fbdd9c7c64ac9605e37291"
+        },
+        {
+          "name": "render.js",
+          "sha256": "57c26f314545696e86a512657bd2df2cb35ba46a9f470600bc56b7455ed405c1"
+        },
+        {
+          "name": "rng.js",
+          "sha256": "f40eda0168b4025902bc848c4ce1e0c1721641459fb3c449071a724b22215ca3"
+        }
+      ],
+      "schema": "0.15",
+      "dirty": true,
+      "scoring": "benchmark score.js; post-inference truth only",
+      "audio_source": "repository test-audio recordings, PCM float32 mono at 48000 Hz",
+      "targets": {
+        "schema": 1,
+        "placeholder": true,
+        "scope": "Starting design targets, not validated acceptance limits. Error targets apply to scenes with source reference range up to 50 m; mixed-range tables are indicative only.",
+        "max_reference_range_m": 50,
+        "metrics": {
+          "horizontal_median_m": {
+            "max": 5,
+            "unit": "m"
+          },
+          "horizontal_p90_m": {
+            "max": 10,
+            "unit": "m"
+          },
+          "useful_fix_rate": {
+            "min": 0.8,
+            "unit": "fraction"
+          },
+          "unflagged_wrong_fix_rate": {
+            "max": 0.01,
+            "unit": "fraction"
+          },
+          "risk_coverage_area": {
+            "max": 0.2,
+            "unit": "fraction"
+          },
+          "within_1sigma": {
+            "min": 0.63,
+            "max": 0.73,
+            "unit": "fraction"
+          },
+          "within_2sigma": {
+            "min": 0.9,
+            "max": 0.99,
+            "unit": "fraction"
+          }
+        }
+      }
+    }
+  }
+}

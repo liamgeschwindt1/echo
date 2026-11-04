@@ -1,0 +1,520 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Round 2 fixed train and validation population benchmark</title><style>body{background:#171b22;color:#ddd;font:14px system-ui;margin:24px}table{border-collapse:collapse;display:block;overflow:auto}td,th{padding:8px;border:1px solid #46505c}small{display:block;color:#aeb8c8}.pass{background:#184431}.fail{background:#58252a}svg{max-width:1000px;width:100%;fill:#ddd}pre{white-space:pre-wrap}</style><h1>Round 2 fixed train and validation population</h1><p>150/150 runs. Simulated only. No single supported array winner. No ranking flip demonstrated by this experiment.</p><table><thead><tr><th>Config / split / realism / mode</th><th>horizontal_median_m</th><th>horizontal_p90_m</th><th>error_3d_median_m</th><th>scene_fix_rate</th><th>useful_fix_rate</th><th>unflagged_wrong_fix_rate</th><th>risk_coverage_area</th><th>within_target_rate</th><th>wrong_fix_rate</th><th>suspect_recall</th><th>suspect_precision</th><th>track_fix_count</th><th>track_median_error_m</th><th>bearing_median_deg</th><th>elevation_median_deg</th><th>within_1sigma</th><th>within_2sigma</th><th>detection_rate</th></tr></thead><tbody><tr><th>Base / train / off / measured_only</th><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="pass">0.367<small>[0.173, 1.529]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="fail">20.056<small>[7.767, 25.265]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.706<small>[0.559, 0.853]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="fail">0.059<small>[0.000, 0.147]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="pass">0.000<small>[0.000, 0.000]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="fail">0.343<small>[0.204, 0.518]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.741<small>[0.571, 0.902]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.259<small>[0.100, 0.433]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">1.000<small>[1.000, 1.000]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.268<small>[0.104, 0.439]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">6042.000<small>[4205.000, 8323.000]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.600<small>[0.164, 1.522]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.455<small>[0.357, 0.760]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="fail">0.825<small>[0.702, 0.923]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="fail">0.832<small>[0.711, 0.930]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.479<small>[0.300, 0.706]</small></td></tr><tr><th>Base / train / on / measured_only</th><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="fail">6.092<small>[3.927, 7.664]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="fail">21.503<small>[14.272, 35.760]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.676<small>[0.500, 0.824]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="fail">0.000<small>[0.000, 0.000]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="pass">0.000<small>[0.000, 0.000]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="fail">0.450<small>[0.295, 0.646]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.627<small>[0.491, 0.775]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.373<small>[0.229, 0.509]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">1.000<small>[1.000, 1.000]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.373<small>[0.229, 0.509]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">4955.000<small>[3232.000, 7127.000]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">6.092<small>[3.817, 6.873]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">4.055<small>[3.171, 6.020]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="fail">0.547<small>[0.433, 0.650]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="fail">0.830<small>[0.724, 0.919]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.411<small>[0.261, 0.628]</small></td></tr><tr><th>Base / validation / off / measured_only</th><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="pass">0.680<small>[0.246, 4.896]</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="fail">51.325<small>[8.180, 69.956]</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="">0.512<small>[0.366, 0.659]</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="fail">0.024<small>[0.000, 0.073]</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="pass">0.000<small>[0.000, 0.000]</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="fail">0.524<small>[0.390, 0.676]</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="">0.725<small>[0.550, 0.895]</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="">0.275<small>[0.111, 0.452]</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="">1.000<small>[1.000, 1.000]</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="">0.282<small>[0.116, 0.463]</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="">4073.000<small>[2402.000, 6296.000]</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="">0.585<small>[0.088, 3.194]</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="">0.524<small>[0.338, 0.771]</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="fail">0.814<small>[0.671, 0.933]</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="fail">0.835<small>[0.692, 0.947]</small></td><td data-config="c0" data-split="validation" data-realism="off" data-mode="measured_only" class="">0.348<small>[0.221, 0.497]</small></td></tr><tr><th>Base / validation / on / measured_only</th><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="pass">2.301<small>[1.244, 7.135]</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="fail">23.514<small>[3.712, 47.995]</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="">0.317<small>[0.171, 0.463]</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="fail">0.000<small>[0.000, 0.000]</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="pass">0.000<small>[0.000, 0.000]</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="fail">0.689<small>[0.553, 0.833]</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="">0.786<small>[0.528, 1.000]</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="">0.214<small>[0.000, 0.472]</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="">1.000<small>[1.000, 1.000]</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="">0.214<small>[0.000, 0.472]</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="">2526.000<small>[1302.000, 4060.000]</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="">2.096<small>[1.244, 6.060]</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="">2.260<small>[2.014, 2.792]</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="fail">0.877<small>[0.698, 1.000]</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="fail">0.892<small>[0.722, 1.000]</small></td><td data-config="c0" data-split="validation" data-realism="on" data-mode="measured_only" class="">0.214<small>[0.113, 0.341]</small></td></tr></tbody></table><h2>Risk versus coverage</h2><svg viewBox="0 0 700 300" role="img" aria-label="Risk versus fraction of all scenes answered"><path d="M60 30V260H650" fill="none" stroke="#aaa"/><text x="60" y="20">c0|train|off|measured_only; area 0.343</text><path fill="none" stroke="#ffb000" d="M60 260 V260H77.35294117647058V260H94.70588235294117V260H112.05882352941177V260H129.41176470588235V260H146.76470588235293V260H164.11764705882354V260H181.47058823529412V260H198.8235294117647V260H216.1764705882353V260H233.52941176470588V260H250.8823529411765V260H268.2352941176471V260H285.5882352941176V260H302.94117647058823V260H320.29411764705884V260H337.6470588235294V247.05882352941177H355V235.55555555555554H372.3529411764706V225.26315789473685H389.70588235294116V216H407.05882352941177V207.61904761904762H424.4117647058824V200H441.764705882353V193.04347826086956H459.11764705882354V186.66666666666669H476.47058823529414"/><text x="60" y="285">0</text><text x="570" y="285">1: all scenes</text><text x="5" y="40">risk 1</text></svg><svg viewBox="0 0 700 300" role="img" aria-label="Mean horizontal error in metres versus fraction of all scenes answered"><path d="M60 30V260H650" fill="none" stroke="#aaa"/><text x="60" y="20">Mean worst-fix error per answered scene (m); unknown unmatched error is unavailable</text><polyline fill="none" stroke="#4cc9f0" points="77.35294117647058,233.50685921921067 94.70588235294117,240.70426555016934 112.05882352941177,245.79917488584627 129.41176470588235,245.7483468677784 146.76470588235293,247.54173064408545 164.11764705882354,248.92082602124506 181.47058823529412,248.50366094446244 198.8235294117647,247.746113119168 216.1764705882353,247.68758820660122 233.52941176470588,246.26718154805295 250.8823529411765,241.98663962990855 268.2352941176471,241.225974283487 285.5882352941176,239.25655022720076 302.94117647058823,234.72232050331877 320.29411764705884,226.87832197326262 337.6470588235294,184.67666793044958 355,114.37709182844691 372.3529411764706,40"/><text x="5" y="40">2.972</text><text x="570" y="285">1: all scenes</text></svg><svg viewBox="0 0 700 300" role="img" aria-label="Risk versus fraction of all scenes answered"><path d="M60 30V260H650" fill="none" stroke="#aaa"/><text x="60" y="20">c0|train|on|measured_only; area 0.450</text><path fill="none" stroke="#ffb000" d="M60 260 V260H77.35294117647058V260H94.70588235294117V260H112.05882352941177V260H129.41176470588235V260H146.76470588235293V260H164.11764705882354V260H181.47058823529412V260H198.8235294117647V260H216.1764705882353V260H233.52941176470588V240H250.8823529411765V223.33333333333334H268.2352941176471V226.15384615384616H285.5882352941176V212.85714285714286H302.94117647058823V201.33333333333334H320.29411764705884V191.25H337.6470588235294V182.35294117647058H355V174.44444444444446H372.3529411764706V167.3684210526316H389.70588235294116V161H407.05882352941177V155.23809523809524H424.4117647058824V150H441.764705882353V145.2173913043478H459.11764705882354"/><text x="60" y="285">0</text><text x="570" y="285">1: all scenes</text><text x="5" y="40">risk 1</text></svg><svg viewBox="0 0 700 300" role="img" aria-label="Mean horizontal error in metres versus fraction of all scenes answered"><path d="M60 30V260H650" fill="none" stroke="#aaa"/><text x="60" y="20">Mean worst-fix error per answered scene (m); unknown unmatched error is unavailable</text><polyline fill="none" stroke="#4cc9f0" points="77.35294117647058,193.24110645489657 94.70588235294117,193.3215293903629 112.05882352941177,190.86825113136817 129.41176470588235,193.39337946609544 146.76470588235293,192.1764385357695 164.11764705882354,182.82789386670692 181.47058823529412,187.30732394302441 198.8235294117647,188.10213830050458 216.1764705882353,179.83736166278192 233.52941176470588,180.9464216532661 250.8823529411765,131.40431903168206 268.2352941176471,125.93286515204048 285.5882352941176,131.9090463616259 302.94117647058823,123.26901130176279 320.29411764705884,109.27931290254125 337.6470588235294,95.24746913817864 355,80.9796694078729 372.3529411764706,70.66260999580862 389.70588235294116,40"/><text x="5" y="40">12.607</text><text x="570" y="285">1: all scenes</text></svg><svg viewBox="0 0 700 300" role="img" aria-label="Risk versus fraction of all scenes answered"><path d="M60 30V260H650" fill="none" stroke="#aaa"/><text x="60" y="20">c0|validation|off|measured_only; area 0.524</text><path fill="none" stroke="#ffb000" d="M60 260 V260H74.39024390243902V260H88.78048780487805V260H103.17073170731706V260H117.5609756097561V260H131.9512195121951V260H146.34146341463412V260H160.7317073170732V260H175.1219512195122V260H189.5121951219512V260H203.90243902439025V260H218.2926829268293V260H232.68292682926827V260H247.0731707317073V260H261.4634146341464V245.33333333333334H275.8536585365854V232.5H290.2439024390244V221.1764705882353H304.6341463414634V211.11111111111111H319.0243902439024V202.10526315789474H333.4146341463415V194H347.8048780487805V186.66666666666669H362.1951219512195"/><text x="60" y="285">0</text><text x="570" y="285">1: all scenes</text><text x="5" y="40">risk 1</text></svg><svg viewBox="0 0 700 300" role="img" aria-label="Mean horizontal error in metres versus fraction of all scenes answered"><path d="M60 30V260H650" fill="none" stroke="#aaa"/><text x="60" y="20">Mean worst-fix error per answered scene (m); unknown unmatched error is unavailable</text><polyline fill="none" stroke="#4cc9f0" points="74.39024390243902,250.82498005285544 88.78048780487805,252.35601147812736 103.17073170731706,253.86996605635014 117.5609756097561,255.21359248790998 131.9512195121951,255.39390010317132 146.34146341463412,256.04726650943996 160.7317073170732,255.07932564964085 175.1219512195122,241.26981648085584 189.5121951219512,242.74300884669913 203.90243902439025,244.1398748293999 218.2926829268293,244.74303409343148 232.68292682926827,245.0567183198274 247.0731707317073,245.96807743354523 261.4634146341464,244.7208186104812 275.8536585365854,224.57586010328956 290.2439024390244,206.1228433157225 304.6341463414634,144.34897384797895 319.0243902439024,88.60496775694409 333.4146341463415,40"/><text x="5" y="40">13.940</text><text x="570" y="285">1: all scenes</text></svg><svg viewBox="0 0 700 300" role="img" aria-label="Risk versus fraction of all scenes answered"><path d="M60 30V260H650" fill="none" stroke="#aaa"/><text x="60" y="20">c0|validation|on|measured_only; area 0.689</text><path fill="none" stroke="#ffb000" d="M60 260 V260H74.39024390243902V260H88.78048780487805V260H103.17073170731706V260H117.5609756097561V260H131.9512195121951V260H146.34146341463412V260H160.7317073170732V260H175.1219512195122V260H189.5121951219512V260H203.90243902439025V260H218.2926829268293V241.66666666666666H232.68292682926827V226.15384615384616H247.0731707317073"/><text x="60" y="285">0</text><text x="570" y="285">1: all scenes</text><text x="5" y="40">risk 1</text></svg><svg viewBox="0 0 700 300" role="img" aria-label="Mean horizontal error in metres versus fraction of all scenes answered"><path d="M60 30V260H650" fill="none" stroke="#aaa"/><text x="60" y="20">Mean worst-fix error per answered scene (m); unknown unmatched error is unavailable</text><polyline fill="none" stroke="#4cc9f0" points="74.39024390243902,137.99704321115962 88.78048780487805,153.4171520676599 103.17073170731706,134.8301523967051 117.5609756097561,126.64708701342119 131.9512195121951,118.1467978126002 146.34146341463412,127.53257039140439 160.7317073170732,106.50087286105062 175.1219512195122,74.90662427603593 189.5121951219512,79.81450635954351 203.90243902439025,40 218.2926829268293,51.47622795477264"/><text x="5" y="40">2.920</text><text x="570" y="285">1: all scenes</text></svg><h2>Offline confidence trial: reliability</h2><p>Not a deployed model. Empty bins remain unavailable. A 90% radius is a train-fitted geometric empirical interval, not a real-world conformal guarantee.</p><p>Standardised logit; intercept -1.101; train-only Platt intercept/slope 0.005 / 0.935. Simulator-to-real calibration is unmeasured.</p><table><tr><th>Feature</th><th>Coefficient</th><th>Train mean</th><th>Train scale</th></tr><tr><th>log_range_m</th><td>0.095</td><td>3.982</td><td>0.354</td></tr><tr><th>log_range_ratio</th><td>0.269</td><td>0.692</td><td>0.620</td></tr><tr><th>crossing_sine</th><td>-0.185</td><td>0.769</td><td>0.251</td></tr><tr><th>bearing_spread_deg</th><td>0.258</td><td>2.292</td><td>1.771</td></tr><tr><th>residual_us</th><td>0.036</td><td>5.897</td><td>2.517</td></tr><tr><th>incoherence</th><td>0.169</td><td>0.110</td><td>0.078</td></tr><tr><th>horizontal_magnitude_deviation</th><td>0.144</td><td>0.042</td><td>0.032</td></tr><tr><th>log_chi2</th><td>0.049</td><td>0.387</td><td>0.452</td></tr><tr><th>log_nis</th><td>0.260</td><td>0.384</td><td>0.657</td></tr><tr><th>onset_skew_s</th><td>-0.186</td><td>0.004</td><td>0.006</td></tr><tr><th>onset_missing</th><td>0.356</td><td>0.459</td><td>0.498</td></tr><tr><th>blocked_fraction</th><td>-0.126</td><td>0.009</td><td>0.055</td></tr><tr><th>competing_tracks</th><td>0.490</td><td>0.281</td><td>0.442</td></tr><tr><th>reliable_nodes</th><td>-0.200</td><td>1.936</td><td>1.136</td></tr><tr><th>declared_heading_sigma_deg</th><td>0.199</td><td>1.170</td><td>1.247</td></tr><tr><th>node_count</th><td>-0.222</td><td>2.495</td><td>0.630</td></tr></table><p>train / off; episodes 58; Brier 0.065; empirical 90% radius coverage 0.923 (N=52)</p><svg viewBox="0 0 400 340" role="img" aria-label="Reliability diagram: predicted versus observed wrong-fix probability"><path d="M50 30V290H350M50 290L350 30" fill="none" stroke="#aaa"/><circle cx="69.3139221218163" cy="290" r="8.196152422706632" fill="#4cc9f0"><title>N=27, predicted 0.064, observed 0.000</title></circle><circle cx="87.57906356212439" cy="290" r="5.449489742783178" fill="#4cc9f0"><title>N=6, predicted 0.125, observed 0.000</title></circle><circle cx="133.06140315044945" cy="290" r="4.732050807568877" fill="#4cc9f0"><title>N=3, predicted 0.277, observed 0.000</title></circle><circle cx="166.62617717204114" cy="290" r="4" fill="#4cc9f0"><title>N=1, predicted 0.389, observed 0.000</title></circle><circle cx="177.91450327734492" cy="192.5" r="5.82842712474619" fill="#4cc9f0"><title>N=8, predicted 0.426, observed 0.375</title></circle><circle cx="213.94445649671633" cy="95" r="5" fill="#4cc9f0"><title>N=4, predicted 0.546, observed 0.750</title></circle><circle cx="249.7262687830029" cy="30" r="4.414213562373095" fill="#4cc9f0"><title>N=2, predicted 0.666, observed 1.000</title></circle><circle cx="271.25363416772063" cy="30" r="5" fill="#4cc9f0"><title>N=4, predicted 0.738, observed 1.000</title></circle><circle cx="337.0694279580413" cy="30" r="4.732050807568877" fill="#4cc9f0"><title>N=3, predicted 0.957, observed 1.000</title></circle><text x="50" y="315">Predicted P(error &gt; 10 m), 0 to 1</text><text x="5" y="20">Observed wrong fraction, 0 to 1</text></svg><p>train / on; episodes 51; Brier 0.143; empirical 90% radius coverage 0.932 (N=44)</p><svg viewBox="0 0 400 340" role="img" aria-label="Reliability diagram: predicted versus observed wrong-fix probability"><path d="M50 30V290H350M50 290L350 30" fill="none" stroke="#aaa"/><circle cx="72.42260951045266" cy="290" r="6.16227766016838" fill="#4cc9f0"><title>N=10, predicted 0.075, observed 0.000</title></circle><circle cx="90.46977205655381" cy="234.28571428571428" r="6.741657386773941" fill="#4cc9f0"><title>N=14, predicted 0.135, observed 0.214</title></circle><circle cx="123.35776239549705" cy="225" r="5" fill="#4cc9f0"><title>N=4, predicted 0.245, observed 0.250</title></circle><circle cx="150.63841492493327" cy="290" r="4.414213562373095" fill="#4cc9f0"><title>N=2, predicted 0.335, observed 0.000</title></circle><circle cx="180.25748684357924" cy="116.66666666666669" r="4.732050807568877" fill="#4cc9f0"><title>N=3, predicted 0.434, observed 0.667</title></circle><circle cx="219.1380921895932" cy="145.55555555555554" r="6" fill="#4cc9f0"><title>N=9, predicted 0.564, observed 0.556</title></circle><circle cx="246.10710505642243" cy="30" r="4.414213562373095" fill="#4cc9f0"><title>N=2, predicted 0.654, observed 1.000</title></circle><circle cx="281.32375175713963" cy="30" r="4" fill="#4cc9f0"><title>N=1, predicted 0.771, observed 1.000</title></circle><circle cx="299.49499102576567" cy="160" r="4.414213562373095" fill="#4cc9f0"><title>N=2, predicted 0.832, observed 0.500</title></circle><circle cx="336.20583430985613" cy="30" r="5" fill="#4cc9f0"><title>N=4, predicted 0.954, observed 1.000</title></circle><text x="50" y="315">Predicted P(error &gt; 10 m), 0 to 1</text><text x="5" y="20">Observed wrong fraction, 0 to 1</text></svg><p>validation / off; episodes 40; Brier 0.100; empirical 90% radius coverage 0.868 (N=38)</p><svg viewBox="0 0 400 340" role="img" aria-label="Reliability diagram: predicted versus observed wrong-fix probability"><path d="M50 30V290H350M50 290L350 30" fill="none" stroke="#aaa"/><circle cx="69.16701834374089" cy="290" r="6.60555127546399" fill="#4cc9f0"><title>N=13, predicted 0.064, observed 0.000</title></circle><circle cx="88.79161003285029" cy="290" r="5" fill="#4cc9f0"><title>N=4, predicted 0.129, observed 0.000</title></circle><circle cx="117.93270974164864" cy="290" r="5.449489742783178" fill="#4cc9f0"><title>N=6, predicted 0.226, observed 0.000</title></circle><circle cx="151.07440780285077" cy="160" r="5" fill="#4cc9f0"><title>N=4, predicted 0.337, observed 0.500</title></circle><circle cx="185.40624789382213" cy="203.33333333333334" r="5.449489742783178" fill="#4cc9f0"><title>N=6, predicted 0.451, observed 0.333</title></circle><circle cx="214.18739323064386" cy="30" r="4.732050807568877" fill="#4cc9f0"><title>N=3, predicted 0.547, observed 1.000</title></circle><circle cx="239.6877792817816" cy="30" r="4.732050807568877" fill="#4cc9f0"><title>N=3, predicted 0.632, observed 1.000</title></circle><circle cx="310.5843467001757" cy="30" r="4" fill="#4cc9f0"><title>N=1, predicted 0.869, observed 1.000</title></circle><text x="50" y="315">Predicted P(error &gt; 10 m), 0 to 1</text><text x="5" y="20">Observed wrong fraction, 0 to 1</text></svg><p>validation / on; episodes 28; Brier 0.097; empirical 90% radius coverage 0.960 (N=25)</p><svg viewBox="0 0 400 340" role="img" aria-label="Reliability diagram: predicted versus observed wrong-fix probability"><path d="M50 30V290H350M50 290L350 30" fill="none" stroke="#aaa"/><circle cx="72.40633017309052" cy="290" r="6.16227766016838" fill="#4cc9f0"><title>N=10, predicted 0.075, observed 0.000</title></circle><circle cx="88.90063631952299" cy="290" r="5.23606797749979" fill="#4cc9f0"><title>N=5, predicted 0.130, observed 0.000</title></circle><circle cx="129.00079802625953" cy="290" r="4" fill="#4cc9f0"><title>N=1, predicted 0.263, observed 0.000</title></circle><circle cx="157.3848691561273" cy="290" r="4" fill="#4cc9f0"><title>N=1, predicted 0.358, observed 0.000</title></circle><circle cx="197.8804725522635" cy="30" r="4" fill="#4cc9f0"><title>N=1, predicted 0.493, observed 1.000</title></circle><circle cx="209.0231642204834" cy="290" r="5" fill="#4cc9f0"><title>N=4, predicted 0.530, observed 0.000</title></circle><circle cx="256.87076327777226" cy="30" r="4" fill="#4cc9f0"><title>N=1, predicted 0.690, observed 1.000</title></circle><circle cx="289.77604904946554" cy="30" r="4" fill="#4cc9f0"><title>N=1, predicted 0.799, observed 1.000</title></circle><circle cx="308.508251343214" cy="160" r="4.414213562373095" fill="#4cc9f0"><title>N=2, predicted 0.862, observed 0.500</title></circle><circle cx="339.08159143667" cy="30" r="4.414213562373095" fill="#4cc9f0"><title>N=2, predicted 0.964, observed 1.000</title></circle><text x="50" y="315">Predicted P(error &gt; 10 m), 0 to 1</text><text x="5" y="20">Observed wrong fraction, 0 to 1</text></svg><h2>Rule-four acceptance: FAIL</h2><p>Paired bootstrap of whole matching scene/seed runs; aggregate endpoint delta after-before. Missing conditional errors are omitted from endpoint draws, never imputed as zero. Calibration guard is absolute distance to nominal. All-equal compares all non-runtime metric values.</p><table><tr><th>Partition / pairs</th><th>Metric</th><th>Before</th><th>After</th><th>Delta / paired CI</th><th>Partition verdict / reasons</th></tr><tr><th>c0|train|off|measured_only / 34</th><td>scene_fix_rate</td><td>0.706</td><td>0.706</td><td>0.000<small>CI unavailable / guard only</small></td><td class="fail">FAIL: within_1sigma fails guard</td></tr><tr><th>c0|train|off|measured_only / 34</th><td>unflagged_wrong_fix_rate</td><td>0.000</td><td>0.000</td><td>0.000<small>CI unavailable / guard only</small></td><td class="fail">FAIL: within_1sigma fails guard</td></tr><tr><th>c0|train|off|measured_only / 34</th><td>within_1sigma</td><td>0.769</td><td>0.825</td><td>0.056<small>CI unavailable / guard only</small></td><td class="fail">FAIL: within_1sigma fails guard</td></tr><tr><th>c0|train|off|measured_only / 34</th><td>within_2sigma</td><td>0.769</td><td>0.832</td><td>0.064<small>CI unavailable / guard only</small></td><td class="fail">FAIL: within_1sigma fails guard</td></tr><tr><th>c0|train|off|measured_only / 34</th><td>horizontal_median_m</td><td>0.526</td><td>0.367</td><td>-0.159<small>-0.854 to 0.255</small></td><td class="fail">FAIL: within_1sigma fails guard</td></tr><tr><th>c0|train|off|measured_only / 34</th><td>horizontal_p90_m</td><td>24.631</td><td>20.056</td><td>-4.575<small>-13.932 to 2.447</small></td><td class="fail">FAIL: within_1sigma fails guard</td></tr><tr><th>c0|train|off|measured_only / 34</th><td>risk_coverage_area</td><td>0.588</td><td>0.343</td><td>-0.245<small>-0.345 to -0.130</small></td><td class="fail">FAIL: within_1sigma fails guard</td></tr><tr><th>c0|train|on|measured_only / 34</th><td>scene_fix_rate</td><td>0.676</td><td>0.676</td><td>0.000<small>CI unavailable / guard only</small></td><td class="pass">PASS: </td></tr><tr><th>c0|train|on|measured_only / 34</th><td>unflagged_wrong_fix_rate</td><td>0.000</td><td>0.000</td><td>0.000<small>CI unavailable / guard only</small></td><td class="pass">PASS: </td></tr><tr><th>c0|train|on|measured_only / 34</th><td>within_1sigma</td><td>0.223</td><td>0.547</td><td>0.324<small>CI unavailable / guard only</small></td><td class="pass">PASS: </td></tr><tr><th>c0|train|on|measured_only / 34</th><td>within_2sigma</td><td>0.500</td><td>0.830</td><td>0.330<small>CI unavailable / guard only</small></td><td class="pass">PASS: </td></tr><tr><th>c0|train|on|measured_only / 34</th><td>horizontal_median_m</td><td>6.873</td><td>6.092</td><td>-0.782<small>-2.548 to 0.523</small></td><td class="pass">PASS: </td></tr><tr><th>c0|train|on|measured_only / 34</th><td>horizontal_p90_m</td><td>24.885</td><td>21.503</td><td>-3.381<small>-7.072 to 10.322</small></td><td class="pass">PASS: </td></tr><tr><th>c0|train|on|measured_only / 34</th><td>risk_coverage_area</td><td>0.706</td><td>0.450</td><td>-0.255<small>-0.333 to -0.159</small></td><td class="pass">PASS: </td></tr><tr><th>c0|validation|off|measured_only / 41</th><td>scene_fix_rate</td><td>0.512</td><td>0.512</td><td>0.000<small>CI unavailable / guard only</small></td><td class="fail">FAIL: within_1sigma fails guard</td></tr><tr><th>c0|validation|off|measured_only / 41</th><td>unflagged_wrong_fix_rate</td><td>0.000</td><td>0.000</td><td>0.000<small>CI unavailable / guard only</small></td><td class="fail">FAIL: within_1sigma fails guard</td></tr><tr><th>c0|validation|off|measured_only / 41</th><td>within_1sigma</td><td>0.811</td><td>0.814</td><td>0.004<small>CI unavailable / guard only</small></td><td class="fail">FAIL: within_1sigma fails guard</td></tr><tr><th>c0|validation|off|measured_only / 41</th><td>within_2sigma</td><td>0.824</td><td>0.835</td><td>0.011<small>CI unavailable / guard only</small></td><td class="fail">FAIL: within_1sigma fails guard</td></tr><tr><th>c0|validation|off|measured_only / 41</th><td>horizontal_median_m</td><td>0.438</td><td>0.680</td><td>0.242<small>-0.164 to 2.770</small></td><td class="fail">FAIL: within_1sigma fails guard</td></tr><tr><th>c0|validation|off|measured_only / 41</th><td>horizontal_p90_m</td><td>21.774</td><td>51.325</td><td>29.551<small>-7.418 to 57.476</small></td><td class="fail">FAIL: within_1sigma fails guard</td></tr><tr><th>c0|validation|off|measured_only / 41</th><td>risk_coverage_area</td><td>0.659</td><td>0.524</td><td>-0.134<small>-0.210 to -0.045</small></td><td class="fail">FAIL: within_1sigma fails guard</td></tr><tr><th>c0|validation|on|measured_only / 41</th><td>scene_fix_rate</td><td>0.317</td><td>0.317</td><td>0.000<small>CI unavailable / guard only</small></td><td class="fail">FAIL: within_1sigma fails guard; No paired median/p90/risk-area improvement with CI excluding zero</td></tr><tr><th>c0|validation|on|measured_only / 41</th><td>unflagged_wrong_fix_rate</td><td>0.000</td><td>0.000</td><td>0.000<small>CI unavailable / guard only</small></td><td class="fail">FAIL: within_1sigma fails guard; No paired median/p90/risk-area improvement with CI excluding zero</td></tr><tr><th>c0|validation|on|measured_only / 41</th><td>within_1sigma</td><td>0.500</td><td>0.877</td><td>0.377<small>CI unavailable / guard only</small></td><td class="fail">FAIL: within_1sigma fails guard; No paired median/p90/risk-area improvement with CI excluding zero</td></tr><tr><th>c0|validation|on|measured_only / 41</th><td>within_2sigma</td><td>0.788</td><td>0.892</td><td>0.104<small>CI unavailable / guard only</small></td><td class="fail">FAIL: within_1sigma fails guard; No paired median/p90/risk-area improvement with CI excluding zero</td></tr><tr><th>c0|validation|on|measured_only / 41</th><td>horizontal_median_m</td><td>2.494</td><td>2.301</td><td>-0.192<small>-2.235 to 2.060</small></td><td class="fail">FAIL: within_1sigma fails guard; No paired median/p90/risk-area improvement with CI excluding zero</td></tr><tr><th>c0|validation|on|measured_only / 41</th><td>horizontal_p90_m</td><td>26.747</td><td>23.514</td><td>-3.232<small>-20.686 to 1.950</small></td><td class="fail">FAIL: within_1sigma fails guard; No paired median/p90/risk-area improvement with CI excluding zero</td></tr><tr><th>c0|validation|on|measured_only / 41</th><td>risk_coverage_area</td><td>0.756</td><td>0.689</td><td>-0.067<small>-0.142 to 0.000</small></td><td class="fail">FAIL: within_1sigma fails guard; No paired median/p90/risk-area improvement with CI excluding zero</td></tr></table><p>Tornado requires one-at-a-time mode.</p><h2>Ranking</h2><pre>[]</pre><h2>Failure atlas</h2><pre>[
+  {
+    &quot;split&quot;: &quot;train&quot;,
+    &quot;realism&quot;: &quot;off&quot;,
+    &quot;analysis_mode&quot;: &quot;measured_only&quot;,
+    &quot;categories&quot;: [
+      {
+        &quot;category&quot;: &quot;overlap&quot;,
+        &quot;failures&quot;: 29,
+        &quot;no_fix&quot;: 14,
+        &quot;unmatched_fixes&quot;: 6,
+        &quot;share&quot;: 0.7435897435897436,
+        &quot;median_error_m&quot;: 23.69149167404898,
+        &quot;p90_error_m&quot;: 52.12416807672482
+      },
+      {
+        &quot;category&quot;: &quot;aerial&quot;,
+        &quot;failures&quot;: 4,
+        &quot;no_fix&quot;: 4,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.10256410256410256,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;moving&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.05128205128205128,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;near-wall&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.05128205128205128,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;bad-geometry&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.05128205128205128,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      }
+    ],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 20,
+        &quot;detection_rate&quot;: 0.35
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 88,
+        &quot;detection_rate&quot;: 0.5681818181818182
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 76,
+        &quot;detection_rate&quot;: 0.40789473684210525
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 8,
+        &quot;detection_rate&quot;: 0.5
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;train&quot;,
+    &quot;realism&quot;: &quot;on&quot;,
+    &quot;analysis_mode&quot;: &quot;measured_only&quot;,
+    &quot;categories&quot;: [
+      {
+        &quot;category&quot;: &quot;overlap&quot;,
+        &quot;failures&quot;: 30,
+        &quot;no_fix&quot;: 16,
+        &quot;unmatched_fixes&quot;: 7,
+        &quot;share&quot;: 0.6666666666666666,
+        &quot;median_error_m&quot;: 21.026141448967525,
+        &quot;p90_error_m&quot;: 26.528892419575993
+      },
+      {
+        &quot;category&quot;: &quot;aerial&quot;,
+        &quot;failures&quot;: 4,
+        &quot;no_fix&quot;: 4,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.08888888888888889,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;near-wall&quot;,
+        &quot;failures&quot;: 3,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.06666666666666667,
+        &quot;median_error_m&quot;: 44.236655717208755,
+        &quot;p90_error_m&quot;: 44.236655717208755
+      },
+      {
+        &quot;category&quot;: &quot;low-SNR&quot;,
+        &quot;failures&quot;: 3,
+        &quot;no_fix&quot;: 0,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.06666666666666667,
+        &quot;median_error_m&quot;: 15.583766514350126,
+        &quot;p90_error_m&quot;: 35.760393088203514
+      },
+      {
+        &quot;category&quot;: &quot;moving&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.044444444444444446,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;bad-geometry&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.044444444444444446,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;blocked&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.022222222222222223,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      }
+    ],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 20,
+        &quot;detection_rate&quot;: 0.3
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 88,
+        &quot;detection_rate&quot;: 0.48863636363636365
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 76,
+        &quot;detection_rate&quot;: 0.34210526315789475
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 8,
+        &quot;detection_rate&quot;: 0.5
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;validation&quot;,
+    &quot;realism&quot;: &quot;off&quot;,
+    &quot;analysis_mode&quot;: &quot;measured_only&quot;,
+    &quot;categories&quot;: [
+      {
+        &quot;category&quot;: &quot;random&quot;,
+        &quot;failures&quot;: 19,
+        &quot;no_fix&quot;: 15,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.5,
+        &quot;median_error_m&quot;: 69.95553565174677,
+        &quot;p90_error_m&quot;: 70.90663630858181
+      },
+      {
+        &quot;category&quot;: &quot;overlap&quot;,
+        &quot;failures&quot;: 14,
+        &quot;no_fix&quot;: 7,
+        &quot;unmatched_fixes&quot;: 2,
+        &quot;share&quot;: 0.3684210526315789,
+        &quot;median_error_m&quot;: 20.952604467806324,
+        &quot;p90_error_m&quot;: 51.3246907713794
+      },
+      {
+        &quot;category&quot;: &quot;aerial&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.05263157894736842,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;moving&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.02631578947368421,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;near-wall&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.02631578947368421,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;bad-geometry&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.02631578947368421,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      }
+    ],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 10,
+        &quot;detection_rate&quot;: 0.4
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 50,
+        &quot;detection_rate&quot;: 0.56
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 71,
+        &quot;detection_rate&quot;: 0.39436619718309857
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 67,
+        &quot;detection_rate&quot;: 0.14925373134328357
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 3,
+        &quot;detection_rate&quot;: 0
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;validation&quot;,
+    &quot;realism&quot;: &quot;on&quot;,
+    &quot;analysis_mode&quot;: &quot;measured_only&quot;,
+    &quot;categories&quot;: [
+      {
+        &quot;category&quot;: &quot;random&quot;,
+        &quot;failures&quot;: 23,
+        &quot;no_fix&quot;: 23,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.5348837209302325,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;overlap&quot;,
+        &quot;failures&quot;: 15,
+        &quot;no_fix&quot;: 9,
+        &quot;unmatched_fixes&quot;: 3,
+        &quot;share&quot;: 0.3488372093023256,
+        &quot;median_error_m&quot;: 30.839311158519337,
+        &quot;p90_error_m&quot;: 47.9951775633845
+      },
+      {
+        &quot;category&quot;: &quot;aerial&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.046511627906976744,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;moving&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.023255813953488372,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;near-wall&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.023255813953488372,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;bad-geometry&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.023255813953488372,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      }
+    ],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 10,
+        &quot;detection_rate&quot;: 0.1
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 50,
+        &quot;detection_rate&quot;: 0.44
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 71,
+        &quot;detection_rate&quot;: 0.23943661971830985
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 67,
+        &quot;detection_rate&quot;: 0.04477611940298507
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 3,
+        &quot;detection_rate&quot;: 0
+      }
+    ]
+  }
+]</pre><h2>Reproducibility</h2><pre>{
+  &quot;git_hash&quot;: &quot;69397f2682f7612fed5b74b663c0c763c8041077&quot;,
+  &quot;code_version&quot;: &quot;628a7338482c6ba5f55a0287b613cad834f99e949c0163dc110af29ae9144880&quot;,
+  &quot;render_code_version&quot;: &quot;08ba89b70c0916cc3f61aa6ce951027c53686b8fd329c8a173564b16f24cc7da&quot;,
+  &quot;render_source_files&quot;: [
+    {
+      &quot;name&quot;: &quot;activity.js&quot;,
+      &quot;sha256&quot;: &quot;9965a16c9ddd57877f04dceecda489f9f6e52c32be2599ed171ca5024c3b863c&quot;
+    },
+    {
+      &quot;name&quot;: &quot;diffraction.js&quot;,
+      &quot;sha256&quot;: &quot;1fcb78ec1986de677d0e7aa7ab14a9166705df036747e11a1e32882bfffeb0d9&quot;
+    },
+    {
+      &quot;name&quot;: &quot;dsp.js&quot;,
+      &quot;sha256&quot;: &quot;2893fe2c7da6591e182d0618bac7fbc38a31a11bfecc445fa65ef14d4cda4c3f&quot;
+    },
+    {
+      &quot;name&quot;: &quot;edges.js&quot;,
+      &quot;sha256&quot;: &quot;f455cfe3d9eacfba321cfb0fbc2a540628f40b5bbf3f3f6c7823a4fac7cc8d5d&quot;
+    },
+    {
+      &quot;name&quot;: &quot;geometry.js&quot;,
+      &quot;sha256&quot;: &quot;53c46891257f5e03fc6151e919b9ee39afa247422bed1084ed5df79787c430b1&quot;
+    },
+    {
+      &quot;name&quot;: &quot;mics.js&quot;,
+      &quot;sha256&quot;: &quot;dae01b073fc21e68de3e412d466913be669f66a8d59b9757b130e15e286c0a97&quot;
+    },
+    {
+      &quot;name&quot;: &quot;motion.js&quot;,
+      &quot;sha256&quot;: &quot;64d63bc9cfb75f265015391f44b99fb7c446de6c5f6a3e796a5a66f831ee8c4c&quot;
+    },
+    {
+      &quot;name&quot;: &quot;physics.js&quot;,
+      &quot;sha256&quot;: &quot;d99e4e86b406fa2a0617fba14008cbcad2d90db65d8efedab04e035cbb429b7b&quot;
+    },
+    {
+      &quot;name&quot;: &quot;profile.js&quot;,
+      &quot;sha256&quot;: &quot;25b69e19ce39b56e287ee0e03f821ff5679bc81010fbdd9c7c64ac9605e37291&quot;
+    },
+    {
+      &quot;name&quot;: &quot;render.js&quot;,
+      &quot;sha256&quot;: &quot;10a001c0a201345b0a6df0c3848e7a98b32e5fd5482ffe8a54cdbaef182c3f5e&quot;
+    },
+    {
+      &quot;name&quot;: &quot;rng.js&quot;,
+      &quot;sha256&quot;: &quot;f40eda0168b4025902bc848c4ce1e0c1721641459fb3c449071a724b22215ca3&quot;
+    }
+  ],
+  &quot;schema&quot;: &quot;0.13&quot;,
+  &quot;dirty&quot;: true,
+  &quot;scoring&quot;: &quot;benchmark score.js; post-inference truth only&quot;,
+  &quot;audio_source&quot;: &quot;repository test-audio recordings, PCM float32 mono at 48000 Hz&quot;,
+  &quot;targets&quot;: {
+    &quot;schema&quot;: 1,
+    &quot;placeholder&quot;: true,
+    &quot;scope&quot;: &quot;Starting design targets, not validated acceptance limits. Error targets apply to scenes with source reference range up to 50 m; mixed-range tables are indicative only.&quot;,
+    &quot;max_reference_range_m&quot;: 50,
+    &quot;metrics&quot;: {
+      &quot;horizontal_median_m&quot;: {
+        &quot;max&quot;: 5,
+        &quot;unit&quot;: &quot;m&quot;
+      },
+      &quot;horizontal_p90_m&quot;: {
+        &quot;max&quot;: 10,
+        &quot;unit&quot;: &quot;m&quot;
+      },
+      &quot;useful_fix_rate&quot;: {
+        &quot;min&quot;: 0.8,
+        &quot;unit&quot;: &quot;fraction&quot;
+      },
+      &quot;unflagged_wrong_fix_rate&quot;: {
+        &quot;max&quot;: 0.01,
+        &quot;unit&quot;: &quot;fraction&quot;
+      },
+      &quot;risk_coverage_area&quot;: {
+        &quot;max&quot;: 0.2,
+        &quot;unit&quot;: &quot;fraction&quot;
+      },
+      &quot;within_1sigma&quot;: {
+        &quot;min&quot;: 0.63,
+        &quot;max&quot;: 0.73,
+        &quot;unit&quot;: &quot;fraction&quot;
+      },
+      &quot;within_2sigma&quot;: {
+        &quot;min&quot;: 0.9,
+        &quot;max&quot;: 0.99,
+        &quot;unit&quot;: &quot;fraction&quot;
+      }
+    }
+  },
+  &quot;cache_policy&quot;: &quot;retain&quot;,
+  &quot;audio&quot;: [
+    {
+      &quot;id&quot;: &quot;car_horn&quot;,
+      &quot;samples&quot;: 240000,
+      &quot;sha256&quot;: &quot;dadf04b0e40acf56e5967682f71b249ae7811a4429372212e633fa207a862202&quot;
+    },
+    {
+      &quot;id&quot;: &quot;chainsaw&quot;,
+      &quot;samples&quot;: 240000,
+      &quot;sha256&quot;: &quot;eb7c39065495f6286ade8b663c76e5e858572568979805d9ea825d332472bfaf&quot;
+    },
+    {
+      &quot;id&quot;: &quot;dog&quot;,
+      &quot;samples&quot;: 240000,
+      &quot;sha256&quot;: &quot;20d460c32866c35509072d12b01e719286b07593aa7ce3299c326f5c510b220f&quot;
+    },
+    {
+      &quot;id&quot;: &quot;engine&quot;,
+      &quot;samples&quot;: 240000,
+      &quot;sha256&quot;: &quot;b6735647f769cb8e044f98675223d3632f194df253a87751145573e938899183&quot;
+    },
+    {
+      &quot;id&quot;: &quot;footsteps&quot;,
+      &quot;samples&quot;: 240000,
+      &quot;sha256&quot;: &quot;4c7b79c77f5689556f97d672e03756c6addc83305c8fd2c263ddee32124b39bf&quot;
+    },
+    {
+      &quot;id&quot;: &quot;glass_breaking&quot;,
+      &quot;samples&quot;: 240000,
+      &quot;sha256&quot;: &quot;4df4ae3a411444c0f623a773ef45d28579253f9b878c69832aa582d3f7c09512&quot;
+    }
+  ],
+  &quot;runtime&quot;: {
+    &quot;engine&quot;: &quot;node&quot;,
+    &quot;node&quot;: &quot;26.12.1&quot;,
+    &quot;v8&quot;: &quot;14.6.202.34-node.40&quot;,
+    &quot;platform&quot;: &quot;linux&quot;,
+    &quot;arch&quot;: &quot;x64&quot;
+  },
+  &quot;cancelled&quot;: false,
+  &quot;expected_runs&quot;: 150,
+  &quot;scoring_version&quot;: &quot;episode-one-to-one-v2&quot;,
+  &quot;scoring_provenance&quot;: {
+    &quot;code_version&quot;: &quot;628a7338482c6ba5f55a0287b613cad834f99e949c0163dc110af29ae9144880&quot;,
+    &quot;git_hash&quot;: &quot;ef2442da1f8af9ae454e7fe2c4788b6799d34cf0&quot;,
+    &quot;dirty&quot;: true,
+    &quot;schema&quot;: &quot;0.15&quot;
+  },
+  &quot;rescored_from&quot;: {
+    &quot;schema&quot;: &quot;0.13&quot;,
+    &quot;scoring_version&quot;: &quot;episode-one-to-one-v2&quot;
+  },
+  &quot;confidence_trial&quot;: &quot;round2-predictive-logistic-v1&quot;
+}</pre><h2>Limits</h2><p>SIMULATED, not real-world validation. Held-out scenes/seeds are reporting-only.</p><p>Bootstrap unit is a complete scene/seed run. CI is unavailable for fewer than two runs. Repeated seeds within sites are correlated; these are not independent-site population confidence intervals.</p><p>Truth-assisted source windows, SNR, overlap, picked paths, multipath and track gates use simulator truth.</p><p>Measured-only reuses measured.js: horizontal only, pairwise greedy association; 3D error and labelling are unavailable (null), not zero.</p><p>Measured scoring assigns overlapping fix episodes one-to-one to source paths after inference, without an error gate. Disjoint episodes may share a source; every matched episode enters error/track/calibration metrics. Unassigned simultaneous hypotheses count wrong. Scoring does not check clip-active intervals. Calibration uses median accepted track bearing error, not individual windows.</p><p>Measured detection rate means source-associated fused node tracks, not an independent classifier detection rate. No model labelling was run.</p><p>Runtime on cache hits records original execution time; render_ms is zero when audio was cached. It is not a fair cold-render speed comparison.</p></html>

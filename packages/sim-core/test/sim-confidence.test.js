@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { confidenceFeatures, fitLogistic, predictWrong, applyConfidence, reliabilityDiagram, CONFIDENCE_FEATURES } from '../src/confidence.js';
+import { confidenceFeatures, fitLogistic, predictWrong, applyConfidence, reliabilityDiagram, CONFIDENCE_FEATURES } from '../../../scripts/lib/confidence.mjs';
 
 const fixture = () => ({
   nodes: [

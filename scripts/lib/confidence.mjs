@@ -1,4 +1,4 @@
-import { buildingBox, segmentBlocked } from './geometry.js';
+import { buildingBox, segmentBlocked } from '../../packages/sim-core/src/geometry.js';
 
 const mean = (a) => a.reduce((s, x) => s + x, 0) / Math.max(1, a.length);
 const median = (a) => [...a].sort((a, b) => a - b)[Math.floor(a.length / 2)];

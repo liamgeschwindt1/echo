@@ -60,7 +60,8 @@ export function scoreMeasured(scenario, measured, { c }) {
       return {
         node_id: node.id, range_m: distance(sourcePosition(src), node.position),
         az_error_deg: median(errors), el_error_deg: null,
-        sigma_deg: fix ? measured.options.bearing_sigma_deg : null,
+        sigma_deg: fix ? measured.nodes[ni].bearing_intervals ? measured.nodes[ni].bearing_intervals.sigma_deg : measured.options.bearing_sigma_deg : null,
+        ...(measured.nodes[ni].bearing_intervals ? { two_sigma_deg: measured.nodes[ni].bearing_intervals.two_sigma_deg } : {}),
         detected: tracks.has(ni), calibration_unit: 'median accepted track bearing error'
       };
     });
