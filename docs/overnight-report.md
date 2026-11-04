@@ -82,7 +82,7 @@ scene probabilities.
 | Renderer provenance/reuse | Kept: separate parsed render dependency hash, producer sidecars, guarded150-input legacy reuse; independent cold control matches every mic/path/activity byte. Final300 audio hits,0ms render; not a cold-speed claim. |
 | Episode scoring | Kept: disjoint bursts may match the same physical source. Removed a false50% wrong-fix result; this is corrected measurement, not better inference. All300 original inference objects preserved. |
 | Maximum-volume four-mic choice | Kept opt-in A1/C1/C2/C3, volume299297.648mm³. Exhaustive495 subsets, own golden. Old coplanar layout and defaults unchanged; no acoustic superiority claim. |
-| Bounded cache | Kept: completed render groups may discard raw audio, retain whole results. Interrupted groups retain raw. No cross-process lease; concurrent discard studies require separate caches. |
+| Bounded cache | Kept: cold four-run test leaves0 raw and4 whole results; core243/smoke16 pass. Completed render groups may discard raw, interrupted groups retain it. No cross-process lease; concurrent discard studies require separate caches. |
 | Weight-aware positive-range consensus | Rejected: train seven-source median21.5058→11.0777m and p9036.4976→26.7930m, but recall66.67→50% and precision80→40%. No implementation retained. |
 | Predictive leave-one-out covariance | Rejected: median21.5058→13.2270m, p9036.4976→32.9615m, tracks20→21; recall66.67→60%, precision80→60%. Exact transformed-source evidence retained; repository solver untouched. |
 | Gain-model check | Kept regression/documentation: positive scalar gain scales signal plus both noise terms and ideally cancels in PHAT. Core244 and smoke16 passed, zero regressions. |
@@ -90,7 +90,8 @@ scene probabilities.
 | CI | Kept: real remote workflow41769397157 passed core243, app31/build and eight measured regression cases on pinned Node24.22.2. Later local counts reflect added tests, not skipped CI cases. |
 | CLI argument safety | Kept: no-compute help and early strict failures. Core248, app32/build and final300 zero regressions. Previously `--help` silently started smoke. |
 
-Final-source remote workflow **41778060382**, revision **ef2108c**, subsequently
+Final handoff validation also passed **248/248 core** and **16/16 smoke cases
+with zero regressions**. Final-source remote workflow **41778060382**, revision **ef2108c**, also
 passed **248 core,32 app**, production build and all eight finite measured cases
 with zero regressions. The final source is pushed; documentation/data updates
 do not change that tested inference.
@@ -136,8 +137,7 @@ The original1350 full study was gracefully cancelled at167 runs based on
 `array-full-partial` archive must not rank unequal populations. The predeclared
 900-run replacement retains all25 sites/all9 arrays, both profiles, seeds1/101,
 306train/594held-out; 32% site IDs and50% seeds are held out.
-Its completion and the eight fixed endpoint sensitivity grids remain pending
-at the original draft checkpoint. The full replacement subsequently completed
+The full replacement completed
 **900/900 at07:45:27 UTC**, with exactly306train/594held-out and every array.
 `baselines/array-full-budget.json.gz` retains exact inference (18.3MB compressed);
 its CSV/HTML retain all metrics and confidence intervals. No endpoint values are
@@ -187,7 +187,35 @@ safe hardware winner follows. The old coplanar four-mic layout produces no
 measured fixes in this study; the noncoplanar alternative restores some coverage
 but does not demonstrate superior tails/calibration.
 
-The eight preregistered endpoint grids are still computing at this checkpoint.
+### Placeholder ranking flips
+
+All eight preregistered endpoint grids completed **1152/1152 runs**. Each grid uses all9 arrays, two sites, seeds1/101,
+both profiles and measured-only:36train/108held-out. Values were fixed before
+grading. These are point-median flips on a **small two-site population**, not
+validated hardware crossovers or evidence that a specific intermediate threshold
+is safe. The swept variable overrides the background off/on profile.
+
+| Placeholder | Tested endpoints | Train off flip | Train on flip | Held off flip | Held on flip | Held-on leaders, low → high |
+|---|---|---|---|---|---|---|
+| Heading error σ | 0 to5deg | Yes | No | Yes | Yes | puck12_d210 → flat4_100 |
+| Mic position σ | 0 to10mm | Yes | Yes | Yes | Yes | dome12_d230 → ball12_d180_sub4_maxvol |
+| Ambient floor | 30 to60dB SPL | No | No | Yes | No | planar12_d180 → planar12_d180 |
+| Mic self-noise | 20 to40dB SPL | No | No | No | No | planar12_d180 → planar12_d180 |
+| Ground reflectivity | 0 to0.8 | No | No | Yes | No | planar12_d180 → planar12_d180 |
+| Noise correlation | 0 to0.6 | No | No | Yes | No | planar12_d180 → planar12_d180 |
+| Source level at1m | 90 to110dB | No | No | Yes | Yes | flat4_100 → planar12_d180 |
+| Scalar mic gain σ | 0 to2dB | No | No | No | No | planar12_d180 → planar12_d180 |
+
+Heading, geometry calibration, ambient noise, ground, correlation and source
+level can therefore change a conditional point leader somewhere in these
+tested contexts. Prioritise measuring those assumptions on a prototype.
+No observed self-noise flip is not evidence that self-noise is unimportant;
+this grid is small, misses are excluded from error quantiles, and there are no
+housing/frequency/phase or inter-node clock models. Every complete grid has
+lossless `baselines/array-*.json.gz` plus directly readable CSV/HTML results.
+The absence of a scalar-gain flip is especially limited: the renderer applies
+gain to signal plus noise together, so ideal PHAT cancels it. These results
+do not establish robustness to real microphone frequency/phase mismatch.
 
 No clock model/sensitivity or measured elevation ranking is claimed. Gain
 insensitivity is partly built into the renderer. The nominal aliasing limit is
@@ -233,6 +261,7 @@ See [testing.md](testing.md) for all groups, presets, charts and extension point
 | Labelling | Real YAMNet/CLAP clean-clip tests ran. Benchmarks do not run models; accuracy null. Exports include labelling only when actual results exist, never a fake block. |
 | Product tools | Coverage placement, real-WAV/external-track ingestion and fitted real-recording calibration deferred. |
 | Statistics/runtime | Shared-site run bootstrap, exploratory paired tests without multiplicity adjustment, legacy JS-runtime tie instability. Cached runtime is original execution, not current wall time. |
+| Scheduling estimate | The default5000ms/run estimate is a placeholder and can severely underestimate seven-source/12-mic work. It is not a completion-time guarantee. |
 | Provenance | Original dirty-tree audio migration includes parsed dependency/PCM/cold-control audit, not a fully committed historical renderer checkout. Full producer identities are preserved. |
 
 ## Review order
@@ -254,8 +283,13 @@ Review chronological logical commits; each can be reverted separately:
 13. `ae743d6` scalar-gain assumption regression.
 14. `5b43a75` complete pilot, honest partial and budget protocol.
 15. `69397f2` protected holdout/cap reduction.
+16. `ef2108c` strict CLI and verified current-source300 grading.
+17. `32a16ed` first honest report checkpoint.
+18. `21c8bea` complete900-case full-scene all-array evidence.
+19. `e0cd423` all1152 preregistered sensitivity runs and final handoff checks.
+20. Final report commit containing this completed review/limitations record.
 
-Later verification/data/report commits will be appended at finalisation. Neither
+Neither
 rejected solver is present. No retained commit is deliberately marked unmergeable,
 but data commits are large and do not certify hardware readiness. Merge the
 scoring convention and its explicit baseline together.
