@@ -22,8 +22,8 @@ Do not treat independently started consumer recorders as synchronised.
 
 | Placeholder / why | Cheap method | Minimum planned samples | Import / calibration and acceptance |
 |---|---|---|---|
-| Heading; observed ranking flips | Survey a stationary speaker at 8 bearings with tape/azimuth board; repeat after remounting. Compare measured minus surveyed bearing, not phone compass alone. | 8 bearings x 3 mounts x 3 nodes; 10 s each; repeat another day | Geometry JSON stores nominal heading. Fit circular offset per node using known speaker coordinates; keep test bearings separate. Import residual RMS as heading sigma, not the fitted offset. Report magnetic bias separately. |
-| Mic position; observed flips | Caliper each centre relative to a rigid reference frame; photograph labels. Survey frame orientation separately. | Every mic, 10 independent reseatings, two operators | Import `mic_offsets_m`/world mic positions in metres; RMS residual is position sigma. Preserve correlations (rigid rotation is heading, not independent mic displacement). |
+| Heading; observed ranking flips | Survey a stationary speaker at 8 bearings with tape/azimuth board; repeat after remounting. Compare measured minus surveyed bearing, not phone compass alone. | 8 bearings x 3 mounts x 3 nodes; 10 s each; repeat another day | Recording geometry encodes heading in world `mic_positions`; simulator nodes use `rotation_deg`. Fit circular offset per node using known speaker coordinates; keep test bearings separate. Import residual RMS as heading sigma, not the fitted offset. Report magnetic bias separately. |
+| Mic position; observed flips | Caliper each centre relative to a rigid reference frame; photograph labels. Survey frame orientation separately. | Every mic, 10 independent reseatings, two operators | Recording `nodes[].mic_positions` are world metres; simulator array imports use declared local units (default mm). RMS residual is position sigma. Preserve correlations (rigid rotation is heading, not independent mic displacement). |
 | Ambient floor; observed flips | Calibrated quiet/site recordings, source absent; reference meter alongside node. Record actual A/Z weighting and spectrum. | Three sites x dawn/day/evening x three 5 min recordings | Convert PCM RMS to Pa using sensitivity/recorder gain or calibrator. Fit band PSD and level quantiles; do not identify dBFS with dB SPL. Import band-specific floor; retain time series for future coloured-noise fitting. |
 | Ground reflectivity; observed flips | Same speaker at two heights, hard paving/grass; close reference mic and near/far node; direct/reflected impulse window. | 2 surfaces x 3 ranges (5/15/30 m) x 2 heights x 10 pulses | Estimate complex reflection by frequency with spreading/delay correction. Fit scalar only over the localisation band, export residual error and surface. The scalar is an approximation, not universal concrete truth. |
 | Noise correlation; observed flips | Source-off multichannel recordings, same gain and no processing; estimate cross PSD/coherence, exclude coherent target events. | 10 x 60 s per site/weather condition, all channels simultaneously | Import correlation by band and node; phase and common-mode components retained. A single broadband scalar cannot represent directional urban noise. Fit on half, check held recordings. |
@@ -38,6 +38,38 @@ Use paired before/after recordings with fixed geometry, waveform, clock and
 gain. Bootstrap independent sessions/sites, not overlapping FFT windows. Keep
 raw WAV immutable with SHA-256; calibration JSON records fit population and
 held-session error. Do not fit and grade on the same recordings.
+
+## What can actually be imported now
+
+Use the [recording CLI/schema](real-recordings.md) for WAV, world-space node/mic
+coordinates, `pa_per_fullscale`, surveyed source/quiet intervals and external
+truth. `recording.mjs calibrate` writes noise/gain/heading estimates; **its fit
+JSON is not automatically applied**. Keep the original WAV/geometry immutable.
+On a derived copy, subtract the reported heading offset by rotating each
+mic's node-relative world vector; correct channel amplitude by
+`10 ** (-relative_gain_db / 20)`. Document the transform and verify on held
+bearings. The helper does not fit mic positions, clocks or complex responses.
+Gains are relative within each node, not an absolute cross-node level
+calibration. Noise attribution needs independently calibrated node levels;
+one global Pa/full-scale value cannot substitute for different unmeasured
+recorder/channel sensitivities.
+
+For simulator experiments, map held-session residual distributions to
+`heading_error_sigma_deg`, `mic_position_sigma_mm`, `mic_gain_sigma_db`,
+`noise_floor_db_spl`, `mic_self_noise_db_spl`, `noise_correlation`,
+`ground_reflectivity` and source `level_1m_db`. Preserve the measured mean bias
+and correlations in the calibration artifact; a zero-mean simulator sigma
+does not automatically correct a real bias. Clock residuals map to opt-in
+`clock_offset_sigma_ms`/`clock_drift_sigma_ppm`, but real WAV clocks must be
+aligned externally before ingestion.
+
+Frequency-resolved PSD, complex mic/housing response, source directivity and
+band-dependent correlation files in the measurement table are **proposed
+calibration artifacts**, not supported general-purpose renderer imports.
+Archive their units/frequency axes and raw measurements; fitting those models
+requires future implementation. Do not add ignored JSON fields and assume the
+engine has used them. The current urban/rain/wind controls are fixed-spectrum
+placeholders, not arbitrary measured-PSD loaders.
 
 ## Three-node aircraft recording with external truth
 
