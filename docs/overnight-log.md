@@ -219,6 +219,32 @@ Keep the full sealed6,649,426ms plus60min reporting/CI. This is a resource-polic
 amendment before any spatial outcomes, not an acceptance/population amendment.
 The trial will not start if even this recorded-p90 reserve fails the deadline.
 
+## Round 2 heartbeat and sequential handoff (14:29 UTC)
+
+- Disk58% by df/60.1% conservative statfs, about7.3GiB available. Core freeze
+  remains2f7230fc; no sealed attempt has been claimed.
+- All registered60 node-count,20 placement,24 attribution-mixture plus12
+  reference, and288 range/noise renders completed sequentially. Exact ID checks
+  passed; descriptive summaries contain30/144 paired-seed conditions.
+- Node-count results still fuse pairs. In this fixed site, three available
+  nodes improve realism-on coverage50% to100%, but conditional error does not
+  improve and N4..6 generate unmatched duplicates. No universal node optimum.
+- Placement has18/20 matched fixes; both N2/on cases miss despite finite ideal
+  geometry. Matched on RMSE is1.12..2.55x the assumed scale. Map not calibrated.
+- Attribution preserves all eight underdetermined N2 results as null. Three-node
+  mean absolute share error3.00pp off/9.24pp on; six-node2.44/10.31pp.
+  Synthetic continuous noises/known POIs are not field contribution truth.
+- Full range/noise output shows all nine200m/on/60dB cells without a fused fix.
+  Stable tracks and fused coverage differ; nonmonotonic gates prohibit a
+  derived detection/noise requirement. All hardware-requirement entries null.
+- Spatial trial began14:27:18 only after all of the above completed. Reserved
+  end19:21:05 uses recorded cold p90, full sealed estimate and60min reporting/CI.
+  At14:29 it has reused36 exact reference rows and is rendering its first
+  eligible seven-source case; no partial metric/ranking is reported.
+- Independent current PCM audit matches198 registered run/clip identities.
+  All286 core tests passed, including five new spatial analytic/boundary tests.
+  Existing app/build/browser/smoke gates and read GitHub success remain intact.
+
 ## Rules and decisions (2026-11-04)
 
 - Work only on `overnight/localisation`; no main pushes. Each retained logical step gets its own commit after core tests and benchmark.
