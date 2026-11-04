@@ -28,3 +28,15 @@ The rejected weighted and predictive solvers may be reconsidered only under this
 changed rule, together with a discriminating confidence model. Their old
 truth-assisted single-site results do not establish measured-only improvement.
 No robust hardware winner or real-world validation is presumed.
+
+Final algorithm freeze is recorded in the sealed registration before execution.
+All five candidates failed; both sealed configurations intentionally use the
+same retained legacy algorithm. The reserved unused confidence-mode keys are
+removed, not silently treated as a calibrated model. The40 physical inputs and
+their original hash do not change. No further algorithm tuning uses any outcome.
+
+The additional balanced variance study is descriptive research after closing
+these solver trials, not another acceptance attempt. It compares retained and
+already rejected diagnostic processing on identical node tracks. It does not
+complete the missing measured3D/multi-peak/tracker upgrades or a full hardware
+ranking. Its exact population and limitations were committed before execution.

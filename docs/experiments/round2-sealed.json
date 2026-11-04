@@ -13667,18 +13667,21 @@
   "configs": [
     {
       "name": "Round 1 measured baseline",
-      "settings": {
-        "measured_confidence_mode": "legacy"
-      }
+      "settings": {}
     },
     {
-      "name": "Frozen round 2 candidate",
-      "settings": {
-        "measured_confidence_mode": "calibrated"
-      }
+      "name": "Frozen round 2 retained legacy",
+      "settings": {}
     }
   ],
   "preregistration": {
+    "final_freeze": {
+      "source_commit": "8483834632d81221a3e832ec6dbed11fb8af3623",
+      "core_sha256": "2f7230fc50b341ad0c3fbd147bad728cc9fe6bb92e2fbc748bc25cf7c1a1bf38",
+      "decision": "All five preregistered confidence/association/consensus candidates failed rule four. Both configurations use the retained legacy measured algorithm; no calibrated confidence or improved solver is deployed. Remove the previously reserved, unused confidence-mode keys rather than implying an accepted model.",
+      "physics": "Original frozen absent/zero new-physics settings only. New clocks/weather remain opt-in and are not added to the sealed population.",
+      "rule": "No algorithm or threshold changes after this freeze. Run the sealed population once after all other studies, report outcomes without tuning."
+    },
     "created_at": "2026-11-04T09:26:39.032Z",
     "site_seeds": [
       {
