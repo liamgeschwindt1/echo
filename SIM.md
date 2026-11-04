@@ -116,6 +116,9 @@ observed render cost, not accuracy. Its explicitly cancelled archive is
 all 25 sites and nine arrays, seeds 1/101, both realism profiles. It retains
 32% held-out site IDs and 50% held-out seeds. See the final report for actual
 completion, rather than assuming every declared study ran.
+The replacement completed900/900. Its full-scene conditional median leader
+flips with realism in both splits, but low coverage, wrong fixes and unmodelled
+physics prevent a hardware recommendation; see the report's complete tables.
 
 ### Regression CI
 
@@ -550,8 +553,14 @@ This replaces the former `micarrays.md`. A model is `{ id, name, status, source,
 | `ball12_d180_sub4` | 4-mic subset of the D180 ball | 4 | 94.6 / 180.0 mm | 143.0 mm | 1.81 kHz | open item 3 test array, farthest-point subset |
 | `ball12_d180_sub6` | 6-mic subset | 6 | 94.6 / 180.0 mm | 143.0 mm | 1.81 kHz | same |
 | `ball12_d180_sub8` | 8-mic subset | 8 | 94.6 / 180.1 mm | 143.0 mm | 1.81 kHz | same |
+| `planar12_d180` | 12-mic planar control, D180 | 12 | 47.3 / 180.0 mm | 0 | 3.63 kHz | Same channel count/aperture control; no vertical baseline |
 | `dome12_d230` | 12-mic downward dome, D230 (assumed) | 12 | 66.0 / 216.2 mm | 54.9 mm | 2.60 kHz | candidate, coordinates assumed |
 | `puck12_d210` | 12-mic squat puck, D210 (assumed) | 12 | 80.0 / 224.7 mm | 80.0 mm | 2.15 kHz | candidate, coordinates assumed |
+| `ball12_d180_sub4_maxvol` | Maximum-volume D180 four-mic alternative | 4 | 94.6 / 153.2 mm | 88.4 mm | 1.81 kHz | Opt-in noncoplanar alternative; legacy subset unchanged |
+
+The aliasing column is the existing nearest-spacing heuristic `c / (2 * nearest)`,
+at20C. It is not a measured alias-free bandwidth guarantee for arbitrary baselines,
+source directions or the complete broadband estimator.
 
 **`flat4_100`: flat 4-mic square, 100 mm.** The array the simulator uses by default (`flat_square`, s = 0.1 m), entered as "layout assumed, confirm": the old project notes only said "flat 4-mic, 10 cm". Known behaviour in the simulator (unvalidated): biased, steep elevations and positions below ground.
 

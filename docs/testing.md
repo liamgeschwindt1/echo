@@ -119,6 +119,10 @@ The original full study is preserved as an explicitly cancelled 167/1350
 checkpoint, not a population-balanced ranking. The predeclared budget replacement
 `array-full-budget.json` keeps every site/array and both realism profiles with
 seeds 1/101: 900 runs, 306 train and 594 held-out.
+That replacement completed all900 cases. Exact results are in
+`baselines/array-full-budget.json.gz` and readable CSV/HTML companions. Report
+coverage and tails alongside any conditional median leader; no hardware
+acceptance limit follows from these simulated mixed-range comparisons.
 
 Large study JSON files use lossless timestamp-free gzip; CSV and standalone HTML
 remain directly readable. Run `gzip -dk baselines/array-pilot.json.gz` before

@@ -166,3 +166,11 @@
 - No inference/rendering/export field changes; schema0.13 changelog records CLI semantics. The already-running full-array workers retain their exact prior source manifest.
 - Core **248/248**, app **32/32** and production build passed. `final-1` completed **300/300**, **zero regressions**, **300 audio hits,0ms render**. Every inference and score object, and every non-runtime summary/CI, is deeply identical to `final-0`. Runtime legitimately differs under concurrent compute and is not gated.
 - The full-array study began before the cap commit and preserves that dirty producer identity. Its loaded source corresponds to the cap repair; later endpoint workers use the CLI-changelog revision. Only metadata/argument handling changed, not rendering or inference. No report producer hash is rewritten to disguise this.
+
+## Complete full-scene array study (reporting only)
+
+- Budget replacement completed **900/900 at07:45:27 UTC**, **306train/594held-out**, all25sites/all9arrays/off-on/seeds1,101. Exact full inference is archived losslessly (18.3MB); original1350 specification/167-run partial remain separate and unmodified.
+- Conditional median leader changes with realism: train **dome12_d230 -> flat4_100**; held-out **puck12_d210 -> ball12_d180_sub6**. Held-out on: sub6 median/p90 **3.523/25.446m**, scene coverage **21.2%**; flat square **5.568/29.036m**, coverage **72.7%**, wrong fixes **42.3%**. This is not a hardware winner.
+- Legacy coplanar sub4 has no measured fixes; opt-in maximum-volume subset restores coverage but has held-out on median/p90 **9.254/47.404m**, coverage57.6%, wrong fixes55.6%. Preserve this regression-looking comparison honestly; it is an optional geometry comparison, not a default solver change.
+- All tables preserve nulls. A temporary reporting probe multiplied null percentages by100 and subtracted missing medians; corrected before documentation. Missing results are never reported as zero or a robustness improvement. Repository metrics already handled nulls correctly.
+- Eight fixed endpoint grids continue sequentially. Final required core/smoke verification is running against unchanged source; the smoke16 replay already has zero regressions.

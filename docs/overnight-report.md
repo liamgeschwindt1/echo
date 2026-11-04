@@ -90,6 +90,11 @@ scene probabilities.
 | CI | Kept: real remote workflow41769397157 passed core243, app31/build and eight measured regression cases on pinned Node24.22.2. Later local counts reflect added tests, not skipped CI cases. |
 | CLI argument safety | Kept: no-compute help and early strict failures. Core248, app32/build and final300 zero regressions. Previously `--help` silently started smoke. |
 
+Final-source remote workflow **41778060382**, revision **ef2108c**, subsequently
+passed **248 core,32 app**, production build and all eight finite measured cases
+with zero regressions. The final source is pushed; documentation/data updates
+do not change that tested inference.
+
 ### Known-bug investigations, not false completion claims
 
 The exact training s8 trace shows n1/n3 joint-refit residuals0.03899/0.01945σ,
@@ -132,13 +137,67 @@ The original1350 full study was gracefully cancelled at167 runs based on
 900-run replacement retains all25 sites/all9 arrays, both profiles, seeds1/101,
 306train/594held-out; 32% site IDs and50% seeds are held out.
 Its completion and the eight fixed endpoint sensitivity grids remain pending
-at this draft checkpoint. No endpoint values are tuned from outcomes.
+at the original draft checkpoint. The full replacement subsequently completed
+**900/900 at07:45:27 UTC**, with exactly306train/594held-out and every array.
+`baselines/array-full-budget.json.gz` retains exact inference (18.3MB compressed);
+its CSV/HTML retain all metrics and confidence intervals. No endpoint values are
+tuned from outcomes.
+
+### Complete full-scene measured array comparison
+
+Each array/profile has17 training and33 held-out runs. "Unavailable" means no
+accepted fixes/calibration samples, never a successful zero error. Degradation is
+the on-minus-off conditional median, unavailable if either side has no fixes.
+The low-coverage medians and 0% wrong-fix values below must not be interpreted
+without their denominators. Confidence intervals are in the archived CSV/HTML.
+
+**Train**
+
+| Array | Off median / p90 m | On median / p90 m | Scene fixes off / on | Wrong fixes on | On 1σ | Median degradation m |
+|---|---|---|---|---|---|---|
+| flat4_100 | 2.851 / 21.282 | 4.740 / 20.308 | 76.5% / 76.5% | 38.9% | 25.0% | 1.890 |
+| ball12_d180 | 0.355 / 0.766 | unavailable | 11.8% / 0.0% | unavailable | unavailable | unavailable |
+| ball12_d180_sub4 | unavailable | unavailable | 0.0% / 0.0% | unavailable | unavailable | unavailable |
+| ball12_d180_sub6 | 0.966 / 23.661 | 5.213 / 11.316 | 64.7% / 17.6% | 20.0% | 50.0% | 4.247 |
+| ball12_d180_sub8 | 1.182 / 5.344 | 10.276 / 14.505 | 70.6% / 17.6% | 50.0% | 37.5% | 9.094 |
+| planar12_d180 | 0.938 / 19.921 | unavailable | 76.5% / 0.0% | unavailable | unavailable | unavailable |
+| dome12_d230 | 0.171 / 19.833 | 8.849 / 8.849 | 76.5% / 5.9% | 0.0% | 0.0% | 8.678 |
+| puck12_d210 | 0.236 / 9.363 | unavailable | 70.6% / 0.0% | unavailable | unavailable | unavailable |
+| ball12_d180_sub4_maxvol | 1.253 / 10.753 | 5.403 / 27.860 | 70.6% / 35.3% | 28.6% | 21.4% | 4.150 |
+
+**Held-out**
+
+| Array | Off median / p90 m | On median / p90 m | Scene fixes off / on | Wrong fixes on | On 1σ | Median degradation m |
+|---|---|---|---|---|---|---|
+| flat4_100 | 1.607 / 22.600 | 5.568 / 29.036 | 84.8% / 72.7% | 42.3% | 58.5% | 3.961 |
+| ball12_d180 | 1.455 / 5.392 | 4.464 / 4.464 | 24.2% / 3.0% | 0.0% | 50.0% | 3.009 |
+| ball12_d180_sub4 | unavailable | unavailable | 0.0% / 0.0% | unavailable | unavailable | unavailable |
+| ball12_d180_sub6 | 1.102 / 10.094 | 3.523 / 25.446 | 57.6% / 21.2% | 37.5% | 75.0% | 2.422 |
+| ball12_d180_sub8 | 1.113 / 2.949 | 8.926 / 26.396 | 66.7% / 15.2% | 20.0% | 60.0% | 7.813 |
+| planar12_d180 | 0.586 / 10.011 | 5.901 / 16.153 | 69.7% / 39.4% | 14.3% | 38.1% | 5.315 |
+| dome12_d230 | 0.443 / 14.506 | 3.841 / 7.044 | 69.7% / 6.1% | 0.0% | 100.0% | 3.398 |
+| puck12_d210 | 0.212 / 3.307 | 4.573 / 4.573 | 66.7% / 3.0% | 0.0% | 100.0% | 4.361 |
+| ball12_d180_sub4_maxvol | 1.366 / 22.004 | 9.254 / 47.404 | 81.8% / 57.6% | 55.6% | 55.2% | 7.887 |
+
+The full-scene point leader flips **dome12_d230 → flat4_100** on training and
+**puck12_d210 → ball12_d180_sub6** on held-out when realism is enabled.
+The held-out realism-on conditional leader has only21.2% scene coverage and
+p9025.446m; the flat square covers72.7% but has42.3% wrong fixes. No robust,
+safe hardware winner follows. The old coplanar four-mic layout produces no
+measured fixes in this study; the noncoplanar alternative restores some coverage
+but does not demonstrate superior tails/calibration.
+
+The eight preregistered endpoint grids are still computing at this checkpoint.
 
 No clock model/sensitivity or measured elevation ranking is claimed. Gain
 insensitivity is partly built into the renderer. The nominal aliasing limit is
 a geometry heuristic, not validated wideband performance. `targets.json` retains
 provisional median5m/p9010m to50m targets; calibrated mic-noise, clock or heading
 hardware requirements cannot honestly be derived from this incomplete physics.
+All nine geometry/channel/nominal-aliasing figures are documented in
+[SIM.md's array table](../SIM.md).
+The planar control and maximum-volume alternative were added to that table
+from the existing `arrayMetrics` calculation, not acoustic acceptance tests.
 
 ## Use Testing
 
