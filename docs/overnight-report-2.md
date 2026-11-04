@@ -444,6 +444,27 @@ Final artifact/source follow-through remains pending in this working report.
 
 ## Scope not completed
 
+| Mission surface | Delivered evidence / remaining limit |
+|---|---|
+| A1/A2 | Single-attempt seal, three-way splits, risk/useful/silent-wrong metrics, coverage-aware ranks and target colours |
+| A3 | Exact-output cache changes retained; measured samples do not establish renderer acceleration |
+| A4-A7 | Measured timing tiers, deterministic browser parity, seeded fuzz, configured nightly and loadable history; no nightly schedule executed on this non-default branch |
+| B1 | Train-only interpretable confidence/radius experiment and full validation; rejected, not a deployed discriminative flag |
+| B2 | Both renewed measured consensus methods and high-weight-node regression; both rejected under rule4 |
+| B3 | Blocked-path feature in offline confidence; no retained blocked-edge hypothesis solver |
+| B4 | Rejected empirical/analytic intervals, per-category descriptive reports; no heading self-calibration or calibrated deployed radius |
+| B5 | Separate complete-population spatial trial pending; no new runtime global/multi-peak/moving3D/tracker pipeline |
+| B6/B7 | No alias-aware processing study; complete60-case available-node/spacing diagnostic, still pair-only fusion |
+| C1/C2 | Clock resampling and placeholder weather/coloured noise OFF by default; no sync-gated TDOA |
+| C3-C6 | Scattering/complex mic response/directivity unbuilt; both real OSM sites skipped after upstream/cache failure |
+| D1 | Real models ran the complete registered clip/range/noise/normalisation study; no field label validation |
+| D2 | Separate36-render known-POI attribution prototype; synthetic independent sources and level assumptions |
+| E1/E2 | Complete narrow variance study and2052-case archived regrading; no improved-engine full rerender or nine-array sealed ranking |
+| E3 | Complete288-case range/noise grid and ideal component ceilings; controlled detection and required hardware specifications unavailable |
+| E4/E5 | Geometry map/suggester,20 simulated disagreement checks and concrete measurement protocols; not calibrated coverage |
+| F1 | Synthetic-tested WAV/geometry/truth/calibration CLI and Testing source; no real recording seen |
+| G | Claims, architecture/testing/SIM and this report; sealed state summary/final outcome pending |
+
 No retained discriminative confidence, heading self-calibration, blocked-edge
 measured solver, measured elevation/3D/multi-peak pipeline, full global runtime
 assignment, new tracker, alias-aware SRP/subarrays, improved-engine full array

@@ -38,7 +38,7 @@ a split study into a one-seed pilot. Explicit held-out IDs are validated.
 Round-one seeds `[1, 2, 101]` had `101` held out, alongside eight random sites.
 Those outcomes have now been seen and are **validation**, not a fresh test.
 Round two preregisters 40 new sealed sites and a persistent single-attempt ledger.
-Reports separate train/held-out, realism off/on (2.5 deg heading, 1 dB gain,
+Round-two reports separate train/validation/test, realism off/on (2.5 deg heading, 1 dB gain,
 5 mm position, correlation 0.3), and analysis modes. Bootstrap resamples complete
 scene/seed runs; within-site seeds remain correlated. See [Testing](docs/testing.md)
 and [overnight log](docs/overnight-log.md) for limitations and retained steps.

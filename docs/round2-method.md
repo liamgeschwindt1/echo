@@ -30,10 +30,13 @@ truth-assisted single-site results do not establish measured-only improvement.
 No robust hardware winner or real-world validation is presumed.
 
 Final algorithm freeze is recorded in the sealed registration before execution.
-All five candidates failed; both sealed configurations intentionally use the
+At the initial freeze, all five candidates failed; both sealed configurations use the
 same retained legacy algorithm. The reserved unused confidence-mode keys are
 removed, not silently treated as a calibrated model. The40 physical inputs and
-their original hash do not change. No further algorithm tuning uses any outcome.
+their original hash do not change. A subsequently preregistered sixth spatial
+trial is a different hypothesis, not a retuned rejected solver. Its complete
+train/validation decision and any integration gates must precede the final
+seal; partial results cannot change the freeze. No tuning uses test outcomes.
 
 The additional balanced variance study is descriptive research after closing
 these solver trials, not another acceptance attempt. It compares retained and
