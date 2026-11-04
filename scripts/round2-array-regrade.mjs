@@ -8,6 +8,10 @@ import { codeManifest } from '../packages/sim-core/src/benchmark/node.js';
 
 const root = new URL('../', import.meta.url), sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const path = new URL('docs/experiments/round2-array-regrade.json', root);
+async function render(output) {
+  if (!output.complete || output.sources.length !== 9) throw new Error('Only complete archived analysis may be rendered');
+  await writeFile(new URL('baselines/round2-arrays-regraded.html', root), `<!doctype html><meta charset="utf-8"><title>Archived array regrading, not a rerender</title><style>body{font:14px system-ui;margin:2rem}table{border-collapse:collapse}th,td{border:1px solid #ccc;padding:.4rem}section{overflow:auto}pre{white-space:pre-wrap}.pass{background:#d9eedf}.fail{background:#f2d5d5}</style><h1>Archived array regrading, not a rerender</h1><p>${esc(output.method)}</p><p>Mixed-range target colours are indicative only; provisional error targets apply within50m. No hardware winner.</p>${output.sources.map((s) => `<details open><summary>${esc(s.name)}: ${s.expected_runs} complete archived cases</summary><p>Original producer ${esc(s.producer.git_hash)}; source SHA256 ${esc(s.sha256)}</p><section>${metricTable({ summary: s.summary }, output.targets)}</section><pre>${esc(JSON.stringify({ primary: s.primary, risk: s.risk }, null, 2))}</pre></details>`).join('')}`);
+}
 if (process.argv[2] === 'register') {
   const names = ['array-full-budget', 'array-heading', 'array-gain', 'array-position', 'array-correlation',
     'array-noise-floor', 'array-self-noise', 'array-ground', 'array-source-level'];
@@ -42,5 +46,7 @@ if (process.argv[2] === 'register') {
   const output = { kind: 'echo-archived-array-regrading', schema: 1, complete: true, registration_sha256: sha(bytes),
     method: registration.method, reaggregation_producer: await codeManifest(), targets, sources };
   await writeFile(new URL('baselines/round2-arrays-regraded.json', root), JSON.stringify(output, null, 2) + '\n');
-  await writeFile(new URL('baselines/round2-arrays-regraded.html', root), `<!doctype html><meta charset="utf-8"><title>Archived array regrading, not a rerender</title><style>body{font:14px system-ui;margin:2rem}table{border-collapse:collapse}th,td{border:1px solid #ccc;padding:.4rem}section{overflow:auto}pre{white-space:pre-wrap}</style><h1>Archived array regrading, not a rerender</h1><p>${esc(registration.method)}</p>${sources.map((s) => `<details open><summary>${esc(s.name)}: ${s.expected_runs} complete archived cases</summary><p>Original producer ${esc(s.producer.git_hash)}; source SHA256 ${esc(s.sha256)}</p><section>${metricTable(s.summary, targets)}</section><pre>${esc(JSON.stringify({ primary: s.primary, risk: s.risk }, null, 2))}</pre></details>`).join('')}`);
-} else throw new Error('Usage: node scripts/round2-array-regrade.mjs register|analyse');
+  await render(output);
+} else if (process.argv[2] === 'render') {
+  await render(JSON.parse(await readFile(new URL('baselines/round2-arrays-regraded.json', root))));
+} else throw new Error('Usage: node scripts/round2-array-regrade.mjs register|analyse|render');
