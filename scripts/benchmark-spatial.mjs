@@ -30,9 +30,9 @@ const eligibleScenes = [...new Set(baseline.runs.filter((r) => r.scenario.nodes.
 const trialEstimate = estimateExperiment({ ...evaluation, scenes: eligibleScenes });
 const sealedEstimate = estimateExperiment(JSON.parse(await read('docs/experiments/round2-sealed.json')));
 const disk = await statfs(root), diskUsed = 1 - disk.bavail / disk.blocks;
-const reservedEnd = Date.now() + 2 * trialEstimate.milliseconds + sealedEstimate.milliseconds + 3600000;
+const reservedEnd = Date.now() + trialEstimate.milliseconds + sealedEstimate.milliseconds + 3600000;
 const preflight = { now: new Date().toISOString(), disk_used: diskUsed, eligible_scenes: eligibleScenes,
-  trial_measured_estimate: trialEstimate, trial_reservation_multiplier: 2, sealed_measured_estimate: sealedEstimate,
+  trial_measured_estimate: trialEstimate, trial_reservation_multiplier: 1, sealed_measured_estimate: sealedEstimate,
   reporting_ci_reserve_ms: 3600000, reserved_end: new Date(reservedEnd).toISOString() };
 console.log(JSON.stringify(preflight));
 if (diskUsed > 0.85 || reservedEnd > Date.parse('2026-11-04T19:25:00Z')) throw new Error('Spatial trial and mandatory sealed/reporting reserve do not fit; no outcome run');

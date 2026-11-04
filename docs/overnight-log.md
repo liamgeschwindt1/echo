@@ -207,6 +207,18 @@
 - GitHub Actions41841490921 at87a9687 reports success; the final-head run is
   still required. Main remains untouched.
 
+## Round 2 resource amendment before spatial outcomes
+
+The spatial population's measured-strata p90 estimate is7,376,922ms(123min),
+despite only995,993ms of recorded render+analysis in the reused reference
+(cached render timings are not cold-render estimates). Do not use that smaller
+sum as a fresh-render budget. Remove the additional2x whole-estimate multiplier:
+the123min upper-tail reservation already assumes **every eligible render cold**,
+the core renderer is unchanged, and the window/FFT population is unchanged.
+Keep the full sealed6,649,426ms plus60min reporting/CI. This is a resource-policy
+amendment before any spatial outcomes, not an acceptance/population amendment.
+The trial will not start if even this recorded-p90 reserve fails the deadline.
+
 ## Rules and decisions (2026-11-04)
 
 - Work only on `overnight/localisation`; no main pushes. Each retained logical step gets its own commit after core tests and benchmark.
