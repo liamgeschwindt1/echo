@@ -14,6 +14,46 @@
   use distinct caches. Previous seven-source rendering averaged 202.24 s on the
   four-mic study; do not use the 5 s placeholder for scheduling.
 
+## Round 2 A1/A2 retained (09:42 UTC)
+
+- Preregistration commit `56c197e` froze 40 new sites and render seed3103170130,
+  input SHA-256 `a93368c737533c8988a0a8301a5bbde304dcc298661a0367ca6c365d52971ce6`.
+  The sealed study has not run. Train68 / validation82 measured runs are fixed.
+- Added exclusive-create persistent sealed-attempt ledger, input-hash validation,
+  mandatory explicit override reason, three-way splits and 85% startup disk guard.
+- Added scene-level useful/silent-wrong rates, confidence-tie-grouped risk curve,
+  unanswered-tail-penalised area, provisional target colours, and useful-rate
+  default ranking. No conditional median can silently substitute for coverage.
+- Added paired aggregate bootstrap rule-4 comparison (`--acceptance round2`);
+  legacy strict comparisons remain available for the original CI contract.
+- Restored dependencies only after the missing `@echo/shared` validation failure.
+  Corrected schema assertion for explicit0.14 bump. Core255/app32/build passed;
+  16-run preregistered smoke passed rule4 with all inference outcomes equal.
+  All existing signal/analysis golden files are untouched. Disk53%.
+
+## Round 2 B1 trial rejected (09:42 UTC)
+
+- Hyperparameters/features/population were committed in `a026dd4` before fitting.
+  Runtime features see nominal geometry, accepted mixture windows and buildings,
+  not source positions, true overlap, path identity or hidden hardware errors.
+- Train-only standardised L2 logistic regression and scene-fold Platt calibration
+  produce exported coefficients. Training has112 fix episodes. Threshold0.0567794
+  is fixed from training wrong predictions; no validation threshold search.
+- Full150-run stored-inference replay keeps every position/track/calibration
+  unchanged. Risk areas: train off0.588235→0.372308, on0.705882→0.477089;
+  validation off0.658537→0.536523, on0.756098→0.706520.
+- Three partitions pass; validation/on paired95% interval includes zero
+  [-0.093595,0]. Therefore reject **despite** the favourable point estimate.
+  Silent-wrong scene rate remains0 throughout. The flag is discriminative:
+  useful rates26.47%/2.94% train off/on and9.76%/4.88% validation off/on.
+- Proposed90% geometric radius empirical coverage92.59%/93.62% train,
+  94.59%/92.31% validation. These are correlated simulated episodes, not an
+  independent real-world conformal guarantee. Brier scores and reliability
+  bins, complete tables and exact model are preserved in `baselines/round2-confidence-*`.
+- Confidence is **not wired as the default inference** after rejection. Offline
+  training/replay infrastructure remains for reproducibility, not a promoted
+  optional failed solver. No claim that positional accuracy improved.
+
 ## Rules and decisions (2026-11-04)
 
 - Work only on `overnight/localisation`; no main pushes. Each retained logical step gets its own commit after core tests and benchmark.

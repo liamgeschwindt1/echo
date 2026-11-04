@@ -1,4 +1,4 @@
-// The results export ("Export results" in the sim). Schema 0.13: see EXPORT_CHANGELOG.
+// The results export ("Export results" in the sim). Schema 0.14: see EXPORT_CHANGELOG.
 // Node output is limited to bearings, levels, times, uncertainties, labels, scores and confidences: no audio, spectra or
 // embeddings, and every unmeasured constant or threshold is marked placeholder.
 import { simConstants } from './geometry.js';
@@ -7,9 +7,14 @@ import { LABELLING_NOTE } from './labelling.js';
 import { nextPow2 } from './dsp.js';
 import { MEASURED_DEFAULTS } from './measured.js';
 
-export const EXPORT_SCHEMA = '0.13';
+export const EXPORT_SCHEMA = '0.14';
 
 export const EXPORT_CHANGELOG = [
+  {
+    schema: '0.14',
+    added: ['Scene-level useful and unflagged-wrong rates, tie-grouped risk-coverage curve, coverage-penalised risk area, three-way scene splits, and persistent single-attempt sealed-run ledger with explicit override reasons.'],
+    changed: ['Default array ranking uses useful scene rate, not conditional median error. No renderer or signal golden changes.']
+  },
   {
     schema: '0.13',
     changed: ['Cap reduction preserves actual train/held-out seed IDs and the requested held-out fraction when both partitions exist. It reduces random/LHS samples, then seed repetitions, before dropping variable alternatives, so the default array-ranking preset retains all nine arrays.', 'Explicit held_out_seeds must be unique unsigned integers. An impossible cap fails explicitly instead of silently turning a split experiment into a one-seed pilot. Existing JSON experiment/run fields record the effective retained seeds; inference and rendering are unchanged.', 'Benchmark CLI --help exits without computation. Unknown/missing arguments and --fail-on-regress without --compare fail before rendering. No export fields change.']

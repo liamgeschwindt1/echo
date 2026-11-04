@@ -72,6 +72,7 @@ export function normaliseExperiment(input) {
   if (!BENCHMARK_MODES.includes(e.mode)) throw new Error(`Unsupported mode: ${e.mode}`);
   if (!Array.isArray(e.scenes) || !e.scenes.length || e.scenes.some((id) => !SCENES.some((s) => s.id === id) && !e.custom_scenes?.[id])) throw new Error('Pick valid benchmark scenes');
   if (new Set(e.scenes).size !== e.scenes.length) throw new Error('Scene IDs must be unique');
+  if (e.scene_splits && Object.entries(e.scene_splits).some(([id, split]) => !e.scenes.includes(id) || !['train', 'validation', 'test'].includes(split))) throw new Error('Invalid scene split');
   for (const k of ['max_runs', 'samples', 'bootstrap_samples', 'permutation_samples']) if (!Number.isInteger(e[k]) || e[k] < 1) throw new Error(`${k} must be a positive integer`);
   if (!(e.held_out_fraction >= 0.3 && e.held_out_fraction < 1)) throw new Error('held_out_fraction must be at least 0.3 and below 1');
   if (e.held_out_seeds !== undefined && (!Array.isArray(e.held_out_seeds) || e.held_out_seeds.some((s) => !Number.isSafeInteger(s) || s < 0 || s > 0xffffffff) || new Set(e.held_out_seeds).size !== e.held_out_seeds.length)) throw new Error('Held-out seeds must be unique unsigned integers');
@@ -135,7 +136,9 @@ export function buildJobs(input, { allowAboveCap = false } = {}) {
     jobs.push({
       id: `${config.id}:${scene}:${seed}:${realism}:${analysis_mode}`, config, scene, seed, realism,
       analysis_mode: config.values.analysis_mode ?? config.settings.analysis_mode ?? analysis_mode,
-      split: SCENES.find((s) => s.id === scene)?.split === 'held-out' || (e.held_out_seeds ?? HELD_OUT_SEEDS).includes(seed) ? 'held-out' : 'train'
+      split: e.scene_splits?.[scene] === 'test' ? 'test'
+        : e.scene_splits?.[scene] === 'validation' || (e.scene_splits && (e.held_out_seeds ?? HELD_OUT_SEEDS).includes(seed)) ? 'validation'
+          : e.scene_splits?.[scene] ?? (SCENES.find((s) => s.id === scene)?.split === 'held-out' || (e.held_out_seeds ?? HELD_OUT_SEEDS).includes(seed) ? 'held-out' : 'train')
     });
   }
   return { experiment: e, configs, jobs };

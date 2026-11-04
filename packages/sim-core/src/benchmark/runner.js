@@ -141,7 +141,7 @@ export function finishExperiment(experiment, configs, runs, manifest) {
     schema: EXPORT_SCHEMA, kind: 'echo-sim-benchmark', experiment, configs, manifest: { ...manifest, scoring_version: SCORING_VERSION },
     thresholds: Object.fromEntries(Object.keys(BENCHMARK_DEFAULTS).map((k) => [k, { value: experiment[k], placeholder: true }])),
     runs, summary, paired, ranking: rankingFlips(summary),
-    failure_atlas: ['train', 'held-out'].flatMap((split) => ['off', 'on', 'custom'].flatMap((realism) => ['truth_assisted', 'measured_only'].flatMap((analysis_mode) => {
+    failure_atlas: ['train', 'held-out', 'validation', 'test'].flatMap((split) => ['off', 'on', 'custom'].flatMap((realism) => ['truth_assisted', 'measured_only'].flatMap((analysis_mode) => {
       const subset = runs.filter((r) => r.job.split === split && r.job.realism === realism && r.job.analysis_mode === analysis_mode);
       return subset.length ? [{ split, realism, analysis_mode, categories: failureAtlas(subset, experiment.wrong_fix_m), detection_by_range: detectionByRange(subset) }] : [];
     }))),

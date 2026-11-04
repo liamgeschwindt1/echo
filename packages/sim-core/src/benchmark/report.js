@@ -7,24 +7,33 @@ const csvCell = (s) => `"${String(s ?? '').replaceAll('"', '""')}"`;
 export function reportCsv(report) {
   const metrics = Object.keys(METRICS);
   const heads = ['config', 'split', 'realism', 'analysis_mode', 'values', ...metrics.flatMap((m) => [m, `${m}_ci_low`, `${m}_ci_high`])];
-  return [heads, ...report.summary.map((r) => [r.name, r.split, r.realism, r.analysis_mode, JSON.stringify(r.values), ...metrics.flatMap((m) => [r.metrics[m].value, ...(r.metrics[m].ci ?? [null, null])])])].map((r) => r.map(csvCell).join(',')).join('\n') + '\n';
+  return [heads, ...report.summary.map((r) => [r.name, r.split, r.realism, r.analysis_mode, JSON.stringify(r.values), ...metrics.flatMap((m) => [r.metrics[m]?.value, ...(r.metrics[m]?.ci ?? [null, null])])])].map((r) => r.map(csvCell).join(',')).join('\n') + '\n';
 }
 
-export function plainSummary(report, metric = 'horizontal_median_m') {
+export function plainSummary(report, metric = 'useful_fix_rate') {
   const ranking = rankingFlips(report.summary, metric);
   const winners = [...new Set(ranking.rankings.filter((r) => r.realism === 'on' && r.split === 'train' && r.analysis_mode === 'measured_only').map((r) => r.winner).filter(Boolean))];
   const flipNames = [...new Set(ranking.flips.filter((f) => f.split === 'train').map((f) => f.variable))];
   const base = `${report.runs.length}/${report.manifest.expected_runs ?? report.runs.length} runs. ${report.manifest.cancelled ? 'Incomplete; cancelled or paused.' : 'Simulated only.'}`;
+  if (report.manifest.cancelled || report.runs.length !== (report.manifest.expected_runs ?? report.runs.length)) return `${base} Rankings suppressed for incomplete populations.`;
   return `${base} ${winners.length === 1 ? `${winners[0]} leads measured-only realism-on by ${metric}, using point estimates.` : 'No single supported array winner.'} ${flipNames.length ? `Ranking changes with ${flipNames.join(', ')}.` : 'No ranking flip demonstrated by this experiment.'}`;
 }
 
 export function metricTable(report, targets = {}) {
-  const columns = ['horizontal_median_m', 'horizontal_p90_m', 'error_3d_median_m', 'scene_fix_rate', 'within_target_rate', 'wrong_fix_rate', 'suspect_recall', 'suspect_precision', 'track_fix_count', 'track_median_error_m', 'bearing_median_deg', 'elevation_median_deg', 'within_1sigma', 'within_2sigma', 'detection_rate'];
+  const columns = ['horizontal_median_m', 'horizontal_p90_m', 'error_3d_median_m', 'scene_fix_rate', 'useful_fix_rate', 'unflagged_wrong_fix_rate', 'risk_coverage_area', 'within_target_rate', 'wrong_fix_rate', 'suspect_recall', 'suspect_precision', 'track_fix_count', 'track_median_error_m', 'bearing_median_deg', 'elevation_median_deg', 'within_1sigma', 'within_2sigma', 'detection_rate'];
   return `<table><thead><tr><th>Config / split / realism / mode</th>${columns.map((k) => `<th>${escapeHtml(k)}</th>`).join('')}</tr></thead><tbody>${report.summary.map((r) => `<tr><th>${escapeHtml(`${r.name} / ${r.split} / ${r.realism} / ${r.analysis_mode}`)}</th>${columns.map((k) => {
-    const m = r.metrics[k], target = targets.metrics?.[k], value = m.value;
-    const pass = target && Number.isFinite(value) ? (target.max !== undefined ? value <= target.max : value >= target.min) : null;
+    const m = r.metrics[k] ?? { value: null, ci: null }, target = targets.metrics?.[k], value = m.value;
+    const pass = target && Number.isFinite(value) ? (target.max === undefined || value <= target.max) && (target.min === undefined || value >= target.min) : null;
     return `<td data-config="${escapeHtml(r.config_id)}" data-split="${escapeHtml(r.split)}" data-realism="${escapeHtml(r.realism)}" data-mode="${escapeHtml(r.analysis_mode)}" class="${pass === null ? '' : pass ? 'pass' : 'fail'}">${formatNumber(value)}${m.ci ? `<small>[${m.ci.map(formatNumber).join(', ')}]</small>` : '<small>CI unavailable</small>'}</td>`;
   }).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
+export function riskCoverageChart(summary) {
+  return summary.map((row) => {
+    const curve = row.risk_coverage?.curve.filter((p) => p.risk !== null) ?? [];
+    if (!curve.length) return `<p>${escapeHtml(row.key)}: risk curve unavailable (no fixes).</p>`;
+    return `<svg viewBox="0 0 700 300" role="img" aria-label="Risk versus fraction of all scenes answered"><path d="M60 30V260H650" fill="none" stroke="#aaa"/><text x="60" y="20">${escapeHtml(row.key)}; area ${formatNumber(row.risk_coverage.area)}</text><polyline fill="none" stroke="#ffb000" points="${curve.map((p) => `${60 + p.coverage * 590},${260 - p.risk * 220}`).join(' ')}"/><text x="60" y="285">0</text><text x="570" y="285">1: all scenes</text><text x="5" y="40">risk 1</text></svg>`;
+  }).join('');
 }
 
 export function lineChart(summary, variable, metric) {
@@ -80,5 +89,6 @@ export function tornado(summary, metric) {
 
 export function reportHtml(report, targets = {}) {
   const numeric = report.experiment.sweeps.find((s) => s.values.every((v) => typeof v === 'number'))?.variable;
-  return `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${escapeHtml(report.experiment.name)} benchmark</title><style>body{background:#171b22;color:#ddd;font:14px system-ui;margin:24px}table{border-collapse:collapse;display:block;overflow:auto}td,th{padding:8px;border:1px solid #46505c}small{display:block;color:#aeb8c8}.pass{background:#184431}.fail{background:#58252a}svg{max-width:1000px;width:100%;fill:#ddd}pre{white-space:pre-wrap}</style><h1>${escapeHtml(report.experiment.name)}</h1><p>${escapeHtml(plainSummary(report))}</p>${metricTable(report, targets)}${numeric ? lineChart(report.summary, numeric, 'horizontal_median_m') : ''}${tornado(report.summary, 'horizontal_median_m')}<h2>Ranking</h2><pre>${escapeHtml(JSON.stringify(report.ranking.flips, null, 2))}</pre><h2>Failure atlas</h2><pre>${escapeHtml(JSON.stringify(report.failure_atlas, null, 2))}</pre><h2>Reproducibility</h2><pre>${escapeHtml(JSON.stringify(report.manifest, null, 2))}</pre><h2>Limits</h2>${report.notes.map((n) => `<p>${escapeHtml(n)}</p>`).join('')}</html>`;
+  const risk = `<h2>Risk versus coverage</h2>${riskCoverageChart(report.summary)}`;
+  return `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${escapeHtml(report.experiment.name)} benchmark</title><style>body{background:#171b22;color:#ddd;font:14px system-ui;margin:24px}table{border-collapse:collapse;display:block;overflow:auto}td,th{padding:8px;border:1px solid #46505c}small{display:block;color:#aeb8c8}.pass{background:#184431}.fail{background:#58252a}svg{max-width:1000px;width:100%;fill:#ddd}pre{white-space:pre-wrap}</style><h1>${escapeHtml(report.experiment.name)}</h1><p>${escapeHtml(plainSummary(report))}</p>${metricTable(report, targets)}${risk}${numeric ? lineChart(report.summary, numeric, 'horizontal_median_m') : ''}${tornado(report.summary, 'horizontal_median_m')}<h2>Ranking</h2><pre>${escapeHtml(JSON.stringify(report.ranking.flips, null, 2))}</pre><h2>Failure atlas</h2><pre>${escapeHtml(JSON.stringify(report.failure_atlas, null, 2))}</pre><h2>Reproducibility</h2><pre>${escapeHtml(JSON.stringify(report.manifest, null, 2))}</pre><h2>Limits</h2>${report.notes.map((n) => `<p>${escapeHtml(n)}</p>`).join('')}</html>`;
 }

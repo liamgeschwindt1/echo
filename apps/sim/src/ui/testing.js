@@ -1,7 +1,7 @@
 import { SCENES } from '@echo/sim-core/benchmark/scenes.js';
 import { VARIABLES, PRESETS, estimateExperiment, presetExperiment, reduceExperiment, buildJobs, normaliseExperiment } from '@echo/sim-core/benchmark/experiment.js';
 import { METRICS, rankingFlips } from '@echo/sim-core/benchmark/metrics.js';
-import { reportCsv, reportHtml, plainSummary, metricTable, lineChart, heatmap, tornado, escapeHtml as esc, formatNumber } from '@echo/sim-core/benchmark/report.js';
+import { reportCsv, reportHtml, plainSummary, metricTable, riskCoverageChart, lineChart, heatmap, tornado, escapeHtml as esc, formatNumber } from '@echo/sim-core/benchmark/report.js';
 import { BUILTIN_ARRAYS } from '@echo/sim-core/arrays.js';
 import { testingStore } from './testing-store.js';
 import targets from '../../../../docs/targets.json' with { type: 'json' };
@@ -60,6 +60,7 @@ export function createTesting({ $, getScenario, getClips, getArrays, onDrilldown
         <div class="row"><button id="testJson">Download JSON</button><button id="testCsv">Download CSV</button><button id="testHtml">Download HTML</button><button id="testCopy">Copy summary</button><label class="upload">Compare baseline JSON<input id="testBaseline" type="file" accept=".json" hidden></label></div>
         <p class="note">Colours use provisional targets from docs/targets.json. Range-mixed results are indicative; targets apply to 50 m. Click metric cells to choose an exact run for editor drill-down.</p>
         <div id="testMetricTable" class="testing-table"></div>
+        <h4>Risk versus coverage (all scenes)</h4><p class="note">Abstain on least-confident scenes; ties stay grouped. Unknown unmatched metre errors remain unavailable. Unanswered scenes cost 1 in the risk area. Useful fix rate, not conditional median, is the default coverage-adjusted array endpoint.</p><div id="testRiskCoverage"></div>
         <div class="row"><label>Metric<select id="testMetric">${Object.keys(METRICS).map((k) => `<option>${k}</option>`).join('')}</select></label><label>Variable X<select id="testX"></select></label><label>Variable Y<select id="testY"></select></label><label>Context<select id="testContext"></select></label></div>
         <h4>Line plot with confidence bands</h4><div id="testLine"></div>
         <h4>Two-variable heatmap</h4><div id="testHeatmap" class="testing-table"></div>
@@ -173,6 +174,7 @@ export function createTesting({ $, getScenario, getClips, getArrays, onDrilldown
     report = next; $('testResults').hidden = false; $('testResults').dataset.runs = next.runs.length;
     $('testSummary').textContent = plainSummary(next);
     $('testMetricTable').innerHTML = metricTable(next, targets);
+    $('testRiskCoverage').innerHTML = riskCoverageChart(next.summary);
     $('testAtlas').textContent = JSON.stringify(next.failure_atlas, null, 2);
     $('testLimits').replaceChildren(...next.notes.map((textContent) => Object.assign(document.createElement('p'), { textContent, className: 'note' })));
     const variables = [...new Set(next.experiment.sweeps.map((s) => s.variable))];

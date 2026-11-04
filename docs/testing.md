@@ -234,3 +234,26 @@ Measured detection means associated fused node tracks. Its bearing calibration
 unit is median track error at a node, unlike one chosen window in truth-assisted.
 These limitations matter when comparing pipelines. Measured 3D/elevation and
 model labelling metrics are null.
+# Round 2 metrics and sealed tests
+
+Reports now include **useful fix rate** (scenes with a correct, unflagged fix /
+all scenes), **unflagged-wrong fix rate** (scenes emitting at least one unflagged
+wrong or unmatched fix / all scenes), and risk-coverage curves. Useful and
+silent-wrong rates may both be positive in a multi-source scene; useful does not
+certify that every event was correct. Risk is the fraction of answered scenes
+with any wrong/unmatched fix. Confidence orders whole scenes by their least
+confident emitted fix; ties are admitted together, never ordered using truth.
+Metre error is unavailable if an unmatched hypothesis has unknown error.
+Risk area integrates the step curve over all scenes, charging unanswered
+coverage a risk of 1. This prevents a nearly silent array winning on a
+conditional median. Default array rankings use useful scene rate. All new target
+colours are provisional and preserve nulls.
+
+`--sealed` is required for a sealed experiment. Its registered site/input hash
+is checked before inference. A durable, exclusive-create ledger under
+`docs/experiments/sealed-runs/` consumes the test attempt at start, including
+failed or cancelled attempts. Repeating requires `--sealed-override "reason"`;
+the reason and producer are recorded in the ledger and manifest. Keep this
+ledger with the reports and repository; it is a local persistent guard, not a
+remote access-control mechanism. Explicit `scene_splits` support train,
+validation and test without changing legacy experiment partitions.
