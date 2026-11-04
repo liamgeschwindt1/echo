@@ -1,0 +1,47 @@
+{
+  "name": "Opt-in clocks and placeholder weather/urban noise",
+  "registered_before": "Any new-physics golden generation or benchmark outcomes",
+  "default": "Absent/zero new settings are OFF; existing DEFAULT_SETTINGS and frozen site JSON must not change.",
+  "physics": {
+    "clock": "t_local=(1+drift_ppm*1e-6)*t_global+offset_ms/1000; common linear resampling for every mic in a node; independent seeded per-node Gaussian offset/drift. No inter-node TDOA constraint is claimed.",
+    "wind": "Placeholder 140 Hz low-pass Gaussian turbulence; RMS 55 dB SPL at 5 m/s, pressure proportional to speed squared; square-root power mixture of shared-node and private-mic noise. No aerodynamic validation.",
+    "urban": "Placeholder additive low-pass 250 Hz Gaussian noise plus a 75 Hz tone (20% amplitude), rescaled to declared RMS; not a recorded city noise model.",
+    "rain": "Placeholder broadband Gaussian plus sparse exponentially decaying impacts, rescaled to declared RMS; no housing response or rainfall-rate calibration.",
+    "time_variation": "Two shared-node slow sinusoidal amplitude envelopes with declared peak dB depth, deterministic phases. Existing source signals are not modulated."
+  },
+  "unit_population": {
+    "seed": 781234,
+    "sample_rate": 48000,
+    "samples": 48000,
+    "nodes": [0, 1],
+    "microphones": [0, 1, 2, 3],
+    "goldens": [
+      {"wind_speed_mps": 5, "wind_correlation": 0.8},
+      {"urban_noise_db_spl": 55},
+      {"rain_noise_db_spl": 55},
+      {"noise_variation_db": 6, "urban_noise_db_spl": 55},
+      {"clock_offset_sigma_ms": 5, "clock_drift_sigma_ppm": 100}
+    ],
+    "checks": "Exact byte hashes, repeat equality, clock ramp/impulse against analytic mapping, identical wind at correlation=1, declared RMS and spectrum checks, all old signal goldens untouched."
+  },
+  "benchmark": {
+    "name": "Round 2 opt-in realism smoke",
+    "mode": "one-at-a-time",
+    "scenes": ["sparse_20", "corner"],
+    "seeds": [1, 101],
+    "held_out_seeds": [101],
+    "analysis_modes": ["measured_only"],
+    "realism": ["off", "on"],
+    "sweeps": [
+      {"variable": "clock_offset_sigma_ms", "values": [5]},
+      {"variable": "clock_drift_sigma_ppm", "values": [100]},
+      {"variable": "wind_speed_mps", "values": [5]},
+      {"variable": "urban_noise_db_spl", "values": [55]},
+      {"variable": "rain_noise_db_spl", "values": [55]},
+      {"variable": "noise_variation_db", "values": [6]}
+    ],
+    "max_runs": 100,
+    "expected_runs": 56
+  },
+  "analysis": "Complete equal scene/seed populations for each profile; report all metrics and nulls, never a hardware winner. New physics is opt-in and not an accepted algorithm improvement. Default-off legacy smoke must pass rule four. The new sealed study retains only its already frozen original physics population."
+}
