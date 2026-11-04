@@ -37,7 +37,7 @@ const out = resolve(option('--out', 'baselines/latest.json'));
 const workers = Number(option('--workers', String(Math.min(2, availableParallelism()))));
 if (!Number.isInteger(workers) || workers < 1 || workers > 16) throw new Error('Workers must be 1..16');
 const estimate = estimateExperiment(e);
-console.log(`Estimated ${estimate.runs} runs, ${(estimate.milliseconds / 60000 / workers).toFixed(1)} worker-minutes (rough; cache not yet counted).`);
+console.log(`Estimated ${estimate.runs} runs, ${(estimate.milliseconds / 60000 / workers).toFixed(1)} minutes at ${workers} workers (${estimate.basis}; ${estimate.unmeasured_runs ?? 0} unmeasured cases).`);
 const clipsNeeded = new Set(jobs.flatMap((job) => scenarioForJob(e.custom_scenes?.[job.scene] ?? buildScene(job.scene), job).sources.map((s) => s.clip)));
 const clips = await loadBenchmarkClips(clipsNeeded);
 const manifest = await codeManifest();

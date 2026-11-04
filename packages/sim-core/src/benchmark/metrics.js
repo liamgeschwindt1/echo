@@ -74,7 +74,10 @@ export function metricValues(runs, { wrong_fix_m = 10 } = {}) {
   const fixes = scoredFixes.filter((s) => Number.isFinite(s.horizontal_m));
   const nodes = sources.flatMap((s) => s.nodes);
   const bearingNodes = scoredFixes.flatMap((s) => s.nodes);
-  const bearings = bearingNodes.filter((n) => Number.isFinite(n.az_error_deg) && Number.isFinite(n.sigma_deg));
+  const eligibleBearings = bearingNodes.filter((n) => Number.isFinite(n.az_error_deg));
+  const bearings = eligibleBearings.filter((n) => Number.isFinite(n.sigma_deg) && n.sigma_deg >= 0);
+  const twoSigma = (n) => Object.hasOwn(n, 'two_sigma_deg') ? n.two_sigma_deg : Number.isFinite(n.sigma_deg) ? 2 * n.sigma_deg : null;
+  const bearings2 = eligibleBearings.filter((n) => Number.isFinite(twoSigma(n)) && twoSigma(n) >= 0);
   const wrong = fixes.filter((s) => s.horizontal_m > wrong_fix_m);
   const flagged = fixes.filter((s) => s.suspect);
   const unmatched = runs.reduce((a, r) => a + r.scores.unmatched_fixes, 0);
@@ -99,8 +102,8 @@ export function metricValues(runs, { wrong_fix_m = 10 } = {}) {
     track_median_error_m: percentile(finite(tracks), 50),
     bearing_median_deg: percentile(finite(bearingNodes.map((n) => n.az_error_deg)), 50),
     elevation_median_deg: percentile(finite(bearingNodes.map((n) => n.el_error_deg)), 50),
-    within_1sigma: ratio(bearings.filter((n) => n.az_error_deg <= n.sigma_deg).length, bearings.length),
-    within_2sigma: ratio(bearings.filter((n) => n.az_error_deg <= 2 * n.sigma_deg).length, bearings.length),
+    within_1sigma: bearings.length === eligibleBearings.length ? ratio(bearings.filter((n) => n.az_error_deg <= n.sigma_deg).length, bearings.length) : null,
+    within_2sigma: bearings2.length === eligibleBearings.length ? ratio(bearings2.filter((n) => n.az_error_deg <= twoSigma(n)).length, bearings2.length) : null,
     detection_rate: ratio(detection.filter((n) => n.detected).length, detection.length),
     labelling_accuracy: null,
     runtime_ms: runs.reduce((a, r) => a + r.runtime_ms, 0)
@@ -130,7 +133,7 @@ export function summariseRuns(runs, options = {}) {
   return keys.map((key) => {
     const subset = runs.filter((r) => [r.job.config.id, r.job.split, r.job.realism, r.job.analysis_mode].join('|') === key);
     const job = subset[0].job;
-    return { key, config_id: job.config.id, name: job.config.name, values: job.config.values, settings: job.config.settings, group: job.config.group, split: job.split, realism: job.realism, analysis_mode: job.analysis_mode, metrics: aggregate(subset, options), risk_coverage: riskCoverage(subset, options) };
+    return { key, config_id: job.config.id, name: job.config.name, values: job.config.values, settings: job.config.settings, group: job.config.group, split: job.split, realism: job.realism, analysis_mode: job.analysis_mode, population: subset.map((r) => `${r.job.scene}|${r.job.seed}`).sort(), metrics: aggregate(subset, options), risk_coverage: riskCoverage(subset, options) };
   });
 }
 
@@ -216,6 +219,9 @@ export function rankingFlips(summary, metric = 'useful_fix_rate', rankVariable =
     partitions.set(key, group);
   }
   const rankings = [...partitions.values()].map((g) => {
+    const populations = g.rows.map((r) => Array.isArray(r.population) && r.population.length ? canonical([...r.population].sort()) : null);
+    if (populations.includes(null) || new Set(populations).size > 1) return { ...g, rows: [], winners: [], winner: null, reason: 'Unequal or unknown scene/seed populations; ranking suppressed' };
+    if (g.rows.some((r) => !Number.isFinite(r.metrics[metric]?.value))) return { ...g, rows: g.rows, winners: [], winner: null, reason: 'Ranking metric unavailable for at least one array; no comparison against null' };
     const rows = g.rows.filter((r) => Number.isFinite(r.metrics[metric]?.value)).sort((a, b) => loss(a.metrics[metric].value, definition) - loss(b.metrics[metric].value, definition));
     const best = rows[0]?.metrics[metric].value;
     const winners = rows.filter((r) => Math.abs(r.metrics[metric].value - best) < 1e-10).map((r) => r.values[rankVariable]);

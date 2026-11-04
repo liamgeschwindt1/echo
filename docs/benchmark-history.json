@@ -1,0 +1,3878 @@
+{
+  "schema": 1,
+  "notes": "Stored complete reports only. Metrics recomputed with current scoring aggregation from stored scores; inference is unchanged. Different population hashes are not a longitudinal regression comparison. Dirty producers retain their original code hash.",
+  "entries": [
+    {
+      "report": "baselines/final-1.json",
+      "report_sha256": "4a77f6fca3d99c93aff7253cc288c3c3cd1307d7bd57d0ce88a0c59fc9bff74b",
+      "population_sha256": "f4995d35f579142cc54c06b51913b216f524dbc64e8420d76f5aca08f6067513",
+      "git_hash": "69397f2682f7612fed5b74b663c0c763c8041077",
+      "code_version": "c91e3fd1c2172ad27f85022a6178678a17997eca694eefdba5f13c0b08cc01a6",
+      "dirty": true,
+      "n_runs": 300,
+      "schema": "0.13",
+      "summary": [
+        {
+          "key": "c0|held-out|off|measured_only",
+          "config_id": "c0",
+          "name": "Base",
+          "values": {},
+          "settings": {},
+          "group": "grid",
+          "split": "held-out",
+          "realism": "off",
+          "analysis_mode": "measured_only",
+          "population": [
+            "bad_geometry|101",
+            "blocked|101",
+            "continuous|101",
+            "corner|101",
+            "drone_2|101",
+            "drone_3|101",
+            "five_node|101",
+            "moving|101",
+            "near_wall|101",
+            "overlap|101",
+            "random_1|1",
+            "random_1|101",
+            "random_1|2",
+            "random_2|1",
+            "random_2|101",
+            "random_2|2",
+            "random_3|1",
+            "random_3|101",
+            "random_3|2",
+            "random_4|1",
+            "random_4|101",
+            "random_4|2",
+            "random_5|1",
+            "random_5|101",
+            "random_5|2",
+            "random_6|1",
+            "random_6|101",
+            "random_6|2",
+            "random_7|1",
+            "random_7|101",
+            "random_7|2",
+            "random_8|1",
+            "random_8|101",
+            "random_8|2",
+            "seven_source|101",
+            "simultaneous_0|101",
+            "simultaneous_10|101",
+            "simultaneous_6|101",
+            "sparse_100|101",
+            "sparse_20|101",
+            "sparse_50|101"
+          ],
+          "metrics": {
+            "horizontal_median_m": {
+              "value": 0.4379962606780376,
+              "ci": [
+                0.31691445354181075,
+                1.9955454327034787
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "horizontal_p90_m": {
+              "value": 21.773820778817814,
+              "ci": [
+                8.001981234232337,
+                69.95553565174677
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "error_3d_median_m": {
+              "value": null,
+              "ci": null,
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "error_3d_p90_m": {
+              "value": null,
+              "ci": null,
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "scene_fix_rate": {
+              "value": 0.5121951219512195,
+              "ci": [
+                0.36585365853658536,
+                0.6829268292682927
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "useful_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "unflagged_wrong_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "risk_coverage_area": {
+              "value": 0.6585365853658536,
+              "ci": [
+                0.5121951219512196,
+                0.8292682926829269
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "source_fix_rate": {
+              "value": 0.5094339622641509,
+              "ci": [
+                0.29310344827586204,
+                0.7358490566037735
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "within_target_rate": {
+              "value": 0.7692307692307693,
+              "ci": [
+                0.6111111111111112,
+                0.8857142857142857
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "wrong_fix_rate": {
+              "value": 0.23076923076923078,
+              "ci": [
+                0.11428571428571428,
+                0.3888888888888889
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "suspect_recall": {
+              "value": 1,
+              "ci": [
+                1,
+                1
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "suspect_precision": {
+              "value": 0.23076923076923078,
+              "ci": [
+                0.11428571428571428,
+                0.3888888888888889
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "unmatched_fix_rate": {
+              "value": 0.05128205128205128,
+              "ci": [
+                0,
+                0.10416666666666667
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "track_fix_count": {
+              "value": 3478,
+              "ci": [
+                2123,
+                5687
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "track_median_error_m": {
+              "value": 0.31691445354181075,
+              "ci": [
+                0.19656189027487378,
+                0.5845531473091191
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "bearing_median_deg": {
+              "value": 0.5132230781829321,
+              "ci": [
+                0.36218730495988893,
+                0.7482692761161616
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "elevation_median_deg": {
+              "value": null,
+              "ci": null,
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "within_1sigma": {
+              "value": 0.8108108108108109,
+              "ci": [
+                0.6702127659574468,
+                0.9146341463414634
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "within_2sigma": {
+              "value": 0.8243243243243243,
+              "ci": [
+                0.6914893617021277,
+                0.9375
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "detection_rate": {
+              "value": 0.2885572139303483,
+              "ci": [
+                0.15283842794759825,
+                0.42696629213483145
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "labelling_accuracy": {
+              "value": null,
+              "ci": null,
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "runtime_ms": {
+              "value": 448637.6743850004,
+              "ci": [
+                345194.1582030002,
+                543648.8094110009
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            }
+          },
+          "risk_coverage": {
+            "curve": [
+              {
+                "coverage": 0,
+                "risk": null,
+                "mean_error_m": null,
+                "n_scenes": 0,
+                "confidence": null
+              },
+              {
+                "coverage": 0.5121951219512195,
+                "risk": 0.3333333333333333,
+                "mean_error_m": null,
+                "n_scenes": 21,
+                "confidence": 0
+              }
+            ],
+            "area": 0.6585365853658536,
+            "max_coverage": 0.5121951219512195,
+            "definition": "Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error."
+          }
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "config_id": "c0",
+          "name": "Base",
+          "values": {},
+          "settings": {},
+          "group": "grid",
+          "split": "held-out",
+          "realism": "off",
+          "analysis_mode": "truth_assisted",
+          "population": [
+            "bad_geometry|101",
+            "blocked|101",
+            "continuous|101",
+            "corner|101",
+            "drone_2|101",
+            "drone_3|101",
+            "five_node|101",
+            "moving|101",
+            "near_wall|101",
+            "overlap|101",
+            "random_1|1",
+            "random_1|101",
+            "random_1|2",
+            "random_2|1",
+            "random_2|101",
+            "random_2|2",
+            "random_3|1",
+            "random_3|101",
+            "random_3|2",
+            "random_4|1",
+            "random_4|101",
+            "random_4|2",
+            "random_5|1",
+            "random_5|101",
+            "random_5|2",
+            "random_6|1",
+            "random_6|101",
+            "random_6|2",
+            "random_7|1",
+            "random_7|101",
+            "random_7|2",
+            "random_8|1",
+            "random_8|101",
+            "random_8|2",
+            "seven_source|101",
+            "simultaneous_0|101",
+            "simultaneous_10|101",
+            "simultaneous_6|101",
+            "sparse_100|101",
+            "sparse_20|101",
+            "sparse_50|101"
+          ],
+          "metrics": {
+            "horizontal_median_m": {
+              "value": 1.7872394827951632,
+              "ci": [
+                0.9745022475955887,
+                8.94464549538411
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "horizontal_p90_m": {
+              "value": 15.085055506908267,
+              "ci": [
+                5.769692598817179,
+                25.303123507043086
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "error_3d_median_m": {
+              "value": 2.230222341409683,
+              "ci": [
+                1.1635345335631202,
+                8.94464549538411
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "error_3d_p90_m": {
+              "value": 15.267017192635164,
+              "ci": [
+                5.769692598817179,
+                25.34311308090307
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "scene_fix_rate": {
+              "value": 0.6829268292682927,
+              "ci": [
+                0.5609756097560976,
+                0.8292682926829268
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "useful_fix_rate": {
+              "value": 0.5365853658536586,
+              "ci": [
+                0.3902439024390244,
+                0.7317073170731707
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "unflagged_wrong_fix_rate": {
+              "value": 0.04878048780487805,
+              "ci": [
+                0,
+                0.12195121951219512
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "risk_coverage_area": {
+              "value": 0.3501742160278746,
+              "ci": [
+                0.19512195121951215,
+                0.4905149051490515
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "source_fix_rate": {
+              "value": 0.660377358490566,
+              "ci": [
+                0.5396825396825397,
+                0.7924528301886793
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "within_target_rate": {
+              "value": 0.8285714285714286,
+              "ci": [
+                0.6190476190476191,
+                1
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "wrong_fix_rate": {
+              "value": 0.17142857142857143,
+              "ci": [
+                0,
+                0.38095238095238093
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "suspect_recall": {
+              "value": 0.5,
+              "ci": [
+                0,
+                0.6
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "suspect_precision": {
+              "value": 0.375,
+              "ci": [
+                0,
+                0.6923076923076923
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "unmatched_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "track_fix_count": {
+              "value": 756,
+              "ci": [
+                522,
+                987
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "track_median_error_m": {
+              "value": 0.5457397614346653,
+              "ci": [
+                0.4652486189379571,
+                0.7676879157344642
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "bearing_median_deg": {
+              "value": 0.7560109114498346,
+              "ci": [
+                0.40392338935089356,
+                1.8389709299943888
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "elevation_median_deg": {
+              "value": 1.5264510096167214,
+              "ci": [
+                1.1246014254410284,
+                2.2548073519466243
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "within_1sigma": {
+              "value": 0.6503496503496503,
+              "ci": [
+                0.514792899408284,
+                0.7863247863247863
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "within_2sigma": {
+              "value": 0.7692307692307693,
+              "ci": [
+                0.6422764227642277,
+                0.8703703703703703
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "detection_rate": {
+              "value": 0.8756218905472637,
+              "ci": [
+                0.8142857142857143,
+                0.9352941176470588
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "labelling_accuracy": {
+              "value": null,
+              "ci": null,
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "runtime_ms": {
+              "value": 433600.22402699915,
+              "ci": [
+                321788.3302280003,
+                592034.3921149981
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            }
+          },
+          "risk_coverage": {
+            "curve": [
+              {
+                "coverage": 0,
+                "risk": null,
+                "mean_error_m": null,
+                "n_scenes": 0,
+                "confidence": null
+              },
+              {
+                "coverage": 0.5609756097560976,
+                "risk": 0.043478260869565216,
+                "mean_error_m": 2.6392749810311904,
+                "n_scenes": 23,
+                "confidence": 1
+              },
+              {
+                "coverage": 0.6829268292682927,
+                "risk": 0.07142857142857142,
+                "mean_error_m": 3.572069145913171,
+                "n_scenes": 28,
+                "confidence": 0
+              }
+            ],
+            "area": 0.3501742160278746,
+            "max_coverage": 0.6829268292682927,
+            "definition": "Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error."
+          }
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "config_id": "c0",
+          "name": "Base",
+          "values": {},
+          "settings": {},
+          "group": "grid",
+          "split": "held-out",
+          "realism": "on",
+          "analysis_mode": "measured_only",
+          "population": [
+            "bad_geometry|101",
+            "blocked|101",
+            "continuous|101",
+            "corner|101",
+            "drone_2|101",
+            "drone_3|101",
+            "five_node|101",
+            "moving|101",
+            "near_wall|101",
+            "overlap|101",
+            "random_1|1",
+            "random_1|101",
+            "random_1|2",
+            "random_2|1",
+            "random_2|101",
+            "random_2|2",
+            "random_3|1",
+            "random_3|101",
+            "random_3|2",
+            "random_4|1",
+            "random_4|101",
+            "random_4|2",
+            "random_5|1",
+            "random_5|101",
+            "random_5|2",
+            "random_6|1",
+            "random_6|101",
+            "random_6|2",
+            "random_7|1",
+            "random_7|101",
+            "random_7|2",
+            "random_8|1",
+            "random_8|101",
+            "random_8|2",
+            "seven_source|101",
+            "simultaneous_0|101",
+            "simultaneous_10|101",
+            "simultaneous_6|101",
+            "sparse_100|101",
+            "sparse_20|101",
+            "sparse_50|101"
+          ],
+          "metrics": {
+            "horizontal_median_m": {
+              "value": 2.4937218191777966,
+              "ci": [
+                1.8703826600645241,
+                9.369892170608095
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "horizontal_p90_m": {
+              "value": 26.746550237115848,
+              "ci": [
+                3.130934930088885,
+                47.9951775633845
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "error_3d_median_m": {
+              "value": null,
+              "ci": null,
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "error_3d_p90_m": {
+              "value": null,
+              "ci": null,
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "scene_fix_rate": {
+              "value": 0.3170731707317073,
+              "ci": [
+                0.1951219512195122,
+                0.4634146341463415
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "useful_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "unflagged_wrong_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "risk_coverage_area": {
+              "value": 0.7560975609756098,
+              "ci": [
+                0.6097560975609757,
+                0.9024390243902438
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "source_fix_rate": {
+              "value": 0.32075471698113206,
+              "ci": [
+                0.1568627450980392,
+                0.5094339622641509
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "within_target_rate": {
+              "value": 0.7586206896551724,
+              "ci": [
+                0.5,
+                1
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "wrong_fix_rate": {
+              "value": 0.2413793103448276,
+              "ci": [
+                0,
+                0.5
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "suspect_recall": {
+              "value": 1,
+              "ci": [
+                1,
+                1
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "suspect_precision": {
+              "value": 0.2413793103448276,
+              "ci": [
+                0,
+                0.5
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "unmatched_fix_rate": {
+              "value": 0.10344827586206896,
+              "ci": [
+                0,
+                0.20833333333333334
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "track_fix_count": {
+              "value": 2229,
+              "ci": [
+                1324,
+                3839
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "track_median_error_m": {
+              "value": 1.9675942283046453,
+              "ci": [
+                1.2444424998373236,
+                6.060290742795092
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "bearing_median_deg": {
+              "value": 2.66150174939753,
+              "ci": [
+                2.0140497747361223,
+                2.8959547070935514
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "elevation_median_deg": {
+              "value": null,
+              "ci": null,
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "within_1sigma": {
+              "value": 0.5,
+              "ci": [
+                0.3076923076923077,
+                0.6923076923076923
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "within_2sigma": {
+              "value": 0.7884615384615384,
+              "ci": [
+                0.5652173913043478,
+                0.9615384615384616
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "detection_rate": {
+              "value": 0.18407960199004975,
+              "ci": [
+                0.0891089108910891,
+                0.31176470588235294
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "labelling_accuracy": {
+              "value": null,
+              "ci": null,
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "runtime_ms": {
+              "value": 434758.70429600007,
+              "ci": [
+                336646.30791199836,
+                529148.6117990008
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            }
+          },
+          "risk_coverage": {
+            "curve": [
+              {
+                "coverage": 0,
+                "risk": null,
+                "mean_error_m": null,
+                "n_scenes": 0,
+                "confidence": null
+              },
+              {
+                "coverage": 0.3170731707317073,
+                "risk": 0.23076923076923078,
+                "mean_error_m": null,
+                "n_scenes": 13,
+                "confidence": 0
+              }
+            ],
+            "area": 0.7560975609756098,
+            "max_coverage": 0.3170731707317073,
+            "definition": "Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error."
+          }
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "config_id": "c0",
+          "name": "Base",
+          "values": {},
+          "settings": {},
+          "group": "grid",
+          "split": "held-out",
+          "realism": "on",
+          "analysis_mode": "truth_assisted",
+          "population": [
+            "bad_geometry|101",
+            "blocked|101",
+            "continuous|101",
+            "corner|101",
+            "drone_2|101",
+            "drone_3|101",
+            "five_node|101",
+            "moving|101",
+            "near_wall|101",
+            "overlap|101",
+            "random_1|1",
+            "random_1|101",
+            "random_1|2",
+            "random_2|1",
+            "random_2|101",
+            "random_2|2",
+            "random_3|1",
+            "random_3|101",
+            "random_3|2",
+            "random_4|1",
+            "random_4|101",
+            "random_4|2",
+            "random_5|1",
+            "random_5|101",
+            "random_5|2",
+            "random_6|1",
+            "random_6|101",
+            "random_6|2",
+            "random_7|1",
+            "random_7|101",
+            "random_7|2",
+            "random_8|1",
+            "random_8|101",
+            "random_8|2",
+            "seven_source|101",
+            "simultaneous_0|101",
+            "simultaneous_10|101",
+            "simultaneous_6|101",
+            "sparse_100|101",
+            "sparse_20|101",
+            "sparse_50|101"
+          ],
+          "metrics": {
+            "horizontal_median_m": {
+              "value": 4.390275945635883,
+              "ci": [
+                2.294790470235823,
+                16.826003422468563
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "horizontal_p90_m": {
+              "value": 42.3811986319104,
+              "ci": [
+                18.60989246037473,
+                59.03054084148513
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "error_3d_median_m": {
+              "value": 4.525549359701002,
+              "ci": [
+                3.794327168415892,
+                16.826003422468563
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "error_3d_p90_m": {
+              "value": 42.39083685801683,
+              "ci": [
+                19.29211954518194,
+                59.03054498653441
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "scene_fix_rate": {
+              "value": 0.6829268292682927,
+              "ci": [
+                0.5365853658536586,
+                0.8292682926829268
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "useful_fix_rate": {
+              "value": 0.3902439024390244,
+              "ci": [
+                0.2682926829268293,
+                0.5121951219512195
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "unflagged_wrong_fix_rate": {
+              "value": 0.1951219512195122,
+              "ci": [
+                0.07317073170731707,
+                0.34146341463414637
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "risk_coverage_area": {
+              "value": 0.5400696864111497,
+              "ci": [
+                0.3843111404087013,
+                0.6941838649155722
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "source_fix_rate": {
+              "value": 0.6792452830188679,
+              "ci": [
+                0.54,
+                0.8125
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "within_target_rate": {
+              "value": 0.6111111111111112,
+              "ci": [
+                0.41935483870967744,
+                0.8235294117647058
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "wrong_fix_rate": {
+              "value": 0.3888888888888889,
+              "ci": [
+                0.17647058823529413,
+                0.5806451612903226
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "suspect_recall": {
+              "value": 0.42857142857142855,
+              "ci": [
+                0,
+                0.7058823529411765
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "suspect_precision": {
+              "value": 0.6666666666666666,
+              "ci": [
+                0,
+                1
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "unmatched_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "track_fix_count": {
+              "value": 756,
+              "ci": [
+                508,
+                978
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "track_median_error_m": {
+              "value": 3.3145733621993787,
+              "ci": [
+                2.2475833546091124,
+                5.134720440613565
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "bearing_median_deg": {
+              "value": 2.6040187742511307,
+              "ci": [
+                2.062479279121817,
+                3.376471419135555
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "elevation_median_deg": {
+              "value": 2.8676875655424965,
+              "ci": [
+                2.203795376590733,
+                4.605553955646883
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "within_1sigma": {
+              "value": 0.4722222222222222,
+              "ci": [
+                0.35251798561151076,
+                0.5855855855855856
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "within_2sigma": {
+              "value": 0.6458333333333334,
+              "ci": [
+                0.5363128491620112,
+                0.7647058823529411
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "detection_rate": {
+              "value": 0.8756218905472637,
+              "ci": [
+                0.8142857142857143,
+                0.9352941176470588
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "labelling_accuracy": {
+              "value": null,
+              "ci": null,
+              "n_runs": 41,
+              "confidence": 0.95
+            },
+            "runtime_ms": {
+              "value": 433284.378286,
+              "ci": [
+                311643.0523960002,
+                590100.901640999
+              ],
+              "n_runs": 41,
+              "confidence": 0.95
+            }
+          },
+          "risk_coverage": {
+            "curve": [
+              {
+                "coverage": 0,
+                "risk": null,
+                "mean_error_m": null,
+                "n_scenes": 0,
+                "confidence": null
+              },
+              {
+                "coverage": 0.5365853658536586,
+                "risk": 0.3181818181818182,
+                "mean_error_m": 10.60462833330179,
+                "n_scenes": 22,
+                "confidence": 1
+              },
+              {
+                "coverage": 0.6829268292682927,
+                "risk": 0.35714285714285715,
+                "mean_error_m": 13.795978136233199,
+                "n_scenes": 28,
+                "confidence": 0
+              }
+            ],
+            "area": 0.5400696864111497,
+            "max_coverage": 0.6829268292682927,
+            "definition": "Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error."
+          }
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "config_id": "c0",
+          "name": "Base",
+          "values": {},
+          "settings": {},
+          "group": "grid",
+          "split": "train",
+          "realism": "off",
+          "analysis_mode": "measured_only",
+          "population": [
+            "bad_geometry|1",
+            "bad_geometry|2",
+            "blocked|1",
+            "blocked|2",
+            "continuous|1",
+            "continuous|2",
+            "corner|1",
+            "corner|2",
+            "drone_2|1",
+            "drone_2|2",
+            "drone_3|1",
+            "drone_3|2",
+            "five_node|1",
+            "five_node|2",
+            "moving|1",
+            "moving|2",
+            "near_wall|1",
+            "near_wall|2",
+            "overlap|1",
+            "overlap|2",
+            "seven_source|1",
+            "seven_source|2",
+            "simultaneous_0|1",
+            "simultaneous_0|2",
+            "simultaneous_10|1",
+            "simultaneous_10|2",
+            "simultaneous_6|1",
+            "simultaneous_6|2",
+            "sparse_100|1",
+            "sparse_100|2",
+            "sparse_20|1",
+            "sparse_20|2",
+            "sparse_50|1",
+            "sparse_50|2"
+          ],
+          "metrics": {
+            "horizontal_median_m": {
+              "value": 0.5260673723299998,
+              "ci": [
+                0.23615298564493017,
+                3.045435686539257
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "horizontal_p90_m": {
+              "value": 24.630670579177263,
+              "ci": [
+                7.31298861783724,
+                26.9826589278313
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "error_3d_median_m": {
+              "value": null,
+              "ci": null,
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "error_3d_p90_m": {
+              "value": null,
+              "ci": null,
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "scene_fix_rate": {
+              "value": 0.7058823529411765,
+              "ci": [
+                0.5588235294117647,
+                0.8529411764705882
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "useful_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "unflagged_wrong_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "risk_coverage_area": {
+              "value": 0.5882352941176471,
+              "ci": [
+                0.4411764705882353,
+                0.7647058823529411
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "source_fix_rate": {
+              "value": 0.6206896551724138,
+              "ci": [
+                0.423728813559322,
+                0.8936170212765957
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "within_target_rate": {
+              "value": 0.7166666666666667,
+              "ci": [
+                0.5423728813559322,
+                0.8636363636363636
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "wrong_fix_rate": {
+              "value": 0.2833333333333333,
+              "ci": [
+                0.13636363636363635,
+                0.4576271186440678
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "suspect_recall": {
+              "value": 1,
+              "ci": [
+                1,
+                1
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "suspect_precision": {
+              "value": 0.2833333333333333,
+              "ci": [
+                0.13636363636363635,
+                0.4576271186440678
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "unmatched_fix_rate": {
+              "value": 0.1,
+              "ci": [
+                0.02,
+                0.2
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "track_fix_count": {
+              "value": 5353,
+              "ci": [
+                3551,
+                7127
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "track_median_error_m": {
+              "value": 0.5260673723299998,
+              "ci": [
+                0.1642351010499449,
+                1.6898049873669632
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "bearing_median_deg": {
+              "value": 0.4623834797160953,
+              "ci": [
+                0.3805197830928364,
+                0.9634124966703439
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "elevation_median_deg": {
+              "value": null,
+              "ci": null,
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "within_1sigma": {
+              "value": 0.7685185185185185,
+              "ci": [
+                0.6326530612244898,
+                0.872093023255814
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "within_2sigma": {
+              "value": 0.7685185185185185,
+              "ci": [
+                0.6326530612244898,
+                0.872093023255814
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "detection_rate": {
+              "value": 0.4114583333333333,
+              "ci": [
+                0.26956521739130435,
+                0.6153846153846154
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "labelling_accuracy": {
+              "value": null,
+              "ci": null,
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "runtime_ms": {
+              "value": 208875.55630100064,
+              "ci": [
+                128810.8553580011,
+                312964.76730900025
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            }
+          },
+          "risk_coverage": {
+            "curve": [
+              {
+                "coverage": 0,
+                "risk": null,
+                "mean_error_m": null,
+                "n_scenes": 0,
+                "confidence": null
+              },
+              {
+                "coverage": 0.7058823529411765,
+                "risk": 0.4166666666666667,
+                "mean_error_m": null,
+                "n_scenes": 24,
+                "confidence": 0
+              }
+            ],
+            "area": 0.5882352941176471,
+            "max_coverage": 0.7058823529411765,
+            "definition": "Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error."
+          }
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "config_id": "c0",
+          "name": "Base",
+          "values": {},
+          "settings": {},
+          "group": "grid",
+          "split": "train",
+          "realism": "off",
+          "analysis_mode": "truth_assisted",
+          "population": [
+            "bad_geometry|1",
+            "bad_geometry|2",
+            "blocked|1",
+            "blocked|2",
+            "continuous|1",
+            "continuous|2",
+            "corner|1",
+            "corner|2",
+            "drone_2|1",
+            "drone_2|2",
+            "drone_3|1",
+            "drone_3|2",
+            "five_node|1",
+            "five_node|2",
+            "moving|1",
+            "moving|2",
+            "near_wall|1",
+            "near_wall|2",
+            "overlap|1",
+            "overlap|2",
+            "seven_source|1",
+            "seven_source|2",
+            "simultaneous_0|1",
+            "simultaneous_0|2",
+            "simultaneous_10|1",
+            "simultaneous_10|2",
+            "simultaneous_6|1",
+            "simultaneous_6|2",
+            "sparse_100|1",
+            "sparse_100|2",
+            "sparse_20|1",
+            "sparse_20|2",
+            "sparse_50|1",
+            "sparse_50|2"
+          ],
+          "metrics": {
+            "horizontal_median_m": {
+              "value": 1.6769971217550463,
+              "ci": [
+                0.4139219042068501,
+                11.07769572221917
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "horizontal_p90_m": {
+              "value": 25.869276206127736,
+              "ci": [
+                8.491058391805124,
+                27.06965107301541
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "error_3d_median_m": {
+              "value": 1.6769971217550463,
+              "ci": [
+                0.44019786875656153,
+                11.255861841859069
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "error_3d_p90_m": {
+              "value": 25.869276206127736,
+              "ci": [
+                8.491058391805124,
+                27.340834270839814
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "scene_fix_rate": {
+              "value": 0.9411764705882353,
+              "ci": [
+                0.8529411764705882,
+                1
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "useful_fix_rate": {
+              "value": 0.7058823529411765,
+              "ci": [
+                0.5588235294117647,
+                0.8823529411764706
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "unflagged_wrong_fix_rate": {
+              "value": 0.11764705882352941,
+              "ci": [
+                0.029411764705882353,
+                0.23529411764705882
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "risk_coverage_area": {
+              "value": 0.1691176470588236,
+              "ci": [
+                0.02595155709342567,
+                0.2860962566844919
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "source_fix_rate": {
+              "value": 0.8275862068965517,
+              "ci": [
+                0.7450980392156863,
+                0.9186046511627907
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "within_target_rate": {
+              "value": 0.6458333333333334,
+              "ci": [
+                0.4528301886792453,
+                0.918918918918919
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "wrong_fix_rate": {
+              "value": 0.3541666666666667,
+              "ci": [
+                0.08108108108108109,
+                0.5471698113207547
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "suspect_recall": {
+              "value": 0.6470588235294118,
+              "ci": [
+                0.4,
+                0.8333333333333334
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "suspect_precision": {
+              "value": 0.7857142857142857,
+              "ci": [
+                0.5714285714285714,
+                1
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "unmatched_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "track_fix_count": {
+              "value": 849,
+              "ci": [
+                646,
+                1065
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "track_median_error_m": {
+              "value": 0.49774908988960226,
+              "ci": [
+                0.40625292803336394,
+                0.6622990487294217
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "bearing_median_deg": {
+              "value": 0.9457428924994247,
+              "ci": [
+                0.3767799216094545,
+                3.0291387193556147
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "elevation_median_deg": {
+              "value": 2.0037080849987206,
+              "ci": [
+                1.5084490777468318,
+                3.679448771412467
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "within_1sigma": {
+              "value": 0.5333333333333333,
+              "ci": [
+                0.4185022026431718,
+                0.7123287671232876
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "within_2sigma": {
+              "value": 0.6777777777777778,
+              "ci": [
+                0.5776892430278885,
+                0.8098591549295775
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "detection_rate": {
+              "value": 0.9583333333333334,
+              "ci": [
+                0.8802395209580839,
+                1
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "labelling_accuracy": {
+              "value": null,
+              "ci": null,
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "runtime_ms": {
+              "value": 279544.3197909995,
+              "ci": [
+                142174.3713419995,
+                478631.7903289988
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            }
+          },
+          "risk_coverage": {
+            "curve": [
+              {
+                "coverage": 0,
+                "risk": null,
+                "mean_error_m": null,
+                "n_scenes": 0,
+                "confidence": null
+              },
+              {
+                "coverage": 0.7352941176470589,
+                "risk": 0.08,
+                "mean_error_m": 2.167434057139905,
+                "n_scenes": 25,
+                "confidence": 1
+              },
+              {
+                "coverage": 0.9411764705882353,
+                "risk": 0.25,
+                "mean_error_m": 6.931569552191771,
+                "n_scenes": 32,
+                "confidence": 0
+              }
+            ],
+            "area": 0.1691176470588236,
+            "max_coverage": 0.9411764705882353,
+            "definition": "Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error."
+          }
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "config_id": "c0",
+          "name": "Base",
+          "values": {},
+          "settings": {},
+          "group": "grid",
+          "split": "train",
+          "realism": "on",
+          "analysis_mode": "measured_only",
+          "population": [
+            "bad_geometry|1",
+            "bad_geometry|2",
+            "blocked|1",
+            "blocked|2",
+            "continuous|1",
+            "continuous|2",
+            "corner|1",
+            "corner|2",
+            "drone_2|1",
+            "drone_2|2",
+            "drone_3|1",
+            "drone_3|2",
+            "five_node|1",
+            "five_node|2",
+            "moving|1",
+            "moving|2",
+            "near_wall|1",
+            "near_wall|2",
+            "overlap|1",
+            "overlap|2",
+            "seven_source|1",
+            "seven_source|2",
+            "simultaneous_0|1",
+            "simultaneous_0|2",
+            "simultaneous_10|1",
+            "simultaneous_10|2",
+            "simultaneous_6|1",
+            "simultaneous_6|2",
+            "sparse_100|1",
+            "sparse_100|2",
+            "sparse_20|1",
+            "sparse_20|2",
+            "sparse_50|1",
+            "sparse_50|2"
+          ],
+          "metrics": {
+            "horizontal_median_m": {
+              "value": 6.873482224182378,
+              "ci": [
+                3.8165201929960837,
+                10.437119372305764
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "horizontal_p90_m": {
+              "value": 24.884515941406285,
+              "ci": [
+                20.90135575572219,
+                28.57541979160202
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "error_3d_median_m": {
+              "value": null,
+              "ci": null,
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "error_3d_p90_m": {
+              "value": null,
+              "ci": null,
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "scene_fix_rate": {
+              "value": 0.6764705882352942,
+              "ci": [
+                0.5,
+                0.8235294117647058
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "useful_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "unflagged_wrong_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "risk_coverage_area": {
+              "value": 0.7058823529411764,
+              "ci": [
+                0.5588235294117647,
+                0.8529411764705882
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "source_fix_rate": {
+              "value": 0.5689655172413793,
+              "ci": [
+                0.37142857142857144,
+                0.8297872340425532
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "within_target_rate": {
+              "value": 0.5961538461538461,
+              "ci": [
+                0.4262295081967213,
+                0.7727272727272727
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "wrong_fix_rate": {
+              "value": 0.40384615384615385,
+              "ci": [
+                0.22727272727272727,
+                0.5737704918032787
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "suspect_recall": {
+              "value": 1,
+              "ci": [
+                1,
+                1
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "suspect_precision": {
+              "value": 0.40384615384615385,
+              "ci": [
+                0.22727272727272727,
+                0.5737704918032787
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "unmatched_fix_rate": {
+              "value": 0.09615384615384616,
+              "ci": [
+                0.02,
+                0.16666666666666666
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "track_fix_count": {
+              "value": 4697,
+              "ci": [
+                3022,
+                6353
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "track_median_error_m": {
+              "value": 5.8739484270636595,
+              "ci": [
+                3.6730852853702136,
+                8.480552283203838
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "bearing_median_deg": {
+              "value": 5.16051303903123,
+              "ci": [
+                3.7343380929149816,
+                6.9217605902570085
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "elevation_median_deg": {
+              "value": null,
+              "ci": null,
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "within_1sigma": {
+              "value": 0.22340425531914893,
+              "ci": [
+                0.14130434782608695,
+                0.3020833333333333
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "within_2sigma": {
+              "value": 0.5,
+              "ci": [
+                0.3673469387755102,
+                0.6190476190476191
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "detection_rate": {
+              "value": 0.3802083333333333,
+              "ci": [
+                0.24302788844621515,
+                0.5797101449275363
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "labelling_accuracy": {
+              "value": null,
+              "ci": null,
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "runtime_ms": {
+              "value": 194874.26227299985,
+              "ci": [
+                126095.55571499905,
+                296963.83550799993
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            }
+          },
+          "risk_coverage": {
+            "curve": [
+              {
+                "coverage": 0,
+                "risk": null,
+                "mean_error_m": null,
+                "n_scenes": 0,
+                "confidence": null
+              },
+              {
+                "coverage": 0.6764705882352942,
+                "risk": 0.5652173913043478,
+                "mean_error_m": null,
+                "n_scenes": 23,
+                "confidence": 0
+              }
+            ],
+            "area": 0.7058823529411764,
+            "max_coverage": 0.6764705882352942,
+            "definition": "Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error."
+          }
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "config_id": "c0",
+          "name": "Base",
+          "values": {},
+          "settings": {},
+          "group": "grid",
+          "split": "train",
+          "realism": "on",
+          "analysis_mode": "truth_assisted",
+          "population": [
+            "bad_geometry|1",
+            "bad_geometry|2",
+            "blocked|1",
+            "blocked|2",
+            "continuous|1",
+            "continuous|2",
+            "corner|1",
+            "corner|2",
+            "drone_2|1",
+            "drone_2|2",
+            "drone_3|1",
+            "drone_3|2",
+            "five_node|1",
+            "five_node|2",
+            "moving|1",
+            "moving|2",
+            "near_wall|1",
+            "near_wall|2",
+            "overlap|1",
+            "overlap|2",
+            "seven_source|1",
+            "seven_source|2",
+            "simultaneous_0|1",
+            "simultaneous_0|2",
+            "simultaneous_10|1",
+            "simultaneous_10|2",
+            "simultaneous_6|1",
+            "simultaneous_6|2",
+            "sparse_100|1",
+            "sparse_100|2",
+            "sparse_20|1",
+            "sparse_20|2",
+            "sparse_50|1",
+            "sparse_50|2"
+          ],
+          "metrics": {
+            "horizontal_median_m": {
+              "value": 8.346598992184939,
+              "ci": [
+                4.2211515314429136,
+                10.67436337973638
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "horizontal_p90_m": {
+              "value": 27.53124998478812,
+              "ci": [
+                15.625800103384785,
+                36.32066207346834
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "error_3d_median_m": {
+              "value": 8.346598992184939,
+              "ci": [
+                4.2211515314429136,
+                10.812026052333037
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "error_3d_p90_m": {
+              "value": 27.719977075347106,
+              "ci": [
+                15.625800103384785,
+                36.42983316119967
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "scene_fix_rate": {
+              "value": 0.9411764705882353,
+              "ci": [
+                0.8529411764705882,
+                1
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "useful_fix_rate": {
+              "value": 0.7647058823529411,
+              "ci": [
+                0.6470588235294118,
+                0.9117647058823529
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "unflagged_wrong_fix_rate": {
+              "value": 0.11764705882352941,
+              "ci": [
+                0.029411764705882353,
+                0.2647058823529412
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "risk_coverage_area": {
+              "value": 0.22058823529411753,
+              "ci": [
+                0.10386029411764697,
+                0.4186851211072664
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "source_fix_rate": {
+              "value": 0.8275862068965517,
+              "ci": [
+                0.72,
+                0.9166666666666666
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "within_target_rate": {
+              "value": 0.6041666666666666,
+              "ci": [
+                0.4262295081967213,
+                0.8571428571428571
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "wrong_fix_rate": {
+              "value": 0.3958333333333333,
+              "ci": [
+                0.14285714285714285,
+                0.5737704918032787
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "suspect_recall": {
+              "value": 0.7368421052631579,
+              "ci": [
+                0.4444444444444444,
+                0.9166666666666666
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "suspect_precision": {
+              "value": 0.9333333333333333,
+              "ci": [
+                0.625,
+                1
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "unmatched_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "track_fix_count": {
+              "value": 789,
+              "ci": [
+                593,
+                1006
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "track_median_error_m": {
+              "value": 5.53413642362522,
+              "ci": [
+                3.5414574297035535,
+                8.344727633456134
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "bearing_median_deg": {
+              "value": 5.322891116814162,
+              "ci": [
+                3.6281637165393477,
+                6.44427168218192
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "elevation_median_deg": {
+              "value": 5.544400648239048,
+              "ci": [
+                4.053879835993598,
+                8.165070997964335
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "within_1sigma": {
+              "value": 0.13333333333333333,
+              "ci": [
+                0.08333333333333333,
+                0.24647887323943662
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "within_2sigma": {
+              "value": 0.35,
+              "ci": [
+                0.2328767123287671,
+                0.45493562231759654
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "detection_rate": {
+              "value": 0.9583333333333334,
+              "ci": [
+                0.8802395209580839,
+                1
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "labelling_accuracy": {
+              "value": null,
+              "ci": null,
+              "n_runs": 34,
+              "confidence": 0.95
+            },
+            "runtime_ms": {
+              "value": 271892.12795800023,
+              "ci": [
+                148076.81295900035,
+                473179.74883000064
+              ],
+              "n_runs": 34,
+              "confidence": 0.95
+            }
+          },
+          "risk_coverage": {
+            "curve": [
+              {
+                "coverage": 0,
+                "risk": null,
+                "mean_error_m": null,
+                "n_scenes": 0,
+                "confidence": null
+              },
+              {
+                "coverage": 0.7058823529411765,
+                "risk": 0.125,
+                "mean_error_m": 5.908708930845463,
+                "n_scenes": 24,
+                "confidence": 1
+              },
+              {
+                "coverage": 0.9411764705882353,
+                "risk": 0.3125,
+                "mean_error_m": 12.00535297281758,
+                "n_scenes": 32,
+                "confidence": 0
+              }
+            ],
+            "area": 0.22058823529411753,
+            "max_coverage": 0.9411764705882353,
+            "definition": "Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error."
+          }
+        }
+      ]
+    },
+    {
+      "report": "baselines/round2-infra-smoke.json",
+      "report_sha256": "0ed388bff8fc8414e9fd860b4073491ce0a7629cdf41edb90856d9873eb50983",
+      "population_sha256": "c5bacc4d668f3c24fdb46c713918f9d7d2816d0e6864f959a3e8296fe578d460",
+      "git_hash": "a026dd4092958de6d4d81b59df16908c0ea4f806",
+      "code_version": "c2760bcba5460958c087deb8f9cd01032462a57f51eda75a9fe774e45dcf5627",
+      "dirty": true,
+      "n_runs": 16,
+      "schema": "0.14",
+      "summary": [
+        {
+          "key": "c0|held-out|off|measured_only",
+          "config_id": "c0",
+          "name": "Base",
+          "values": {},
+          "settings": {},
+          "group": "grid",
+          "split": "held-out",
+          "realism": "off",
+          "analysis_mode": "measured_only",
+          "population": [
+            "random_1|1",
+            "random_1|101",
+            "sparse_20|101"
+          ],
+          "metrics": {
+            "horizontal_median_m": {
+              "value": 0.09405291671279457,
+              "ci": [
+                0.09405291671279457,
+                0.09405291671279457
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "horizontal_p90_m": {
+              "value": 0.09405291671279457,
+              "ci": [
+                0.09405291671279457,
+                0.09405291671279457
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "error_3d_median_m": {
+              "value": null,
+              "ci": null,
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "error_3d_p90_m": {
+              "value": null,
+              "ci": null,
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "scene_fix_rate": {
+              "value": 0.3333333333333333,
+              "ci": [
+                0,
+                0.6666666666666666
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "useful_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "unflagged_wrong_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "risk_coverage_area": {
+              "value": 0.6666666666666667,
+              "ci": [
+                0.33333333333333337,
+                1
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "source_fix_rate": {
+              "value": 0.3333333333333333,
+              "ci": [
+                0,
+                0.6666666666666666
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "within_target_rate": {
+              "value": 1,
+              "ci": [
+                1,
+                1
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "wrong_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "suspect_recall": {
+              "value": null,
+              "ci": null,
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "suspect_precision": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "unmatched_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "track_fix_count": {
+              "value": 127,
+              "ci": [
+                0,
+                254
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "track_median_error_m": {
+              "value": 0.05377096320434447,
+              "ci": [
+                0.05377096320434447,
+                0.05377096320434447
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "bearing_median_deg": {
+              "value": 0.2976613288645922,
+              "ci": [
+                0.2976613288645922,
+                0.2976613288645922
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "elevation_median_deg": {
+              "value": null,
+              "ci": null,
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "within_1sigma": {
+              "value": 1,
+              "ci": [
+                1,
+                1
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "within_2sigma": {
+              "value": 1,
+              "ci": [
+                1,
+                1
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "detection_rate": {
+              "value": 0.15384615384615385,
+              "ci": [
+                0,
+                0.36363636363636365
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "labelling_accuracy": {
+              "value": null,
+              "ci": null,
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "runtime_ms": {
+              "value": 25353.068035999997,
+              "ci": [
+                14217.509124,
+                36488.626948
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            }
+          },
+          "risk_coverage": {
+            "curve": [
+              {
+                "coverage": 0,
+                "risk": null,
+                "mean_error_m": null,
+                "n_scenes": 0,
+                "confidence": null
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0,
+                "mean_error_m": 0.09405291671279457,
+                "n_scenes": 1,
+                "confidence": 0
+              }
+            ],
+            "area": 0.6666666666666667,
+            "max_coverage": 0.3333333333333333,
+            "definition": "Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error."
+          }
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "config_id": "c0",
+          "name": "Base",
+          "values": {},
+          "settings": {},
+          "group": "grid",
+          "split": "held-out",
+          "realism": "off",
+          "analysis_mode": "truth_assisted",
+          "population": [
+            "random_1|1",
+            "random_1|101",
+            "sparse_20|101"
+          ],
+          "metrics": {
+            "horizontal_median_m": {
+              "value": 3.501418677692156,
+              "ci": [
+                3.501418677692156,
+                3.501418677692156
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "horizontal_p90_m": {
+              "value": 3.501418677692156,
+              "ci": [
+                3.501418677692156,
+                3.501418677692156
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "error_3d_median_m": {
+              "value": 3.501418677692156,
+              "ci": [
+                3.501418677692156,
+                3.501418677692156
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "error_3d_p90_m": {
+              "value": 3.501418677692156,
+              "ci": [
+                3.501418677692156,
+                3.501418677692156
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "scene_fix_rate": {
+              "value": 0.3333333333333333,
+              "ci": [
+                0,
+                0.6666666666666666
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "useful_fix_rate": {
+              "value": 0.3333333333333333,
+              "ci": [
+                0,
+                0.6666666666666666
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "unflagged_wrong_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "risk_coverage_area": {
+              "value": 0.6666666666666667,
+              "ci": [
+                0.33333333333333337,
+                1
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "source_fix_rate": {
+              "value": 0.3333333333333333,
+              "ci": [
+                0,
+                0.6666666666666666
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "within_target_rate": {
+              "value": 1,
+              "ci": [
+                1,
+                1
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "wrong_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "suspect_recall": {
+              "value": null,
+              "ci": null,
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "suspect_precision": {
+              "value": null,
+              "ci": null,
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "unmatched_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "track_fix_count": {
+              "value": 2,
+              "ci": [
+                0,
+                4
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "track_median_error_m": {
+              "value": 2.0146979335360893,
+              "ci": [
+                2.0146979335360893,
+                2.0146979335360893
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "bearing_median_deg": {
+              "value": 3.084026446116127,
+              "ci": [
+                0.10959598450381236,
+                5.442305575760429
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "elevation_median_deg": {
+              "value": 6.751409058143167,
+              "ci": [
+                0.6288399498158697,
+                16.20422829019583
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "within_1sigma": {
+              "value": 0.4,
+              "ci": [
+                0.14285714285714285,
+                1
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "within_2sigma": {
+              "value": 0.4,
+              "ci": [
+                0.14285714285714285,
+                1
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "detection_rate": {
+              "value": 0.6923076923076923,
+              "ci": [
+                0.6,
+                0.8181818181818182
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "labelling_accuracy": {
+              "value": null,
+              "ci": null,
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "runtime_ms": {
+              "value": 35914.979401000004,
+              "ci": [
+                21734.079745000003,
+                50095.879057000006
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            }
+          },
+          "risk_coverage": {
+            "curve": [
+              {
+                "coverage": 0,
+                "risk": null,
+                "mean_error_m": null,
+                "n_scenes": 0,
+                "confidence": null
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0,
+                "mean_error_m": 3.501418677692156,
+                "n_scenes": 1,
+                "confidence": 1
+              }
+            ],
+            "area": 0.6666666666666667,
+            "max_coverage": 0.3333333333333333,
+            "definition": "Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error."
+          }
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "config_id": "c0",
+          "name": "Base",
+          "values": {},
+          "settings": {},
+          "group": "grid",
+          "split": "held-out",
+          "realism": "on",
+          "analysis_mode": "measured_only",
+          "population": [
+            "random_1|1",
+            "random_1|101",
+            "sparse_20|101"
+          ],
+          "metrics": {
+            "horizontal_median_m": {
+              "value": 1.205579184978051,
+              "ci": [
+                1.205579184978051,
+                1.205579184978051
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "horizontal_p90_m": {
+              "value": 1.205579184978051,
+              "ci": [
+                1.205579184978051,
+                1.205579184978051
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "error_3d_median_m": {
+              "value": null,
+              "ci": null,
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "error_3d_p90_m": {
+              "value": null,
+              "ci": null,
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "scene_fix_rate": {
+              "value": 0.3333333333333333,
+              "ci": [
+                0,
+                0.6666666666666666
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "useful_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "unflagged_wrong_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "risk_coverage_area": {
+              "value": 0.6666666666666667,
+              "ci": [
+                0.33333333333333337,
+                1
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "source_fix_rate": {
+              "value": 0.3333333333333333,
+              "ci": [
+                0,
+                0.6666666666666666
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "within_target_rate": {
+              "value": 1,
+              "ci": [
+                1,
+                1
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "wrong_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "suspect_recall": {
+              "value": null,
+              "ci": null,
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "suspect_precision": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "unmatched_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "track_fix_count": {
+              "value": 128,
+              "ci": [
+                0,
+                256
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "track_median_error_m": {
+              "value": 1.205579184978051,
+              "ci": [
+                1.205579184978051,
+                1.205579184978051
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "bearing_median_deg": {
+              "value": 2.7204158902698055,
+              "ci": [
+                2.7204158902698055,
+                2.7204158902698055
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "elevation_median_deg": {
+              "value": null,
+              "ci": null,
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "within_1sigma": {
+              "value": 0.5,
+              "ci": [
+                0.5,
+                0.5
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "within_2sigma": {
+              "value": 1,
+              "ci": [
+                1,
+                1
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "detection_rate": {
+              "value": 0.15384615384615385,
+              "ci": [
+                0,
+                0.36363636363636365
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "labelling_accuracy": {
+              "value": null,
+              "ci": null,
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "runtime_ms": {
+              "value": 25059.384522000008,
+              "ci": [
+                14259.926164000004,
+                36008.779506000006
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            }
+          },
+          "risk_coverage": {
+            "curve": [
+              {
+                "coverage": 0,
+                "risk": null,
+                "mean_error_m": null,
+                "n_scenes": 0,
+                "confidence": null
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0,
+                "mean_error_m": 1.205579184978051,
+                "n_scenes": 1,
+                "confidence": 0
+              }
+            ],
+            "area": 0.6666666666666667,
+            "max_coverage": 0.3333333333333333,
+            "definition": "Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error."
+          }
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "config_id": "c0",
+          "name": "Base",
+          "values": {},
+          "settings": {},
+          "group": "grid",
+          "split": "held-out",
+          "realism": "on",
+          "analysis_mode": "truth_assisted",
+          "population": [
+            "random_1|1",
+            "random_1|101",
+            "sparse_20|101"
+          ],
+          "metrics": {
+            "horizontal_median_m": {
+              "value": 0.552256619006718,
+              "ci": [
+                0.552256619006718,
+                0.552256619006718
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "horizontal_p90_m": {
+              "value": 0.552256619006718,
+              "ci": [
+                0.552256619006718,
+                0.552256619006718
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "error_3d_median_m": {
+              "value": 0.552256619006718,
+              "ci": [
+                0.552256619006718,
+                0.552256619006718
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "error_3d_p90_m": {
+              "value": 0.552256619006718,
+              "ci": [
+                0.552256619006718,
+                0.552256619006718
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "scene_fix_rate": {
+              "value": 0.3333333333333333,
+              "ci": [
+                0,
+                0.6666666666666666
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "useful_fix_rate": {
+              "value": 0.3333333333333333,
+              "ci": [
+                0,
+                0.6666666666666666
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "unflagged_wrong_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "risk_coverage_area": {
+              "value": 0.6666666666666667,
+              "ci": [
+                0.33333333333333337,
+                1
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "source_fix_rate": {
+              "value": 0.3333333333333333,
+              "ci": [
+                0,
+                0.6666666666666666
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "within_target_rate": {
+              "value": 1,
+              "ci": [
+                1,
+                1
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "wrong_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "suspect_recall": {
+              "value": null,
+              "ci": null,
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "suspect_precision": {
+              "value": null,
+              "ci": null,
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "unmatched_fix_rate": {
+              "value": 0,
+              "ci": [
+                0,
+                0
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "track_fix_count": {
+              "value": 12,
+              "ci": [
+                0,
+                24
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "track_median_error_m": {
+              "value": 1.580533031932408,
+              "ci": [
+                1.580533031932408,
+                1.580533031932408
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "bearing_median_deg": {
+              "value": 1.2165204395723777,
+              "ci": [
+                1.1446341408196758,
+                6.229314503905471
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "elevation_median_deg": {
+              "value": 1.1472245072939131,
+              "ci": [
+                0.09129285000517484,
+                1.185964563241896
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "within_1sigma": {
+              "value": 0.2,
+              "ci": [
+                0,
+                0.2857142857142857
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "within_2sigma": {
+              "value": 0.4,
+              "ci": [
+                0,
+                0.5714285714285714
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "detection_rate": {
+              "value": 0.6923076923076923,
+              "ci": [
+                0.6,
+                0.8181818181818182
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "labelling_accuracy": {
+              "value": null,
+              "ci": null,
+              "n_runs": 3,
+              "confidence": 0.95
+            },
+            "runtime_ms": {
+              "value": 38534.981684000006,
+              "ci": [
+                25818.554283999998,
+                51251.40908400001
+              ],
+              "n_runs": 3,
+              "confidence": 0.95
+            }
+          },
+          "risk_coverage": {
+            "curve": [
+              {
+                "coverage": 0,
+                "risk": null,
+                "mean_error_m": null,
+                "n_scenes": 0,
+                "confidence": null
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0,
+                "mean_error_m": 0.552256619006718,
+                "n_scenes": 1,
+                "confidence": 1
+              }
+            ],
+            "area": 0.6666666666666667,
+            "max_coverage": 0.3333333333333333,
+            "definition": "Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error."
+          }
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "config_id": "c0",
+          "name": "Base",
+          "values": {},
+          "settings": {},
+          "group": "grid",
+          "split": "train",
+          "realism": "off",
+          "analysis_mode": "measured_only",
+          "population": [
+            "sparse_20|1"
+          ],
+          "metrics": {
+            "horizontal_median_m": {
+              "value": 0.12294456938195211,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "horizontal_p90_m": {
+              "value": 0.12294456938195211,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "error_3d_median_m": {
+              "value": null,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "error_3d_p90_m": {
+              "value": null,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "scene_fix_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "useful_fix_rate": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "unflagged_wrong_fix_rate": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "risk_coverage_area": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "source_fix_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "within_target_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "wrong_fix_rate": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "suspect_recall": {
+              "value": null,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "suspect_precision": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "unmatched_fix_rate": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "track_fix_count": {
+              "value": 128,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "track_median_error_m": {
+              "value": 0.04437541951373984,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "bearing_median_deg": {
+              "value": 0.2521354625159802,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "elevation_median_deg": {
+              "value": null,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "within_1sigma": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "within_2sigma": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "detection_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "labelling_accuracy": {
+              "value": null,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "runtime_ms": {
+              "value": 1092.1165799999999,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            }
+          },
+          "risk_coverage": {
+            "curve": [
+              {
+                "coverage": 0,
+                "risk": null,
+                "mean_error_m": null,
+                "n_scenes": 0,
+                "confidence": null
+              },
+              {
+                "coverage": 1,
+                "risk": 0,
+                "mean_error_m": 0.12294456938195211,
+                "n_scenes": 1,
+                "confidence": 0
+              }
+            ],
+            "area": 0,
+            "max_coverage": 1,
+            "definition": "Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error."
+          }
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "config_id": "c0",
+          "name": "Base",
+          "values": {},
+          "settings": {},
+          "group": "grid",
+          "split": "train",
+          "realism": "off",
+          "analysis_mode": "truth_assisted",
+          "population": [
+            "sparse_20|1"
+          ],
+          "metrics": {
+            "horizontal_median_m": {
+              "value": 0.029590915009248833,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "horizontal_p90_m": {
+              "value": 0.029590915009248833,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "error_3d_median_m": {
+              "value": 0.029590915009248833,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "error_3d_p90_m": {
+              "value": 0.029590915009248833,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "scene_fix_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "useful_fix_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "unflagged_wrong_fix_rate": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "risk_coverage_area": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "source_fix_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "within_target_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "wrong_fix_rate": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "suspect_recall": {
+              "value": null,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "suspect_precision": {
+              "value": null,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "unmatched_fix_rate": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "track_fix_count": {
+              "value": 16,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "track_median_error_m": {
+              "value": 0.0798163356675122,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "bearing_median_deg": {
+              "value": 0.02496137645505314,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "elevation_median_deg": {
+              "value": 1.4482420865915628,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "within_1sigma": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "within_2sigma": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "detection_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "labelling_accuracy": {
+              "value": null,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "runtime_ms": {
+              "value": 6296.047487,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            }
+          },
+          "risk_coverage": {
+            "curve": [
+              {
+                "coverage": 0,
+                "risk": null,
+                "mean_error_m": null,
+                "n_scenes": 0,
+                "confidence": null
+              },
+              {
+                "coverage": 1,
+                "risk": 0,
+                "mean_error_m": 0.029590915009248833,
+                "n_scenes": 1,
+                "confidence": 1
+              }
+            ],
+            "area": 0,
+            "max_coverage": 1,
+            "definition": "Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error."
+          }
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "config_id": "c0",
+          "name": "Base",
+          "values": {},
+          "settings": {},
+          "group": "grid",
+          "split": "train",
+          "realism": "on",
+          "analysis_mode": "measured_only",
+          "population": [
+            "sparse_20|1"
+          ],
+          "metrics": {
+            "horizontal_median_m": {
+              "value": 3.8165201929960837,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "horizontal_p90_m": {
+              "value": 3.8165201929960837,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "error_3d_median_m": {
+              "value": null,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "error_3d_p90_m": {
+              "value": null,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "scene_fix_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "useful_fix_rate": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "unflagged_wrong_fix_rate": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "risk_coverage_area": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "source_fix_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "within_target_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "wrong_fix_rate": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "suspect_recall": {
+              "value": null,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "suspect_precision": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "unmatched_fix_rate": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "track_fix_count": {
+              "value": 114,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "track_median_error_m": {
+              "value": 3.7670994255147607,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "bearing_median_deg": {
+              "value": 7.03083203862036,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "elevation_median_deg": {
+              "value": null,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "within_1sigma": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "within_2sigma": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "detection_rate": {
+              "value": 0.6666666666666666,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "labelling_accuracy": {
+              "value": null,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "runtime_ms": {
+              "value": 1196.7975509999997,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            }
+          },
+          "risk_coverage": {
+            "curve": [
+              {
+                "coverage": 0,
+                "risk": null,
+                "mean_error_m": null,
+                "n_scenes": 0,
+                "confidence": null
+              },
+              {
+                "coverage": 1,
+                "risk": 0,
+                "mean_error_m": 3.8165201929960837,
+                "n_scenes": 1,
+                "confidence": 0
+              }
+            ],
+            "area": 0,
+            "max_coverage": 1,
+            "definition": "Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error."
+          }
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "config_id": "c0",
+          "name": "Base",
+          "values": {},
+          "settings": {},
+          "group": "grid",
+          "split": "train",
+          "realism": "on",
+          "analysis_mode": "truth_assisted",
+          "population": [
+            "sparse_20|1"
+          ],
+          "metrics": {
+            "horizontal_median_m": {
+              "value": 3.0782669806028733,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "horizontal_p90_m": {
+              "value": 3.0782669806028733,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "error_3d_median_m": {
+              "value": 3.0782669806028733,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "error_3d_p90_m": {
+              "value": 3.0782669806028733,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "scene_fix_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "useful_fix_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "unflagged_wrong_fix_rate": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "risk_coverage_area": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "source_fix_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "within_target_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "wrong_fix_rate": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "suspect_recall": {
+              "value": null,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "suspect_precision": {
+              "value": null,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "unmatched_fix_rate": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "track_fix_count": {
+              "value": 3,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "track_median_error_m": {
+              "value": 5.123532033029741,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "bearing_median_deg": {
+              "value": 3.3877982995938964,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "elevation_median_deg": {
+              "value": 3.645133121710387,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "within_1sigma": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "within_2sigma": {
+              "value": 0,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "detection_rate": {
+              "value": 1,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "labelling_accuracy": {
+              "value": null,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            },
+            "runtime_ms": {
+              "value": 5600.395519000001,
+              "ci": null,
+              "n_runs": 1,
+              "confidence": 0.95
+            }
+          },
+          "risk_coverage": {
+            "curve": [
+              {
+                "coverage": 0,
+                "risk": null,
+                "mean_error_m": null,
+                "n_scenes": 0,
+                "confidence": null
+              },
+              {
+                "coverage": 1,
+                "risk": 0,
+                "mean_error_m": 3.0782669806028733,
+                "n_scenes": 1,
+                "confidence": 1
+              }
+            ],
+            "area": 0,
+            "max_coverage": 1,
+            "definition": "Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error."
+          }
+        }
+      ]
+    }
+  ]
+}

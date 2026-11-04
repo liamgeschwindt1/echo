@@ -32,8 +32,29 @@ export function riskCoverageChart(summary) {
   return summary.map((row) => {
     const curve = row.risk_coverage?.curve.filter((p) => p.risk !== null) ?? [];
     if (!curve.length) return `<p>${escapeHtml(row.key)}: risk curve unavailable (no fixes).</p>`;
-    return `<svg viewBox="0 0 700 300" role="img" aria-label="Risk versus fraction of all scenes answered"><path d="M60 30V260H650" fill="none" stroke="#aaa"/><text x="60" y="20">${escapeHtml(row.key)}; area ${formatNumber(row.risk_coverage.area)}</text><polyline fill="none" stroke="#ffb000" points="${curve.map((p) => `${60 + p.coverage * 590},${260 - p.risk * 220}`).join(' ')}"/><text x="60" y="285">0</text><text x="570" y="285">1: all scenes</text><text x="5" y="40">risk 1</text></svg>`;
+    const path = `M60 ${260 - curve[0].risk * 220} ` + curve.map((p) => `V${260 - p.risk * 220}H${60 + p.coverage * 590}`).join('');
+    const metres = curve.filter((p) => Number.isFinite(p.mean_error_m));
+    const maxError = Math.max(...metres.map((p) => p.mean_error_m), 1);
+    return `<svg viewBox="0 0 700 300" role="img" aria-label="Risk versus fraction of all scenes answered"><path d="M60 30V260H650" fill="none" stroke="#aaa"/><text x="60" y="20">${escapeHtml(row.key)}; area ${formatNumber(row.risk_coverage.area)}</text><path fill="none" stroke="#ffb000" d="${path}"/><text x="60" y="285">0</text><text x="570" y="285">1: all scenes</text><text x="5" y="40">risk 1</text></svg>${metres.length ? `<svg viewBox="0 0 700 300" role="img" aria-label="Mean horizontal error in metres versus fraction of all scenes answered"><path d="M60 30V260H650" fill="none" stroke="#aaa"/><text x="60" y="20">Mean worst-fix error per answered scene (m); unknown unmatched error is unavailable</text><polyline fill="none" stroke="#4cc9f0" points="${metres.map((p) => `${60 + p.coverage * 590},${260 - p.mean_error_m / maxError * 220}`).join(' ')}"/><text x="5" y="40">${formatNumber(maxError)}</text><text x="570" y="285">1: all scenes</text></svg>` : '<p>Metre-error curve unavailable: unmatched or no measured errors.</p>'}`;
   }).join('');
+}
+
+export function confidenceReport(report) {
+  if (!Array.isArray(report.confidence_evaluation)) return '';
+  const model = report.confidence_model?.regression;
+  const coefficients = model ? `<p>Standardised logit; intercept ${formatNumber(model.intercept)}; train-only Platt intercept/slope ${formatNumber(model.calibration?.intercept)} / ${formatNumber(model.calibration?.slope)}. Simulator-to-real calibration is unmeasured.</p><table><tr><th>Feature</th><th>Coefficient</th><th>Train mean</th><th>Train scale</th></tr>${model.features.map((f, i) => `<tr><th>${escapeHtml(f)}</th><td>${formatNumber(model.coefficients[i])}</td><td>${formatNumber(model.means[i])}</td><td>${formatNumber(model.scales[i])}</td></tr>`).join('')}</table>` : '';
+  return `<h2>Offline confidence trial: reliability</h2><p>Not a deployed model. Empty bins remain unavailable. A 90% radius is a train-fitted geometric empirical interval, not a real-world conformal guarantee.</p>${coefficients}${report.confidence_evaluation.map((r) => {
+    const bins = r.reliability.filter((b) => b.count > 0 && Number.isFinite(b.predicted) && Number.isFinite(b.observed));
+    return `<p>${escapeHtml(r.split)} / ${escapeHtml(r.realism)}; episodes ${escapeHtml(r.n_episodes)}; Brier ${formatNumber(r.brier_score)}; empirical 90% radius coverage ${formatNumber(r.radius_90_coverage)} (N=${escapeHtml(r.radius_n)})</p><svg viewBox="0 0 400 340" role="img" aria-label="Reliability diagram: predicted versus observed wrong-fix probability"><path d="M50 30V290H350M50 290L350 30" fill="none" stroke="#aaa"/>${bins.map((b) => `<circle cx="${50 + 300 * b.predicted}" cy="${290 - 260 * b.observed}" r="${3 + Math.min(7, Math.sqrt(b.count))}" fill="#4cc9f0"><title>N=${b.count}, predicted ${formatNumber(b.predicted)}, observed ${formatNumber(b.observed)}</title></circle>`).join('')}<text x="50" y="315">Predicted P(error &gt; 10 m), 0 to 1</text><text x="5" y="20">Observed wrong fraction, 0 to 1</text></svg>`;
+  }).join('')}`;
+}
+
+function acceptanceTable(comparison) {
+  if (comparison?.rule !== 'round2') return '';
+  const rows = comparison.rows.flatMap((r) => Object.entries(r.changes).map(([metric, c]) =>
+    `<tr><th>${escapeHtml(r.key)} / ${r.n_pairs}</th><td>${escapeHtml(metric)}</td><td>${formatNumber(c.before)}</td><td>${formatNumber(c.after)}</td><td>${formatNumber(c.delta)}<small>${c.ci ? c.ci.map(formatNumber).join(' to ') : 'CI unavailable / guard only'}</small></td><td class="${r.pass ? 'pass' : 'fail'}">${r.pass ? 'PASS' : 'FAIL'}: ${escapeHtml(r.reasons.join('; '))}</td></tr>`
+  )).join('');
+  return `<h2>Rule-four acceptance: ${comparison.pass ? 'PASS' : 'FAIL'}</h2><p>${escapeHtml(comparison.method)}</p><table><tr><th>Partition / pairs</th><th>Metric</th><th>Before</th><th>After</th><th>Delta / paired CI</th><th>Partition verdict / reasons</th></tr>${rows}</table>`;
 }
 
 export function lineChart(summary, variable, metric) {
@@ -89,6 +110,6 @@ export function tornado(summary, metric) {
 
 export function reportHtml(report, targets = {}) {
   const numeric = report.experiment.sweeps.find((s) => s.values.every((v) => typeof v === 'number'))?.variable;
-  const risk = `<h2>Risk versus coverage</h2>${riskCoverageChart(report.summary)}`;
+  const risk = `<h2>Risk versus coverage</h2>${riskCoverageChart(report.summary)}${confidenceReport(report)}${acceptanceTable(report.comparison)}`;
   return `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${escapeHtml(report.experiment.name)} benchmark</title><style>body{background:#171b22;color:#ddd;font:14px system-ui;margin:24px}table{border-collapse:collapse;display:block;overflow:auto}td,th{padding:8px;border:1px solid #46505c}small{display:block;color:#aeb8c8}.pass{background:#184431}.fail{background:#58252a}svg{max-width:1000px;width:100%;fill:#ddd}pre{white-space:pre-wrap}</style><h1>${escapeHtml(report.experiment.name)}</h1><p>${escapeHtml(plainSummary(report))}</p>${metricTable(report, targets)}${risk}${numeric ? lineChart(report.summary, numeric, 'horizontal_median_m') : ''}${tornado(report.summary, 'horizontal_median_m')}<h2>Ranking</h2><pre>${escapeHtml(JSON.stringify(report.ranking.flips, null, 2))}</pre><h2>Failure atlas</h2><pre>${escapeHtml(JSON.stringify(report.failure_atlas, null, 2))}</pre><h2>Reproducibility</h2><pre>${escapeHtml(JSON.stringify(report.manifest, null, 2))}</pre><h2>Limits</h2>${report.notes.map((n) => `<p>${escapeHtml(n)}</p>`).join('')}</html>`;
 }

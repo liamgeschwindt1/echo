@@ -6,8 +6,10 @@ import { join } from 'node:path';
 import { metricValues, riskCoverage, rankingFlips, summariseRuns } from '../src/benchmark/metrics.js';
 import { beginSealedRun, sealedInputHash } from '../src/benchmark/sealed.js';
 import { buildJobs } from '../src/benchmark/experiment.js';
-import { metricTable, riskCoverageChart } from '../src/benchmark/report.js';
+import { metricTable, riskCoverageChart, confidenceReport } from '../src/benchmark/report.js';
 import { compareRound2Reports } from '../src/benchmark/acceptance.js';
+import { consensusCandidateWins } from '../src/fix.js';
+import { estimateExperiment, presetExperiment } from '../src/benchmark/experiment.js';
 
 const run = (error, suspect = false, extra = {}) => ({
   job: { config: { id: 'c0', name: 'Base', values: {}, settings: {}, group: 'grid' }, scene: 'sparse_20', seed: 1, split: 'train', realism: 'off', analysis_mode: 'measured_only' },
@@ -24,6 +26,9 @@ test('scene endpoints include misses and unflagged unmatched hypotheses', () => 
   duplicate.scores.unmatched_fixes = 1;
   assert.equal(metricValues([duplicate]).unflagged_wrong_fix_rate, 1);
   assert.equal(riskCoverage([duplicate]).curve[1].mean_error_m, null);
+  const partial = run(1); partial.scores.sources[0].nodes = [{ az_error_deg: 1, sigma_deg: 2 }, { az_error_deg: 3, sigma_deg: null }];
+  assert.equal(metricValues([partial]).within_1sigma, null);
+  assert.equal(metricValues([partial]).within_2sigma, null);
 });
 
 test('risk curve groups equal confidence without consulting truth and penalises no answer', () => {
@@ -43,9 +48,14 @@ test('risk curve groups equal confidence without consulting truth and penalises 
 test('coverage-adjusted default does not reward low-coverage conditional median', () => {
   const row = (array, useful, median) => ({
     values: { mic_array: array }, split: 'train', realism: 'off', analysis_mode: 'measured_only',
+    population: ['sparse_20|1'],
     metrics: { useful_fix_rate: { value: useful }, horizontal_median_m: { value: median } }
   });
   assert.equal(rankingFlips([row('sparse', 0.01, 0.1), row('broad', 0.8, 2)]).rankings[0].winner, 'broad');
+  const missing = row('missing', 0.5, 1); delete missing.population;
+  assert.equal(rankingFlips([missing, row('broad', 0.8, 2)]).rankings[0].winner, null);
+  const unequal = row('unequal', 0.9, 0.5); unequal.population = ['another-site|1'];
+  assert.equal(rankingFlips([unequal, row('broad', 0.8, 2)]).rankings[0].winner, null);
 });
 
 test('risk metrics render and targets honour both bounds', () => {
@@ -54,6 +64,30 @@ test('risk metrics render and targets honour both bounds', () => {
   assert.match(table, /risk_coverage_area/);
   assert.match(table, /class="fail"/);
   assert.match(riskCoverageChart(summary), /Risk versus fraction of all scenes/);
+  const reliability = confidenceReport({ confidence_evaluation: [{ split: '<train>', realism: 'off', n_episodes: 1, reliability: [
+    { count: 0, predicted: null, observed: null }, { count: 1, predicted: 0.1, observed: 1 }
+  ] }] });
+  assert.match(reliability, /Reliability diagram/);
+  assert.match(reliability, /&lt;train&gt;/);
+  assert.equal(reliability.match(/<circle /g).length, 1);
+});
+
+test('consensus cost ties below 1e-10 use canonical node pair, not machine-zero noise', () => {
+  const set = [1, 2];
+  const best = { set, cost: 1e-30, pair_key: 'n2\0n3' };
+  assert.equal(consensusCandidateWins(set, 1e-28, ['n2', 'n1'], best), true);
+  assert.equal(consensusCandidateWins(set, 0, ['n4', 'n5'], best), false);
+  assert.equal(consensusCandidateWins(set, 1, ['n1', 'n2'], best), false);
+  assert.equal(consensusCandidateWins([1, 2, 3], 10, ['n4', 'n5'], best), true);
+});
+
+test('benchmark tiers and estimates use historical expensive-scene measurements', () => {
+  assert.equal(buildJobs(presetExperiment('smoke')).jobs.length, 16);
+  assert.equal(buildJobs(presetExperiment('standard')).jobs.length, 100);
+  assert.equal(buildJobs(presetExperiment('full')).jobs.length, 2700);
+  const estimate = estimateExperiment({ ...presetExperiment('standard'), scenes: ['seven_source'] });
+  assert.match(estimate.basis, /recorded stage p90/);
+  assert.ok(estimate.milliseconds / estimate.runs > 100000, 'Seven-source scheduling must not use a 5-second placeholder');
 });
 
 test('round-two acceptance guards silent wrong fixes, missing populations, and paired improvement', () => {
@@ -71,6 +105,9 @@ test('round-two acceptance guards silent wrong fixes, missing populations, and p
   assert.equal(compareRound2Reports(mismatch, baseline).pass, false);
   const incomplete = structuredClone(improved); incomplete.manifest.expected_runs++;
   assert.equal(compareRound2Reports(incomplete, baseline).pass, false);
+  for (const r of baseline.runs) r.scenario = { nodes: [], sources: [], buildings: [], settings: { noise_floor_db_spl: 45 } };
+  const differentPhysics = structuredClone(baseline); differentPhysics.runs[0].scenario.settings.noise_floor_db_spl = 30;
+  assert.equal(compareRound2Reports(differentPhysics, baseline).pass, false);
 });
 
 test('sealed population hash is frozen; 40 new sites and explicit three-way splits', async () => {

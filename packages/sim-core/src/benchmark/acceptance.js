@@ -1,5 +1,5 @@
 import { metricValues } from './metrics.js';
-import { canonical } from './cache.js';
+import { canonical, renderSettingsFor } from './cache.js';
 import { mulberry32 } from '../rng.js';
 import { percentile } from '../sweep.js';
 
@@ -22,7 +22,8 @@ export function compareRound2Reports(current, baseline, options = {}) {
       current.runs.length !== current.manifest.expected_runs || baseline.runs.length !== baseline.manifest.expected_runs) {
     return { pass: false, differences: [], regressions: [{ reason: 'Incomplete population' }], rule: 'round2' };
   }
-  const groups = [...new Set(baseline.runs.map((r) => `${r.job.config.id}|${r.job.split}|${r.job.realism}|${r.job.analysis_mode}`))];
+  const groups = [...new Set(baseline.runs.filter((r) => r.job.analysis_mode === 'measured_only').map((r) => `${r.job.config.id}|${r.job.split}|${r.job.realism}|${r.job.analysis_mode}`))];
+  if (!groups.length) regressions.push({ reason: 'Rule four requires measured-only runs; truth-assisted results cannot establish acceptance' });
   if (current.runs.length !== baseline.runs.length) regressions.push({ reason: 'Different run counts' });
   for (const key of groups) {
     const subset = (report) => report.runs.filter((r) => `${r.job.config.id}|${r.job.split}|${r.job.realism}|${r.job.analysis_mode}` === key).sort((a, b) => identity(a).localeCompare(identity(b)));
@@ -33,7 +34,8 @@ export function compareRound2Reports(current, baseline, options = {}) {
     }
     if (before.some((r, i) => canonical(r.scenario) !== canonical(after[i].scenario))) {
       // Analysis settings may change deliberately; physical inputs must not.
-      const inputs = (r) => ({ nodes: r.scenario?.nodes, sources: r.scenario?.sources, buildings: r.scenario?.buildings });
+      const inputs = (r) => ({ nodes: r.scenario?.nodes, sources: r.scenario?.sources, buildings: r.scenario?.buildings,
+        settings: r.scenario?.settings ? renderSettingsFor(r.scenario.settings) : undefined });
       if (before.some((r, i) => canonical(inputs(r)) !== canonical(inputs(after[i])))) {
         regressions.push({ key, reason: 'Different physical scene inputs' }); continue;
       }
@@ -73,6 +75,6 @@ export function compareRound2Reports(current, baseline, options = {}) {
   return {
     rule: 'round2', pass: !regressions.length, rows, regressions,
     differences: rows.flatMap((r) => Object.entries(r.changes).map(([metric, change]) => ({ key: r.key, metric, ...change, regression: r.reasons.some((s) => s.startsWith(metric)) }))),
-    method: 'Paired bootstrap of whole matching scene/seed runs; aggregate endpoint delta after-before. Missing conditional errors are omitted from endpoint draws, never imputed as zero. Calibration guard is absolute distance to nominal. All-equal compares all non-runtime metric values.'
+    method: 'Measured-only partitions. Paired bootstrap of whole matching scene/seed runs; aggregate endpoint delta after-before. Missing conditional errors are omitted from endpoint draws, never imputed as zero. Calibration guard is absolute distance to nominal. All-equal compares all non-runtime metric values.'
   };
 }

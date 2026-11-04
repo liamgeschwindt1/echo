@@ -1,0 +1,12 @@
+{
+  "name": "Nightly standard fixed 100-run measured population",
+  "scenes": ["near_wall", "overlap", "continuous", "moving", "blocked", "five_node", "seven_source", "drone_2", "drone_3", "sparse_20", "sparse_50", "sparse_100", "simultaneous_0", "simultaneous_6", "simultaneous_10", "corner", "bad_geometry", "random_1", "random_2", "random_3", "random_4", "random_5", "random_6", "random_7", "random_8"],
+  "seeds": [1, 101],
+  "held_out_seeds": [101],
+  "realism": ["off", "on"],
+  "analysis_modes": ["measured_only"],
+  "mode": "grid",
+  "sweeps": [],
+  "max_runs": 100,
+  "preregistration": "Fixed before any nightly run. Round-one held-out data is validation, not sealed test. This workflow never runs round2-sealed.json."
+}

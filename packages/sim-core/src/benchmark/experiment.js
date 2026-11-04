@@ -1,6 +1,8 @@
 import { mulberry32 } from '../rng.js';
-import { SCENES, DEFAULT_SEEDS, HELD_OUT_SEEDS, REALISM } from './scenes.js';
+import { SCENES, DEFAULT_SEEDS, HELD_OUT_SEEDS, REALISM, buildScene } from './scenes.js';
 import { VARIABLES, VARIABLE_MAP, applyValues } from './variables.js';
+import { micPositions } from '../mics.js';
+import measuredTimings from './timings.json' with { type: 'json' };
 
 export const BENCHMARK_DEFAULTS = Object.freeze({
   max_runs: 2000, samples: 20, bootstrap_samples: 500, confidence: 0.95,
@@ -20,6 +22,15 @@ export const PRESETS = Object.freeze({
 });
 
 export function presetExperiment(name = 'Full regression (compare with baseline)') {
+  if (name === 'standard') return {
+    name: 'Standard: 100 measured runs', scenes: SCENES.map((s) => s.id), seeds: [1, 101],
+    sweeps: [], mode: 'grid', realism: ['off', 'on'], analysis_modes: ['measured_only']
+  };
+  if (name === 'full') return {
+    name: 'Full: all sites, seeds, arrays and pipelines', scenes: SCENES.map((s) => s.id), seeds: DEFAULT_SEEDS,
+    sweeps: [{ variable: 'mic_array', values: VARIABLE_MAP.get('mic_array').values }], mode: 'grid',
+    realism: ['off', 'on'], analysis_modes: ['measured_only', 'truth_assisted'], max_runs: 3000
+  };
   if (name === 'baseline') name = 'Full regression (compare with baseline)';
   if (name === 'smoke') return {
     name, scenes: ['sparse_20', 'random_1'], seeds: [1, 101], sweeps: [], mode: 'grid',
@@ -99,7 +110,47 @@ export function normaliseExperiment(input) {
 
 export function estimateExperiment(input, runMs) {
   const e = normaliseExperiment(input);
-  return { runs: e.estimated_runs, milliseconds: e.estimated_runs * (runMs ?? e.estimated_run_ms), above_cap: e.estimated_runs > e.max_runs, cap: e.max_runs };
+  const result = { runs: e.estimated_runs, above_cap: e.estimated_runs > e.max_runs, cap: e.max_runs };
+  if (runMs !== undefined) return { ...result, milliseconds: e.estimated_runs * runMs, basis: 'explicit caller estimate' };
+  const rows = measuredTimings.timings;
+  const maximum = Math.max(...rows.map((r) => (r.render_p90_ms ?? 0) + (r.analysis_p90_ms ?? 0)));
+  if (e.estimated_runs > 10000) return { ...result, milliseconds: e.estimated_runs * maximum, basis: 'recorded worst-stratum p90; huge-grid upper estimate', unmeasured_runs: e.estimated_runs };
+  let milliseconds = 0, unmeasured_runs = 0;
+  for (const config of buildConfigs(e)) for (const id of e.scenes) {
+    const base = e.custom_scenes?.[id] ?? buildScene(id);
+    const scene = applyValues({ ...base, settings: { ...base.settings, ...config.settings } }, config.values);
+    const total = scene.nodes.reduce((sum, n) => sum + micPositions(n).length, 0);
+    const modes = config.values.analysis_mode || config.settings.analysis_mode ? [config.values.analysis_mode ?? config.settings.analysis_mode] : e.analysis_modes;
+    for (const mode of modes) {
+      const exact = rows.find((r) => r.scene === id && r.total_mics === total && r.analysis_mode === mode && r.render_n > 0);
+      const repetitions = e.seeds.length * e.realism.length;
+      if (exact) milliseconds += repetitions * (exact.render_p90_ms + exact.analysis_p90_ms);
+      else {
+        const descriptor = timingDescriptor(scene);
+        const distance = (r) => ['moving_sources', 'source_count', 'reflection_order', 'diffraction_order', 'building_count']
+          .map((k) => Math.abs(r.descriptor[k] - descriptor[k]));
+        const compare = (a, b) => { for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i] - b[i]; return 0; };
+        const available = rows.filter((r) => r.analysis_mode === mode && r.render_n > 0 && r.descriptor);
+        if (!available.length) throw new Error(`No recorded timings for ${mode}`);
+        const nearest = available.reduce((best, r) => compare(distance(r), distance(best)) < 0 ? r : best);
+        const references = available.filter((r) => compare(distance(r), distance(nearest)) === 0);
+        const conservative = Math.max(...references.map((r) => ((r.render_p90_ms ?? 0) + (r.analysis_p90_ms ?? 0)) * Math.max(1, total / r.total_mics)));
+        milliseconds += repetitions * conservative;
+        unmeasured_runs += repetitions;
+      }
+    }
+  }
+  return { ...result, milliseconds, basis: 'recorded stage p90, no cache discount; unseen geometries use nearest source/motion/path/building strata with conservative mic scaling', unmeasured_runs };
+}
+
+export function timingDescriptor(scene) {
+  return {
+    source_count: scene.sources.length,
+    moving_sources: scene.sources.filter((s) => s.keyframes?.length > 1).length,
+    building_count: scene.buildings?.length ?? 0,
+    reflection_order: scene.settings.reflection_order ?? 0,
+    diffraction_order: scene.settings.diffraction_order ?? 0
+  };
 }
 
 export function buildConfigs(e) {

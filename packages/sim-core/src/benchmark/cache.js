@@ -1,3 +1,5 @@
+import { ANALYSIS_THRESHOLDS } from '../scenario.js';
+
 export function canonical(value) {
   if (ArrayBuffer.isView(value)) return canonical(Array.from(value));
   if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
@@ -26,13 +28,17 @@ export class MemoryCache {
   async set(key, value) { this.entries.set(key, structuredClone(value)); }
 }
 
-export async function cacheKeys(scenario, { code_version, render_code_version = code_version, runtime, audio, analysis_settings, schema }) {
-  const { ANALYSIS_THRESHOLDS } = await import('../scenario.js');
-  const { settings, ...geometry } = scenario;
+export function renderSettingsFor(settings) {
   const renderSettings = Object.fromEntries(Object.entries(settings).filter(([k]) => !(k in ANALYSIS_THRESHOLDS) && k !== 'analysis_mode' && !k.startsWith('measured_')));
   // localisation/detection bands are also consumed by render activity; retain them even though documented as thresholds.
   renderSettings.localisation_band_hz = settings.localisation_band_hz;
   renderSettings.detection_band_hz = settings.detection_band_hz;
+  return renderSettings;
+}
+
+export async function cacheKeys(scenario, { code_version, render_code_version = code_version, runtime, audio, analysis_settings, schema }) {
+  const { settings, ...geometry } = scenario;
+  const renderSettings = renderSettingsFor(settings);
   const render = await contentHash({ geometry, settings: renderSettings, code_version: render_code_version, runtime, audio });
   return { render: `render:${render}`, origin: `render-origin:${render}`, run: `run:${await contentHash({ render, code_version, analysis_settings, schema })}` };
 }
