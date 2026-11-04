@@ -1,0 +1,962 @@
+{
+  "name": "Geometry-only placement diagnostic, not a localiser change",
+  "mode": "grid",
+  "scenes": [
+    "placement_2",
+    "placement_3",
+    "placement_4",
+    "placement_5",
+    "placement_6"
+  ],
+  "seeds": [
+    1,
+    101
+  ],
+  "held_out_seeds": [
+    101
+  ],
+  "analysis_modes": [
+    "measured_only"
+  ],
+  "realism": [
+    "off",
+    "on"
+  ],
+  "custom_scenes": {
+    "placement_2": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 1,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1
+      },
+      "nodes": [
+        {
+          "id": "pnode1",
+          "position": [
+            -30,
+            -30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "pnode2",
+          "position": [
+            30,
+            30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                0,
+                20,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 105,
+          "start_s": 3
+        }
+      ],
+      "buildings": [],
+      "id": "placement_2",
+      "name": "Greedy geometry placement 2 nodes"
+    },
+    "placement_3": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 1,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1
+      },
+      "nodes": [
+        {
+          "id": "pnode1",
+          "position": [
+            -30,
+            -30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "pnode2",
+          "position": [
+            30,
+            30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "pnode3",
+          "position": [
+            -30,
+            30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                0,
+                20,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 105,
+          "start_s": 3
+        }
+      ],
+      "buildings": [],
+      "id": "placement_3",
+      "name": "Greedy geometry placement 3 nodes"
+    },
+    "placement_4": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 1,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1
+      },
+      "nodes": [
+        {
+          "id": "pnode1",
+          "position": [
+            -30,
+            -30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "pnode2",
+          "position": [
+            30,
+            30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "pnode3",
+          "position": [
+            -30,
+            30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "pnode4",
+          "position": [
+            30,
+            -30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                0,
+                20,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 105,
+          "start_s": 3
+        }
+      ],
+      "buildings": [],
+      "id": "placement_4",
+      "name": "Greedy geometry placement 4 nodes"
+    },
+    "placement_5": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 1,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1
+      },
+      "nodes": [
+        {
+          "id": "pnode1",
+          "position": [
+            -30,
+            -30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "pnode2",
+          "position": [
+            30,
+            30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "pnode3",
+          "position": [
+            -30,
+            30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "pnode4",
+          "position": [
+            30,
+            -30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "pnode5",
+          "position": [
+            -30,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                0,
+                20,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 105,
+          "start_s": 3
+        }
+      ],
+      "buildings": [],
+      "id": "placement_5",
+      "name": "Greedy geometry placement 5 nodes"
+    },
+    "placement_6": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 1,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1
+      },
+      "nodes": [
+        {
+          "id": "pnode1",
+          "position": [
+            -30,
+            -30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "pnode2",
+          "position": [
+            30,
+            30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "pnode3",
+          "position": [
+            -30,
+            30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "pnode4",
+          "position": [
+            30,
+            -30,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "pnode5",
+          "position": [
+            -30,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "pnode6",
+          "position": [
+            30,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                0,
+                20,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 105,
+          "start_s": 3
+        }
+      ],
+      "buildings": [],
+      "id": "placement_6",
+      "name": "Greedy geometry placement 6 nodes"
+    }
+  },
+  "base_settings": {
+    "reflection_order": 0,
+    "diffraction_order": 0,
+    "ground_reflectivity": 0
+  },
+  "max_runs": 30,
+  "expected_runs": 20,
+  "placement_method": {
+    "helper_sha256": "db971314cef4d588c4bb4e1d2f7f63c830118c215f25bf376a27229208ba10db",
+    "bounds": {
+      "min_x": -60,
+      "max_x": 60,
+      "min_y": -60,
+      "max_y": 60
+    },
+    "predictions": {
+      "2": {
+        "nodes": [
+          [
+            -30,
+            -30,
+            5
+          ],
+          [
+            30,
+            30,
+            5
+          ]
+        ],
+        "objective": 0.5267537836005185,
+        "assumptions": {
+          "sigma_deg": 2.5,
+          "max_range_m": 100,
+          "source_height_m": 1.5,
+          "node_height_m": 5,
+          "min_crossing_deg": 10
+        },
+        "at_source": {
+          "visible_nodes": 2,
+          "crossing_deg": 40.60129464500446,
+          "rms_m": 4.4473563269262435,
+          "major_m": 4.263598197795565
+        }
+      },
+      "3": {
+        "nodes": [
+          [
+            -30,
+            -30,
+            5
+          ],
+          [
+            30,
+            30,
+            5
+          ],
+          [
+            -30,
+            30,
+            5
+          ]
+        ],
+        "objective": 0.34744047966544495,
+        "assumptions": {
+          "sigma_deg": 2.5,
+          "max_range_m": 100,
+          "source_height_m": 1.5,
+          "node_height_m": 5,
+          "min_crossing_deg": 10
+        },
+        "at_source": {
+          "visible_nodes": 3,
+          "crossing_deg": 77.47119229084849,
+          "rms_m": 2.3896742536484696,
+          "major_m": 2.1686007148770905
+        }
+      },
+      "4": {
+        "nodes": [
+          [
+            -30,
+            -30,
+            5
+          ],
+          [
+            30,
+            30,
+            5
+          ],
+          [
+            -30,
+            30,
+            5
+          ],
+          [
+            30,
+            -30,
+            5
+          ]
+        ],
+        "objective": 0.2509327187702985,
+        "assumptions": {
+          "sigma_deg": 2.5,
+          "max_range_m": 100,
+          "source_height_m": 1.5,
+          "node_height_m": 5,
+          "min_crossing_deg": 10
+        },
+        "at_source": {
+          "visible_nodes": 4,
+          "crossing_deg": 77.47119229084853,
+          "rms_m": 1.9958501191281215,
+          "major_m": 1.7349150000457403
+        }
+      },
+      "5": {
+        "nodes": [
+          [
+            -30,
+            -30,
+            5
+          ],
+          [
+            30,
+            30,
+            5
+          ],
+          [
+            -30,
+            30,
+            5
+          ],
+          [
+            30,
+            -30,
+            5
+          ],
+          [
+            -30,
+            0,
+            5
+          ]
+        ],
+        "objective": 0.207492956246185,
+        "assumptions": {
+          "sigma_deg": 2.5,
+          "max_range_m": 100,
+          "source_height_m": 1.5,
+          "node_height_m": 5,
+          "min_crossing_deg": 10
+        },
+        "at_source": {
+          "visible_nodes": 5,
+          "crossing_deg": 87.27368900609373,
+          "rms_m": 1.7715429315921942,
+          "major_m": 1.5477236377790946
+        }
+      },
+      "6": {
+        "nodes": [
+          [
+            -30,
+            -30,
+            5
+          ],
+          [
+            30,
+            30,
+            5
+          ],
+          [
+            -30,
+            30,
+            5
+          ],
+          [
+            30,
+            -30,
+            5
+          ],
+          [
+            -30,
+            0,
+            5
+          ],
+          [
+            30,
+            0,
+            5
+          ]
+        ],
+        "objective": 0.17367685231278002,
+        "assumptions": {
+          "sigma_deg": 2.5,
+          "max_range_m": 100,
+          "source_height_m": 1.5,
+          "node_height_m": 5,
+          "min_crossing_deg": 10
+        },
+        "at_source": {
+          "visible_nodes": 6,
+          "crossing_deg": 87.27368900609373,
+          "rms_m": 1.533557727390121,
+          "major_m": 1.3120781283321512
+        }
+      }
+    },
+    "algorithm": "Independent Gaussian azimuth Jacobian covariance;2.5deg assumed sigma,100m assumed bearing range,10deg crossing gate; known footprint LOS. Exclude indoor targets. Exhaust all pairs of eight quarter-lattice candidate mounts at5m, then greedy additions. Objective: mean min(major_scale/10m,1) over9x9 cell centres; blind=1; ties quantised1e-12 then candidate order.",
+    "analysis": "Complete20 cases. Compare frozen source-point RMS geometry scale with observed matched-fix RMSE and actual fusion-node count, per seed/profile/N. Preserve no-fix errors/ratios as null. Two seed ranges, not population95%CI. No tuning from outcomes; one source cell does not validate the whole map, model probability or suggested real-world mounts."
+  }
+}
