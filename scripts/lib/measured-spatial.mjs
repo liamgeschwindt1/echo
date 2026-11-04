@@ -148,7 +148,7 @@ export function analyseSpatial(scenario, data, { c, options = {} }) {
   const o = { ...MEASURED_DEFAULTS, ...options };
   const context = { fs: data.sample_rate, c, band: scenario.settings.localisation_band_hz, options: o,
     headingSigmaDeg: scenario.settings.heading_error_sigma_deg ?? 0, positionSigmaMm: scenario.settings.mic_position_sigma_mm ?? 0 };
-  const nodes = scenario.nodes.map((node, i) => spatialEligible(node)
+  const nodes = scenario.nodes.map((node, i) => geometry(data.nodes[i].mic_positions).inverse
     ? spatialNodeTracks(data.nodes[i], node, context) : nodeTracks(data.nodes[i], node, context));
   const fixes = fuseTracks(nodes, { c, options: o });
   for (const fix of fixes) {

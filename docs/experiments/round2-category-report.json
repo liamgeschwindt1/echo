@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "kind": "derived-calibration-report-no-new-renders",
+  "population": "Complete fixed150-case train/validation reports and the complete single160-job sealed report; never partial populations. Per-config/split/realism groups remain separate.",
+  "timing": "Descriptive groups chosen after known round-one validation, before any sealed outcome; not an acceptance rule or fitted calibration.",
+  "scene_categories": {
+    "sparse": ["sparse_20", "sparse_50", "sparse_100"],
+    "moving_or_aerial_presets": ["moving", "drone_2", "drone_3"],
+    "multiple_or_overlapping_sources": ["overlap", "seven_source", "simultaneous_0", "simultaneous_6", "simultaneous_10"],
+    "multipath_or_blocked_presets": ["near_wall", "blocked", "corner"],
+    "node_geometry_presets": ["five_node", "bad_geometry"],
+    "continuous": ["continuous"],
+    "old_random_validation": ["random_1", "random_2", "random_3", "random_4", "random_5", "random_6", "random_7", "random_8"]
+  },
+  "unknown_scene_category": "new_sealed_random_sites",
+  "physical_categories": ["two_available_nodes", "three_plus_available_nodes", "one_source", "multiple_sources", "moving_source_present", "source_at_or_above10m", "buildings_present", "no_buildings"],
+  "method": "Existing shared metricValues point calibration on associated-node track-median bearings; available-bearing counts reported. Physical subgroups overlap and are scoring-only. Nulls preserved. No subgroup fitting, winner selection or bootstrap claim."
+}

@@ -213,6 +213,10 @@ episodes remain in benchmark metrics and exported inference.
 
 Summary cells show point estimates and bootstrap confidence intervals. No-fix
 errors are null and excluded from error quantiles; coverage is reported separately.
+Conditional-error bootstrap draws without any matched error are also unavailable.
+With only one answered scene, an error interval can therefore degenerate to that
+one value; it is not evidence of high precision. Read coverage/risk and the
+available error population, not just the conditional interval.
 Wrong fixes exceed `wrong_fix_m` (10 m default, placeholder target). Suspect recall
 is the fraction of wrong fixes flagged; precision is the fraction of flags wrong.
 No wrong fixes means recall is unavailable, not 100%. Unmatched measured fixes
@@ -296,6 +300,28 @@ study preregisters270 runs, five whole-seed bootstrap clusters, three 12-mic
 designs and node count/spacing factors. Its rejected predictive solver is a
 diagnostic factor, not a deployed algorithm; the array effect includes aperture
 and current processing. Neither study is a full nine-array hardware ranking.
+
+`round2-node-count.json`, `round2-range-noise.json` and `round2-placement.json`
+freeze60/288/20 further cases. Their seed101 is validation. Descriptive summaries
+show both observed seed values/ranges, not a reliable95% population interval.
+The count/spacing study varies **available** nodes; inspect
+`actual_fusion_node_counts` because the retained runtime still uses pairs.
+The range study's stable-track rate is a detection proxy, not a false-alarm
+controlled detector or a derivation of microphone self-noise requirements.
+
+`node scripts/benchmark-attribution.mjs` runs the separate known-POI prototype:
+24 mixtures plus12 isolated reference renders. Its three source labels stand
+for independent synthetic continuous noises, not actual traffic/venue/HVAC
+recordings. Two nodes cannot identify three independent powers and yield null
+shares/errors. Level/propagation/POI assumptions and each share error remain in
+`baselines/round2-attribution.json`; this does not change the localiser.
+
+`node scripts/benchmark-spatial.mjs --discard-renders` is a preregistered,
+offline150-case experiment, not a deployed mode. Full-rank cases are rerendered;
+ineligible geometries reuse the exact reference inference with provenance.
+Its cold p90 budget must leave the entire sealed estimate plus60min. Research
+XYZ is stationary-only; moving3D and calibrated positional radii remain absent.
+The same four acceptance partitions decide it without validation tuning.
 
 See [real-recordings.md](real-recordings.md) for WAV/geometry/external truth
 formats and the Testing tab's real-recording source. Synthetic round-trips are
