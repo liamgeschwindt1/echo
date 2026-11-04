@@ -1,0 +1,383 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>smoke benchmark</title><style>body{background:#171b22;color:#ddd;font:14px system-ui;margin:24px}table{border-collapse:collapse;display:block;overflow:auto}td,th{padding:8px;border:1px solid #46505c}small{display:block;color:#aeb8c8}.pass{background:#184431}.fail{background:#58252a}svg{max-width:1000px;width:100%;fill:#ddd}pre{white-space:pre-wrap}</style><h1>smoke</h1><p>16/16 runs. Simulated only. No single supported array winner. No ranking flip demonstrated by this experiment.</p><table><thead><tr><th>Config / split / realism / mode</th><th>horizontal_median_m</th><th>horizontal_p90_m</th><th>error_3d_median_m</th><th>scene_fix_rate</th><th>within_target_rate</th><th>wrong_fix_rate</th><th>suspect_recall</th><th>suspect_precision</th><th>track_fix_count</th><th>track_median_error_m</th><th>bearing_median_deg</th><th>elevation_median_deg</th><th>within_1sigma</th><th>within_2sigma</th><th>detection_rate</th></tr></thead><tbody><tr><th>Base / held-out / off / measured_only</th><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="pass">0.094<small>[0.094, 0.094]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="pass">0.094<small>[0.094, 0.094]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">0.333<small>[0.000, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">1.000<small>[1.000, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">0.000<small>[0.000, 0.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">0.000<small>[0.000, 0.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">127.000<small>[0.000, 381.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">0.054<small>[0.054, 0.054]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">0.298<small>[0.298, 0.298]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">1.000<small>[1.000, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">1.000<small>[1.000, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">0.154<small>[0.000, 0.667]</small></td></tr><tr><th>Base / held-out / off / truth_assisted</th><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="pass">3.501<small>[3.501, 3.501]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="pass">3.501<small>[3.501, 3.501]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">3.501<small>[3.501, 3.501]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">0.333<small>[0.000, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">1.000<small>[1.000, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">0.000<small>[0.000, 0.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">2.000<small>[0.000, 6.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">2.015<small>[2.015, 2.015]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">3.084<small>[0.110, 5.442]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">6.751<small>[0.629, 16.204]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">0.400<small>[0.000, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">0.400<small>[0.000, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">0.692<small>[0.600, 1.000]</small></td></tr><tr><th>Base / held-out / on / measured_only</th><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="pass">1.206<small>[1.206, 1.206]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="pass">1.206<small>[1.206, 1.206]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">0.333<small>[0.000, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">1.000<small>[1.000, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">0.000<small>[0.000, 0.000]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">0.000<small>[0.000, 0.000]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">128.000<small>[0.000, 384.000]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">1.206<small>[1.206, 1.206]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">2.720<small>[2.720, 2.720]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">0.500<small>[0.500, 0.500]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">1.000<small>[1.000, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">0.154<small>[0.000, 0.667]</small></td></tr><tr><th>Base / held-out / on / truth_assisted</th><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="pass">0.552<small>[0.552, 0.552]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="pass">0.552<small>[0.552, 0.552]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">0.552<small>[0.552, 0.552]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">0.333<small>[0.000, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">1.000<small>[1.000, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">0.000<small>[0.000, 0.000]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">12.000<small>[0.000, 36.000]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">1.581<small>[1.581, 1.581]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">1.217<small>[1.145, 6.229]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">1.147<small>[0.091, 1.186]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">0.200<small>[0.000, 0.333]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">0.400<small>[0.000, 0.667]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">0.692<small>[0.600, 1.000]</small></td></tr><tr><th>Base / train / off / measured_only</th><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="pass">0.123<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="pass">0.123<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">1.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">1.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">128.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.044<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.252<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">1.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">1.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">1.000<small>CI unavailable</small></td></tr><tr><th>Base / train / off / truth_assisted</th><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="pass">0.030<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="pass">0.030<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">0.030<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">1.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">1.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">0.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">16.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">0.080<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">0.025<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">1.448<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">1.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">1.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">1.000<small>CI unavailable</small></td></tr><tr><th>Base / train / on / measured_only</th><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="pass">3.817<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="pass">3.817<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">1.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">1.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">114.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">3.767<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">7.031<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.667<small>CI unavailable</small></td></tr><tr><th>Base / train / on / truth_assisted</th><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="pass">3.078<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="pass">3.078<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">3.078<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">1.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">1.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">0.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">3.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">5.124<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">3.388<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">3.645<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">0.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">0.000<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">1.000<small>CI unavailable</small></td></tr></tbody></table><p>Tornado requires one-at-a-time mode.</p><h2>Ranking</h2><pre>[]</pre><h2>Failure atlas</h2><pre>[
+  {
+    &quot;split&quot;: &quot;train&quot;,
+    &quot;realism&quot;: &quot;off&quot;,
+    &quot;analysis_mode&quot;: &quot;truth_assisted&quot;,
+    &quot;categories&quot;: [],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 1,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 2,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;train&quot;,
+    &quot;realism&quot;: &quot;off&quot;,
+    &quot;analysis_mode&quot;: &quot;measured_only&quot;,
+    &quot;categories&quot;: [],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 1,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 2,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;train&quot;,
+    &quot;realism&quot;: &quot;on&quot;,
+    &quot;analysis_mode&quot;: &quot;truth_assisted&quot;,
+    &quot;categories&quot;: [],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 1,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 2,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;train&quot;,
+    &quot;realism&quot;: &quot;on&quot;,
+    &quot;analysis_mode&quot;: &quot;measured_only&quot;,
+    &quot;categories&quot;: [],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 1,
+        &quot;detection_rate&quot;: 0
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 2,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;held-out&quot;,
+    &quot;realism&quot;: &quot;off&quot;,
+    &quot;analysis_mode&quot;: &quot;truth_assisted&quot;,
+    &quot;categories&quot;: [
+      {
+        &quot;category&quot;: &quot;random&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 1,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      }
+    ],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 1,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 2,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 2,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 8,
+        &quot;detection_rate&quot;: 0.5
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;held-out&quot;,
+    &quot;realism&quot;: &quot;off&quot;,
+    &quot;analysis_mode&quot;: &quot;measured_only&quot;,
+    &quot;categories&quot;: [
+      {
+        &quot;category&quot;: &quot;random&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 1,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      }
+    ],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 1,
+        &quot;detection_rate&quot;: 0
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 2,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 2,
+        &quot;detection_rate&quot;: 0
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 8,
+        &quot;detection_rate&quot;: 0
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;held-out&quot;,
+    &quot;realism&quot;: &quot;on&quot;,
+    &quot;analysis_mode&quot;: &quot;truth_assisted&quot;,
+    &quot;categories&quot;: [
+      {
+        &quot;category&quot;: &quot;random&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 1,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      }
+    ],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 1,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 2,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 2,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 8,
+        &quot;detection_rate&quot;: 0.5
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;held-out&quot;,
+    &quot;realism&quot;: &quot;on&quot;,
+    &quot;analysis_mode&quot;: &quot;measured_only&quot;,
+    &quot;categories&quot;: [
+      {
+        &quot;category&quot;: &quot;random&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 1,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      }
+    ],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 1,
+        &quot;detection_rate&quot;: 0
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 2,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 2,
+        &quot;detection_rate&quot;: 0
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 8,
+        &quot;detection_rate&quot;: 0
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      }
+    ]
+  }
+]</pre><h2>Reproducibility</h2><pre>{
+  &quot;git_hash&quot;: &quot;bc8bfa0fefdec7a70d09166ca9e007900d15776b&quot;,
+  &quot;code_version&quot;: &quot;31774d59aaae22f2afb938ce2284e46631738c7033abb47116877001948a43f8&quot;,
+  &quot;schema&quot;: &quot;0.8&quot;,
+  &quot;dirty&quot;: true,
+  &quot;scoring&quot;: &quot;benchmark score.js; post-inference truth only&quot;,
+  &quot;audio_source&quot;: &quot;repository test-audio recordings, PCM float32 mono at 48000 Hz&quot;,
+  &quot;audio&quot;: [
+    {
+      &quot;id&quot;: &quot;engine&quot;,
+      &quot;samples&quot;: 240000,
+      &quot;sha256&quot;: &quot;b6735647f769cb8e044f98675223d3632f194df253a87751145573e938899183&quot;
+    },
+    {
+      &quot;id&quot;: &quot;glass_breaking&quot;,
+      &quot;samples&quot;: 240000,
+      &quot;sha256&quot;: &quot;4df4ae3a411444c0f623a773ef45d28579253f9b878c69832aa582d3f7c09512&quot;
+    }
+  ],
+  &quot;runtime&quot;: {
+    &quot;engine&quot;: &quot;node&quot;,
+    &quot;node&quot;: &quot;26.12.1&quot;,
+    &quot;v8&quot;: &quot;14.6.202.34-node.40&quot;
+  },
+  &quot;cancelled&quot;: false,
+  &quot;expected_runs&quot;: 16,
+  &quot;scoring_provenance&quot;: {
+    &quot;code_version&quot;: &quot;c3c54e7fd6e83d3418138647157ef6c8bb08e3ee201e2bf80ec5aed7fab8b922&quot;,
+    &quot;git_hash&quot;: &quot;c8d27304424638dffa65d967de123de850f5cd80&quot;,
+    &quot;dirty&quot;: true,
+    &quot;schema&quot;: &quot;0.10&quot;
+  },
+  &quot;rescored_from&quot;: {
+    &quot;schema&quot;: &quot;0.8&quot;,
+    &quot;scoring_version&quot;: &quot;source-one-to-one-v1&quot;
+  },
+  &quot;scoring_version&quot;: &quot;episode-one-to-one-v2&quot;
+}</pre><h2>Limits</h2><p>SIMULATED, not real-world validation. Held-out scenes/seeds are reporting-only.</p><p>Bootstrap unit is a complete scene/seed run. CI is unavailable for fewer than two runs. Repeated seeds within sites are correlated; these are not independent-site population confidence intervals.</p><p>Truth-assisted source windows, SNR, overlap, picked paths, multipath and track gates use simulator truth.</p><p>Measured-only reuses measured.js: horizontal only, pairwise greedy association; 3D error and labelling are unavailable (null), not zero.</p><p>Measured scoring assigns overlapping fix episodes one-to-one to source paths after inference, without an error gate. Disjoint episodes may share a source; every matched episode enters error/track/calibration metrics. Unassigned simultaneous hypotheses count wrong. Scoring does not check clip-active intervals. Calibration uses median accepted track bearing error, not individual windows.</p><p>Measured detection rate means source-associated fused node tracks, not an independent classifier detection rate. No model labelling was run.</p><p>Runtime on cache hits records original execution time; render_ms is zero when audio was cached. It is not a fair cold-render speed comparison.</p></html>

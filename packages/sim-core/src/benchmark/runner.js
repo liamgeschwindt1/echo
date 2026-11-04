@@ -7,7 +7,7 @@ import { EXPORT_SCHEMA } from '../export.js';
 import { buildScene } from './scenes.js';
 import { scenarioForJob, buildJobs, BENCHMARK_DEFAULTS } from './experiment.js';
 import { cacheKeys, audioHash, canonical } from './cache.js';
-import { scoreAssisted, scoreMeasured } from './score.js';
+import { scoreAssisted, scoreMeasured, SCORING_VERSION } from './score.js';
 import { summariseRuns, failureAtlas, rankingFlips, pairedComparison, detectionByRange } from './metrics.js';
 
 export function measuredOptions(settings) {
@@ -72,7 +72,7 @@ export async function runJob(job, context) {
     scores = scoreAssisted(inference);
   }
   const result = {
-    job, scenario, inference, scores, manifest: { ...manifest, schema: EXPORT_SCHEMA, audio, seed: job.seed, settings: scenario.settings, variable_values: job.config.values },
+    job, scenario, inference, scores, manifest: { ...manifest, schema: EXPORT_SCHEMA, scoring_version: SCORING_VERSION, audio, seed: job.seed, settings: scenario.settings, variable_values: job.config.values },
     cache_keys: keys, cache_hit: false, render_cache_hit: renderCached, render_provenance: renderProvenance, render_ms: renderMs,
     analysis_ms: performance.now() - analysisStart, runtime_ms: performance.now() - started
   };
@@ -133,7 +133,7 @@ export function finishExperiment(experiment, configs, runs, manifest) {
     return ['horizontal_median_m', 'scene_fix_rate', 'within_target_rate', 'wrong_fix_rate', 'track_median_error_m'].map((metric) => ({ key, ...pairedComparison(subset, metric, experiment) }));
   }) : [];
   return {
-    schema: EXPORT_SCHEMA, kind: 'echo-sim-benchmark', experiment, configs, manifest,
+    schema: EXPORT_SCHEMA, kind: 'echo-sim-benchmark', experiment, configs, manifest: { ...manifest, scoring_version: SCORING_VERSION },
     thresholds: Object.fromEntries(Object.keys(BENCHMARK_DEFAULTS).map((k) => [k, { value: experiment[k], placeholder: true }])),
     runs, summary, paired, ranking: rankingFlips(summary),
     failure_atlas: ['train', 'held-out'].flatMap((split) => ['off', 'on', 'custom'].flatMap((realism) => ['truth_assisted', 'measured_only'].flatMap((analysis_mode) => {
@@ -145,9 +145,26 @@ export function finishExperiment(experiment, configs, runs, manifest) {
       'Bootstrap unit is a complete scene/seed run. CI is unavailable for fewer than two runs. Repeated seeds within sites are correlated; these are not independent-site population confidence intervals.',
       'Truth-assisted source windows, SNR, overlap, picked paths, multipath and track gates use simulator truth.',
       'Measured-only reuses measured.js: horizontal only, pairwise greedy association; 3D error and labelling are unavailable (null), not zero.',
-      'Measured scoring greedily assigns fixes one-to-one to source paths after inference, with no error gate. Unassigned fixes count wrong; track calibration uses median accepted track bearing error, not individual windows.',
+      'Measured scoring assigns overlapping fix episodes one-to-one to source paths after inference, without an error gate. Disjoint episodes may share a source; every matched episode enters error/track/calibration metrics. Unassigned simultaneous hypotheses count wrong. Scoring does not check clip-active intervals. Calibration uses median accepted track bearing error, not individual windows.',
       'Measured detection rate means source-associated fused node tracks, not an independent classifier detection rate. No model labelling was run.',
       'Runtime on cache hits records original execution time; render_ms is zero when audio was cached. It is not a fair cold-render speed comparison.'
     ]
   };
+}
+
+export function rescoreReport(report, manifest) {
+  if (report.kind !== 'echo-sim-benchmark' || !Array.isArray(report.runs)) throw new Error('Expected benchmark report with stored inference');
+  if (!manifest?.code_version) throw new Error('Re-scoring requires current code provenance');
+  const provenance = { code_version: manifest.code_version, git_hash: manifest.git_hash, dirty: manifest.dirty, schema: EXPORT_SCHEMA };
+  const runs = report.runs.map((run) => {
+    if (!run.inference || !run.scenario) throw new Error(`Missing stored inference/scenario: ${run.job.id}`);
+    const start = performance.now();
+    const scores = run.job.analysis_mode === 'measured_only'
+      ? scoreMeasured(run.scenario, run.inference, { c: speedOfSound(run.scenario.settings.temperature_c) })
+      : scoreAssisted(run.inference);
+    return { ...run, scores, cache_keys: { ...run.cache_keys, run: null }, rescoring_ms: performance.now() - start,
+      manifest: { ...run.manifest, scoring_version: SCORING_VERSION, scoring_provenance: provenance,
+        rescored_from: { scoring_version: run.manifest.scoring_version ?? 'source-one-to-one-v1', run_cache_key: run.cache_keys.run } } };
+  });
+  return finishExperiment(report.experiment, report.configs, runs, { ...report.manifest, scoring_provenance: provenance, rescored_from: { schema: report.schema, scoring_version: report.manifest.scoring_version ?? 'source-one-to-one-v1' } });
 }

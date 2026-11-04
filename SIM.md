@@ -6,7 +6,7 @@ The one reference document for the **sim** frontend ([apps/sim](apps/sim)) and i
 
 Coordinates: metres, x east, y north, z up. Time: seconds of scenario time. Inside the physics, pressure is in pascals; digital floats appear only at the microphone output. Angles in the code are in radians unless the name ends in `_deg`.
 
-## Reproducible Testing engine (schema 0.9)
+## Reproducible Testing engine (schema 0.10)
 
 `npm run benchmark -- --experiment smoke --out baselines/smoke.json` runs the shared
 `packages/sim-core/src/benchmark/` engine. CLI and Testing use identical experiment
@@ -53,6 +53,24 @@ track windows. Recorded audio hashes and whole-event bearings matched. Schema
 numbers did not cause that difference. Engine/runtime provenance matters. A
 weight-aware repair was rejected because suspect precision and recall regressed;
 see the overnight log. No solver upgrade is claimed.
+
+### Episode scoring (schema 0.10)
+
+Measured spatial matching is one-to-one only among overlapping emission-time
+intervals. Separate bursts in one recording may belong to the same physical
+source. Previously every burst after the best match was marked unmatched/wrong.
+Every assigned episode now contributes to error quantiles, track counts and
+calibration; source coverage remains capped at one per source. Simultaneous
+unmatched hypotheses still count wrong. Scoring does not validate clip-active
+intervals; this remains a limitation. Editor drill-down displays the best matched
+episode per source, while the export retains all episodes.
+
+Reports identify `scoring_version`; unlike conventions cannot be compared.
+`node scripts/benchmark-rescore.mjs --from old.json --out rescored.json`
+explicitly recomputes scores from stored inference without rendering, changing
+inference or overwriting the original. It records both producers and clears the
+obsolete whole-result cache reference. Re-score both sides before regression
+comparison. This is a measurement correction, not an algorithm accuracy gain.
 
 ### Simulated, measured and assumed
 

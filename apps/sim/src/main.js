@@ -2724,7 +2724,7 @@ const testingPanel = createTesting({
     applyScenario(run.scenario, testingEditorResults(run));
     t = lengthS();
     selected = scenario.sources[0] ? { type: 'source', id: scenario.sources[0].id } : null;
-    $('loadNotice').textContent = `Testing snapshot: ${run.job.scene}, seed ${run.job.seed}, ${run.job.realism}/${run.job.analysis_mode}. ${run.job.analysis_mode === 'measured_only' ? 'Horizontal inference only; display height assumed. Create still uses the legacy truth-assisted editor pipeline.' : 'Exact saved inference; no rerender.'}`;
+    $('loadNotice').textContent = `Testing snapshot: ${run.job.scene}, seed ${run.job.seed}, ${run.job.realism}/${run.job.analysis_mode}. ${run.job.analysis_mode === 'measured_only' ? 'Horizontal inference only; display height assumed. Best matched episode per source shown; exports and benchmark metrics include every episode. Create still uses the legacy truth-assisted editor pipeline.' : 'Exact saved inference; no rerender.'}`;
     $('loadNotice').hidden = false;
     setView('scene');
     renderInspector();

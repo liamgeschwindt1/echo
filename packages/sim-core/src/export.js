@@ -1,4 +1,4 @@
-// The results export ("Export results" in the sim). Schema 0.9: see EXPORT_CHANGELOG.
+// The results export ("Export results" in the sim). Schema 0.10: see EXPORT_CHANGELOG.
 // Node output is limited to bearings, levels, times, uncertainties, labels, scores and confidences: no audio, spectra or
 // embeddings, and every unmeasured constant or threshold is marked placeholder.
 import { simConstants } from './geometry.js';
@@ -7,9 +7,14 @@ import { LABELLING_NOTE } from './labelling.js';
 import { nextPow2 } from './dsp.js';
 import { MEASURED_DEFAULTS } from './measured.js';
 
-export const EXPORT_SCHEMA = '0.9';
+export const EXPORT_SCHEMA = '0.10';
 
 export const EXPORT_CHANGELOG = [
+  {
+    schema: '0.10',
+    added: ['Benchmark scores.fixes contains every assigned measured episode; manifests identify scoring_version and explicit re-scoring provenance. Failure atlas includes every wrong episode and counts unmatched hypotheses separately without inventing their spatial errors.'],
+    changed: ['Measured one-to-one assignment applies to overlapping emission-time intervals, not a whole recording. Disjoint bursts may match the same source. Error, track and calibration metrics include every assigned episode; source coverage stays capped at one per source.', 'Comparisons reject different scoring conventions. benchmark-rescore.mjs preserves original reports and inference, invalidates the old whole-run cache reference, and recomputes scores only. Simultaneous unassigned hypotheses still count wrong.']
+  },
   {
     schema: '0.9',
     added: ['Benchmark manifest.render_code_version and render_source_files: SHA-256 of the complete parsed local renderer dependency graph', 'Run render_provenance preserves actual audio producer code/git/runtime; cache_keys.origin identifies its sidecar'],

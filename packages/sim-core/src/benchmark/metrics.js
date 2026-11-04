@@ -31,13 +31,15 @@ const finite = (a) => a.filter(Number.isFinite);
 
 export function metricValues(runs, { wrong_fix_m = 10 } = {}) {
   const sources = runs.flatMap((r) => r.scores.sources);
-  const fixes = sources.filter((s) => Number.isFinite(s.horizontal_m));
+  const scoredFixes = runs.flatMap((r) => r.scores.fixes ?? r.scores.sources);
+  const fixes = scoredFixes.filter((s) => Number.isFinite(s.horizontal_m));
   const nodes = sources.flatMap((s) => s.nodes);
-  const bearings = nodes.filter((n) => Number.isFinite(n.az_error_deg) && Number.isFinite(n.sigma_deg));
+  const bearingNodes = scoredFixes.flatMap((s) => s.nodes);
+  const bearings = bearingNodes.filter((n) => Number.isFinite(n.az_error_deg) && Number.isFinite(n.sigma_deg));
   const wrong = fixes.filter((s) => s.horizontal_m > wrong_fix_m);
   const flagged = fixes.filter((s) => s.suspect);
   const unmatched = runs.reduce((a, r) => a + r.scores.unmatched_fixes, 0);
-  const tracks = sources.flatMap((s) => s.track_errors_m);
+  const tracks = scoredFixes.flatMap((s) => s.track_errors_m);
   const detection = nodes.filter((n) => n.detected !== null);
   return {
     horizontal_median_m: percentile(finite(fixes.map((s) => s.horizontal_m)), 50),
@@ -45,7 +47,7 @@ export function metricValues(runs, { wrong_fix_m = 10 } = {}) {
     error_3d_median_m: percentile(finite(fixes.map((s) => s.error_3d_m)), 50),
     error_3d_p90_m: percentile(finite(fixes.map((s) => s.error_3d_m)), 90),
     scene_fix_rate: ratio(runs.filter((r) => r.scores.fix_count > 0).length, runs.length),
-    source_fix_rate: ratio(fixes.length, sources.length),
+    source_fix_rate: ratio(sources.filter((s) => Number.isFinite(s.horizontal_m)).length, sources.length),
     within_target_rate: ratio(fixes.filter((s) => s.horizontal_m <= wrong_fix_m).length, fixes.length + unmatched),
     wrong_fix_rate: ratio(wrong.length + unmatched, fixes.length + unmatched),
     suspect_recall: ratio(wrong.filter((s) => s.suspect).length + runs.reduce((a, r) => a + r.scores.unmatched_suspect, 0), wrong.length + unmatched),
@@ -53,8 +55,8 @@ export function metricValues(runs, { wrong_fix_m = 10 } = {}) {
     unmatched_fix_rate: ratio(unmatched, fixes.length + unmatched),
     track_fix_count: tracks.length,
     track_median_error_m: percentile(finite(tracks), 50),
-    bearing_median_deg: percentile(finite(nodes.map((n) => n.az_error_deg)), 50),
-    elevation_median_deg: percentile(finite(nodes.map((n) => n.el_error_deg)), 50),
+    bearing_median_deg: percentile(finite(bearingNodes.map((n) => n.az_error_deg)), 50),
+    elevation_median_deg: percentile(finite(bearingNodes.map((n) => n.el_error_deg)), 50),
     within_1sigma: ratio(bearings.filter((n) => n.az_error_deg <= n.sigma_deg).length, bearings.length),
     within_2sigma: ratio(bearings.filter((n) => n.az_error_deg <= 2 * n.sigma_deg).length, bearings.length),
     detection_rate: ratio(detection.filter((n) => n.detected).length, detection.length),
@@ -119,6 +121,9 @@ export function compareSummaries(current, baseline, tolerances = {}) {
 }
 
 export function compareReports(current, baseline, tolerances = {}) {
+  if ((current.manifest?.scoring_version ?? 'source-one-to-one-v1') !== (baseline.manifest?.scoring_version ?? 'source-one-to-one-v1')) {
+    return { differences: [], regressions: [{ reason: 'different scoring conventions; explicitly re-score reports before comparison' }], pass: false };
+  }
   const comparison = compareSummaries(current.summary, baseline.summary, tolerances);
   const cases = (report, row) => report.runs.filter((r) =>
     r.job.config.id === row.config_id && r.job.split === row.split && r.job.realism === row.realism && r.job.analysis_mode === row.analysis_mode)
@@ -188,17 +193,25 @@ export function rankingFlips(summary, metric = 'horizontal_median_m', rankVariab
 export function failureAtlas(runs, wrongFixM = 10) {
   const categories = new Map();
   let total = 0;
-  for (const run of runs) for (const s of run.scores.sources) {
-    if (Number.isFinite(s.horizontal_m) && s.horizontal_m <= wrongFixM) continue;
-    total++;
+  for (const run of runs) {
     const category = SCENES.find((x) => x.id === run.job.scene)?.category ?? 'custom';
-    const row = categories.get(category) ?? { category, failures: 0, no_fix: 0, errors_m: [] };
-    row.failures++;
-    if (s.horizontal_m === null) row.no_fix++;
-    else row.errors_m.push(s.horizontal_m);
-    categories.set(category, row);
+    const add = (error, unmatched = 0, count = 1) => {
+      if (!count) return;
+      total += count;
+      const row = categories.get(category) ?? { category, failures: 0, no_fix: 0, unmatched_fixes: 0, errors_m: [] };
+      row.failures += count;
+      if (unmatched) row.unmatched_fixes += count;
+      else if (error === null) row.no_fix += count;
+      else row.errors_m.push(error);
+      categories.set(category, row);
+    };
+    const entries = run.scores.fixes
+      ? [...run.scores.fixes, ...run.scores.sources.filter((s) => !Number.isFinite(s.horizontal_m))]
+      : run.scores.sources;
+    for (const s of entries) if (!Number.isFinite(s.horizontal_m) || s.horizontal_m > wrongFixM) add(s.horizontal_m ?? null);
+    add(null, 1, run.scores.unmatched_fixes);
   }
-  return [...categories.values()].map((r) => ({ category: r.category, failures: r.failures, no_fix: r.no_fix, share: ratio(r.failures, total), median_error_m: percentile(r.errors_m, 50), p90_error_m: percentile(r.errors_m, 90) })).sort((a, b) => b.failures - a.failures);
+  return [...categories.values()].map((r) => ({ category: r.category, failures: r.failures, no_fix: r.no_fix, unmatched_fixes: r.unmatched_fixes, share: ratio(r.failures, total), median_error_m: percentile(r.errors_m, 50), p90_error_m: percentile(r.errors_m, 90) })).sort((a, b) => b.failures - a.failures);
 }
 
 export function detectionByRange(runs, bins = [0, 20, 50, 100, 200, Infinity]) {

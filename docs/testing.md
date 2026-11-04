@@ -31,6 +31,18 @@ Calibration compares distance from 68.27%/95.45%, not simply bigger-is-better.
 Comparisons match variable values rather than configuration list order, and reject
 different scene/seed populations or wrong-fix targets. A delta on different grading
 data is not a regression result.
+Scoring conventions must also match. Schema 0.10 fixes false unmatched counts
+for separate sound bursts: one-to-one assignment applies to overlapping
+emission-time intervals, while disjoint episodes may share a source. Every
+assigned episode enters error/track/calibration metrics; source coverage cannot
+exceed 100%. Simultaneous unmatched hypotheses still count wrong. Clip-active
+intervals are not checked by this scorer.
+
+Use `node scripts/benchmark-rescore.mjs --from old.json --out rescored.json`
+to re-score stored inference explicitly. It writes JSON/CSV/HTML, preserves the
+original and records scoring provenance. Re-score both reports under the same
+convention before comparing; the command also supports `--compare` and
+`--fail-on-regress`. No audio or inference is recomputed.
 
 ## Variable groups
 
@@ -94,6 +106,8 @@ saved inference in the editor. Measured-only drill-down uses an explicitly assum
 display height and unavailable 3D error. Pressing the existing editor **Create**
 still runs its legacy truth-assisted analysis; it does not replace the saved
 benchmark inference.
+Measured drill-down displays the best matched episode per source. All assigned
+episodes remain in benchmark metrics and exported inference.
 
 Summary cells show point estimates and bootstrap confidence intervals. No-fix
 errors are null and excluded from error quantiles; coverage is reported separately.

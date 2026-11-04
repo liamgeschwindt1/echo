@@ -35,7 +35,12 @@ JSON experiment / Testing form
 In measured-only mode, `runner.js` constructs a restricted sensor scenario and
 sensor data object. Only nominal node geometry, settings, buildings, microphone
 mixtures and sample rate cross that boundary. Ground truth stays in the scorer.
-Scoring association is explicitly greedy, one-to-one and ungated. Missing
+Scoring association is greedy, ungated and one-to-one among overlapping
+emission-time intervals; disjoint episodes may share a source. Every assigned
+episode enters error, track and calibration metrics, while detection/source
+coverage uses unique truth sources. Explicit re-scoring preserves inference and
+records separate scoring provenance; comparisons reject unlike conventions.
+Clip-active intervals are not checked. Missing
 elevation, 3D error and labelling are null, not successful zero-error results.
 
 `node.js` adapts file assets, source/audio hashes, disk cache and `worker_threads`;
