@@ -1,5 +1,19 @@
 # Overnight localisation log
 
+## Round 2 start (2026-11-04 09:25 UTC)
+
+- Branch `overnight/localisation-2` starts at round-one final `099a0d0`.
+- Read the round-one log/report, rejected solver manifests and exact consensus
+  trace. Preserve all originals and signal goldens.
+- No standalone sealed-baseline files exist in this checkout. The round-one
+  frozen eight random sites and previously held-out seed now count as validation.
+- Generate and commit 40 new random sites with fresh high-range site/render seeds
+  before outcomes. Exact populations and acceptance interpretation are recorded
+  in `docs/round2-method.md` and `docs/experiments/round2-*.json`.
+- Initial disk 50% (8.8 GiB available), 2 CPUs. Sequential discard-mode studies
+  use distinct caches. Previous seven-source rendering averaged 202.24 s on the
+  four-mic study; do not use the 5 s placeholder for scheduling.
+
 ## Rules and decisions (2026-11-04)
 
 - Work only on `overnight/localisation`; no main pushes. Each retained logical step gets its own commit after core tests and benchmark.
