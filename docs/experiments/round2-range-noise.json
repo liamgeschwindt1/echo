@@ -4,6 +4,7 @@
   "scenes": ["sparse_50"],
   "seeds": [1, 101],
   "held_out_seeds": [101],
+  "scene_splits": {},
   "analysis_modes": ["measured_only"],
   "realism": ["off", "on"],
   "base_values": {"layout": "ring", "node_count": 3, "node_spacing_m": 40},

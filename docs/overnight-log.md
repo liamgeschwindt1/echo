@@ -140,7 +140,7 @@
   Hardware requirements stay null when the appropriate impairment was not
   swept or target compliance is not demonstrated.
 
-## Round 2 placement method and gates (12:49 UTC)
+## Round 2 placement method and gates (12:46 UTC)
 
 - Disk58%, over7GiB available. Variance remains the only rendering study.
   Mandatory sealed inputs remain unrun; default inference/core freeze unchanged.
@@ -154,6 +154,10 @@
   and the retained16-case smoke will run after variance, not concurrently with
   a science render. History now accepts generated/nightly summaries directly;
   bad uploads report errors and preserve the previous displayed dataset.
+- Before their first runs, node-count/range/placement registrations explicitly
+  use validation labels for seed101. Scene/seed/variable populations are
+  unchanged. Existing realism/variance archives retain their actual legacy
+  "held-out" metadata; that means seen validation, never the sealed test.
 
 ## Rules and decisions (2026-11-04)
 

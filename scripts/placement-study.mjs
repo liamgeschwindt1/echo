@@ -20,7 +20,7 @@ if (process.argv[2] === 'register') {
   }
   await writeFile(path, JSON.stringify({
     name: 'Geometry-only placement diagnostic, not a localiser change',
-    mode: 'grid', scenes: Object.keys(custom_scenes), seeds: [1, 101], held_out_seeds: [101],
+    mode: 'grid', scenes: Object.keys(custom_scenes), seeds: [1, 101], held_out_seeds: [101], scene_splits: {},
     analysis_modes: ['measured_only'], realism: ['off', 'on'], custom_scenes,
     base_settings: { reflection_order: 0, diffraction_order: 0, ground_reflectivity: 0 },
     max_runs: 30, expected_runs: 20,

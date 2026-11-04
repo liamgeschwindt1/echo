@@ -15,6 +15,7 @@
   "held_out_seeds": [
     101
   ],
+  "scene_splits": {},
   "analysis_modes": [
     "measured_only"
   ],
