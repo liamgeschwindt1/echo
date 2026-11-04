@@ -1,14 +1,25 @@
-// The results export ("Export results" in the sim). Schema 0.6: see EXPORT_CHANGELOG.
+// The results export ("Export results" in the sim). Schema 0.7: see EXPORT_CHANGELOG.
 // Node output is limited to bearings, levels, times, uncertainties, labels, scores and confidences: no audio, spectra or
 // embeddings, and every unmeasured constant or threshold is marked placeholder.
 import { simConstants } from './geometry.js';
 import { ANALYSIS_THRESHOLDS } from './scenario.js';
 import { LABELLING_NOTE } from './labelling.js';
 import { nextPow2 } from './dsp.js';
+import { MEASURED_DEFAULTS } from './measured.js';
 
-export const EXPORT_SCHEMA = '0.6';
+export const EXPORT_SCHEMA = '0.7';
 
 export const EXPORT_CHANGELOG = [
+  {
+    schema: '0.7',
+    added: [
+      'benchmark result kind: experiments, reproducibility manifest with source/audio hashes, scene/seed split, realism and analysis mode, bootstrap CI, paired comparisons, failure atlas and ranking flips',
+      'analysis_mode setting; measured-only inference has no source/path/activity input; scoring truth is isolated after inference',
+      'measured_* placeholder thresholds in exports, including effective defaults'
+    ],
+    changed: ['Benchmark defaults to measured_only; existing editor defaults remain truth_assisted. No rendered signal changes.'],
+    removed: []
+  },
   {
     schema: '0.6',
     added: [
@@ -74,7 +85,10 @@ export const EXPORT_NOTES = [
 
 /** Every analysis threshold with its value in this scenario, marked placeholder. */
 export function thresholdsOf(settings) {
-  return Object.fromEntries(Object.entries(ANALYSIS_THRESHOLDS).map(([k, note]) => [k, { value: settings[k], placeholder: true, note }]));
+  return {
+    ...Object.fromEntries(Object.entries(ANALYSIS_THRESHOLDS).map(([k, note]) => [k, { value: settings[k], placeholder: true, note }])),
+    ...Object.fromEntries(Object.entries(MEASURED_DEFAULTS).map(([k, value]) => [`measured_${k}`, { value: settings[`measured_${k}`] ?? value, placeholder: true, note: 'Existing measured.js heuristic; not calibrated on real recordings.' }]))
+  };
 }
 
 // Fields that must never leave: audio or audio-derived arrays. Labelling results never contain them; this is a guard.

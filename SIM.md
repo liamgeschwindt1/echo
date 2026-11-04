@@ -6,6 +6,30 @@ The one reference document for the **sim** frontend ([apps/sim](apps/sim)) and i
 
 Coordinates: metres, x east, y north, z up. Time: seconds of scenario time. Inside the physics, pressure is in pascals; digital floats appear only at the microphone output. Angles in the code are in radians unless the name ends in `_deg`.
 
+## Reproducible Testing engine (schema 0.7)
+
+`npm run benchmark -- --experiment smoke --out baselines/smoke.json` runs the shared
+`packages/sim-core/src/benchmark/` engine. CLI and Testing use identical experiment
+expansion, variable transforms, cache keys, scoring and aggregation. JSON, CSV and
+standalone HTML are written together. Use `--compare baseline.json --fail-on-regress`
+for deterministic metric regression checks. Runtime is recorded but not gated.
+
+Experiments default to `measured_only`; the existing editor retains
+`truth_assisted` for compatibility. The latter uses true per-source windows,
+SNR, overlap, path selection and track dominance. It is an optimistic upper
+bound, not deployable inference. Measured-only uses the existing horizontal
+mixture-only `measured.js` pipeline, not the source-window solver. Its elevation,
+3D error and labelling accuracy are **unavailable**, not zero. Scoring uses
+truth only after inference. Unmatched fixes count as wrong. Model labelling is
+not run by benchmarks.
+
+Seeds `[1, 2, 101]` have `101` held out. Eight of 25 scene IDs are held-out random
+sites; the split is fixed before baseline and held-out data is reporting-only.
+Reports separate train/held-out, realism off/on (2.5 deg heading, 1 dB gain,
+5 mm position, correlation 0.3), and analysis modes. Bootstrap resamples complete
+scene/seed runs; within-site seeds remain correlated. See [Testing](docs/testing.md)
+and [overnight log](docs/overnight-log.md) for limitations and retained steps.
+
 Contents:
 
 - 1. Purpose, pipeline and layout

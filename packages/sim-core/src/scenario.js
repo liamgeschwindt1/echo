@@ -35,6 +35,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   spl_ref_db: 94,
   dbfs_ref_db: -26,
   noise_enabled: true, // test switch: false renders silence apart from the sources
+  analysis_mode: 'truth_assisted',
   reach_cell_m: 2,
   reach_reflection_order: 2,
   // Localisation thresholds added in export schema 0.4 and 0.5. Every one is a placeholder: see ANALYSIS_THRESHOLDS.
@@ -77,6 +78,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
 
 /** Documented defaults of the analysis thresholds. None is measured: all are placeholders until real recordings exist. */
 export const ANALYSIS_THRESHOLDS = Object.freeze({
+  analysis_mode: "'truth_assisted' preserves the editor pipeline; benchmark defaults to 'measured_only', using measured.js on mixtures only",
   min_snr_db: 'in-window (localisation band) SNR a node needs before its bearing is used; also the detection and localisable gates',
   window_snr_db: 'level over noise (dB) that marks a 10 ms frame as active when finding a source\'s active window',
   window_policy: "'auto' picks onset_gated or adaptive_long from the trigger type; 'fixed' localises on the whole active window (schema 0.3 behaviour)",

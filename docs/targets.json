@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "placeholder": true,
+  "scope": "Starting design targets, not validated acceptance limits. Error targets apply to scenes with source reference range up to 50 m; mixed-range tables are indicative only.",
+  "max_reference_range_m": 50,
+  "metrics": {
+    "horizontal_median_m": { "max": 5, "unit": "m" },
+    "horizontal_p90_m": { "max": 10, "unit": "m" }
+  }
+}

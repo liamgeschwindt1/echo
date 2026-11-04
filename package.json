@@ -8,6 +8,7 @@
     "apps/*"
   ],
   "scripts": {
+    "benchmark": "node scripts/benchmark.mjs",
     "build": "node scripts/service.mjs build",
     "start": "node scripts/service.mjs start",
     "dev": "node scripts/dev.mjs",
