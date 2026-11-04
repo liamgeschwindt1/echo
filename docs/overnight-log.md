@@ -57,7 +57,7 @@
 - The editor still uses legacy truth-assisted Create. Measured drill-down opens saved horizontal inference with an explicitly assumed display height, not invented elevation.
 - Final retained measured-only browser/CLI sweep **4/4 runs**, with actual fixes, matched scores/CI to **1e-7**. The test pauses only after a completed checkpoint, reloads, resumes, exports all three formats and drills down. App tests **31/31** and production build passed. Screenshots now show retained code: `testing-setup.png` and `testing-results.png`; wide metrics scroll within their table.
 - A strengthened browser test initially hit its 30 s first-progress timeout while the full core suite and baseline ran concurrently. Increased only compute wait to 120 s (overall harness 600 s); numerical tolerance stayed fixed. Rerun passed in 100 s.
-- Four-run glass pilot has duplicate pairwise fixes: unmatched fixes count wrong, so wrong-fix fraction is **50%** despite small matched-position errors. Realism-on uncertainty remains badly calibrated. No hardware recommendation follows.
+- Initially interpreted separate glass episodes as duplicate/wrong pairwise fixes (**50%**). That was a scoring bug, not an algorithm failure: corrected explicitly in the repeated-event section below. Realism-on uncertainty remains badly calibrated. No hardware recommendation follows.
 
 ## Renderer cache reuse (kept)
 
@@ -101,3 +101,22 @@
 - Original 300-run baseline audio migration verified all **150** unique inputs: **142** newly hard-linked, **8** already present. Independent cold near_wall/seed1 control matched every microphone byte plus path/activity diagnostics. Original source/runtime dirty-audit assumptions remain explicit. Re-scored baseline to v2 without changing any inference.
 - Expired another **14** individually audited development-only 0.7 audio files (**494 MiB**), after comparing exact producer hashes with completed baseline producer **ca41e67bb04098fd15a2d2fdc1d702ea5fcf216cd1d3df56efc65b2729023aff**. All **150 original-baseline audio keys**, current canonical audio, whole results and reports remain intact. A preliminary cleanup guard correctly refused to classify the real smoke producer as obsolete; no files were removed by that refused attempt.
 - Predeclared eight endpoint grids for all nine arrays, using existing UI ranges only: heading 0/5 deg, gain 0/2 dB, position 0/10 mm, correlation 0/0.6, ambient 30/60 dB SPL, self-noise 20/40 dB SPL, ground 0/0.8, source level 90/110 dB SPL. Each has 144 measured-only runs on the same two-site/two-seed split; 1152 total. Swept variables explicitly override the corresponding realism-profile value. No timing sweep is offered because timing realism is not built.
+
+## Final grading and preregistered full array ranking
+
+- Original full baseline is preserved untouched as `baselines/baseline-0.json` (300 runs, 25 sites; 136 train / 164 held-out). Its explicit v2 score migration has 300/300 deeply identical inference objects. Final default-engine grading now uses that like-for-like scoring reference, no changed tolerances.
+- Before inspecting final or array outcomes, expanded the preregistered array study to all 25 sites, seeds 1/2/101, all nine layouts, realism off/on, measured-only: **1350 runs**. This supersedes the pilot as the main ranking if completed. The 144-run two-pipeline pilot and eight 144-run endpoint grids remain useful secondary studies, not substitutes for full-scene coverage.
+- Two CPU workers and opt-in per-render-group cleanup keep memory/storage bounded. Run studies sequentially, not concurrently against a discard-mode shared cache. No new threshold is selected from any final/held-out result.
+
+## Finite measured CI reference (kept)
+
+- Added a GitHub workflow with read-only permissions, exact Node **24.22.2**, core tests, eight measured-only regression cases, realism off/on and the same scene/seed holdout discipline. Model files are committed; the workflow fetches pinned ESC-50 audio rather than silently skipping the real-model test.
+- Installed the missing Node 24 runtime only after `node24` failed. Its independently cold-rendered eight-run replay passed `--fail-on-regress` against the new reference. Default metric tolerances remain zero.
+- Official actionlint **1.7.12** binary checksum verified; workflow lint passed. Exact CI runtime validation passed **243/243 core**, **31/31 app** and the production build. Independently cold-rendered eight-run replay had **zero regressions**. Both train/off and train/on reference cases contain actual fixes. This is local validation, not a claim that GitHub Actions has executed remotely.
+- Existing model-runtime/Vite warnings remain visible. No signal or analysis golden changed. CI changes do not alter inference/export format; schema stays 0.12.
+
+## Exact consensus decision trace (investigation only)
+
+- Added `docs/experiments/consensus-trace.json` from read-only instrumentation of the retained solver on training seven_source/seed1/off/s8. Final point, inliers and rejected nodes deeply match the original baseline.
+- Initial consensus kept all four usable nodes. Its refit residuals for n1/n3 were **0.03899 / 0.01945 sigma**. Leave-one-out then rejected reliable n1 at **160.45496 sigma** against n2/n3/n7, and reliable n3 at **24.50194 sigma** against n2/n7. Final survivor weights were only **0.0001985 / 0.0009554**, versus rejected **0.05812 / 0.08837**.
+- The exported rejection residual is recalculated at the final surviving fit, **not** the leave-one-out point that triggered rejection. Therefore its number need not equal or exceed the rejection-time gate. The reported exact **0.4** case was not reproduced in the available scene/settings/seeds; do not claim otherwise. This trace confirms the structural cause and low-weight-consensus failure, not a kept solver repair.
