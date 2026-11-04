@@ -81,7 +81,7 @@ export async function runJob(job, context) {
 }
 
 // The same bounded scheduler drives Node workers and browser workers. Pause stops dispatch; in-flight jobs finish.
-export async function runExperiment(input, { execute, renderGroup = (job) => job.id, completed = [], signal, isPaused = () => false, waitWhilePaused = async () => {}, workers = 2, onProgress = () => {}, onResult = async () => {}, manifest = {} }) {
+export async function runExperiment(input, { execute, renderGroup = (job) => job.id, onRenderComplete = async () => {}, completed = [], signal, isPaused = () => false, waitWhilePaused = async () => {}, workers = 2, onProgress = () => {}, onResult = async () => {}, manifest = {} }) {
   if (!Number.isInteger(workers) || workers < 1) throw new Error('Worker count must be a positive integer');
   const { experiment, configs, jobs } = buildJobs(input);
   const resumeIdentity = (job) => canonical({ job, custom_scene: experiment.custom_scenes?.[job.scene], wrong_fix_m: experiment.wrong_fix_m });
@@ -93,6 +93,8 @@ export async function runExperiment(input, { execute, renderGroup = (job) => job
   const done = new Set(runs.map((r) => r.job.id));
   const pending = jobs.filter((j) => !done.has(j.id));
   const groups = new Map(await Promise.all(pending.map(async (job) => [job.id, await renderGroup(job)])));
+  const remaining = new Map();
+  for (const group of groups.values()) remaining.set(group, (remaining.get(group) ?? 0) + 1);
   const rendering = new Set(), waiting = new Set();
   const wake = () => { for (const resolve of waiting) resolve(); waiting.clear(); };
   let failed = false;
@@ -115,6 +117,9 @@ export async function runExperiment(input, { execute, renderGroup = (job) => job
         const result = { ...await execute(job, { releaseRender }), resume_identity: identities.get(job.id) };
         await onResult(result);
         runs.push(result);
+        const left = remaining.get(group) - 1;
+        remaining.set(group, left);
+        if (left === 0) await onRenderComplete(group);
         onProgress({ done: runs.length, total: jobs.length, job, result });
       } catch (error) {
         failed = true; throw error;
@@ -166,5 +171,5 @@ export function rescoreReport(report, manifest) {
       manifest: { ...run.manifest, scoring_version: SCORING_VERSION, scoring_provenance: provenance,
         rescored_from: { scoring_version: run.manifest.scoring_version ?? 'source-one-to-one-v1', run_cache_key: run.cache_keys.run } } };
   });
-  return finishExperiment(report.experiment, report.configs, runs, { ...report.manifest, scoring_provenance: provenance, rescored_from: { schema: report.schema, scoring_version: report.manifest.scoring_version ?? 'source-one-to-one-v1' } });
+  return finishExperiment(report.experiment, report.configs, runs, { ...report.manifest, targets: manifest.targets, scoring_provenance: provenance, rescored_from: { schema: report.schema, scoring_version: report.manifest.scoring_version ?? 'source-one-to-one-v1' } });
 }

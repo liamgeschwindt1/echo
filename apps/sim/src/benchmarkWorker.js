@@ -47,7 +47,7 @@ async function start({ record, clips: providedClips, arrays, manifest, targets }
       if (!response.ok) throw new Error(`Missing clip ${id} (${response.status})`);
       clips.set(id, decodeBenchmarkWav(await response.arrayBuffer()));
     }
-    manifest = { ...manifest, audio: await audioHash(clips), runtime: { engine: 'browser', user_agent: self.navigator.userAgent } };
+    manifest = { ...manifest, targets, cache_policy: 'retain', audio: await audioHash(clips), runtime: { engine: 'browser', user_agent: self.navigator.userAgent } };
     const context = { clips, arrays, custom_scenes: experiment.custom_scenes, manifest, wrong_fix_m: experiment.wrong_fix_m };
     for (let i = 0; i < 2; i++) {
       const worker = new Worker(new URL('./benchmarkJobWorker.js', import.meta.url), { type: 'module' });

@@ -6,7 +6,7 @@ import { runJob } from '../src/benchmark/runner.js';
 import { buildJobs } from '../src/benchmark/experiment.js';
 import { buildScene } from '../src/benchmark/scenes.js';
 import { click } from './golden-scenes.js';
-import { nodeExecutor } from '../src/benchmark/node.js';
+import { nodeExecutor, DiskCache } from '../src/benchmark/node.js';
 import { runExperiment } from '../src/benchmark/runner.js';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -81,7 +81,7 @@ test('cross-revision audio reuse retains actual producer provenance, not current
   await assert.rejects(runJob(job, { ...context, manifest: { code_version: 'c', render_code_version: 'renderer', runtime: { node: 'test' } } }), /missing producer provenance/);
 });
 
-test('actual Node workers render one cold shared input once for both analysis pipelines', async () => {
+for (const discardRenders of [false, true]) test(`actual Node workers render shared input once; discardRenders=${discardRenders}`, async () => {
   const scenario = buildScene('sparse_20');
   scenario.sources[0].clip = 'click'; scenario.sources[0].start_s = 0.2;
   scenario.settings.reflection_order = 0; scenario.settings.diffraction_order = 0;
@@ -89,13 +89,19 @@ test('actual Node workers render one cold shared input once for both analysis pi
   const directory = await mkdtemp(join(tmpdir(), 'echo-render-singleflight-'));
   let executor;
   try {
-    executor = await nodeExecutor({ workers: 2, clips: new Map([['click', click()]]), manifest: { code_version: 'worker-test', render_code_version: 'renderer-test' }, experiment, cacheDirectory: directory });
+    executor = await nodeExecutor({ workers: 2, clips: new Map([['click', click()]]), manifest: { code_version: 'worker-test', render_code_version: 'renderer-test' }, experiment, cacheDirectory: directory, discardRenders });
     const report = await runExperiment(experiment, { ...executor, workers: 2 });
     assert.equal(report.runs.length, 2);
     assert.equal(report.runs.filter((r) => !r.render_cache_hit && !r.cache_hit).length, 1);
     assert.equal(report.runs.filter((r) => r.render_cache_hit).length, 1);
     assert.equal(report.runs[0].cache_keys.render, report.runs[1].cache_keys.render);
     assert.deepEqual(report.runs[0].render_provenance, report.runs[1].render_provenance);
+    const cache = new DiskCache(directory), keys = report.runs[0].cache_keys;
+    assert.equal(!!await cache.get(keys.render), !discardRenders);
+    assert.equal(!!await cache.get(keys.origin), !discardRenders);
+    for (const run of report.runs) assert.ok(await cache.get(run.cache_keys.run));
+    const repeat = await runExperiment(experiment, { ...executor, workers: 2 });
+    assert.ok(repeat.runs.every((run) => run.cache_hit));
   } finally {
     await executor?.close();
     await rm(directory, { recursive: true });

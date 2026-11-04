@@ -43,6 +43,15 @@ to re-score stored inference explicitly. It writes JSON/CSV/HTML, preserves the
 original and records scoring provenance. Re-score both reports under the same
 convention before comparing; the command also supports `--compare` and
 `--fail-on-regress`. No audio or inference is recomputed.
+Manifests snapshot display targets, including `placeholder: true`; later edits
+to `docs/targets.json` cannot silently change what an archived report used.
+
+Large sequential CLI sweeps may use `--discard-renders`. Default caching is
+unchanged. This opt-in removes raw audio/provenance only after all jobs sharing
+the exact key complete, and retains whole results for resume/replay. Interrupted
+groups retain their audio. Use a separate `--cache` directory for any concurrent
+discard-mode experiment; cross-process cleanup is not protected. Browser
+IndexedDB retention remains unchanged.
 
 ## Variable groups
 

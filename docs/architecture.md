@@ -56,6 +56,11 @@ source revisions reuse audio without reusing inference. A provenance sidecar
 preserves the actual producer across revisions. Legacy migration is explicit,
 with graph/input/runtime/PCM checks and a cold control; dirty historical source
 remains an acknowledged audit assumption.
+Optional CLI discard mode uses the shared scheduler's last-consumer callback;
+only completed render groups lose raw audio/provenance, never whole results.
+Interrupted groups remain resumable. There are no cross-process leases, so
+concurrent discard-mode experiments must not share a cache. Report manifests
+snapshot the display targets and cache policy independently of inference data.
 Seeded random sites use a frozen list of original array IDs/order, not the
 current library length. Library additions therefore cannot alter held-out
 geometry. The opt-in maximum-volume four-mic layout is an exact geometry-only

@@ -6,7 +6,7 @@ The one reference document for the **sim** frontend ([apps/sim](apps/sim)) and i
 
 Coordinates: metres, x east, y north, z up. Time: seconds of scenario time. Inside the physics, pressure is in pascals; digital floats appear only at the microphone output. Angles in the code are in radians unless the name ends in `_deg`.
 
-## Reproducible Testing engine (schema 0.11)
+## Reproducible Testing engine (schema 0.12)
 
 `npm run benchmark -- --experiment smoke --out baselines/smoke.json` runs the shared
 `packages/sim-core/src/benchmark/` engine. CLI and Testing use identical experiment
@@ -22,6 +22,8 @@ mixture-only `measured.js` pipeline, not the source-window solver. Its elevation
 3D error and labelling accuracy are **unavailable**, not zero. Scoring uses
 truth only after inference. Unmatched fixes count as wrong. Model labelling is
 not run by benchmarks.
+The benchmark manifest snapshots the exact display targets, including their
+placeholder marker, rather than relying on a later copy of `targets.json`.
 
 Seeds `[1, 2, 101]` have `101` held out. Eight of 25 scene IDs are held-out random
 sites; the split is fixed before baseline and held-out data is reporting-only.
@@ -119,6 +121,12 @@ git/source/runtime provenance. Unknown dependency graphs fail explicitly.
 The shared scheduler permits only one cold render per audio key within an
 experiment. Workers notify it as soon as audio is persisted, allowing waiting
 analysis jobs to start without waiting for the first analysis to finish.
+Default retention is unchanged. For large sequential CLI sweeps,
+`--discard-renders` removes each raw audio/provenance pair only after every
+consumer of that exact key completes; whole results remain cached. Interrupted
+groups retain audio for resume. The manifest records `cache_policy`. Do not
+share a cache with another concurrent experiment in discard mode: there is no
+cross-process lease. Use separate `--cache` directories instead.
 
 Pre-0.9 caches need explicit migration, not an automatic assumption of compatibility:
 `node scripts/benchmark-reuse-renders.mjs --from REPORT.json --source-revision REV

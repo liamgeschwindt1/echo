@@ -1,4 +1,4 @@
-// The results export ("Export results" in the sim). Schema 0.11: see EXPORT_CHANGELOG.
+// The results export ("Export results" in the sim). Schema 0.12: see EXPORT_CHANGELOG.
 // Node output is limited to bearings, levels, times, uncertainties, labels, scores and confidences: no audio, spectra or
 // embeddings, and every unmeasured constant or threshold is marked placeholder.
 import { simConstants } from './geometry.js';
@@ -7,9 +7,14 @@ import { LABELLING_NOTE } from './labelling.js';
 import { nextPow2 } from './dsp.js';
 import { MEASURED_DEFAULTS } from './measured.js';
 
-export const EXPORT_SCHEMA = '0.11';
+export const EXPORT_SCHEMA = '0.12';
 
 export const EXPORT_CHANGELOG = [
+  {
+    schema: '0.12',
+    added: ['Benchmark manifest snapshots display targets (including placeholder marker) and cache_policy. CLI --discard-renders is opt-in; default retain behavior is unchanged.'],
+    changed: ['Shared scheduler notifies completion only after all consumers of an exact render key finish. Opt-in Node cleanup deletes only that audio/provenance pair, preserving whole results and interrupted groups. No cross-process cleanup safety is claimed; use a separate cache for concurrent discard-mode experiments.']
+  },
   {
     schema: '0.11',
     added: ['Opt-in library ID ball12_d180_sub4_maxvol: exact maximum-volume noncoplanar four-mic subset, with its own new signal golden. No default array changes.'],

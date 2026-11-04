@@ -1,4 +1,4 @@
-import { readdir, readFile, mkdir, writeFile, rename } from 'node:fs/promises';
+import { readdir, readFile, mkdir, writeFile, rename, unlink } from 'node:fs/promises';
 import { resolve, relative } from 'node:path';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -29,7 +29,8 @@ export async function codeManifest() {
     code_version: hash.digest('hex'), ...await renderFingerprint(), schema: EXPORT_SCHEMA,
     dirty: !!execFileSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' }).trim(),
     scoring: 'benchmark score.js; post-inference truth only',
-    audio_source: 'repository test-audio recordings, PCM float32 mono at 48000 Hz'
+    audio_source: 'repository test-audio recordings, PCM float32 mono at 48000 Hz',
+    targets: JSON.parse(await readFile(new URL('docs/targets.json', root), 'utf8'))
   };
 }
 
@@ -62,10 +63,14 @@ export class DiskCache {
     await writeFile(temp, serialize(value));
     await rename(temp, file);
   }
+  async delete(key) {
+    try { await unlink(this.path(key)); }
+    catch (error) { if (error.code !== 'ENOENT') throw error; }
+  }
 }
 
-export async function nodeExecutor({ workers = 2, clips, arrays, manifest, experiment, cacheDirectory }) {
-  manifest = { ...manifest, audio: await audioHash(clips), runtime: { engine: 'node', node: process.versions.node, v8: process.versions.v8, platform: process.platform, arch: process.arch } };
+export async function nodeExecutor({ workers = 2, clips, arrays, manifest, experiment, cacheDirectory, discardRenders = false }) {
+  manifest = { ...manifest, cache_policy: discardRenders ? 'discard_render_after_consumers' : 'retain', audio: await audioHash(clips), runtime: { engine: 'node', node: process.versions.node, v8: process.versions.v8, platform: process.platform, arch: process.arch } };
   const context = { clips, arrays, manifest, custom_scenes: experiment.custom_scenes, wrong_fix_m: experiment.wrong_fix_m };
   const pool = Array.from({ length: workers }, () => {
     const worker = new Worker(new URL('./node-worker.js', import.meta.url), { workerData: { ...context, cacheDirectory } });
@@ -93,5 +98,8 @@ export async function nodeExecutor({ workers = 2, clips, arrays, manifest, exper
     slot.worker.once('exit', onExit);
     slot.worker.postMessage({ id, job });
   });
-  return { execute, manifest, renderGroup: (job) => jobRenderKey(job, context), close: async () => { await Promise.all(pool.map((s) => s.worker.terminate())); } };
+  const cache = new DiskCache(cacheDirectory);
+  return { execute, manifest, renderGroup: (job) => jobRenderKey(job, context),
+    onRenderComplete: discardRenders ? async (key) => { await cache.delete(key); await cache.delete(`render-origin:${key.slice('render:'.length)}`); } : undefined,
+    close: async () => { await Promise.all(pool.map((s) => s.worker.terminate())); } };
 }

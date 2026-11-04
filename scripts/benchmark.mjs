@@ -26,7 +26,7 @@ console.log(`Estimated ${estimate.runs} runs, ${(estimate.milliseconds / 60000 /
 const clipsNeeded = new Set(jobs.flatMap((job) => scenarioForJob(e.custom_scenes?.[job.scene] ?? buildScene(job.scene), job).sources.map((s) => s.clip)));
 const clips = await loadBenchmarkClips(clipsNeeded);
 const manifest = await codeManifest();
-const executor = await nodeExecutor({ workers, clips, manifest, experiment: e, cacheDirectory: resolve(option('--cache', '.benchmark-cache')) });
+const executor = await nodeExecutor({ workers, clips, manifest, experiment: e, cacheDirectory: resolve(option('--cache', '.benchmark-cache')), discardRenders: args.includes('--discard-renders') });
 const controller = new AbortController();
 process.once('SIGINT', () => { console.error('Cancellation requested; finish active jobs, then save partial report.'); controller.abort(); });
 let report;
@@ -50,8 +50,5 @@ await mkdir(dirname(out), { recursive: true });
 await writeFile(out, JSON.stringify(report, null, 2) + '\n');
 const stem = out.replace(/\.json$/, '');
 await writeFile(`${stem}.csv`, reportCsv(report));
-let targets = {};
-try { targets = JSON.parse(await readFile(new URL('../docs/targets.json', import.meta.url), 'utf8')); }
-catch (err) { if (err.code !== 'ENOENT') throw err; }
-await writeFile(`${stem}.html`, reportHtml(report, targets));
+await writeFile(`${stem}.html`, reportHtml(report, manifest.targets));
 console.log(`Saved ${out}; ${report.comparison ? report.comparison.pass ? 'no regressions' : `${report.comparison.regressions.length} REGRESSIONS` : 'baseline report'}.`);

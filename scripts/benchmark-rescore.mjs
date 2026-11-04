@@ -24,6 +24,5 @@ await mkdir(dirname(output), { recursive: true });
 await writeFile(output, JSON.stringify(report, null, 2) + '\n');
 const stem = output.replace(/\.json$/, '');
 await writeFile(`${stem}.csv`, reportCsv(report));
-const targets = JSON.parse(await readFile(new URL('../docs/targets.json', import.meta.url), 'utf8'));
-await writeFile(`${stem}.html`, reportHtml(report, targets));
+await writeFile(`${stem}.html`, reportHtml(report, report.manifest.targets));
 console.log(`Re-scored ${report.runs.length} stored inferences without rendering or inference changes. Saved ${output}${report.comparison ? `; ${report.comparison.pass ? 'no regressions' : `${report.comparison.regressions.length} REGRESSIONS`}` : ''}.`);
