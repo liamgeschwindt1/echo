@@ -1,0 +1,1083 @@
+{
+  "complete": true,
+  "runs": 20,
+  "registration_sha256": "1879cb35c38dd1755de33051ab358abaa95b0dd800e3f2bc7002b6431cd1b404",
+  "input_sha256": "ce4e2ea40eee0f224f9e6cc1f63ebc4276776990f27102750e8ef123f8a3f740",
+  "method": {
+    "helper_sha256": "0804b2a06a696db35131551c92f745cff69d30916fa0a4501c524d8b07ce548f",
+    "bounds": {
+      "min_x": -60,
+      "max_x": 60,
+      "min_y": -60,
+      "max_y": 60
+    },
+    "predictions": {
+      "2": {
+        "nodes": [
+          [
+            -30,
+            -30,
+            5
+          ],
+          [
+            30,
+            30,
+            5
+          ]
+        ],
+        "objective": 0.5267537836005185,
+        "assumptions": {
+          "sigma_deg": 2.5,
+          "max_range_m": 100,
+          "source_height_m": 1.5,
+          "node_height_m": 5,
+          "min_crossing_deg": 10
+        },
+        "at_source": {
+          "visible_nodes": 2,
+          "crossing_deg": 40.60129464500446,
+          "rms_m": 4.4473563269262435,
+          "major_m": 4.263598197795565
+        }
+      },
+      "3": {
+        "nodes": [
+          [
+            -30,
+            -30,
+            5
+          ],
+          [
+            30,
+            30,
+            5
+          ],
+          [
+            -30,
+            30,
+            5
+          ]
+        ],
+        "objective": 0.34744047966544495,
+        "assumptions": {
+          "sigma_deg": 2.5,
+          "max_range_m": 100,
+          "source_height_m": 1.5,
+          "node_height_m": 5,
+          "min_crossing_deg": 10
+        },
+        "at_source": {
+          "visible_nodes": 3,
+          "crossing_deg": 77.47119229084849,
+          "rms_m": 2.3896742536484696,
+          "major_m": 2.1686007148770905
+        }
+      },
+      "4": {
+        "nodes": [
+          [
+            -30,
+            -30,
+            5
+          ],
+          [
+            30,
+            30,
+            5
+          ],
+          [
+            -30,
+            30,
+            5
+          ],
+          [
+            30,
+            -30,
+            5
+          ]
+        ],
+        "objective": 0.2509327187702985,
+        "assumptions": {
+          "sigma_deg": 2.5,
+          "max_range_m": 100,
+          "source_height_m": 1.5,
+          "node_height_m": 5,
+          "min_crossing_deg": 10
+        },
+        "at_source": {
+          "visible_nodes": 4,
+          "crossing_deg": 77.47119229084853,
+          "rms_m": 1.9958501191281215,
+          "major_m": 1.7349150000457403
+        }
+      },
+      "5": {
+        "nodes": [
+          [
+            -30,
+            -30,
+            5
+          ],
+          [
+            30,
+            30,
+            5
+          ],
+          [
+            -30,
+            30,
+            5
+          ],
+          [
+            30,
+            -30,
+            5
+          ],
+          [
+            -30,
+            0,
+            5
+          ]
+        ],
+        "objective": 0.207492956246185,
+        "assumptions": {
+          "sigma_deg": 2.5,
+          "max_range_m": 100,
+          "source_height_m": 1.5,
+          "node_height_m": 5,
+          "min_crossing_deg": 10
+        },
+        "at_source": {
+          "visible_nodes": 5,
+          "crossing_deg": 87.27368900609373,
+          "rms_m": 1.7715429315921942,
+          "major_m": 1.5477236377790946
+        }
+      },
+      "6": {
+        "nodes": [
+          [
+            -30,
+            -30,
+            5
+          ],
+          [
+            30,
+            30,
+            5
+          ],
+          [
+            -30,
+            30,
+            5
+          ],
+          [
+            30,
+            -30,
+            5
+          ],
+          [
+            -30,
+            0,
+            5
+          ],
+          [
+            30,
+            0,
+            5
+          ]
+        ],
+        "objective": 0.17367685231278002,
+        "assumptions": {
+          "sigma_deg": 2.5,
+          "max_range_m": 100,
+          "source_height_m": 1.5,
+          "node_height_m": 5,
+          "min_crossing_deg": 10
+        },
+        "at_source": {
+          "visible_nodes": 6,
+          "crossing_deg": 87.27368900609373,
+          "rms_m": 1.533557727390121,
+          "major_m": 1.3120781283321512
+        }
+      }
+    },
+    "algorithm": "Independent Gaussian azimuth Jacobian covariance;2.5deg assumed sigma,100m assumed bearing range,10deg crossing gate; known footprint LOS. Exclude indoor targets and bearings below1m horizontal range. Exhaust all pairs of eight quarter-lattice candidate mounts at5m, then greedy additions. Objective: mean min(major_scale/10m,1) over9x9 cell centres; blind=1; ties quantised1e-12 then candidate order.",
+    "analysis": "Complete20 cases. Compare frozen source-point RMS geometry scale with observed matched-fix RMSE and actual fusion-node count, per seed/profile/N. Preserve no-fix errors/ratios as null. Two seed ranges, not population95%CI. No tuning from outcomes; one source cell does not validate the whole map, model probability or suggested real-world mounts."
+  },
+  "producer": {
+    "git_hash": "def364829fe46a4cfd3946d359bff85fd8bf9c1c",
+    "code_version": "2f7230fc50b341ad0c3fbd147bad728cc9fe6bb92e2fbc748bc25cf7c1a1bf38",
+    "render_code_version": "39d44f7b80a96220844fabdc2b11bff172055a20a311c35a84603f308f2ffbe4",
+    "render_source_files": [
+      {
+        "name": "activity.js",
+        "sha256": "9965a16c9ddd57877f04dceecda489f9f6e52c32be2599ed171ca5024c3b863c"
+      },
+      {
+        "name": "diffraction.js",
+        "sha256": "1fcb78ec1986de677d0e7aa7ab14a9166705df036747e11a1e32882bfffeb0d9"
+      },
+      {
+        "name": "dsp.js",
+        "sha256": "2893fe2c7da6591e182d0618bac7fbc38a31a11bfecc445fa65ef14d4cda4c3f"
+      },
+      {
+        "name": "edges.js",
+        "sha256": "f455cfe3d9eacfba321cfb0fbc2a540628f40b5bbf3f3f6c7823a4fac7cc8d5d"
+      },
+      {
+        "name": "geometry.js",
+        "sha256": "53c46891257f5e03fc6151e919b9ee39afa247422bed1084ed5df79787c430b1"
+      },
+      {
+        "name": "mics.js",
+        "sha256": "dae01b073fc21e68de3e412d466913be669f66a8d59b9757b130e15e286c0a97"
+      },
+      {
+        "name": "motion.js",
+        "sha256": "64d63bc9cfb75f265015391f44b99fb7c446de6c5f6a3e796a5a66f831ee8c4c"
+      },
+      {
+        "name": "physics.js",
+        "sha256": "d99e4e86b406fa2a0617fba14008cbcad2d90db65d8efedab04e035cbb429b7b"
+      },
+      {
+        "name": "profile.js",
+        "sha256": "25b69e19ce39b56e287ee0e03f821ff5679bc81010fbdd9c7c64ac9605e37291"
+      },
+      {
+        "name": "realism.js",
+        "sha256": "ad2b98407c3ff6bd5688eb5323abf3a86b1f1496de6491040f55afcc6f8575fd"
+      },
+      {
+        "name": "render.js",
+        "sha256": "0edc46d44c0a7072d764fde43ca51c45c9439f7c87dc7299592b6797101ff4f3"
+      },
+      {
+        "name": "rng.js",
+        "sha256": "f40eda0168b4025902bc848c4ce1e0c1721641459fb3c449071a724b22215ca3"
+      }
+    ],
+    "schema": "0.16",
+    "dirty": true,
+    "scoring": "benchmark score.js; post-inference truth only",
+    "audio_source": "repository test-audio recordings, PCM float32 mono at 48000 Hz",
+    "targets": {
+      "schema": 1,
+      "placeholder": true,
+      "scope": "Starting design targets, not validated acceptance limits. Error targets apply to scenes with source reference range up to 50 m; mixed-range tables are indicative only.",
+      "max_reference_range_m": 50,
+      "metrics": {
+        "horizontal_median_m": {
+          "max": 5,
+          "unit": "m"
+        },
+        "horizontal_p90_m": {
+          "max": 10,
+          "unit": "m"
+        },
+        "useful_fix_rate": {
+          "min": 0.8,
+          "unit": "fraction"
+        },
+        "unflagged_wrong_fix_rate": {
+          "max": 0.01,
+          "unit": "fraction"
+        },
+        "risk_coverage_area": {
+          "max": 0.2,
+          "unit": "fraction"
+        },
+        "within_1sigma": {
+          "min": 0.63,
+          "max": 0.73,
+          "unit": "fraction"
+        },
+        "within_2sigma": {
+          "min": 0.9,
+          "max": 0.99,
+          "unit": "fraction"
+        }
+      }
+    },
+    "cache_policy": "discard_render_after_consumers",
+    "audio": [
+      {
+        "id": "glass_breaking",
+        "samples": 240000,
+        "sha256": "4df4ae3a411444c0f623a773ef45d28579253f9b878c69832aa582d3f7c09512"
+      }
+    ],
+    "runtime": {
+      "engine": "node",
+      "node": "26.12.1",
+      "v8": "14.6.202.34-node.40",
+      "platform": "linux",
+      "arch": "x64"
+    },
+    "cancelled": false,
+    "expected_runs": 20,
+    "scoring_version": "episode-one-to-one-v2"
+  },
+  "rows": [
+    {
+      "run_id": "c0:placement_2:1:off:measured_only",
+      "count": 2,
+      "seed": 1,
+      "split": "train",
+      "realism": "off",
+      "predicted_geometry_rms_m": 4.4473563269262435,
+      "matched_fix_rmse_m": 0.14185435900328205,
+      "observed_to_assumed_rms_ratio": 0.03189633314165398,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 0.17533511903141316,
+        "horizontal_p90_m": 0.17533511903141316,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 0,
+        "source_fix_rate": 1,
+        "within_target_rate": 1,
+        "wrong_fix_rate": 0,
+        "suspect_recall": null,
+        "suspect_precision": 0,
+        "unmatched_fix_rate": 0,
+        "track_fix_count": 125,
+        "track_median_error_m": 0.09748289270792199,
+        "bearing_median_deg": 0.29907534535163904,
+        "elevation_median_deg": null,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "detection_rate": 1,
+        "labelling_accuracy": null,
+        "runtime_ms": 2767.2845079999997
+      }
+    },
+    {
+      "run_id": "c0:placement_2:1:on:measured_only",
+      "count": 2,
+      "seed": 1,
+      "split": "train",
+      "realism": "on",
+      "predicted_geometry_rms_m": 4.4473563269262435,
+      "matched_fix_rmse_m": null,
+      "observed_to_assumed_rms_ratio": null,
+      "actual_fusion_node_counts": [],
+      "metrics": {
+        "horizontal_median_m": null,
+        "horizontal_p90_m": null,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 0,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 1,
+        "source_fix_rate": 0,
+        "within_target_rate": null,
+        "wrong_fix_rate": null,
+        "suspect_recall": null,
+        "suspect_precision": null,
+        "unmatched_fix_rate": null,
+        "track_fix_count": 0,
+        "track_median_error_m": null,
+        "bearing_median_deg": null,
+        "elevation_median_deg": null,
+        "within_1sigma": null,
+        "within_2sigma": null,
+        "detection_rate": 0,
+        "labelling_accuracy": null,
+        "runtime_ms": 2700.3930499999997
+      }
+    },
+    {
+      "run_id": "c0:placement_2:101:off:measured_only",
+      "count": 2,
+      "seed": 101,
+      "split": "validation",
+      "realism": "off",
+      "predicted_geometry_rms_m": 4.4473563269262435,
+      "matched_fix_rmse_m": 0.20646220085827938,
+      "observed_to_assumed_rms_ratio": 0.04642357969121268,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 0.2662697794861803,
+        "horizontal_p90_m": 0.2662697794861803,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 0,
+        "source_fix_rate": 1,
+        "within_target_rate": 1,
+        "wrong_fix_rate": 0,
+        "suspect_recall": null,
+        "suspect_precision": 0,
+        "unmatched_fix_rate": 0,
+        "track_fix_count": 129,
+        "track_median_error_m": 0.2662697794861803,
+        "bearing_median_deg": 0.31176801131823595,
+        "elevation_median_deg": null,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "detection_rate": 1,
+        "labelling_accuracy": null,
+        "runtime_ms": 2275.188877999999
+      }
+    },
+    {
+      "run_id": "c0:placement_2:101:on:measured_only",
+      "count": 2,
+      "seed": 101,
+      "split": "validation",
+      "realism": "on",
+      "predicted_geometry_rms_m": 4.4473563269262435,
+      "matched_fix_rmse_m": null,
+      "observed_to_assumed_rms_ratio": null,
+      "actual_fusion_node_counts": [],
+      "metrics": {
+        "horizontal_median_m": null,
+        "horizontal_p90_m": null,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 0,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 1,
+        "source_fix_rate": 0,
+        "within_target_rate": null,
+        "wrong_fix_rate": null,
+        "suspect_recall": null,
+        "suspect_precision": null,
+        "unmatched_fix_rate": null,
+        "track_fix_count": 0,
+        "track_median_error_m": null,
+        "bearing_median_deg": null,
+        "elevation_median_deg": null,
+        "within_1sigma": null,
+        "within_2sigma": null,
+        "detection_rate": 0,
+        "labelling_accuracy": null,
+        "runtime_ms": 2491.046579
+      }
+    },
+    {
+      "run_id": "c0:placement_3:1:off:measured_only",
+      "count": 3,
+      "seed": 1,
+      "split": "train",
+      "realism": "off",
+      "predicted_geometry_rms_m": 2.3896742536484696,
+      "matched_fix_rmse_m": 0.15719555342379857,
+      "observed_to_assumed_rms_ratio": 0.06578116376480936,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 0.21364774576388884,
+        "horizontal_p90_m": 0.21364774576388884,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 0,
+        "source_fix_rate": 1,
+        "within_target_rate": 1,
+        "wrong_fix_rate": 0,
+        "suspect_recall": null,
+        "suspect_precision": 0,
+        "unmatched_fix_rate": 0,
+        "track_fix_count": 129,
+        "track_median_error_m": 0.061445298944974955,
+        "bearing_median_deg": 0.19869445982226352,
+        "elevation_median_deg": null,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "detection_rate": 0.6666666666666666,
+        "labelling_accuracy": null,
+        "runtime_ms": 3701.1269329999996
+      }
+    },
+    {
+      "run_id": "c0:placement_3:1:on:measured_only",
+      "count": 3,
+      "seed": 1,
+      "split": "train",
+      "realism": "on",
+      "predicted_geometry_rms_m": 2.3896742536484696,
+      "matched_fix_rmse_m": 6.099390394497716,
+      "observed_to_assumed_rms_ratio": 2.552394070106159,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 7.067033577765911,
+        "horizontal_p90_m": 7.067033577765911,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 0,
+        "source_fix_rate": 1,
+        "within_target_rate": 1,
+        "wrong_fix_rate": 0,
+        "suspect_recall": null,
+        "suspect_precision": 0,
+        "unmatched_fix_rate": 0,
+        "track_fix_count": 123,
+        "track_median_error_m": 7.067033577765911,
+        "bearing_median_deg": 3.3405431541498274,
+        "elevation_median_deg": null,
+        "within_1sigma": 0,
+        "within_2sigma": 0.75,
+        "detection_rate": 1,
+        "labelling_accuracy": null,
+        "runtime_ms": 3975.1056850000004
+      }
+    },
+    {
+      "run_id": "c0:placement_3:101:off:measured_only",
+      "count": 3,
+      "seed": 101,
+      "split": "validation",
+      "realism": "off",
+      "predicted_geometry_rms_m": 2.3896742536484696,
+      "matched_fix_rmse_m": 0.0873975412260482,
+      "observed_to_assumed_rms_ratio": 0.03657299361727346,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 0.11980686665992862,
+        "horizontal_p90_m": 0.11980686665992862,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 0,
+        "source_fix_rate": 1,
+        "within_target_rate": 1,
+        "wrong_fix_rate": 0,
+        "suspect_recall": null,
+        "suspect_precision": 0,
+        "unmatched_fix_rate": 0,
+        "track_fix_count": 130,
+        "track_median_error_m": 0.030380505687820185,
+        "bearing_median_deg": 0.2790752393539151,
+        "elevation_median_deg": null,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "detection_rate": 1,
+        "labelling_accuracy": null,
+        "runtime_ms": 3176.1270189999996
+      }
+    },
+    {
+      "run_id": "c0:placement_3:101:on:measured_only",
+      "count": 3,
+      "seed": 101,
+      "split": "validation",
+      "realism": "on",
+      "predicted_geometry_rms_m": 2.3896742536484696,
+      "matched_fix_rmse_m": 3.5157862574853027,
+      "observed_to_assumed_rms_ratio": 1.4712407986643055,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 3.5637128053166323,
+        "horizontal_p90_m": 3.5637128053166323,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 0,
+        "source_fix_rate": 1,
+        "within_target_rate": 1,
+        "wrong_fix_rate": 0,
+        "suspect_recall": null,
+        "suspect_precision": 0,
+        "unmatched_fix_rate": 0,
+        "track_fix_count": 127,
+        "track_median_error_m": 3.4671972914541915,
+        "bearing_median_deg": 4.6171333562981545,
+        "elevation_median_deg": null,
+        "within_1sigma": 0,
+        "within_2sigma": 1,
+        "detection_rate": 0.6666666666666666,
+        "labelling_accuracy": null,
+        "runtime_ms": 3335.248412000001
+      }
+    },
+    {
+      "run_id": "c0:placement_4:1:off:measured_only",
+      "count": 4,
+      "seed": 1,
+      "split": "train",
+      "realism": "off",
+      "predicted_geometry_rms_m": 1.9958501191281215,
+      "matched_fix_rmse_m": 0.13137337768398352,
+      "observed_to_assumed_rms_ratio": 0.06582326820281145,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 0.17533511903141316,
+        "horizontal_p90_m": 0.17533511903141316,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 1,
+        "source_fix_rate": 1,
+        "within_target_rate": 0.5,
+        "wrong_fix_rate": 0.5,
+        "suspect_recall": 1,
+        "suspect_precision": 0.5,
+        "unmatched_fix_rate": 0.5,
+        "track_fix_count": 129,
+        "track_median_error_m": 0.061445298944974955,
+        "bearing_median_deg": 0.29907534535163904,
+        "elevation_median_deg": null,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "detection_rate": 0.75,
+        "labelling_accuracy": null,
+        "runtime_ms": 4692.408853000001
+      }
+    },
+    {
+      "run_id": "c0:placement_4:1:on:measured_only",
+      "count": 4,
+      "seed": 1,
+      "split": "train",
+      "realism": "on",
+      "predicted_geometry_rms_m": 1.9958501191281215,
+      "matched_fix_rmse_m": 2.8289686646665895,
+      "observed_to_assumed_rms_ratio": 1.417425405622348,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 3.749688853642065,
+        "horizontal_p90_m": 3.749688853642065,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 1,
+        "source_fix_rate": 1,
+        "within_target_rate": 0.6666666666666666,
+        "wrong_fix_rate": 0.3333333333333333,
+        "suspect_recall": 1,
+        "suspect_precision": 0.3333333333333333,
+        "unmatched_fix_rate": 0.3333333333333333,
+        "track_fix_count": 126,
+        "track_median_error_m": 1.3949770292744565,
+        "bearing_median_deg": 2.5353552375124764,
+        "elevation_median_deg": null,
+        "within_1sigma": 0.5,
+        "within_2sigma": 1,
+        "detection_rate": 0.75,
+        "labelling_accuracy": null,
+        "runtime_ms": 4804.450205000001
+      }
+    },
+    {
+      "run_id": "c0:placement_4:101:off:measured_only",
+      "count": 4,
+      "seed": 101,
+      "split": "validation",
+      "realism": "off",
+      "predicted_geometry_rms_m": 1.9958501191281215,
+      "matched_fix_rmse_m": 0.07397412019841937,
+      "observed_to_assumed_rms_ratio": 0.037063965620191285,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 0.10010677196080552,
+        "horizontal_p90_m": 0.10010677196080552,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 1,
+        "source_fix_rate": 1,
+        "within_target_rate": 0.5,
+        "wrong_fix_rate": 0.5,
+        "suspect_recall": 1,
+        "suspect_precision": 0.5,
+        "unmatched_fix_rate": 0.5,
+        "track_fix_count": 129,
+        "track_median_error_m": 0.030380505687820185,
+        "bearing_median_deg": 0.31176801131823595,
+        "elevation_median_deg": null,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "detection_rate": 1,
+        "labelling_accuracy": null,
+        "runtime_ms": 4907.376731999997
+      }
+    },
+    {
+      "run_id": "c0:placement_4:101:on:measured_only",
+      "count": 4,
+      "seed": 101,
+      "split": "validation",
+      "realism": "on",
+      "predicted_geometry_rms_m": 1.9958501191281215,
+      "matched_fix_rmse_m": 3.1145179452501854,
+      "observed_to_assumed_rms_ratio": 1.560496910765398,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 3.4671972914541915,
+        "horizontal_p90_m": 3.4671972914541915,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 0,
+        "source_fix_rate": 1,
+        "within_target_rate": 1,
+        "wrong_fix_rate": 0,
+        "suspect_recall": null,
+        "suspect_precision": 0,
+        "unmatched_fix_rate": 0,
+        "track_fix_count": 125,
+        "track_median_error_m": 3.4671972914541915,
+        "bearing_median_deg": 2.630644677720511,
+        "elevation_median_deg": null,
+        "within_1sigma": 0.25,
+        "within_2sigma": 1,
+        "detection_rate": 0.75,
+        "labelling_accuracy": null,
+        "runtime_ms": 4855.460492000006
+      }
+    },
+    {
+      "run_id": "c0:placement_5:1:off:measured_only",
+      "count": 5,
+      "seed": 1,
+      "split": "train",
+      "realism": "off",
+      "predicted_geometry_rms_m": 1.7715429315921942,
+      "matched_fix_rmse_m": 0.08585451152177498,
+      "observed_to_assumed_rms_ratio": 0.04846312781401931,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 0.10472091259556442,
+        "horizontal_p90_m": 0.10472091259556442,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 1,
+        "source_fix_rate": 1,
+        "within_target_rate": 0.5,
+        "wrong_fix_rate": 0.5,
+        "suspect_recall": 1,
+        "suspect_precision": 0.5,
+        "unmatched_fix_rate": 0.5,
+        "track_fix_count": 128,
+        "track_median_error_m": 0.061445298944974955,
+        "bearing_median_deg": 0.3207528083894431,
+        "elevation_median_deg": null,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "detection_rate": 0.8,
+        "labelling_accuracy": null,
+        "runtime_ms": 5585.3225509999975
+      }
+    },
+    {
+      "run_id": "c0:placement_5:1:on:measured_only",
+      "count": 5,
+      "seed": 1,
+      "split": "train",
+      "realism": "on",
+      "predicted_geometry_rms_m": 1.7715429315921942,
+      "matched_fix_rmse_m": 2.806945257417704,
+      "observed_to_assumed_rms_ratio": 1.5844635810744536,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 3.7164394847859548,
+        "horizontal_p90_m": 3.7164394847859548,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 1,
+        "source_fix_rate": 1,
+        "within_target_rate": 0.5,
+        "wrong_fix_rate": 0.5,
+        "suspect_recall": 1,
+        "suspect_precision": 0.5,
+        "unmatched_fix_rate": 0.5,
+        "track_fix_count": 126,
+        "track_median_error_m": 1.3949770292744565,
+        "bearing_median_deg": 2.5353552375124764,
+        "elevation_median_deg": null,
+        "within_1sigma": 0.5,
+        "within_2sigma": 0.75,
+        "detection_rate": 0.6,
+        "labelling_accuracy": null,
+        "runtime_ms": 5916.0612980000005
+      }
+    },
+    {
+      "run_id": "c0:placement_5:101:off:measured_only",
+      "count": 5,
+      "seed": 101,
+      "split": "validation",
+      "realism": "off",
+      "predicted_geometry_rms_m": 1.7715429315921942,
+      "matched_fix_rmse_m": 0.07462972052525965,
+      "observed_to_assumed_rms_ratio": 0.042126961302702014,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 0.10010677196080552,
+        "horizontal_p90_m": 0.10010677196080552,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 1,
+        "source_fix_rate": 1,
+        "within_target_rate": 0.5,
+        "wrong_fix_rate": 0.5,
+        "suspect_recall": 1,
+        "suspect_precision": 0.5,
+        "unmatched_fix_rate": 0.5,
+        "track_fix_count": 128,
+        "track_median_error_m": 0.033433883695197696,
+        "bearing_median_deg": 0.31176801131823595,
+        "elevation_median_deg": null,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "detection_rate": 0.8,
+        "labelling_accuracy": null,
+        "runtime_ms": 5469.7158839999975
+      }
+    },
+    {
+      "run_id": "c0:placement_5:101:on:measured_only",
+      "count": 5,
+      "seed": 101,
+      "split": "validation",
+      "realism": "on",
+      "predicted_geometry_rms_m": 1.7715429315921942,
+      "matched_fix_rmse_m": 2.640369928037992,
+      "observed_to_assumed_rms_ratio": 1.4904351912402878,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 2.7164290906820288,
+        "horizontal_p90_m": 2.7164290906820288,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 1,
+        "source_fix_rate": 1,
+        "within_target_rate": 0.5,
+        "wrong_fix_rate": 0.5,
+        "suspect_recall": 1,
+        "suspect_precision": 0.5,
+        "unmatched_fix_rate": 0.5,
+        "track_fix_count": 127,
+        "track_median_error_m": 2.562053806825904,
+        "bearing_median_deg": 2.532709889659941,
+        "elevation_median_deg": null,
+        "within_1sigma": 0.5,
+        "within_2sigma": 1,
+        "detection_rate": 0.8,
+        "labelling_accuracy": null,
+        "runtime_ms": 6087.252755999994
+      }
+    },
+    {
+      "run_id": "c0:placement_6:1:off:measured_only",
+      "count": 6,
+      "seed": 1,
+      "split": "train",
+      "realism": "off",
+      "predicted_geometry_rms_m": 1.533557727390121,
+      "matched_fix_rmse_m": 0.08585451152177498,
+      "observed_to_assumed_rms_ratio": 0.05598387982947738,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 0.10472091259556442,
+        "horizontal_p90_m": 0.10472091259556442,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 1,
+        "source_fix_rate": 1,
+        "within_target_rate": 0.3333333333333333,
+        "wrong_fix_rate": 0.6666666666666666,
+        "suspect_recall": 1,
+        "suspect_precision": 0.6666666666666666,
+        "unmatched_fix_rate": 0.6666666666666666,
+        "track_fix_count": 128,
+        "track_median_error_m": 0.061445298944974955,
+        "bearing_median_deg": 0.3207528083894431,
+        "elevation_median_deg": null,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "detection_rate": 0.6666666666666666,
+        "labelling_accuracy": null,
+        "runtime_ms": 6697.132490000004
+      }
+    },
+    {
+      "run_id": "c0:placement_6:1:on:measured_only",
+      "count": 6,
+      "seed": 1,
+      "split": "train",
+      "realism": "on",
+      "predicted_geometry_rms_m": 1.533557727390121,
+      "matched_fix_rmse_m": 3.7816442608105874,
+      "observed_to_assumed_rms_ratio": 2.465928861541041,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 3.845743645456261,
+        "horizontal_p90_m": 3.845743645456261,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 1,
+        "source_fix_rate": 1,
+        "within_target_rate": 0.3333333333333333,
+        "wrong_fix_rate": 0.6666666666666666,
+        "suspect_recall": 1,
+        "suspect_precision": 0.6666666666666666,
+        "unmatched_fix_rate": 0.6666666666666666,
+        "track_fix_count": 125,
+        "track_median_error_m": 3.845743645456261,
+        "bearing_median_deg": 5.574279309693452,
+        "elevation_median_deg": null,
+        "within_1sigma": 0.5,
+        "within_2sigma": 0.5,
+        "detection_rate": 0.3333333333333333,
+        "labelling_accuracy": null,
+        "runtime_ms": 8095.733460000003
+      }
+    },
+    {
+      "run_id": "c0:placement_6:101:off:measured_only",
+      "count": 6,
+      "seed": 101,
+      "split": "validation",
+      "realism": "off",
+      "predicted_geometry_rms_m": 1.533557727390121,
+      "matched_fix_rmse_m": 0.03600769855380701,
+      "observed_to_assumed_rms_ratio": 0.02347984553218389,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 0.04086726788563186,
+        "horizontal_p90_m": 0.04086726788563186,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 1,
+        "source_fix_rate": 1,
+        "within_target_rate": 0.3333333333333333,
+        "wrong_fix_rate": 0.6666666666666666,
+        "suspect_recall": 1,
+        "suspect_precision": 0.6666666666666666,
+        "unmatched_fix_rate": 0.6666666666666666,
+        "track_fix_count": 130,
+        "track_median_error_m": 0.030380505687820185,
+        "bearing_median_deg": 0.2790752393539151,
+        "elevation_median_deg": null,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "detection_rate": 0.5,
+        "labelling_accuracy": null,
+        "runtime_ms": 6574.571170999989
+      }
+    },
+    {
+      "run_id": "c0:placement_6:101:on:measured_only",
+      "count": 6,
+      "seed": 101,
+      "split": "validation",
+      "realism": "on",
+      "predicted_geometry_rms_m": 1.533557727390121,
+      "matched_fix_rmse_m": 1.7229977908397474,
+      "observed_to_assumed_rms_ratio": 1.1235297896297807,
+      "actual_fusion_node_counts": [
+        2
+      ],
+      "metrics": {
+        "horizontal_median_m": 1.9425836900379172,
+        "horizontal_p90_m": 1.9425836900379172,
+        "error_3d_median_m": null,
+        "error_3d_p90_m": null,
+        "scene_fix_rate": 1,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "risk_coverage_area": 1,
+        "source_fix_rate": 1,
+        "within_target_rate": 0.5,
+        "wrong_fix_rate": 0.5,
+        "suspect_recall": 1,
+        "suspect_precision": 0.5,
+        "unmatched_fix_rate": 0.5,
+        "track_fix_count": 100,
+        "track_median_error_m": 1.4709899325542541,
+        "bearing_median_deg": 1.9843281660638468,
+        "elevation_median_deg": null,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "detection_rate": 0.5,
+        "labelling_accuracy": null,
+        "runtime_ms": 7085.200376000008
+      }
+    }
+  ],
+  "caveat": "Only one fixed source cell and two noise seeds. Geometry all-node covariance is deliberately contrasted with retained pair-only fusion. No calibrated map, detection probability, field mounting recommendation or demonstrated third-node fusion gain."
+}

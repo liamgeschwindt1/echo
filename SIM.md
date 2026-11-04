@@ -78,6 +78,9 @@ pair IDs. This is not a measured-localiser accuracy upgrade.
 | Confidence/global-association candidates | Train-only fitting, validation accept/reject | Rejected trials; coefficients/evidence retained offline, not runtime options |
 | Real-recording ingestion/truth scoring/calibration | WAV, declared geometry and independent CSV/calibration source | Synthetic round-trip only; no real data tested |
 | Labelling | Real models, real ESC-50 clips through synthetic propagation | Small simulated mixture benchmark, not field label accuracy |
+| Noise attribution | Known POIs and calibrated-level assumptions, separate NNLS prototype | Not a localiser; underdetermined shares unavailable; synthetic source statistics |
+| Placement and geometry coverage | Nominal nodes/footprints and explicitly assumed bearing error/range | Geometry-only map and N2..6 greedy suggestions, not calibrated accuracy or safe mounting advice |
+| Hardware component budgets | Ideal independent timing/position/heading geometry | Optimistic separate-budget ceilings; no derived self-noise/sync requirement or hardware winner |
 | Clocks, wind/rain, urban/time-varying noise | Opt-in, default OFF; separate physics golden | Placeholder spectra/levels and linear clock resampling, not measured site/hardware models; no inter-node TDOA constraint |
 | Housing scattering, frequency/phase response, directivity | Not implemented | Scalar gain cancellation does not validate phase robustness |
 
@@ -163,7 +166,7 @@ schema 0.12; it introduces no inference, export-format or tolerance change.
 | Microphone gain error | Positive scalar applied to signal plus both noises. It ideally cancels in PHAT; this does not model frequency/phase mismatch or preamplifier noise. |
 | Bearing sigmas, association gates, benchmark targets and numerical thresholds | Uncalibrated placeholders. Coverage/calibration must be reported with conditional error. |
 | Flat-array elevation | Sign/height assumption, not resolved up/down. Measured-only elevation and 3D error remain unavailable. |
-| Labelling | Actual YAMNet/CLAP results only after runners finish. Benchmark accuracy remains unavailable because benchmarks do not execute labelling. |
+| Labelling | Actual YAMNet/CLAP results only after runners finish. Localisation reports leave accuracy unavailable; the separate labelling benchmark runs models and records its small synthetic-mixture population. |
 
 ### Renderer cache identity (schema 0.9)
 

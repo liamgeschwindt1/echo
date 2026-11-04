@@ -107,6 +107,14 @@ refitting them. Historical timing strata come from complete recorded runs.
 Nightly Actions is configured but only becomes scheduled after the workflow is
 present on the default branch.
 
+`ui/placement.js` is independent of inference. It uses nominal nodes, known
+footprints and explicit sigma/range assumptions to show a21x21 linearised
+geometry map and deterministic N2..6 suggestions. It neither reads source truth
+nor changes the editor. Its predictions must not be confused with the retained
+pair-only solver, obstruction-aware acoustic propagation or calibrated coverage.
+Uploaded schema2 history preserves the prior display on validation errors and
+does not authenticate externally supplied reports.
+
 The variance and noise-attribution research scripts are separate from runtime
 localisation. The former compares a frozen rejected diagnostic solver without
 refitting; the latter estimates three declared POI powers from nominal geometry
