@@ -4,6 +4,7 @@ import { METRICS, rankingFlips } from '@echo/sim-core/benchmark/metrics.js';
 import { reportCsv, reportHtml, plainSummary, metricTable, riskCoverageChart, lineChart, heatmap, tornado, escapeHtml as esc, formatNumber } from '@echo/sim-core/benchmark/report.js';
 import { BUILTIN_ARRAYS } from '@echo/sim-core/arrays.js';
 import { testingStore } from './testing-store.js';
+import { placementBounds, placementSvg, suggestPlacement } from './placement.js';
 import targets from '../../../../docs/targets.json' with { type: 'json' };
 import history from '../../../../docs/benchmark-history.json' with { type: 'json' };
 
@@ -15,7 +16,10 @@ export function labellingReportTable(report) {
 }
 
 export function benchmarkHistoryTable(data, metric) {
-  return `<p>${esc(data.notes)}</p><table><tr><th>Producer / stored report</th><th>Population hash / runs</th><th>Config / split / realism / mode</th><th>${esc(metric)}</th></tr>${data.entries.flatMap((e) => e.summary.map((r) => `<tr><td><code>${esc(e.git_hash?.slice(0, 10))}${e.dirty ? ' (dirty producer)' : ''}</code><small>${esc(e.report)}</small></td><td><code>${esc(e.population_sha256.slice(0, 12))}</code> / ${e.n_runs}</td><td>${esc(r.key)}</td><td>${formatNumber(r.metrics[metric]?.value)}<small>${r.metrics[metric]?.ci?.map(formatNumber).join(' - ') ?? 'CI unavailable'}</small></td></tr>`)).join('')}</table>`;
+  if (data.schema !== 2 || !Array.isArray(data.entries) || !data.entries.length || data.entries.some((e) =>
+    !Number.isInteger(e.n_runs) || e.n_runs <= 0 || !/^[a-f0-9]{64}$/.test(e.population_sha256) ||
+    !Array.isArray(e.summary) || e.summary.some((r) => typeof r.key !== 'string' || !r.metrics))) throw new Error('Load a schema2 history generated from complete stored reports');
+  return `<p>${esc(data.notes)}</p><table><tr><th>Producer / stored report</th><th>Population hash / runs</th><th>Config / split / realism / mode</th><th>${esc(metric)}</th></tr>${data.entries.flatMap((e) => e.summary.map((r) => `<tr><td><code>${esc(e.git_hash?.slice(0, 10))}${e.dirty ? ' (dirty producer)' : ''}</code><small>${esc(e.report)}</small></td><td><code>${esc(e.population_sha256.slice(0, 12))}</code> / ${esc(e.n_runs)}</td><td>${esc(r.key)}</td><td>${formatNumber(r.metrics[metric]?.value)}<small>${r.metrics[metric]?.ci?.map(formatNumber).join(' - ') ?? 'CI unavailable'}</small></td></tr>`)).join('')}</table>`;
 }
 
 export function parseVariableValues(variable, text) {
@@ -52,7 +56,15 @@ export function createTesting({ $, getScenario, getClips, getArrays, onDrilldown
         <p id="recordingStatus" role="status"></p><pre id="recordingResult"></pre>
       </section>
       <section class="set-card"><h3>Labelling benchmark</h3><p class="note">Load the complete report from <code>node scripts/benchmark-labelling.mjs --discard-renders</code>. Models actually run in Node; oracle labels are a separate upper bound. One ESC-50 clip per class is not a real-world validation dataset.</p><label>Labelling report JSON<input id="labellingReport" type="file" accept=".json"></label><p id="labellingStatus" role="status"></p><div id="labellingResults" class="testing-table"></div></section>
-      <section class="set-card"><h3>Benchmark history</h3><p class="note">Stored complete reports over producer commits. Compare only equal population hashes and matching conditions; a different population is not an improvement. Nightly artifacts can be regenerated with scripts/benchmark-history.mjs.</p><label>History metric<select id="historyMetric">${Object.keys(METRICS).map((k) => `<option>${k}</option>`).join('')}</select></label><div id="historyResults" class="testing-table"></div></section>
+      <section class="set-card"><h3>Benchmark history</h3><p class="note">Stored complete reports over producer commits. Compare only equal population hashes and matching conditions; a different population is not an improvement. Generate from stored/nightly reports with scripts/benchmark-history.mjs, then load its JSON here without rebuilding. Summary hashes identify inputs, not an authenticated audit of an uploaded file.</p><label>History JSON<input id="historyReport" type="file" accept=".json"></label><p id="historyStatus" role="status"></p><label>History metric<select id="historyMetric">${Object.keys(METRICS).map((k) => `<option>${k}</option>`).join('')}</select></label><div id="historyResults" class="testing-table"></div></section>
+      <section class="set-card"><h3>Placement and geometry coverage</h3>
+        <p class="note">Planning placeholder, not calibrated accuracy or detection probability. Uses current editor nodes/buildings, independent bearing errors, a 1.5 m source plane and an assumed usable-bearing range. Red: blind under these assumptions; green: major geometry scale at most10 m; amber: larger; grey: building. Reflections, noise, heading bias and the retained pair-only fusion are not predicted. Suggestions use eight unverified candidate mounts at5 m; survey access before use. They do not alter the editor or localiser.</p>
+        <div class="row"><label>Suggested nodes<select id="placementCount">${[2, 3, 4, 5, 6].map((n) => `<option>${n}</option>`).join('')}</select></label>
+        <label>Assumed bearing sigma deg<input id="placementSigma" type="number" min=".1" max="30" step=".1" value="2.5"></label>
+        <label>Assumed bearing range m<input id="placementRange" type="number" min="1" value="100"></label></div>
+        <button id="placementCurrent">Map current nodes</button><button id="placementSuggest">Suggest geometry-only placement</button>
+        <p id="placementStatus" role="status"></p><div id="placementMap"></div><pre id="placementPositions"></pre>
+      </section>
       <div class="testing-setup">
         <section class="set-card">
           <h3>Scenes</h3><div class="row"><button id="testAll">All</button><button id="testHeldOut">Validation sites</button><button id="testNone">Clear</button></div>
@@ -114,8 +126,33 @@ export function createTesting({ $, getScenario, getClips, getArrays, onDrilldown
       $('labellingStatus').textContent = 'Complete fixed-population model report loaded.';
     } catch (error) { $('labellingStatus').textContent = `Error: ${error.message}`; $('labellingResults').replaceChildren(); }
   };
-  $('historyMetric').onchange = () => { $('historyResults').innerHTML = benchmarkHistoryTable(history, $('historyMetric').value); };
+  let historyData = history;
+  $('historyMetric').onchange = () => { $('historyResults').innerHTML = benchmarkHistoryTable(historyData, $('historyMetric').value); };
   $('historyMetric').onchange();
+  $('historyReport').onchange = async () => {
+    try {
+      const data = JSON.parse(await $('historyReport').files[0].text());
+      const table = benchmarkHistoryTable(data, $('historyMetric').value);
+      historyData = data; $('historyResults').innerHTML = table;
+      $('historyStatus').textContent = 'Stored-report history loaded; compare equal population hashes only.';
+    } catch (error) { $('historyStatus').textContent = `Error: ${error.message}. Existing history unchanged.`; }
+  };
+  const showPlacement = (suggest) => {
+    try {
+      const scene = getScenario(), bounds = placementBounds(scene);
+      const assumptions = { sigma_deg: Number($('placementSigma').value), max_range_m: Number($('placementRange').value) };
+      const result = suggest ? suggestPlacement(bounds, Number($('placementCount').value), assumptions, scene.buildings)
+        : { nodes: scene.nodes.map((n) => n.position) };
+      $('placementMap').innerHTML = placementSvg(bounds, result.nodes, assumptions, scene.buildings);
+      $('placementPositions').textContent = JSON.stringify({ bounds, nodes_xyz_m: result.nodes,
+        ...suggest && { bounded_geometry_objective: result.objective } }, null, 2);
+      $('placementStatus').textContent = `${result.nodes.length} nodes; geometry assumptions only, not a validated fix-error radius. White circles mark mounts.`;
+    } catch (error) {
+      $('placementStatus').textContent = `Error: ${error.message}`; $('placementMap').replaceChildren(); $('placementPositions').replaceChildren();
+    }
+  };
+  $('placementCurrent').onclick = () => showPlacement(false);
+  $('placementSuggest').onclick = () => showPlacement(true);
   let recordingReport = null;
   $('recordingStart').onclick = async () => {
     let recordingWorker;

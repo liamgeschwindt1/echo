@@ -159,6 +159,31 @@ grading and array studies. Runtime is recorded rather than performance-gated.
 
 ## Reading results
 
+The **Placement and geometry coverage** section in Testing maps the current
+editor's nominal nodes/buildings without reading source truth. Its21x21 cells
+show a linearised independent-bearing geometry scale, not a calibrated error
+radius or detection probability. Bearing sigma, usable range, source plane1.5m,
+candidate mount height5m and10degree minimum crossing are assumptions.
+Bearings within1m horizontal range are excluded; offered sigma is0.1..30degrees.
+Known footprint intersections block direct bearings; reflections/diffraction,
+heading bias, signal quality and the retained pair-only fusion are not predicted.
+Indoor cells are grey; blind cells red. Green means only that the assumed major
+scale is at most10m, not that a real target passes.
+
+The deterministic N2..6 suggester searches all pairs of eight quarter-lattice
+candidate mounts, then adds greedily. It minimises bounded major scale over9x9
+exterior cell centres; ties quantise at1e-12 then use candidate order. Suggestions
+are not applied to the editor and do not establish safe/accessible mount sites.
+`docs/experiments/round2-placement.json` preregisters20 simulated checks and
+source-point predictions before outcomes; one source cell/two seeds cannot
+validate the whole map or a real mounting plan.
+
+History initially shows the committed complete reports. Generate a schema2
+summary with `node scripts/benchmark-history.mjs report-a.json report-b.json.gz`
+and load `docs/benchmark-history.json` using **History JSON**. This also supports
+downloaded nightly artifacts without rebuilding the app. Uploaded summaries are
+not authenticated; retain their full reports/provenance for audit.
+
 Open **Testing** in the simulator side menu. Select scenes (or snapshot the editor),
 expand a variable group, tick variables and enter values/ranges, then click **Test**.
 The default small experiment is one 20 m scene, five seeds, realism off/on and

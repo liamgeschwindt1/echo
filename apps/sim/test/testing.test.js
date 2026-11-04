@@ -27,9 +27,11 @@ test('labelling view rejects partial populations and escapes labels', () => {
   assert.throws(() => labellingReportTable({ ...report, manifest: { complete: false } }), /complete/);
 });
 test('history view preserves null metrics and identifies unlike populations', () => {
-  const html = benchmarkHistoryTable({ notes: '<note>', entries: [{ git_hash: 'abc', population_sha256: '123', n_runs: 2, report: 'a.json',
+  const html = benchmarkHistoryTable({ schema: 2, notes: '<note>', entries: [{ git_hash: 'abc', population_sha256: '123'.padEnd(64, '0'), n_runs: 2, report: 'a.json',
     summary: [{ key: 'c0|validation|on', metrics: { useful_fix_rate: { value: null, ci: null } } }] }] }, 'useful_fix_rate');
   assert.match(html, /unavailable/); assert.match(html, /123/); assert.match(html, /&lt;note&gt;/);
+  assert.throws(() => benchmarkHistoryTable({ schema: 1, entries: [] }, 'useful_fix_rate'), /schema2/);
+  assert.throws(() => benchmarkHistoryTable({ schema: 2, entries: [{ n_runs: '<img>' }] }, 'useful_fix_rate'), /complete/);
 });
 test('Testing paired A/B uses chosen first/last variable values or explicit realism pair', () => {
   const e = testingExperiment({ scenes: ['sparse_20'], seeds: 1, mode: 'paired', sweeps: [{ variable: 'min_snr_db', values: [3, 6, 12] }] });
