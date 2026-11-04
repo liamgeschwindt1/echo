@@ -1290,19 +1290,28 @@ An edge hypothesis constrains a region, not a ray: along another node's ray, eve
 
 Back-trace constants (`BACKTRACE_DEFAULTS`): `min_crossing_angle_deg` 20, `cluster_m` 1, `path_scale_m` 100, `fallback_uncertainty_deg` 5, `min_tolerance_deg` 3, `edge_margin_m` 100, `edges` true, `edge_fan_step_deg` 5, `edge_support_weight` 0.7.
 
-### 7.15 Export (schema 0.5; [export.js](packages/sim-core/src/export.js))
+### 7.15 Export (schema 0.6; [export.js](packages/sim-core/src/export.js))
 
-*File → Export results* writes:
+*File → Export results* opens a standalone HTML report in a new tab. **Copy JSON** copies the complete `buildExport` payload:
 
 ```
-{ app: 'echo-sim', schema: '0.5', changelog, notes, constants (simConstants, placeholders marked),
+{ app: 'echo-sim', schema: '0.6', changelog, notes, constants (simConstants, placeholders marked),
   thresholds: { key: { value, placeholder: true, note } }, scenario, nodes (layout, mic positions assumed and rendered),
   results: [ per source: source_id, true_position, nodes[], track, heard_nodes, usable_nodes, excluded_unreliable,
              backtrace, fix, error_horizontal_m, error_3d_m ],
-  labelling?: { mode, clap_mode, events, sources, summary, models, association_rule, notes } }
+  labelling?: { mode, clap_mode, events, sources, summary, models, association_rule, notes },
+  rendering?: { sample_rate_hz, samples_per_mic, duration_s, fft_size, frequency_bins,
+                nodes: [{ node_id, noise_band_power, noise_detection_power,
+                          microphones: [{ mic_index, sources: [{ source_id, applied_paths }] }] }] } }
 ```
 
 `EXPORT_CHANGELOG` lists every added and changed field since 0.3. Schema 0.5 adds trusted-elevation 3D fix methods and `track_pre_fix_elevation_gate_deg`; no field was removed. Fields whose meaning changed: `heard`, `heard_nodes`, `fix.max_angle_deg`, `fix.fix_suspect`, `fix.position[2]`, `picked_path_index`, `track.fixes[].t_s`. `labelling` is included only after label processing completes for the exact exported results; `labelling_enabled: true` is a request to run asynchronously, not proof that a labelling block exists. Exporting before completion or after a failed run leaves the block absent. The caveats go into `notes`: simulated, placeholders, no housing scattering, wind, rain, coloured noise or facade scattering, unvalidated diffraction, which fields are simulator-only, and that labelling accuracy here does not predict real-world accuracy.
+
+Schema 0.6 adds optional scalar `rendering` diagnostics and the actual static-source per-microphone path audit (§6), including delay in samples (source start plus path travel time), 1 kHz gain and the applied filter description. This does not change rendering or localisation. Moving-source piece audits are not recorded; empty audit lists are not evidence of absent sound. FFT size and bin count refer to the full buffer, not each moving-source piece. Audio, spectra, activity-frame arrays and embeddings remain excluded.
+
+The report ([ui/report.js](apps/sim/src/ui/report.js)) has eleven expandable stages: scene/calibration, acoustic paths, microphone render, detection/window selection, GCC-PHAT direction, uncertainty/weights, robust position fix, rolling track, indirect back-trace candidates, event labels, and constants/thresholds. Per-node dropdowns show saved inputs, formulas, numeric substitutions and outputs. Every accepted track observation and fix can be read as a table; full recorded fields are also available through expandable JSON blocks. Unrecorded pairwise TDOAs, FFT bins, intermediate matrices, rejected hypotheses and moving-source internals are explicitly identified as unavailable: this is an explanation of the saved calculations, not a fabricated full execution trace. Simulator-truth comparisons and derived values are labelled separately.
+
+Exports use the scenario snapshot associated with the results, with a warning if the current editor is stale. Saved results can be reported without audio, but cannot supply the render audit until Create is run again. The report is self-contained (no external assets), detaches its opener, and remains usable after closing the simulator. **Expand all steps**, **Collapse all steps**, and **Print / PDF** support reading and sharing; printing temporarily opens steps and node sections. **Copy JSON** has visible success/failure feedback and a selectable **Complete JSON** fallback when clipboard permission is unavailable. Popup failures are shown in the simulator; allow popups and retry.
 
 ### 7.16 Other analysis modules
 
@@ -1617,7 +1626,7 @@ This is a 2D canvas, not WebGL.
 - **Files on this computer**:
   - **Download scenario file** (`scenario.json`);
   - **Load scenario file** (validates and applies, clears results, detaches from the saved simulation);
-  - **Export results**: after Create, `results.json` = `buildExport(...)`, schema 0.5 (§7.15): `{ app, schema, changelog, notes, constants, thresholds, scenario, nodes: [{ id, mic_layout, mic_params, mic_positions_assumed, mic_positions_rendered }], results, labelling? }`. The results schema is described in §7;
+  - **Export results**: after Create (or opening saved results), opens the step-by-step HTML report in a new tab. **Copy JSON** copies `buildExport(...)`, schema 0.6 (§7.15), including optional labels and render audits. The original result scenario is used even if the editor has changed;
   - **Repeats / sweep** (8.3).
 - **Applying a scenario** (`applyScenario`) runs validation and notices, replaces the scene, and sets `status = 'ready'` with `rendered = null` when saved results come with it, so the map, fixes and tables show at once and Create re-renders the audio. It also resets playback, hidden nodes and selection, fits the view and loads the clips.
 - **Dirty tracking** compares a JSON snapshot of the scenario with the baseline saved or opened. The title shows `name · vN` (and "(latest vM)" for an older version) with a dirty dot; the document title gets "• ". The **URL** keeps `?sim=<uuid>` and `&v=<n>` when not the latest, so a reload or a shared link reopens it. The title refreshes every 1.5 s.
@@ -2013,7 +2022,7 @@ Next steps: define pass/fail targets for localisation and attribution; run the s
 | `sim-label.test.js` | window schedule; event matching; the older detect, label and attach pipeline on a gunshot (stub runners) |
 | `sim-suite.test.js` | the fixed-seed A–E suite runs and reports (`suite-lib.js`) |
 | `sim-upgrade.test.js` | 0.4/0.5 analysis: P1 silent-window regression and containment; P2 onset-gated vs fixed; P3 two of five bad rays rejected with reasons; P4 horizontal and trusted-elevation 3D fixes, z clamp, suspect checks; P6 moving ground and aerial D180 tracks; P7 corner edge support and visibility; P8 detected but not localisable, band-following decimation |
-| `sim-labelling.test.js` | P9 with stub runners: manifest truth; omni and beamformed labelling with the app stack, bearings untouched, required fields, no audio-derived arrays; oracle mode; delay-and-sum steering; sanity check; export schema 0.5 and absent labels before completion |
+| `sim-labelling.test.js` | P9 with stub runners: manifest truth; omni and beamformed labelling with the app stack, bearings untouched, required fields, no audio-derived arrays; oracle mode; delay-and-sum steering; sanity check; export schema 0.6, scalar render audit and absent labels before completion |
 | `sim-labelling-models.test.js` | P9 with the real YAMNet and CLAP (Node runners): the app path and the sim path agree on the clean glass, horn and dog clips. Skipped without the model files or the ESC-50 clips |
 | `sim-upgrade-regression.test.js` | the six upgrade scenes against `test/fixtures/upgrade-0.4.json`: fails if any fix, node azimuth or track error gets worse beyond tolerance, or fewer nodes are heard/usable (skipped without the ESC-50 clips) |
 
@@ -2047,6 +2056,7 @@ Helpers: `reference-render.js` (independent slow renderer), `btm-reference.js` (
 
 | File | Checks |
 |---|---|
+| `report.test.js` | all eleven calculation stages; complete JSON fidelity; zero/false values; no-fix and missing labels; actual render audits; untrusted text escaping; legacy/stale results; popup failures; standalone inline runtime; clipboard success/denial and manual fallback; lazy records, expand/collapse and print state |
 | `sim-view3d.test.js` | particles move outwards, keep source colours and replay deterministically; 3D particles on spheres respect walls and ground; projection skips points behind the camera; the projector puts the target at the centre with up as up; 3D playback draws rolling fixes, not whole-event candidates for a moving source |
 | `sim-tracking.test.js` | the ring follows the latest elapsed fix and keeps earlier circles; no extrapolation or connecting across gaps; projection and ring sizes on both canvases |
 | `sim-osm-loader.test.js` | busy state always clears on a hard timeout and retry works; cancel restores the controls and late results cannot change the scene; success applied once; async and sync errors surfaced |
@@ -2142,7 +2152,7 @@ Contradictions and notes:
 | P7 diffraction-aware back-trace | `backtrace.js` `edgeLegs`, `roofLegs` | §7.13 |
 | P8 detected vs localisable | `activity.js`, `analyse.js` | §7.9 |
 | P9 labelling with the app stack | `labelling.js`, `beamform.js`, `apps/sim/src/main.js`, `config/sim-label-manifest.json` | §7.12 |
-| Export schema 0.5 + changelog | `export.js` | §7.15 |
+| Export schema 0.6 + changelog | `export.js` | §7.15 |
 
 ### 13.3 Before (0.3) and after (0.4) on the six scenes
 

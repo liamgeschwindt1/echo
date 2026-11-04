@@ -23,6 +23,7 @@ import { nodeShares } from '@echo/sim-core/attribution.js';
 import { SWEEP_VARIABLES } from '@echo/sim-core/sweep.js';
 import { drawLocalisationTrack } from './ui/tracking.js';
 import { buildExport } from '@echo/sim-core/export.js';
+import { openResultsReport } from './ui/report.js';
 import { labelEvents, labellingSanityCheck } from '@echo/sim-core/labelling.js';
 import { renderScenario } from '@echo/sim-core/render.js';
 import { analyseScenario } from '@echo/sim-core/analyse.js';
@@ -65,6 +66,7 @@ const library = []; // manifest entries plus uploads
 let status = 'edit'; // edit | rendering | ready | stale
 let rendered = null;
 let results = null;
+let resultsScenario = null;
 let labelling = null; // { results, out }: labels for exactly that results object (P9)
 const hiddenNodes = new Set(); // nodes hidden from the map only; they still take part in the simulation
 let tool = 'select';
@@ -343,6 +345,7 @@ function applyScenario(raw, savedResults = null) {
   $('loadNotice').classList.remove('error');
   rendered = null;
   results = savedResults;
+  resultsScenario = savedResults ? structuredClone(next) : null;
   lastCreate = null;
   status = results ? 'ready' : 'edit';
   playing = false;
@@ -404,9 +407,10 @@ setInterval(() => {
   if (currentView === 'settings') refreshSettingsTitle();
 }, 1500);
 $('exportBtn').addEventListener('click', () => {
-  if (!results) return;
-  // Schema 0.5 (see EXPORT_CHANGELOG in sim-core export.js); `nodes` (0.3): layout and the mic positions used (world metres).
-  const nodes = scenario.nodes.map((n) => {
+  if (!results || !resultsScenario) return alert('No results yet. Press Create first.');
+  if (status === 'rendering') return alert('The simulation is still running. Export results after Create finishes.');
+  const snapshot = resultsScenario;
+  const nodes = snapshot.nodes.map((n) => {
     const rn = rendered?.nodes.find((x) => x.id === n.id);
     return {
       id: n.id,
@@ -417,7 +421,14 @@ $('exportBtn').addEventListener('click', () => {
     };
   });
   const lab = labelling?.results === results ? labelling.out : null;
-  download('results.json', JSON.stringify(buildExport({ scenario, nodes, results, labelling: lab }), null, 2));
+  try {
+    openResultsReport(buildExport({ scenario: snapshot, nodes, results, labelling: lab, rendered }), {
+      title: $('simTitle').textContent,
+      stale: status === 'stale'
+    });
+  } catch (err) {
+    alert(`Could not open results report: ${err.message}`);
+  }
 });
 
 async function fetchOsm(area, signal) {
@@ -519,6 +530,7 @@ $('createBtn').addEventListener('click', async () => {
     else if (m.type === 'done') {
       rendered = m.rendered;
       results = m.results;
+      resultsScenario = lastCreate.scenario;
       t = 0;
       status = 'ready';
       const located = results.filter((r) => r.error_3d_m != null).length;

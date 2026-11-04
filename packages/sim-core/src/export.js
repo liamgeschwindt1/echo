@@ -1,13 +1,23 @@
-// The results export ("Export results" in the sim). Schema 0.5: see EXPORT_CHANGELOG.
+// The results export ("Export results" in the sim). Schema 0.6: see EXPORT_CHANGELOG.
 // Node output is limited to bearings, levels, times, uncertainties, labels, scores and confidences: no audio, spectra or
 // embeddings, and every unmeasured constant or threshold is marked placeholder.
 import { simConstants } from './geometry.js';
 import { ANALYSIS_THRESHOLDS } from './scenario.js';
 import { LABELLING_NOTE } from './labelling.js';
+import { nextPow2 } from './dsp.js';
 
-export const EXPORT_SCHEMA = '0.5';
+export const EXPORT_SCHEMA = '0.6';
 
 export const EXPORT_CHANGELOG = [
+  {
+    schema: '0.6',
+    added: [
+      'rendering (when rendered data is available): sample_rate_hz, samples_per_mic, duration_s, fft_size, frequency_bins, nodes[].noise powers and microphones[].sources[].applied_paths (the actual render audit)',
+      'HTML results report: expandable pipeline stages and Copy JSON of the same export'
+    ],
+    changed: ['Export results opens a report in a new tab instead of downloading JSON; exports use the scenario snapshot belonging to the results'],
+    removed: []
+  },
   {
     schema: '0.5',
     added: [
@@ -58,6 +68,7 @@ export const EXPORT_NOTES = [
   'SIMULATED results. Physics constants that are not measured are marked placeholder; nothing here is validated against real recordings.',
   'No housing scattering, wind, rain, coloured noise or facade scattering; the diffraction model is unvalidated beyond its listed checks.',
   'weight_terms.uncertainty_deg (multipath term), picked_path_* and multipath_suspect use the true source position (simulator-only); track_overlap_max_db uses per-source levels (simulator-only). fix_suspect does not use ground truth.',
+  'rendering contains actual static-source per-microphone path audits, not waveform samples. Moving-source piece audits, FFT spectra, pairwise TDOAs and solver iteration matrices are not retained.',
   LABELLING_NOTE
 ];
 
@@ -74,8 +85,8 @@ function scrub(v) {
   return ArrayBuffer.isView(v) ? undefined : v;
 }
 
-/** The export object. nodes: per node layout (0.3); labelling: completed labelEvents output or null. */
-export function buildExport({ scenario, nodes, results, labelling = null }) {
+/** The export object. Only scalar render diagnostics are retained, never microphone audio or spectra. */
+export function buildExport({ scenario, nodes, results, labelling = null, rendered = null }) {
   return {
     app: 'echo-sim',
     schema: EXPORT_SCHEMA,
@@ -86,6 +97,27 @@ export function buildExport({ scenario, nodes, results, labelling = null }) {
     scenario,
     nodes,
     results: scrub(results),
+    ...(rendered ? {
+      rendering: {
+        sample_rate_hz: rendered.sample_rate,
+        samples_per_mic: rendered.length,
+        duration_s: rendered.length / rendered.sample_rate,
+        fft_size: nextPow2(rendered.length),
+        frequency_bins: nextPow2(rendered.length) / 2 + 1,
+        nodes: rendered.nodes.map((node, ni) => ({
+          node_id: node.id,
+          noise_band_power: rendered.activity?.[ni]?.noise_band_power ?? null,
+          noise_detection_power: rendered.activity?.[ni]?.noise_detection_power ?? null,
+          microphones: (rendered.audit?.[ni] ?? []).map((mic, mi) => ({
+            mic_index: mi,
+            sources: mic.map((paths, si) => ({
+              source_id: scenario.sources[si].id,
+              applied_paths: scrub(paths)
+            }))
+          }))
+        }))
+      }
+    } : {}),
     ...(labelling ? { labelling: scrub(labelling) } : {})
   };
 }

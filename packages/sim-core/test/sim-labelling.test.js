@@ -128,14 +128,24 @@ test('P9: sanity check compares the app path on the clean clip with the sim path
   assert.equal(res.app_label, 'glass_break');
 });
 
-test('export schema 0.5: changelog, placeholder thresholds, notes, labels only', async () => {
+test('export schema 0.6: changelog, placeholder thresholds, notes, labels only', async () => {
   const { buildExport, EXPORT_SCHEMA } = await import('../src/export.js');
   const { s, rendered, durations, results } = glassScene();
   const labelling = await labelEvents(s, rendered, results, { cat, runners: glassRunners, manifest, settings: s.settings, clipDurations: durations });
-  const ex = JSON.parse(JSON.stringify(buildExport({ scenario: s, nodes: [], results, labelling })));
-  assert.equal(ex.schema, '0.5');
-  assert.equal(EXPORT_SCHEMA, '0.5');
-  assert.equal(ex.changelog[0].schema, '0.5');
+  const ex = JSON.parse(JSON.stringify(buildExport({ scenario: s, nodes: [], results, labelling, rendered })));
+  assert.equal(ex.schema, '0.6');
+  assert.equal(EXPORT_SCHEMA, '0.6');
+  assert.equal(ex.changelog[0].schema, '0.6');
+  assert.equal(ex.rendering.sample_rate_hz, rendered.sample_rate);
+  assert.equal(ex.rendering.samples_per_mic, rendered.length);
+  assert.equal(ex.rendering.duration_s, rendered.length / rendered.sample_rate);
+  assert.ok(ex.rendering.fft_size >= rendered.length);
+  assert.equal(ex.rendering.frequency_bins, ex.rendering.fft_size / 2 + 1);
+  assert.equal(ex.rendering.nodes[0].noise_band_power, rendered.activity[0].noise_band_power);
+  const mic = ex.rendering.nodes[0].microphones[0];
+  assert.equal(mic.mic_index, 0);
+  assert.equal(mic.sources[0].source_id, s.sources[0].id);
+  assert.deepEqual(mic.sources[0].applied_paths, rendered.audit[0][0][0]);
   assert.ok(Object.values(ex.thresholds).every((t) => t.placeholder === true && 'value' in t));
   assert.ok(ex.notes.some((n) => /synthetic/.test(n)));
   for (const k of ['usable_nodes', 'heard_nodes', 'track', 'fix']) assert.ok(k in ex.results[0], k);
@@ -154,4 +164,5 @@ test('labelling_enabled without completed labels does not emit a labelling block
   const ex = buildExport({ scenario: s, nodes: [], results });
   assert.equal(ex.scenario.settings.labelling_enabled, true);
   assert.equal('labelling' in ex, false);
+  assert.equal('rendering' in ex, false);
 });
