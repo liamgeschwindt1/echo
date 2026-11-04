@@ -29,6 +29,8 @@ import { renderScenario } from '@echo/sim-core/render.js';
 import { analyseScenario } from '@echo/sim-core/analyse.js';
 import { loadCatalogue, loadRunners } from './models.js';
 import { drawParticles, sourceColor, waveParticles } from './ui/particles.js';
+import { createTesting } from './ui/testing.js';
+import { testingEditorResults } from './ui/testing-view.js';
 
 const $ = (id) => document.getElementById(id);
 const FS = 48000;
@@ -2607,7 +2609,7 @@ function frame(now) {
 
 // ---------- side menu and workspaces ----------
 
-const VIEWS = ['scenes', 'scene', 'sounds', 'arrays', 'settings'];
+const VIEWS = ['scenes', 'scene', 'sounds', 'arrays', 'settings', 'testing'];
 let currentView = 'scene';
 function setView(name) {
   if (!VIEWS.includes(name)) return;
@@ -2619,6 +2621,7 @@ function setView(name) {
   $('panelSounds').hidden = name !== 'sounds';
   $('panelArrays').hidden = name !== 'arrays';
   $('panelSettings').hidden = name !== 'settings';
+  $('panelTesting').hidden = name !== 'testing';
   if (name !== 'scene') {
     $('sectionView').hidden = true;
     $('micView').hidden = true;
@@ -2627,6 +2630,7 @@ function setView(name) {
   if (name === 'settings') refreshSettingsTitle();
   if (name === 'sounds') soundLib.show();
   if (name === 'arrays') arrayLib.show();
+  if (name === 'testing') testingPanel.show();
   if (name === 'scene') heatmap?.schedule(0);
 }
 for (const b of document.querySelectorAll('.nav-item')) b.addEventListener('click', () => setView(b.dataset.view));
@@ -2706,6 +2710,24 @@ const soundLib = createSoundLibrary({
       analyses.delete(e.id);
     }
     library.push(...entries);
+  }
+});
+const testingPanel = createTesting({
+  $, getScenario: () => scenario,
+  getClips: async () => {
+    for (const source of scenario.sources) await ensureClip(source.clip);
+    // Recorded library clips are decoded by the benchmark's shared WAV reader, for CLI/browser parity.
+    return [...clips].filter(([id]) => !library.find((c) => c.id === id)?.file);
+  },
+  getArrays: () => arrayLib.list(),
+  onDrilldown: (run) => {
+    applyScenario(run.scenario, testingEditorResults(run));
+    t = lengthS();
+    selected = scenario.sources[0] ? { type: 'source', id: scenario.sources[0].id } : null;
+    $('loadNotice').textContent = `Testing snapshot: ${run.job.scene}, seed ${run.job.seed}, ${run.job.realism}/${run.job.analysis_mode}. ${run.job.analysis_mode === 'measured_only' ? 'Horizontal inference only; display height assumed. Create still uses the legacy truth-assisted editor pipeline.' : 'Exact saved inference; no rerender.'}`;
+    $('loadNotice').hidden = false;
+    setView('scene');
+    renderInspector();
   }
 });
 setView('scene');
