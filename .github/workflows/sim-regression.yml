@@ -1,0 +1,67 @@
+name: Simulator regression
+
+on:
+  pull_request:
+    paths:
+      - 'packages/sim-core/**'
+      - 'packages/shared/**'
+      - 'packages/assets/**'
+      - 'apps/sim/**'
+      - 'scripts/benchmark*.mjs'
+      - 'docs/targets.json'
+      - 'docs/experiments/ci-smoke.json'
+      - 'baselines/ci-smoke.json'
+      - 'package*.json'
+      - '.github/workflows/sim-regression.yml'
+  push:
+    branches: [main, overnight/localisation]
+    paths:
+      - 'packages/sim-core/**'
+      - 'packages/shared/**'
+      - 'packages/assets/**'
+      - 'apps/sim/**'
+      - 'scripts/benchmark*.mjs'
+      - 'docs/targets.json'
+      - 'docs/experiments/ci-smoke.json'
+      - 'baselines/ci-smoke.json'
+      - 'package*.json'
+      - '.github/workflows/sim-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sim-regression-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.2'
+          cache: npm
+      - run: npm ci
+      - run: npm run fetch-test-audio -w @echo/assets
+      - run: npm test -w @echo/sim-core
+      - run: npm test -w @echo/sim
+      - run: npm run build -w @echo/sim
+      - name: Compare finite measured-only fixes, realism off and on
+        run: >-
+          npm run benchmark --
+          --experiment docs/experiments/ci-smoke.json
+          --compare baselines/ci-smoke.json
+          --fail-on-regress
+          --discard-renders
+          --out artifacts/ci-smoke.json
+      - name: Preserve reports on success or regression
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulator-regression
+          path: artifacts/ci-smoke.*
+          if-no-files-found: warn

@@ -97,6 +97,20 @@ all-nine-array off/on comparison in both pipelines. This is a bounded pilot,
 not the requested full-scene hardware ranking. It reserves 50% of scene IDs
 and seeds as held out and does not tune algorithm thresholds.
 
+`docs/experiments/array-full.json` separately freezes the full measured-only
+ranking: 25 sites, nine arrays, three seeds, realism off/on, 1350 runs.
+Eight 144-run two-site endpoint grids test existing placeholder ranges.
+Their outcomes are reporting-only; none selects an algorithm threshold.
+
+### Regression CI
+
+The read-only `sim-regression.yml` workflow runs core/app tests and the app build
+on Node 24.22.2, then gates eight measured-only cases with actual fixes against
+`baselines/ci-smoke.json`. Both realism profiles and scene/seed holdout are included.
+It fetches pinned test audio, uses the committed models, and preserves
+JSON/CSV/HTML artifacts even on regression. This infrastructure uses the existing
+schema 0.12; it introduces no inference, export-format or tolerance change.
+
 ### Simulated, measured and assumed
 
 | Quantity | Status and permitted use |

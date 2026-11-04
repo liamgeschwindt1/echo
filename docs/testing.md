@@ -24,7 +24,7 @@ source-window upper bound. Realism on uses heading 2.5 deg, gain 1 dB, mic posit
 5 mm, noise correlation 0.3; explicit swept variables override those values.
 The effective settings, not the realism label, are authoritative.
 
-Use `--compare baselines/baseline-0.json --fail-on-regress` to gate tracked metrics
+Use `--compare baselines/baseline-0-v2.json --fail-on-regress` to gate tracked metrics
 with explicit `tolerances` (metric to absolute tolerance, default zero). A metric
 becoming unavailable is a regression. Missing configs fail. Runtime is not gated.
 Calibration compares distance from 68.27%/95.45%, not simply bigger-is-better.
@@ -98,6 +98,33 @@ pin their original array choices even when the library grows.
 runs a predeclared two-site pilot across every library array, both pipelines,
 both realism profiles and seeds 1/101. Its limited scene coverage cannot
 establish a hardware winner.
+
+`docs/experiments/array-full.json` freezes the full 1350-run measured-only
+study: all 25 sites, nine arrays, seeds 1/2/101, realism off/on. It contains
+612 train and 738 held-out runs. The eight `array-heading`, `array-gain`,
+`array-position`, `array-correlation`, `array-noise-floor`, `array-self-noise`,
+`array-ground` and `array-source-level` experiments each contain 144 runs.
+Those are limited two-site endpoint sensitivity studies, not full-scene
+hardware acceptance tests. No clock sensitivity is claimed.
+
+## Regression CI
+
+`.github/workflows/sim-regression.yml` runs core/app unit tests, the app build,
+and `docs/experiments/ci-smoke.json` against `baselines/ci-smoke.json`.
+The fixed Node 24.22.2 reference includes actual measured-only fixes, both realism
+profiles and held-out site/seed cases; it cannot pass merely by reproducing the
+old all-no-fix gate bug. ESC-50 audio is fetched at the manifest's pinned revision.
+Model files are committed. JSON/CSV/HTML artifacts are retained even on regression.
+
+To reproduce the benchmark locally, run:
+
+```
+npm run benchmark -- --experiment docs/experiments/ci-smoke.json --compare baselines/ci-smoke.json --fail-on-regress --discard-renders --out artifacts/ci-smoke.json
+```
+
+Default metric tolerances remain zero, with the shared numerical comparison
+allowance. This is a small regression fixture, not a substitute for the full
+grading and array studies. Runtime is recorded rather than performance-gated.
 
 ## Reading results
 
