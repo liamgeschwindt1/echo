@@ -437,7 +437,7 @@ identity; different populations are not a longitudinal improvement. Nightly
 standard CI is configured for02:20UTC but scheduling only activates after the
 workflow reaches the default branch. The sealed set is never nightly input.
 
-Actual GitHub Actions run41841490921 at87a9687 succeeded:281 core,38 app,
+Actual GitHub Actions run41848917910 at35a2056 succeeded:286 core,38 app,
 production build,2 Chromium/Node end-to-end cases and the finite measured
 zero-regression benchmark. Logs were read; this is not an assumed CI result.
 Final artifact/source follow-through remains pending in this working report.
@@ -448,15 +448,16 @@ No retained discriminative confidence, heading self-calibration, blocked-edge
 measured solver, measured elevation/3D/multi-peak pipeline, full global runtime
 assignment, new tracker, alias-aware SRP/subarrays, improved-engine full array
 ranking, or validated hardware requirements. The placement view is implemented,
-but geometry-only; simulation checks and the count/range studies are pending
-final verification here. C1 is partial(no TDOA); C3-C5 are unbuilt. Diagnostic research and a
+but geometry-only; all20 placement,60 count/spacing and288 range/noise cases
+completed. These diagnostics do not calibrate the map or establish hardware
+requirements. C1 is partial(no TDOA); C3-C5 are unbuilt. Diagnostic research and a
 calibration-file helper must not be presented as these completed features.
 
 ## Review order and open decisions
 
 Review the method/seal commits first, then metrics, offline trials, exact-output
 caches, deterministic ties, recording/physics, model evidence and prototype
-protocol. `git log --reverse099a0d0..overnight/localisation-2` gives full order.
+protocol. `git log --reverse 099a0d0..overnight/localisation-2` gives full order.
 The final report will record the completed-study commits.
 
 Open decisions for the next round, not requests to change this run:

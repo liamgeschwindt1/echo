@@ -245,6 +245,24 @@ The trial will not start if even this recorded-p90 reserve fails the deadline.
   All286 core tests passed, including five new spatial analytic/boundary tests.
   Existing app/build/browser/smoke gates and read GitHub success remain intact.
 
+## Round 2 heartbeat and final-study reserve (15:10 UTC)
+
+- Disk58% by df,7.3GiB available. Spatial trial is still running sequentially;
+  no partial metric table or ranking has been inspected. Its recorded startup
+  reserve includes123min for eligible renders,111min for the complete sealed
+  population and60min for reporting/CI, ending19:21UTC.
+- Read actual GitHub run41848917910 at35a2056:286 core and38 app tests,
+  production build,2 Chromium/Node parity cases and the finite measured
+  benchmark all passed. This is observed CI evidence, not the eventual final
+  artifact-head check.
+- All earlier descriptive studies are complete. Additional microphone-response
+  physics was considered but not registered, executed or implemented: adding
+  another renderer changeset while the final solver trial is running risks the
+  mandatory sealed reserve. No new science population will be started after
+  the sealed execution. C3-C5 remain explicitly unbuilt.
+- Sealed inputs remain untouched. Baseline/final labels will remain identical
+  unless the entire spatial acceptance/integration gate passes before freeze.
+
 ## Rules and decisions (2026-11-04)
 
 - Work only on `overnight/localisation`; no main pushes. Each retained logical step gets its own commit after core tests and benchmark.
