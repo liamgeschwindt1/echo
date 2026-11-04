@@ -14,8 +14,7 @@ export function measuredOptions(settings) {
   return Object.fromEntries(Object.entries(MEASURED_DEFAULTS).map(([k, value]) => [k, settings[`measured_${k}`] ?? value]));
 }
 
-export async function runJob(job, { clips, arrays, custom_scenes = {}, manifest, cache, wrong_fix_m = 10 }) {
-  const started = performance.now();
+async function prepareJob(job, { clips, arrays, custom_scenes = {}, manifest, wrong_fix_m = 10 }) {
   const scenario = validateScenario(scenarioForJob(custom_scenes[job.scene] ?? buildScene(job.scene), job, arrays));
   const usedClips = new Map(scenario.sources.map((s) => {
     const clip = clips.get(s.clip);
@@ -24,17 +23,38 @@ export async function runJob(job, { clips, arrays, custom_scenes = {}, manifest,
   }));
   const durations = new Map([...usedClips].map(([k, v]) => [k, v.length / scenario.settings.render_sample_rate]));
   const audio = (manifest.audio ?? await audioHash(usedClips)).filter((a) => usedClips.has(a.id));
-  const keys = await cacheKeys(scenario, { code_version: manifest.code_version, runtime: manifest.runtime, schema: EXPORT_SCHEMA, audio, analysis_settings: { settings: scenario.settings, mode: job.analysis_mode, wrong_fix_m } });
+  const keys = await cacheKeys(scenario, { code_version: manifest.code_version, render_code_version: manifest.render_code_version, runtime: manifest.runtime, schema: EXPORT_SCHEMA, audio, analysis_settings: { settings: scenario.settings, mode: job.analysis_mode, wrong_fix_m } });
+  return { scenario, usedClips, durations, audio, keys };
+}
+
+export async function jobRenderKey(job, context) {
+  return (await prepareJob(job, context)).keys.render;
+}
+
+export async function runJob(job, context) {
+  const started = performance.now();
+  const { manifest, cache, onRenderReady = () => {} } = context;
+  const { scenario, usedClips, durations, audio, keys } = await prepareJob(job, context);
   const cached = await cache?.get(keys.run);
-  if (cached) return { ...cached, job, cache_hit: true };
+  if (cached) {
+    onRenderReady();
+    return { ...cached, job, manifest: { ...cached.manifest, seed: job.seed, variable_values: job.config.values }, cache_hit: true };
+  }
   let rendered = await cache?.get(keys.render);
   const renderCached = !!rendered;
   const renderStart = performance.now();
+  let renderProvenance;
   if (!rendered) {
     rendered = renderScenario(scenario, usedClips, { lengthS: renderLengthS(scenario, durations) });
+    renderProvenance = { kind: 'rendered', render_code_version: manifest.render_code_version ?? manifest.code_version, code_version: manifest.code_version, git_hash: manifest.git_hash, dirty: manifest.dirty, runtime: manifest.runtime };
+    await cache?.set(keys.origin, renderProvenance);
     await cache?.set(keys.render, rendered);
+  } else {
+    renderProvenance = await cache.get(keys.origin);
+    if (!renderProvenance) throw new Error(`Rendered cache is missing producer provenance: ${keys.render}`);
   }
   const renderMs = renderCached ? 0 : performance.now() - renderStart;
+  onRenderReady();
   // analyseScenario overwrites moving-source path diagnostics; never mutate reusable audio cache.
   rendered = structuredClone(rendered);
   const analysisStart = performance.now();
@@ -53,7 +73,7 @@ export async function runJob(job, { clips, arrays, custom_scenes = {}, manifest,
   }
   const result = {
     job, scenario, inference, scores, manifest: { ...manifest, schema: EXPORT_SCHEMA, audio, seed: job.seed, settings: scenario.settings, variable_values: job.config.values },
-    cache_keys: keys, cache_hit: false, render_cache_hit: renderCached, render_ms: renderMs,
+    cache_keys: keys, cache_hit: false, render_cache_hit: renderCached, render_provenance: renderProvenance, render_ms: renderMs,
     analysis_ms: performance.now() - analysisStart, runtime_ms: performance.now() - started
   };
   await cache?.set(keys.run, result);
@@ -61,7 +81,8 @@ export async function runJob(job, { clips, arrays, custom_scenes = {}, manifest,
 }
 
 // The same bounded scheduler drives Node workers and browser workers. Pause stops dispatch; in-flight jobs finish.
-export async function runExperiment(input, { execute, completed = [], signal, isPaused = () => false, waitWhilePaused = async () => {}, workers = 2, onProgress = () => {}, onResult = async () => {}, manifest = {} }) {
+export async function runExperiment(input, { execute, renderGroup = (job) => job.id, completed = [], signal, isPaused = () => false, waitWhilePaused = async () => {}, workers = 2, onProgress = () => {}, onResult = async () => {}, manifest = {} }) {
+  if (!Number.isInteger(workers) || workers < 1) throw new Error('Worker count must be a positive integer');
   const { experiment, configs, jobs } = buildJobs(input);
   const resumeIdentity = (job) => canonical({ job, custom_scene: experiment.custom_scenes?.[job.scene], wrong_fix_m: experiment.wrong_fix_m });
   const identities = new Map(jobs.map((j) => [j.id, resumeIdentity(j)]));
@@ -71,18 +92,33 @@ export async function runExperiment(input, { execute, completed = [], signal, is
     canonical(r.manifest.runtime) === canonical(manifest.runtime) && audioMatches(r.manifest.audio)).map((r) => [r.job.id, r])).values()];
   const done = new Set(runs.map((r) => r.job.id));
   const pending = jobs.filter((j) => !done.has(j.id));
-  let cursor = 0;
+  const groups = new Map(await Promise.all(pending.map(async (job) => [job.id, await renderGroup(job)])));
+  const rendering = new Set(), waiting = new Set();
+  const wake = () => { for (const resolve of waiting) resolve(); waiting.clear(); };
+  let failed = false;
   onProgress({ done: runs.length, total: jobs.length, resumed: true });
   const work = async () => {
-    while (cursor < pending.length && !signal?.aborted) {
-      while (isPaused() && !signal?.aborted) await waitWhilePaused();
-      if (signal?.aborted) return;
-      const job = pending[cursor++];
-      onProgress({ done: runs.length, total: jobs.length, job });
-      const result = { ...await execute(job), resume_identity: identities.get(job.id) };
-      await onResult(result);
-      runs.push(result);
-      onProgress({ done: runs.length, total: jobs.length, job, result });
+    while (pending.length && !signal?.aborted && !failed) {
+      while (isPaused() && !signal?.aborted && !failed) await waitWhilePaused();
+      if (signal?.aborted || failed) return;
+      const at = pending.findIndex((job) => !rendering.has(groups.get(job.id)));
+      if (at < 0) { await new Promise((resolve) => waiting.add(resolve)); continue; }
+      const [job] = pending.splice(at, 1), group = groups.get(job.id);
+      rendering.add(group);
+      let released = false;
+      const releaseRender = () => {
+        if (released) return;
+        released = true; rendering.delete(group); wake();
+      };
+      try {
+        onProgress({ done: runs.length, total: jobs.length, job });
+        const result = { ...await execute(job, { releaseRender }), resume_identity: identities.get(job.id) };
+        await onResult(result);
+        runs.push(result);
+        onProgress({ done: runs.length, total: jobs.length, job, result });
+      } catch (error) {
+        failed = true; throw error;
+      } finally { releaseRender(); }
     }
   };
   await Promise.all(Array.from({ length: Math.max(1, Math.min(workers, pending.length)) }, work));

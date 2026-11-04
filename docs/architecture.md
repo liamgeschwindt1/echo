@@ -46,6 +46,11 @@ Worker messages carry progress/errors; IndexedDB checkpoints completed jobs.
 Pause stops dispatch, cancellation finishes active jobs, and reopening resumes
 only matching code/audio/runtime and exact job/custom-scene settings and scoring
 target. Changed source code cannot silently reuse whole results.
+The renderer's parsed dependency graph has its own fingerprint: analysis-only
+source revisions reuse audio without reusing inference. A provenance sidecar
+preserves the actual producer across revisions. Legacy migration is explicit,
+with graph/input/runtime/PCM checks and a cold control; dirty historical source
+remains an acknowledged audit assumption.
 
 `testing.js` builds forms with existing app design classes and renders shared
 report components. `testing-view.js` is a display adapter for saved inference,

@@ -1,6 +1,6 @@
 import { buildJobs, scenarioForJob } from '@echo/sim-core/benchmark/experiment.js';
 import { buildScene } from '@echo/sim-core/benchmark/scenes.js';
-import { runExperiment } from '@echo/sim-core/benchmark/runner.js';
+import { runExperiment, jobRenderKey } from '@echo/sim-core/benchmark/runner.js';
 import { decodeBenchmarkWav } from '@echo/sim-core/benchmark/audio.js';
 import { audioHash } from '@echo/sim-core/benchmark/cache.js';
 import { reportCsv, reportHtml } from '@echo/sim-core/benchmark/report.js';
@@ -12,7 +12,7 @@ const wakes = new Set();
 function resumeDispatch() { for (const wake of wakes) wake(); wakes.clear(); }
 const pool = [];
 let sequence = 0;
-function execute(job) {
+function execute(job, { releaseRender = () => {} } = {}) {
   return new Promise((resolve, reject) => {
     const slot = pool.find((s) => !s.busy);
     if (!slot) return reject(new Error('Benchmark worker pool exhausted'));
@@ -20,6 +20,7 @@ function execute(job) {
     const id = sequence++;
     slot.worker.onmessage = ({ data }) => {
       if (data.id !== id) return;
+      if (data.type === 'render-ready') { releaseRender(); return; }
       slot.busy = false;
       if (data.error) reject(new Error(data.error));
       else resolve(data.result);
@@ -47,9 +48,10 @@ async function start({ record, clips: providedClips, arrays, manifest, targets }
       clips.set(id, decodeBenchmarkWav(await response.arrayBuffer()));
     }
     manifest = { ...manifest, audio: await audioHash(clips), runtime: { engine: 'browser', user_agent: self.navigator.userAgent } };
+    const context = { clips, arrays, custom_scenes: experiment.custom_scenes, manifest, wrong_fix_m: experiment.wrong_fix_m };
     for (let i = 0; i < 2; i++) {
       const worker = new Worker(new URL('./benchmarkJobWorker.js', import.meta.url), { type: 'module' });
-      worker.postMessage({ type: 'init', context: { clips, arrays, custom_scenes: experiment.custom_scenes, manifest, wrong_fix_m: experiment.wrong_fix_m } });
+      worker.postMessage({ type: 'init', context });
       pool.push({ worker, busy: false });
     }
     const completed = await testingStore.jobs(record.id);
@@ -57,6 +59,7 @@ async function start({ record, clips: providedClips, arrays, manifest, targets }
     await testingStore.set('runs', record.id, record);
     const report = await runExperiment(experiment, {
       execute,
+      renderGroup: (job) => jobRenderKey(job, context),
       onResult: (result) => testingStore.set('jobs', `${record.id}:${result.job.id}`, result),
       completed, manifest, workers: 2, signal: controller.signal,
       isPaused: () => paused,

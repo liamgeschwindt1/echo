@@ -76,6 +76,10 @@ The default small experiment is one 20 m scene, five seeds, realism off/on and
 measured-only. Presets populate the entire form and may need **Reduce samples /
 values** before running. The app uses a coordinator worker and two compute workers;
 rendering and aggregation never block the UI thread.
+Workers sharing a cold audio key wait for one render, then analyse independently
+as soon as the audio is persisted. This avoids duplicate expensive rendering
+without serialising analysis-only sweeps. Separate concurrent experiments are
+not protected by a cross-process render lock.
 
 Pause stops dispatch after active work; Resume continues. Cancel saves completed
 jobs and a partial report. Saved runs live in IndexedDB, with names and notes;
@@ -129,6 +133,15 @@ all settings, seeds, variable values and audio checksums. Schema version alone
 cannot reproduce bearings. Schema 0.6 added audit only; source windows, settings
 and clip content are needed to explain historical bearing differences. This
 checkout has no pre-0.6 history, so exact old differences remain unproven.
+
+Since schema 0.9, audio uses the complete parsed renderer dependency fingerprint,
+not the unrelated analysis source hash. Full results still use the full code hash.
+Actual audio producer provenance is retained across analysis revisions. Node cache
+keys also distinguish platform and architecture. Legacy caches are not implicitly
+trusted: `scripts/benchmark-reuse-renders.mjs` requires a source revision, matching
+runtime evidence for incomplete old records, unchanged inputs/PCM, a byte-identical
+cold control and explicit acknowledgement of dirty-source audit assumptions.
+See SIM.md for the command. Do not treat an acknowledged assumption as proof.
 
 Measured-only scoring assigns inferred tracks one-to-one to true source paths
 **after** inference, with no error gate. Association is greedy, not optimal.

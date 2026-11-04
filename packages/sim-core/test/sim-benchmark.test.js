@@ -191,6 +191,10 @@ test('cached real run is deterministic and analysis-only sweep reuses audio', as
   assert.deepEqual(first.scores, cached.scores);
   assert.equal(cached.cache_hit, true); assert.equal(changed.render_cache_hit, true);
   assert.notEqual(first.cache_keys.run, changed.cache_keys.run);
+  const alias = { ...jobs[0], config: { ...jobs[0].config, values: { heading_error_sigma_deg: 0 } } };
+  const equivalent = await runJob(alias, context);
+  assert.equal(equivalent.cache_hit, true);
+  assert.deepEqual(equivalent.manifest.variable_values, alias.config.values);
 });
 test('scheduler cancels dispatch and resumes complete jobs without duplication', async () => {
   const e = experiment({ seeds: [1, 2, 101] }), controller = new AbortController();
@@ -202,6 +206,50 @@ test('scheduler cancels dispatch and resumes complete jobs without duplication',
   const full = await runExperiment(e, { execute: async (job) => { resumed++; return fakeRun(2, { job }); }, completed: [...partial.runs, ...partial.runs], workers: 1, manifest: { code_version: 'test' } });
   assert.equal(full.runs.length, 3); assert.equal(count, 1);
   assert.equal(resumed, 2);
+});
+test('scheduler single-flights equal renders, then permits parallel analysis after audio is ready', async () => {
+  const e = experiment({ seeds: [1], sweeps: [{ variable: 'min_snr_db', values: [3, 6] }] });
+  let audioReady = false, coldRenders = 0, active = 0, peak = 0;
+  const report = await runExperiment(e, {
+    workers: 2, renderGroup: () => 'same-audio', manifest: { code_version: 'test' },
+    execute: async (job, { releaseRender }) => {
+      active++; peak = Math.max(peak, active);
+      if (!audioReady) {
+        coldRenders++;
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        audioReady = true;
+      }
+      releaseRender();
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      active--;
+      return fakeRun(2, { job });
+    }
+  });
+  assert.equal(report.runs.length, 2);
+  assert.equal(coldRenders, 1);
+  assert.equal(peak, 2);
+});
+test('shared-render waiters exit on cancellation and propagate failures without dispatching more work', { timeout: 1000 }, async () => {
+  const e = experiment({ seeds: [1], sweeps: [{ variable: 'min_snr_db', values: [3, 6] }] });
+  const controller = new AbortController();
+  let calls = 0;
+  const report = await runExperiment(e, {
+    workers: 2, renderGroup: () => 'same-audio', signal: controller.signal,
+    execute: async (job) => {
+      calls++; await new Promise((resolve) => setTimeout(resolve, 5));
+      controller.abort();
+      return fakeRun(2, { job });
+    }
+  });
+  assert.equal(calls, 1);
+  assert.equal(report.runs.length, 1);
+  assert.equal(report.manifest.cancelled, true);
+  calls = 0;
+  await assert.rejects(runExperiment(e, {
+    workers: 2, renderGroup: () => 'same-audio',
+    execute: async () => { calls++; await new Promise((resolve) => setTimeout(resolve, 5)); throw new Error('render failed'); }
+  }), /render failed/);
+  assert.equal(calls, 1);
 });
 test('resume rejects changed audio, settings, scoring targets, runtime and custom scenes', async () => {
   const audio = [{ id: 'glass_breaking', samples: 1, sha256: 'abc' }];

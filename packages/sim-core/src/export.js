@@ -1,4 +1,4 @@
-// The results export ("Export results" in the sim). Schema 0.8: see EXPORT_CHANGELOG.
+// The results export ("Export results" in the sim). Schema 0.9: see EXPORT_CHANGELOG.
 // Node output is limited to bearings, levels, times, uncertainties, labels, scores and confidences: no audio, spectra or
 // embeddings, and every unmeasured constant or threshold is marked placeholder.
 import { simConstants } from './geometry.js';
@@ -7,9 +7,15 @@ import { LABELLING_NOTE } from './labelling.js';
 import { nextPow2 } from './dsp.js';
 import { MEASURED_DEFAULTS } from './measured.js';
 
-export const EXPORT_SCHEMA = '0.8';
+export const EXPORT_SCHEMA = '0.9';
 
 export const EXPORT_CHANGELOG = [
+  {
+    schema: '0.9',
+    added: ['Benchmark manifest.render_code_version and render_source_files: SHA-256 of the complete parsed local renderer dependency graph', 'Run render_provenance preserves actual audio producer code/git/runtime; cache_keys.origin identifies its sidecar'],
+    changed: ['Analysis-only source revisions invalidate complete results but reuse audio only when renderer dependency fingerprint, runtime, inputs and clip hashes match. Unknown/external dependency graphs fail explicitly.', 'Shared worker scheduler single-flights cold audio keys and releases waiting jobs as soon as audio is persisted, before analysis finishes. Equivalent-result cache hits retain requested variable values.'],
+    removed: []
+  },
   {
     schema: '0.8',
     added: ['windowTdoas[].peak_normalized: raw PHAT peak divided by the theoretical fully coherent in-band peak; raw peak and TDOA remain unchanged', 'Benchmark runtime provenance, completed-job resume_identity, summary config settings and held_out_fraction=0.3 (placeholder)'],

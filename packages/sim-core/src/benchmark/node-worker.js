@@ -4,6 +4,6 @@ import { DiskCache } from './node.js';
 
 const context = { ...workerData, cache: new DiskCache(workerData.cacheDirectory) };
 parentPort.on('message', async ({ id, job }) => {
-  try { parentPort.postMessage({ id, result: await runJob(job, context) }); }
+  try { parentPort.postMessage({ id, result: await runJob(job, { ...context, onRenderReady: () => parentPort.postMessage({ id, type: 'render-ready' }) }) }); }
   catch (error) { parentPort.postMessage({ id, error: error.stack ?? String(error) }); }
 });

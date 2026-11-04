@@ -7,6 +7,8 @@ import { Worker } from 'node:worker_threads';
 import { decodeBenchmarkWav } from './audio.js';
 import { audioHash } from './cache.js';
 import { EXPORT_SCHEMA } from '../export.js';
+import { renderFingerprint } from './render-fingerprint.js';
+import { jobRenderKey } from './runner.js';
 
 const root = new URL('../../../../', import.meta.url);
 export async function codeManifest() {
@@ -24,7 +26,7 @@ export async function codeManifest() {
   for (const file of files) { hash.update(relative(dir.pathname, file.pathname)); hash.update(await readFile(file)); }
   return {
     git_hash: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
-    code_version: hash.digest('hex'), schema: EXPORT_SCHEMA,
+    code_version: hash.digest('hex'), ...await renderFingerprint(), schema: EXPORT_SCHEMA,
     dirty: !!execFileSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' }).trim(),
     scoring: 'benchmark score.js; post-inference truth only',
     audio_source: 'repository test-audio recordings, PCM float32 mono at 48000 Hz'
@@ -47,7 +49,7 @@ export async function loadBenchmarkClips(ids) {
 export class DiskCache {
   constructor(directory) { this.directory = resolve(directory); }
   path(key) {
-    if (!/^(render|run):[a-f0-9]{64}$/.test(key)) throw new Error('Invalid cache key');
+    if (!/^(render|run|render-origin):[a-f0-9]{64}$/.test(key)) throw new Error('Invalid cache key');
     return resolve(this.directory, key.replace(':', '-') + '.bin');
   }
   async get(key) {
@@ -63,13 +65,14 @@ export class DiskCache {
 }
 
 export async function nodeExecutor({ workers = 2, clips, arrays, manifest, experiment, cacheDirectory }) {
-  manifest = { ...manifest, audio: await audioHash(clips), runtime: { engine: 'node', node: process.versions.node, v8: process.versions.v8 } };
+  manifest = { ...manifest, audio: await audioHash(clips), runtime: { engine: 'node', node: process.versions.node, v8: process.versions.v8, platform: process.platform, arch: process.arch } };
+  const context = { clips, arrays, manifest, custom_scenes: experiment.custom_scenes, wrong_fix_m: experiment.wrong_fix_m };
   const pool = Array.from({ length: workers }, () => {
-    const worker = new Worker(new URL('./node-worker.js', import.meta.url), { workerData: { clips, arrays, manifest, custom_scenes: experiment.custom_scenes, wrong_fix_m: experiment.wrong_fix_m, cacheDirectory } });
+    const worker = new Worker(new URL('./node-worker.js', import.meta.url), { workerData: { ...context, cacheDirectory } });
     return { worker, busy: false, reject: null };
   });
   let counter = 0;
-  const execute = (job) => new Promise((resolve, reject) => {
+  const execute = (job, { releaseRender = () => {} } = {}) => new Promise((resolve, reject) => {
     const slot = pool.find((s) => !s.busy);
     if (!slot) return reject(new Error('Worker pool exhausted'));
     slot.busy = true;
@@ -78,6 +81,7 @@ export async function nodeExecutor({ workers = 2, clips, arrays, manifest, exper
     const cleanup = () => { slot.busy = false; slot.reject = null; slot.worker.off('message', onMessage); slot.worker.off('error', onError); slot.worker.off('exit', onExit); };
     const onMessage = (data) => {
       if (data.id !== id) return;
+      if (data.type === 'render-ready') { releaseRender(); return; }
       cleanup();
       if (data.error) reject(new Error(data.error));
       else resolve(data.result);
@@ -89,5 +93,5 @@ export async function nodeExecutor({ workers = 2, clips, arrays, manifest, exper
     slot.worker.once('exit', onExit);
     slot.worker.postMessage({ id, job });
   });
-  return { execute, manifest, close: async () => { await Promise.all(pool.map((s) => s.worker.terminate())); } };
+  return { execute, manifest, renderGroup: (job) => jobRenderKey(job, context), close: async () => { await Promise.all(pool.map((s) => s.worker.terminate())); } };
 }

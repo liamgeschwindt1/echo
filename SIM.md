@@ -6,7 +6,7 @@ The one reference document for the **sim** frontend ([apps/sim](apps/sim)) and i
 
 Coordinates: metres, x east, y north, z up. Time: seconds of scenario time. Inside the physics, pressure is in pascals; digital floats appear only at the microphone output. Angles in the code are in radians unless the name ends in `_deg`.
 
-## Reproducible Testing engine (schema 0.8)
+## Reproducible Testing engine (schema 0.9)
 
 `npm run benchmark -- --experiment smoke --out baselines/smoke.json` runs the shared
 `packages/sim-core/src/benchmark/` engine. CLI and Testing use identical experiment
@@ -65,6 +65,29 @@ see the overnight log. No solver upgrade is claimed.
 | Bearing sigmas, association gates, benchmark targets and numerical thresholds | Uncalibrated placeholders. Coverage/calibration must be reported with conditional error. |
 | Flat-array elevation | Sign/height assumption, not resolved up/down. Measured-only elevation and 3D error remain unavailable. |
 | Labelling | Actual YAMNet/CLAP results only after runners finish. Benchmark accuracy remains unavailable because benchmarks do not execute labelling. |
+
+### Renderer cache identity (schema 0.9)
+
+The manifest hashes the complete parsed local module dependency graph rooted at
+`render.js`, including cyclic dependencies and re-exports. Audio keys include that
+renderer fingerprint, runtime, nominal inputs, render settings, seed and PCM hashes;
+complete-result keys additionally include full analysis source version and schema.
+Changing analysis cannot silently reuse old results, but no longer forces an
+identical renderer to run again. Every cached render retains its actual producer's
+git/source/runtime provenance. Unknown dependency graphs fail explicitly.
+The shared scheduler permits only one cold render per audio key within an
+experiment. Workers notify it as soon as audio is persisted, allowing waiting
+analysis jobs to start without waiting for the first analysis to finish.
+
+Pre-0.9 caches need explicit migration, not an automatic assumption of compatibility:
+`node scripts/benchmark-reuse-renders.mjs --from REPORT.json --source-revision REV
+--legacy-runtime OBSERVATION.json --acknowledge-dirty-audit`. It checks the complete
+renderer graph against that revision, exact nominal inputs, PCM hashes and observed
+Node/V8/platform/architecture, and independently re-renders one control, comparing
+every microphone byte plus activity/path diagnostics. Dirty historic source needs
+an explicit audited assumption, retained in exported provenance; it is **not**
+cryptographic proof of the old working tree. Hard links avoid copying audio.
+Whole-run results are never migrated.
 
 Contents:
 
