@@ -5,7 +5,7 @@ import { canonical } from '../packages/sim-core/src/benchmark/cache.js';
 import { metricValues } from '../packages/sim-core/src/benchmark/metrics.js';
 
 const root = new URL('../', import.meta.url), sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
-const selected = ['scene_fix_rate', 'source_fix_rate', 'horizontal_median_m', 'horizontal_p90_m',
+const selected = ['scene_fix_rate', 'source_fix_rate', 'detection_rate', 'horizontal_median_m', 'horizontal_p90_m',
   'useful_fix_rate', 'unflagged_wrong_fix_rate', 'wrong_fix_rate', 'within_1sigma', 'within_2sigma', 'risk_coverage_area'];
 const metrics = (runs) => {
   const all = metricValues(runs);
