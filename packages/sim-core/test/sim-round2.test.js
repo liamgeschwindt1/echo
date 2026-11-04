@@ -124,6 +124,24 @@ test('sealed population hash is frozen; 40 new sites and explicit three-way spli
   assert.deepEqual(counts, { train: 68, validation: 82 });
 });
 
+test('seal producer is an independent serializable snapshot when attached to the caller manifest', async () => {
+  const e = JSON.parse(await readFile(new URL('../../../docs/experiments/round2-sealed.json', import.meta.url), 'utf8'));
+  const directory = await mkdtemp(join(tmpdir(), 'echo-seal-snapshot-'));
+  try {
+    const manifest = { code_version: 'unit-test', runtime: { node: 'original' } };
+    const seal = await beginSealedRun(e, { directory, manifest });
+    manifest.sealed = seal.manifest;
+    manifest.runtime.node = 'later mutation';
+    const exported = JSON.parse(JSON.stringify({ manifest, runs: [{ manifest }] }));
+    assert.deepEqual(exported.manifest.sealed.producer, {
+      code_version: 'unit-test', runtime: { node: 'original' }
+    });
+    const started = JSON.parse((await readFile(seal.manifest.ledger, 'utf8')).trim());
+    assert.deepEqual(started.producer, seal.manifest.producer);
+    await seal.finish('completed', { unit_test: true });
+  } finally { await rm(directory, { recursive: true }); }
+});
+
 test('seal persists a failed attempt and requires an auditable override', async () => {
   const e = JSON.parse(await readFile(new URL('../../../docs/experiments/round2-sealed.json', import.meta.url), 'utf8'));
   const directory = await mkdtemp(join(tmpdir(), 'echo-seal-'));

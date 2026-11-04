@@ -26,7 +26,7 @@ export async function beginSealedRun(experiment, { directory, override, manifest
   const entry = {
     state: 'started', at: new Date().toISOString(), input_sha256: hash,
     experiment_sha256: createHash('sha256').update(canonical(experiment)).digest('hex'),
-    override_reason: override ?? null, producer: manifest
+    override_reason: override ?? null, producer: structuredClone(manifest)
   };
   try {
     const handle = await open(file, 'wx');

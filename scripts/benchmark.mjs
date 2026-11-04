@@ -45,33 +45,35 @@ const seal = args.sealed ? await beginSealedRun(e, {
   directory: resolve('docs/experiments/sealed-runs'), override: args['sealed-override'], manifest
 }) : null;
 if (seal) manifest.sealed = seal.manifest;
-const executor = await nodeExecutor({ workers, clips, manifest, experiment: e, cacheDirectory: resolve(option('--cache', '.benchmark-cache')), discardRenders: !!args['discard-renders'] });
 const controller = new AbortController();
 process.once('SIGINT', () => { console.error('Cancellation requested; finish active jobs, then save partial report.'); controller.abort(); });
 let report;
 try {
-  report = await runExperiment(e, {
-    ...executor, workers, signal: controller.signal, manifest: executor.manifest,
-    onProgress: ({ done, total, result }) => {
-      // Held-out numbers are saved, never printed for tuning.
-      if (result) console.log(`${done}/${total} ${result.job.scene} ${result.job.split} ${result.job.realism}/${result.job.analysis_mode}${result.cache_hit ? ' [cache]' : ''}`);
-    }
-  });
+  const executor = await nodeExecutor({ workers, clips, manifest, experiment: e, cacheDirectory: resolve(option('--cache', '.benchmark-cache')), discardRenders: !!args['discard-renders'] });
+  try {
+    report = await runExperiment(e, {
+      ...executor, workers, signal: controller.signal, manifest: executor.manifest,
+      onProgress: ({ done, total, result }) => {
+        // Held-out numbers are saved, never printed for tuning.
+        if (result) console.log(`${done}/${total} ${result.job.scene} ${result.job.split} ${result.job.realism}/${result.job.analysis_mode}${result.cache_hit ? ' [cache]' : ''}`);
+      }
+    });
+  } finally { await executor.close(); }
+  const baselineFile = option('--compare', null);
+  if (baselineFile) {
+    const baseline = JSON.parse(await readFile(resolve(baselineFile), 'utf8'));
+    report.comparison = args.acceptance === 'round2' ? compareRound2Reports(report, baseline, e) : compareReports(report, baseline, e.tolerances);
+    if (args['fail-on-regress'] && !report.comparison.pass) process.exitCode = 1;
+  }
+  if (controller.signal.aborted) process.exitCode = 130;
+  await mkdir(dirname(out), { recursive: true });
+  await writeFile(out, JSON.stringify(report, null, 2) + '\n');
+  const stem = out.replace(/\.json$/, '');
+  await writeFile(`${stem}.csv`, reportCsv(report));
+  await writeFile(`${stem}.html`, reportHtml(report, manifest.targets));
+  await seal?.finish(controller.signal.aborted ? 'cancelled' : 'completed', { output: out, runs: report.runs.length });
+  console.log(`Saved ${out}; ${report.comparison ? report.comparison.pass ? 'no regressions' : `${report.comparison.regressions.length} REGRESSIONS` : 'baseline report'}.`);
 } catch (error) {
-  await seal?.finish('failed', { error: error.message });
+  await seal?.finish('failed', { error: error.message, runs: report?.runs.length });
   throw error;
-} finally { await executor.close(); }
-const baselineFile = option('--compare', null);
-if (baselineFile) {
-  const baseline = JSON.parse(await readFile(resolve(baselineFile), 'utf8'));
-  report.comparison = args.acceptance === 'round2' ? compareRound2Reports(report, baseline, e) : compareReports(report, baseline, e.tolerances);
-  if (args['fail-on-regress'] && !report.comparison.pass) process.exitCode = 1;
 }
-if (controller.signal.aborted) process.exitCode = 130;
-await mkdir(dirname(out), { recursive: true });
-await writeFile(out, JSON.stringify(report, null, 2) + '\n');
-const stem = out.replace(/\.json$/, '');
-await writeFile(`${stem}.csv`, reportCsv(report));
-await writeFile(`${stem}.html`, reportHtml(report, manifest.targets));
-await seal?.finish(controller.signal.aborted ? 'cancelled' : 'completed', { output: out, runs: report.runs.length });
-console.log(`Saved ${out}; ${report.comparison ? report.comparison.pass ? 'no regressions' : `${report.comparison.regressions.length} REGRESSIONS` : 'baseline report'}.`);
