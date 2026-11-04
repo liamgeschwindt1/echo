@@ -121,6 +121,25 @@
   among41:4.436% bootstrap probability of no wrong scene, giving zero delta
   for confidence-only ordering. Preserve the rule and population unchanged.
 
+## Round 2 heartbeat and complete evaluation (12:22 UTC)
+
+- Disk58%,7.3GiB free. Fresh150/150 final evaluation completed; all inference
+  and scoring objects exactly equal the re-scored reference. Every train/
+  validation x realism partition passes rule4 by all-equal, not improvement.
+  The270-run variance population is now running; no partial ranking is reported.
+- Committed `2924ef5` before outcomes:60 available-node/spacing cases and288
+  equal nine-design range/ambient-floor cases. Measured p90 estimates are
+  1,292,465ms and3,521,018ms. With the conservative variance, attribution and
+  sealed reservations plus an hour for reporting/CI, these fit the19:25UTC
+  budget. Start them only after the current study, sequentially with distinct
+  discard caches and disk preflight; seal remains the last study.
+- These are descriptive studies of the retained solver, not another algorithm
+  tuning attempt or the full improved-engine array ranking. Report actual
+  nodes used, not just nodes available. Track presence is only a detection
+  proxy. Two observed seed ranges are not reliable population95% intervals.
+  Hardware requirements stay null when the appropriate impairment was not
+  swept or target compliance is not demonstrated.
+
 ## Rules and decisions (2026-11-04)
 
 - Work only on `overnight/localisation`; no main pushes. Each retained logical step gets its own commit after core tests and benchmark.

@@ -15,7 +15,7 @@ for (const study of ['confidence', 'global', 'global-uncertainty', 'weighted', '
       confidence_evaluation: report.confidence_evaluation });
   }
 }
-const baseline = JSON.parse(await readFile(new URL('baselines/round2-final-baseline.json', root)));
+const baseline = JSON.parse(gunzipSync(await readFile(new URL('baselines/round2-final-baseline.json.gz', root))));
 const validationOn = baseline.runs.filter((r) => r.job.split === 'validation' && r.job.realism === 'on');
 const bad = validationOn.filter((r) => r.scores.unmatched_fixes || r.scores.fixes.some((f) => f.horizontal_m > 10)).length;
 const output = { trials, diagnostic_not_a_new_acceptance_rule: {
