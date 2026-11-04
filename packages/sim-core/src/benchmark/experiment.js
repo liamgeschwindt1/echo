@@ -74,6 +74,7 @@ export function normaliseExperiment(input) {
   if (new Set(e.scenes).size !== e.scenes.length) throw new Error('Scene IDs must be unique');
   for (const k of ['max_runs', 'samples', 'bootstrap_samples', 'permutation_samples']) if (!Number.isInteger(e[k]) || e[k] < 1) throw new Error(`${k} must be a positive integer`);
   if (!(e.held_out_fraction >= 0.3 && e.held_out_fraction < 1)) throw new Error('held_out_fraction must be at least 0.3 and below 1');
+  if (e.held_out_seeds !== undefined && (!Array.isArray(e.held_out_seeds) || e.held_out_seeds.some((s) => !Number.isSafeInteger(s) || s < 0 || s > 0xffffffff) || new Set(e.held_out_seeds).size !== e.held_out_seeds.length)) throw new Error('Held-out seeds must be unique unsigned integers');
   if (Number.isInteger(e.seeds)) {
     if (e.seeds < 1 || e.seeds > e.max_runs) throw new Error(`Seed count must be between 1 and run cap ${e.max_runs}; reduce seeds first`);
     const held = e.seeds >= 2 ? Math.ceil(e.seeds * e.held_out_fraction) : 0;
@@ -140,16 +141,34 @@ export function buildJobs(input, { allowAboveCap = false } = {}) {
   return { experiment: e, configs, jobs };
 }
 
+function fewerSeeds(e) {
+  if (e.seeds.length < 2) return null;
+  const heldIds = new Set(e.held_out_seeds ?? HELD_OUT_SEEDS);
+  const held = e.seeds.filter((s) => heldIds.has(s));
+  const train = e.seeds.filter((s) => !heldIds.has(s));
+  const target = Math.ceil(e.seeds.length / 2);
+  if (!held.length || !train.length) return e.seeds.slice(0, target);
+  for (let count = Math.max(2, target); count < e.seeds.length; count++) {
+    const heldCount = Math.ceil(count * e.held_out_fraction);
+    const trainCount = count - heldCount;
+    if (trainCount < 1 || heldCount > held.length || trainCount > train.length) continue;
+    const keep = new Set([...train.slice(0, trainCount), ...held.slice(0, heldCount)]);
+    return e.seeds.filter((s) => keep.has(s));
+  }
+  return null;
+}
+
 export function reduceExperiment(input) {
   const e = normaliseExperiment(input);
   while (e.estimated_runs > e.max_runs) {
     const largest = [...e.sweeps].sort((a, b) => b.values.length - a.values.length)[0];
+    const seeds = fewerSeeds(e);
     if (['random', 'latin-hypercube'].includes(e.mode) && e.samples > 1) e.samples = Math.max(1, Math.floor(e.samples / 2));
+    else if (seeds) e.seeds = seeds;
     else if (largest?.values.length > 1) {
       largest.values = largest.values.filter((_, i) => i % 2 === 0);
       delete largest.range;
-    } else if (e.seeds.length > 1) e.seeds = e.seeds.slice(0, Math.ceil(e.seeds.length / 2));
-    else throw new Error('Scene/mode count alone exceeds cap; pick fewer scenes');
+    } else throw new Error('Cannot fit cap while preserving seed partitions; pick fewer scenes/modes or increase cap');
     e.estimated_runs = modeRunCount(e) * e.scenes.length * e.seeds.length * e.realism.length;
   }
   return e;

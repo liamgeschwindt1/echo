@@ -15,8 +15,13 @@ Modes are `one-at-a-time` (base plus individual changes), `grid` (full cross),
 `random`, `latin-hypercube` (stratified samples of discrete listed values), and
 `paired` (two `configs` with settings and/or variable values). Random sampling
 uses `sample_seed`, default 20261104. `samples` defaults to 20; `max_runs` to 2000.
-Above-cap experiments are rejected before rendering. Reduction removes values,
-then seeds; it never silently truncates a result.
+Above-cap experiments are rejected before rendering. Reduction removes random/LHS
+samples, then seed repetitions, then variable values; it never silently truncates
+a result. Both seed partitions and the requested held-out fraction are preserved
+when both exist, including custom explicit IDs. An impossible cap asks for fewer
+scenes/modes or a larger cap rather than silently making a one-seed pilot.
+The default all-library preset reduces to 1800 runs with all nine arrays and seeds
+1/101, instead of dropping four array alternatives.
 
 Defaults include both realism off and on, measured-only inference. Add
 `analysis_modes: ["measured_only", "truth_assisted"]` to quantify the optimistic
@@ -110,6 +115,15 @@ study: all 25 sites, nine arrays, seeds 1/2/101, realism off/on. It contains
 `array-ground` and `array-source-level` experiments each contain 144 runs.
 Those are limited two-site endpoint sensitivity studies, not full-scene
 hardware acceptance tests. No clock sensitivity is claimed.
+The original full study is preserved as an explicitly cancelled 167/1350
+checkpoint, not a population-balanced ranking. The predeclared budget replacement
+`array-full-budget.json` keeps every site/array and both realism profiles with
+seeds 1/101: 900 runs, 306 train and 594 held-out.
+
+Large study JSON files use lossless timestamp-free gzip; CSV and standalone HTML
+remain directly readable. Run `gzip -dk baselines/array-pilot.json.gz` before
+passing its JSON to CLI comparison tools. Archives retain full per-run inference,
+settings and producer provenance; no fields were stripped to reduce file size.
 
 ## Regression CI
 

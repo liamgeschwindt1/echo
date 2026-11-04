@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { testingExperiment, parseVariableValues } from '../src/ui/testing.js';
 import { testingEditorResults } from '../src/ui/testing-view.js';
-import { VARIABLES, estimateExperiment, buildJobs, presetExperiment } from '@echo/sim-core/benchmark/experiment.js';
+import { VARIABLES, estimateExperiment, buildJobs, presetExperiment, reduceExperiment } from '@echo/sim-core/benchmark/experiment.js';
 
 test('Testing builds shared-engine experiments without JSON editing', () => {
   const sweep = { variable: 'heading_error_sigma_deg', values: [0, 2.5], group: 'Hardware errors' };
@@ -32,6 +32,16 @@ test('All Testing presets expand and show counts using shared engine', () => {
     assert.ok(count.runs > 0);
     if (!count.above_cap) assert.equal(buildJobs(e).jobs.length, count.runs);
   }
+});
+test('Reduced array preset round-trips through form counts without changing held-out jobs', () => {
+  const reduced = reduceExperiment(presetExperiment('Array ranking'));
+  const fromForm = testingExperiment({
+    scenes: reduced.scenes, seeds: reduced.seeds.length, mode: reduced.mode,
+    sweeps: reduced.sweeps, analysis_modes: reduced.analysis_modes, realism: reduced.realism
+  });
+  assert.deepEqual(fromForm.seeds, [1, 101]);
+  assert.equal(fromForm.sweeps[0].values.length, 9);
+  assert.deepEqual(buildJobs(fromForm).jobs.map((j) => j.id), buildJobs(reduced).jobs.map((j) => j.id));
 });
 test('Editor adapter returns exact assisted results and never invents measured elevation error', () => {
   const original = [{ source_id: 's1' }];

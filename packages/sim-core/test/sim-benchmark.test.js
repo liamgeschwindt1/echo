@@ -73,6 +73,30 @@ test('cap rejects before expansion and reduce samples reaches safe size', () => 
   assert.throws(() => buildJobs(experiment({ sweeps: [{ variable: 'noise_correlation', values: [1.1] }] })), /fraction/);
   assert.throws(() => buildJobs(experiment({ sweeps: [{ variable: 'unknown', values: [1] }] })), /Unknown/);
 });
+test('cap reduction preserves actual held-out seed IDs and array alternatives', () => {
+  const preset = presetExperiment('Array ranking');
+  const original = structuredClone(preset);
+  const reduced = reduceExperiment(preset);
+  assert.deepEqual(preset, original);
+  assert.deepEqual(reduced.seeds, [1, 101]);
+  assert.deepEqual(reduced.sweeps, preset.sweeps);
+  assert.equal(buildJobs(reduced).jobs.length, 1800);
+  const custom = reduceExperiment(experiment({ scenes: ['sparse_20', 'random_1'], seeds: [7, 9, 99, 101, 300], held_out_seeds: [99, 101], realism: ['off', 'on'], max_runs: 12 }));
+  assert.deepEqual(custom.seeds, [7, 9, 99]);
+  assert.ok(custom.seeds.filter((s) => custom.held_out_seeds.includes(s)).length / custom.seeds.length >= custom.held_out_fraction);
+  assert.deepEqual(reduceExperiment(custom), custom);
+  assert.throws(() => reduceExperiment(experiment({ max_runs: 1 })), /preserving seed partitions/);
+});
+test('cap reduction honours larger holdout fractions and validates explicit held-out seeds', () => {
+  const input = normaliseExperiment(experiment({ seeds: 10, held_out_fraction: 0.6 }));
+  const reduced = reduceExperiment({ ...input, max_runs: 3 });
+  assert.equal(reduced.seeds.length, 3);
+  assert.equal(reduced.seeds.filter((s) => reduced.held_out_seeds.includes(s)).length, 2);
+  assert.ok(reduced.seeds.some((s) => !reduced.held_out_seeds.includes(s)));
+  for (const held_out_seeds of [null, '101', [101, 101], [-1], [1.5], [2 ** 32]]) {
+    assert.throws(() => normaliseExperiment(experiment({ held_out_seeds })), /Held-out seeds/);
+  }
+});
 test('variable transforms are nonmutating and each descriptor has render classification', () => {
   const scene = buildScene('sparse_20'), before = structuredClone(scene);
   for (const variable of VARIABLES) {

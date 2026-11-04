@@ -32,6 +32,11 @@ JSON experiment / Testing form
   -> report.js: shared tables, SVG plots, CSV, standalone HTML
 ```
 
+Cap reduction preserves both seed partitions and their requested held-out minimum
+before thinning variable alternatives. Explicit IDs are retained, not replaced;
+an impossible split/cap combination errors. This helper is shared by CLI callers
+and the Testing form.
+
 In measured-only mode, `runner.js` constructs a restricted sensor scenario and
 sensor data object. Only nominal node geometry, settings, buildings, microphone
 mixtures and sample rate cross that boundary. Ground truth stays in the scorer.

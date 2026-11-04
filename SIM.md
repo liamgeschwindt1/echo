@@ -6,7 +6,7 @@ The one reference document for the **sim** frontend ([apps/sim](apps/sim)) and i
 
 Coordinates: metres, x east, y north, z up. Time: seconds of scenario time. Inside the physics, pressure is in pascals; digital floats appear only at the microphone output. Angles in the code are in radians unless the name ends in `_deg`.
 
-## Reproducible Testing engine (schema 0.12)
+## Reproducible Testing engine (schema 0.13)
 
 `npm run benchmark -- --experiment smoke --out baselines/smoke.json` runs the shared
 `packages/sim-core/src/benchmark/` engine. CLI and Testing use identical experiment
@@ -24,6 +24,12 @@ truth only after inference. Unmatched fixes count as wrong. Model labelling is
 not run by benchmarks.
 The benchmark manifest snapshots the exact display targets, including their
 placeholder marker, rather than relying on a later copy of `targets.json`.
+
+Cap reduction preserves both actual seed partitions and the requested held-out
+fraction when both are present. It reduces random/LHS samples, then seed repetitions,
+before removing variable alternatives. The default array preset therefore keeps
+all nine arrays at 1800 runs. An impossible cap errors instead of silently turning
+a split study into a one-seed pilot. Explicit held-out IDs are validated.
 
 Seeds `[1, 2, 101]` have `101` held out. Eight of 25 scene IDs are held-out random
 sites; the split is fixed before baseline and held-out data is reporting-only.
@@ -101,6 +107,13 @@ and seeds as held out and does not tune algorithm thresholds.
 ranking: 25 sites, nine arrays, three seeds, realism off/on, 1350 runs.
 Eight 144-run two-site endpoint grids test existing placeholder ranges.
 Their outcomes are reporting-only; none selects an algorithm threshold.
+The original full study was gracefully checkpointed at 167/1350 because of
+observed render cost, not accuracy. Its explicitly cancelled archive is
+`baselines/array-full-partial.json.gz`, not a fair all-array ranking.
+`docs/experiments/array-full-budget.json` preregisters the 900-run replacement:
+all 25 sites and nine arrays, seeds 1/101, both realism profiles. It retains
+32% held-out site IDs and 50% held-out seeds. See the final report for actual
+completion, rather than assuming every declared study ran.
 
 ### Regression CI
 
