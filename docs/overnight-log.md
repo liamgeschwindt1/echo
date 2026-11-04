@@ -28,3 +28,33 @@
 - Native browser WAV decoding may resample differently than the CLI. Benchmark now shares explicit PCM16/float32 decoding plus `resampleSinc`; hashes verify exact clip identity.
 - Existing measured thresholds are exported as `measured_*` placeholders. Editor's default pipeline is unchanged; benchmark defaults measured-only. No new propagation physics was added.
 - Limits: measured elevation/3D and label accuracy unavailable; measured association remains greedy/two-node and calibration uses track medians. Within-site seeds are not independent sites. No hardware winner is inferred from conditional error alone.
+
+## Consensus investigation (rejected and removed)
+
+- Browser/CLI end-to-end testing found an actual reproducibility bug, not just different WAV decoders. PCM SHA-256 and whole-event results matched, but a legacy rolling fix selected n1/n2 in Chromium and n2/n3 in Node. At the first diverging track fix, horizontal error was 0.257293 m vs 0.079816 m. Pair costs near machine zero are used to break equal-count consensus ties; tiny arithmetic differences change the chosen pair, then propagation-aligned windows diverge.
+- Implemented positive-weight, forward-ray, deterministic consensus experimentally. Four new solver/property regressions and existing upgrade tests passed (35 targeted tests total); browser/CLI eight-run parity passed. Defaults-only smoke also had zero regressions, but that was not sufficient evidence to keep the optional solver.
+- Replayed the original **training-only** seven-source seed 1, realism off, truth-assisted, reusing exact cached audio. First verified legacy scores exactly reproduced the baseline. Median horizontal error improved **21.5058 -> 11.0777 m**, p90 **36.4976 -> 26.7930 m**, within 10 m **14.29% -> 42.86%**, track count **20 -> 21**, median track error **7.7501 -> 3.7344 m**. s8 improved **25.3632 -> 6.5593 m**, s11 **36.4976 -> 3.6362 m**.
+- However suspect recall regressed **66.67% -> 50%** and precision **80% -> 40%**. Under the no-regression rule the entire optional solver and its thresholds were **removed before commit**, not promoted or hidden behind a flag. `baselines/consensus-seven-source.json` preserves the rejected experiment's evidence, not an available preset. No held-out outputs were inspected to choose it.
+- s1 already has four legacy track fixes on this exact shared-decoder replay; the reported zero-fix case is not reproduced. s12 remains a 21.5058 m unflagged error. These are not claimed fixed.
+
+## Measured quality and benchmark correctness
+
+- Found an exact unit mismatch: `windowTdoas` raw PHAT peak has maximum `2 * band_bins / (FFT_length * 4)`, under 0.015 for 200-1600 Hz at 48 kHz. `measured.js` compared it with `min_peak=0.25`, rejecting even perfectly coherent windows.
+- Added dimensionless `peak_normalized`, leaving raw peak/TDOA unchanged. Measured-only quality uses that value and the **unchanged** 0.25 placeholder gate. This is a mathematical normalisation repair, not threshold tuning. Added coherent/silent-window tests and a nonempty poisoned-truth test that must form tracks.
+- Corrected resume validation for changed PCM hashes, runtime, exact settings/custom scenes and error target. Checkpoints are persisted only after attaching their identity. Cache/run manifests now identify runtime.
+- Integer seed counts reserve at least 30% held-out seeds (when count >=2), without duplicating ID 101 for large counts. A single-seed pilot is explicitly not seed holdout validation.
+- OAT no longer silently removes a requested value merely because it equals a library default; scene/realism bases differ. Analysis-mode overrides no longer duplicate jobs or inflate estimates.
+- Fixed combined-sweep transform order: node layout then spacing, source count then levels, range after node geometry. Reordered JSON keys cannot change an experiment's meaning. Comparison matches variable values instead of config order and fails on changed scene/seed populations or wrong-fix targets. Tornado never substitutes zero for unavailable sensitivity.
+- Initial retained repair smoke: **16 runs, zero tracked regressions**. Newly available measured error/precision metrics have no old finite counterpart; this is not proof of good accuracy. Final verification repeats after the benchmark correctness changes.
+- Retained-step validation: required core suite **223/223** passed with all signal/analysis goldens untouched; targeted final benchmark/measured regressions **26/26** passed, including an additional paired-config identity case. Final 16-run smoke again had **zero tracked regressions**. This changes availability, not established real-world accuracy.
+
+## Testing workspace
+
+- Added scene checkboxes, held-out/current-editor selection, groups with list/range/default controls, presets, cap/reduction, modes, estimates, two compute workers plus coordinator, pause/cancel and IndexedDB checkpoints.
+- Shared tables/CI, SVG lines/bands, heatmap, tornado, ranking-flip diagnostics, baseline/saved-run deltas, downloads and clipboard summary. Names and notes persist with each saved run.
+- Headless browser verification is available, not skipped. The first legacy eight-run sweep exposed reproducibility failure rather than passing on no-fix equality. Its weighted rerun passed, but that solver was subsequently rejected. Final browser verification must exercise the retained measured-only pipeline, require a real fix, and replace the screenshot.
+- Before normalisation repair, default measured-only returned **no fixes** even on the glass sweep. That was a genuine gate bug, not evidence that the scene was impossible.
+- The editor still uses legacy truth-assisted Create. Measured drill-down opens saved horizontal inference with an explicitly assumed display height, not invented elevation.
+- Final retained measured-only browser/CLI sweep **4/4 runs**, with actual fixes, matched scores/CI to **1e-7**. The test pauses only after a completed checkpoint, reloads, resumes, exports all three formats and drills down. App tests **31/31** and production build passed. Screenshots now show retained code: `testing-setup.png` and `testing-results.png`; wide metrics scroll within their table.
+- A strengthened browser test initially hit its 30 s first-progress timeout while the full core suite and baseline ran concurrently. Increased only compute wait to 120 s (overall harness 600 s); numerical tolerance stayed fixed. Rerun passed in 100 s.
+- Four-run glass pilot has duplicate pairwise fixes: unmatched fixes count wrong, so wrong-fix fraction is **50%** despite small matched-position errors. Realism-on uncertainty remains badly calibrated. No hardware recommendation follows.

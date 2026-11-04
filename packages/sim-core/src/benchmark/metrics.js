@@ -2,6 +2,7 @@ import { mulberry32 } from '../rng.js';
 import { percentile } from '../sweep.js';
 import { SCENES } from './scenes.js';
 import { BENCHMARK_DEFAULTS } from './experiment.js';
+import { canonical } from './cache.js';
 
 export const METRICS = Object.freeze({
   horizontal_median_m: { direction: 'lower', unit: 'm', tolerance: 0 },
@@ -85,16 +86,23 @@ export function summariseRuns(runs, options = {}) {
   return keys.map((key) => {
     const subset = runs.filter((r) => [r.job.config.id, r.job.split, r.job.realism, r.job.analysis_mode].join('|') === key);
     const job = subset[0].job;
-    return { key, config_id: job.config.id, name: job.config.name, values: job.config.values, group: job.config.group, split: job.split, realism: job.realism, analysis_mode: job.analysis_mode, metrics: aggregate(subset, options) };
+    return { key, config_id: job.config.id, name: job.config.name, values: job.config.values, settings: job.config.settings, group: job.config.group, split: job.split, realism: job.realism, analysis_mode: job.analysis_mode, metrics: aggregate(subset, options) };
   });
 }
 
 const loss = (v, m) => m.direction === 'target' ? Math.abs(v - m.target) : m.direction === 'higher' ? -v : v;
+function matchingRow(current, before) {
+  if (before.values === undefined) return current.find((r) => r.key === before.key);
+  const candidates = current.filter((r) => r.split === before.split && r.realism === before.realism &&
+    r.analysis_mode === before.analysis_mode && canonical(r.values) === canonical(before.values) &&
+    (before.settings === undefined || canonical(r.settings) === canonical(before.settings)));
+  return candidates.length === 1 ? candidates[0] : candidates.find((r) => r.key === before.key);
+}
 export function compareSummaries(current, baseline, tolerances = {}) {
   const differences = [];
   const regressions = [];
   for (const before of baseline) {
-    const after = current.find((r) => r.key === before.key);
+    const after = matchingRow(current, before);
     if (!after) { regressions.push({ key: before.key, reason: 'missing configuration' }); continue; }
     for (const [metric, definition] of Object.entries(METRICS)) {
       if (definition.tracked === false) continue;
@@ -108,6 +116,20 @@ export function compareSummaries(current, baseline, tolerances = {}) {
     }
   }
   return { differences, regressions, pass: regressions.length === 0 };
+}
+
+export function compareReports(current, baseline, tolerances = {}) {
+  const comparison = compareSummaries(current.summary, baseline.summary, tolerances);
+  const cases = (report, row) => report.runs.filter((r) =>
+    r.job.config.id === row.config_id && r.job.split === row.split && r.job.realism === row.realism && r.job.analysis_mode === row.analysis_mode)
+    .map((r) => `${r.job.scene}|${r.job.seed}`).sort();
+  for (const before of baseline.summary) {
+    const after = matchingRow(current.summary, before);
+    if (after && canonical(cases(current, after)) !== canonical(cases(baseline, before))) comparison.regressions.push({ key: before.key, reason: 'different scene/seed populations; metric delta is not a regression comparison' });
+  }
+  if ((current.experiment.wrong_fix_m ?? BENCHMARK_DEFAULTS.wrong_fix_m) !== (baseline.experiment.wrong_fix_m ?? BENCHMARK_DEFAULTS.wrong_fix_m)) comparison.regressions.push({ reason: 'different wrong-fix scoring targets' });
+  comparison.pass = comparison.regressions.length === 0;
+  return comparison;
 }
 
 export function pairedComparison(runs, metric, options = {}) {

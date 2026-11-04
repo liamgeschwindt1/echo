@@ -5,9 +5,9 @@ import { buildJobs, estimateExperiment, presetExperiment, reduceExperiment, norm
 import { SCENES, buildScene } from '../src/benchmark/scenes.js';
 import { applyValues, VARIABLES } from '../src/benchmark/variables.js';
 import { cacheKeys, MemoryCache, audioHash } from '../src/benchmark/cache.js';
-import { aggregate, metricValues, compareSummaries, rankingFlips, pairedComparison } from '../src/benchmark/metrics.js';
+import { aggregate, metricValues, compareSummaries, compareReports, rankingFlips, pairedComparison } from '../src/benchmark/metrics.js';
 import { runJob, runExperiment } from '../src/benchmark/runner.js';
-import { reportCsv, reportHtml } from '../src/benchmark/report.js';
+import { reportCsv, reportHtml, tornado } from '../src/benchmark/report.js';
 import { click } from './golden-scenes.js';
 import { analyseMeasured } from '../src/measured.js';
 import { speedOfSound } from '../src/physics.js';
@@ -33,7 +33,7 @@ test('grid count, seeds and held-out are explicit and repeatable', () => {
 });
 test('OAT includes base and does not cross variables', () => {
   const { configs } = buildJobs(experiment({ mode: 'one-at-a-time', sweeps: [{ variable: 'heading_error_sigma_deg', values: [0, 1, 2.5] }, { variable: 'min_snr_db', values: [3, 6, 12] }] }));
-  assert.equal(configs.length, 5);
+  assert.equal(configs.length, 7);
   assert.ok(configs.every((c) => Object.keys(c.values).length <= 1));
 });
 test('random and Latin hypercube sample deterministically; LHS covers equal discrete strata', () => {
@@ -42,6 +42,27 @@ test('random and Latin hypercube sample deterministically; LHS covers equal disc
     assert.deepEqual(buildJobs(e), buildJobs(e));
     if (mode === 'latin-hypercube') assert.equal(new Set(buildJobs(e).configs.map((c) => c.values.heading_error_sigma_deg)).size, 4);
   }
+});
+test('integer seed counts reserve >=30% and never duplicate reserved IDs', () => {
+  for (const count of [2, 3, 5, 102, 300]) {
+    const e = normaliseExperiment(experiment({ seeds: count }));
+    assert.equal(e.seeds.length, count);
+    assert.equal(new Set(e.seeds).size, count);
+    assert.ok(e.held_out_seeds.length / count >= 0.3);
+    assert.deepEqual(normaliseExperiment(e), e);
+  }
+  assert.throws(() => normaliseExperiment(experiment({ seeds: 1e9 })), /Seed count/);
+});
+test('analysis-mode sweeps and explicit overrides have exact nonduplicated run estimates', () => {
+  for (const mode of ['grid', 'one-at-a-time', 'random', 'latin-hypercube']) {
+    const e = experiment({ mode, analysis_modes: ['measured_only', 'truth_assisted'], sweeps: [{ variable: 'analysis_mode', values: ['measured_only', 'truth_assisted'] }] });
+    const built = buildJobs(e);
+    assert.equal(estimateExperiment(e).runs, built.jobs.length);
+    assert.equal(new Set(built.jobs.map((j) => j.id)).size, built.jobs.length);
+    if (mode === 'grid') assert.equal(built.jobs.length, 4);
+  }
+  const e = experiment({ analysis_modes: ['measured_only', 'truth_assisted'], base_settings: { analysis_mode: 'truth_assisted' } });
+  assert.equal(buildJobs(e).jobs.length, 2);
 });
 test('cap rejects before expansion and reduce samples reaches safe size', () => {
   const e = presetExperiment('Array ranking');
@@ -61,6 +82,15 @@ test('variable transforms are nonmutating and each descriptor has render classif
     assert.deepEqual(scene, before);
   }
   assert.equal(applyValues(scene, { node_count: 6 }).nodes.length, 6);
+});
+test('combined transforms are order-independent and preserve requested geometry and source levels', () => {
+  const values = { range_m: 50, node_spacing_m: 80, layout: 'line', node_count: 4, level_difference_db: 6, source_count: 2, level_1m_db: 100 };
+  const changed = applyValues(buildScene('sparse_20'), values);
+  assert.deepEqual(changed, applyValues(buildScene('sparse_20'), Object.fromEntries(Object.entries(values).reverse())));
+  assert.deepEqual(changed.sources.map((s) => s.level_1m_db), [100, 106]);
+  const pairs = changed.nodes.flatMap((n, i) => changed.nodes.slice(i + 1).map((m) => Math.hypot(n.position[0] - m.position[0], n.position[1] - m.position[1])));
+  assert.ok(Math.abs(pairs.reduce((a, b) => a + b, 0) / pairs.length - 80) < 1e-10);
+  assert.ok(Math.abs(Math.hypot(...changed.sources[0].keyframes[0].position.slice(0, 2)) - 50) < 1e-10);
 });
 test('render cache ignores analysis thresholds but includes realism, bands, audio and code', async () => {
   const s = buildScene('sparse_20');
@@ -99,6 +129,32 @@ test('regression comparison gates loss of availability, missing configs and cali
   assert.equal(compareSummaries([row(null)], [row(3)]).pass, false);
   assert.equal(compareSummaries([], [row(3)]).pass, false);
   assert.equal(compareSummaries([row(3)], [row(3)]).pass, true);
+});
+test('report comparisons reject different grading populations and scoring targets', async () => {
+  const baseline = await runExperiment(experiment(), { execute: async (job) => fakeRun(2, { job }), manifest: { code_version: 'test' } });
+  assert.equal(compareReports(baseline, baseline).pass, true);
+  const changed = structuredClone(baseline);
+  changed.runs[0].job.seed = 7;
+  assert.equal(compareReports(changed, baseline).pass, false);
+  const target = structuredClone(baseline); target.experiment.wrong_fix_m = 20;
+  assert.equal(compareReports(target, baseline).pass, false);
+  const reordered = structuredClone(baseline);
+  reordered.summary[0].config_id = 'c5';
+  reordered.summary[0].key = reordered.summary[0].key.replace('c0', 'c5');
+  for (const r of reordered.runs) if (r.job.split === reordered.summary[0].split) r.job.config = { ...r.job.config, id: 'c5' };
+  assert.equal(compareReports(reordered, baseline).pass, true);
+});
+test('paired configurations with the same values but different settings compare to their own baseline', async () => {
+  const e = experiment({ mode: 'paired', configs: [{ settings: { min_snr_db: 3 } }, { settings: { min_snr_db: 12 } }] });
+  const report = await runExperiment(e, { execute: async (job) => fakeRun(job.config.id === 'c0' ? 5 : 2, { job }), manifest: { code_version: 'test' } });
+  assert.equal(compareReports(report, report).pass, true);
+  assert.ok(compareReports(report, report).differences.every((r) => r.delta === null || r.delta === 0));
+});
+test('tornado never reports unavailable sensitivity as a zero effect', () => {
+  const row = (group) => ({ group, split: 'train', realism: 'on', analysis_mode: 'measured_only', metrics: { horizontal_median_m: { value: null } } });
+  const html = tornado([row('base'), row('heading_error_sigma_deg')], 'horizontal_median_m');
+  assert.match(html, /unavailable/);
+  assert.ok(!html.includes('<meter'));
 });
 test('array ranking flips identify only single changing variables, ties have no winner', () => {
   const row = (array, heading, value) => ({ values: { mic_array: array, heading_error_sigma_deg: heading }, split: 'train', realism: 'on', analysis_mode: 'measured_only', metrics: { horizontal_median_m: { value } } });
@@ -142,8 +198,30 @@ test('scheduler cancels dispatch and resumes complete jobs without duplication',
   const execute = async (job) => { count++; controller.abort(); return fakeRun(2, { job }); };
   const partial = await runExperiment(e, { execute, signal: controller.signal, workers: 1, manifest: { code_version: 'test' } });
   assert.equal(partial.runs.length, 1);
-  const full = await runExperiment(e, { execute: async (job) => fakeRun(2, { job }), completed: partial.runs, workers: 1, manifest: { code_version: 'test' } });
+  let resumed = 0;
+  const full = await runExperiment(e, { execute: async (job) => { resumed++; return fakeRun(2, { job }); }, completed: [...partial.runs, ...partial.runs], workers: 1, manifest: { code_version: 'test' } });
   assert.equal(full.runs.length, 3); assert.equal(count, 1);
+  assert.equal(resumed, 2);
+});
+test('resume rejects changed audio, settings, scoring targets, runtime and custom scenes', async () => {
+  const audio = [{ id: 'glass_breaking', samples: 1, sha256: 'abc' }];
+  const manifest = { code_version: 'test', audio, runtime: { engine: 'test' } };
+  const e = experiment({ seeds: [1] });
+  const first = await runExperiment(e, { execute: async (job) => fakeRun(2, { job, manifest }), manifest });
+  for (const [input, currentManifest] of [
+    [e, { ...manifest, audio: [{ ...audio[0], sha256: 'changed' }] }],
+    [e, { ...manifest, runtime: { engine: 'other' } }],
+    [{ ...e, base_settings: { min_snr_db: 99 } }, manifest],
+    [{ ...e, wrong_fix_m: 20 }, manifest],
+    [{ ...e, custom_scenes: { sparse_20: { changed: true } } }, manifest]
+  ]) {
+    let reruns = 0;
+    await runExperiment(input, { execute: async (job) => { reruns++; return fakeRun(2, { job, manifest: currentManifest }); }, completed: first.runs, manifest: currentManifest });
+    assert.equal(reruns, 1);
+  }
+  let saved;
+  await runExperiment(e, { execute: async (job) => fakeRun(2, { job, manifest }), manifest, onResult: async (result) => { saved = result; } });
+  assert.ok(saved.resume_identity);
 });
 test('reports escape scene/config text, CSV quotes, standalone HTML has no remote dependencies', async () => {
   const report = await runExperiment(experiment(), { execute: async (job) => fakeRun(2, { job }), manifest: { code_version: 'test' } });

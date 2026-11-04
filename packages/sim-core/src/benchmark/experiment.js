@@ -4,7 +4,7 @@ import { VARIABLES, VARIABLE_MAP, applyValues } from './variables.js';
 
 export const BENCHMARK_DEFAULTS = Object.freeze({
   max_runs: 2000, samples: 20, bootstrap_samples: 500, confidence: 0.95,
-  wrong_fix_m: 10, estimated_run_ms: 5000, permutation_samples: 2000
+  wrong_fix_m: 10, estimated_run_ms: 5000, permutation_samples: 2000, held_out_fraction: 0.3
 });
 export const BENCHMARK_MODES = ['one-at-a-time', 'grid', 'random', 'latin-hypercube', 'paired'];
 export const PRESETS = Object.freeze({
@@ -58,24 +58,39 @@ function configCount(e, sweeps) {
   return sweeps.reduce((s, v) => s * v.values.length, 1);
 }
 
+function modeRunCount(e) {
+  const modes = (values, settings) => values?.analysis_mode || settings?.analysis_mode ? 1 : e.analysis_modes.length;
+  const baseModes = modes(e.base_values, e.base_settings);
+  if (e.mode === 'paired') return e.configs.reduce((sum, c) => sum + modes(c.values ?? e.base_values, { ...e.base_settings, ...c.settings }), 0);
+  if (e.mode === 'one-at-a-time') return baseModes + e.sweeps.reduce((sum, s) => sum + s.values.length * (s.variable === 'analysis_mode' ? 1 : baseModes), 0);
+  return configCount(e, e.sweeps) * (e.sweeps.some((s) => s.variable === 'analysis_mode') ? 1 : baseModes);
+}
+
 export function normaliseExperiment(input) {
   if (!input || typeof input !== 'object') throw new Error('Experiment must be an object');
   const e = { ...BENCHMARK_DEFAULTS, sweeps: [], base_settings: {}, mode: 'one-at-a-time', realism: ['off', 'on'], analysis_modes: ['measured_only'], ...structuredClone(input) };
   if (!BENCHMARK_MODES.includes(e.mode)) throw new Error(`Unsupported mode: ${e.mode}`);
   if (!Array.isArray(e.scenes) || !e.scenes.length || e.scenes.some((id) => !SCENES.some((s) => s.id === id) && !e.custom_scenes?.[id])) throw new Error('Pick valid benchmark scenes');
   if (new Set(e.scenes).size !== e.scenes.length) throw new Error('Scene IDs must be unique');
-  e.seeds = Number.isInteger(e.seeds) ? Array.from({ length: e.seeds }, (_, i) => i === e.seeds - 1 && e.seeds >= 3 ? 101 : i + 1) : e.seeds;
-  if (!Array.isArray(e.seeds) || !e.seeds.length || e.seeds.some((s) => !Number.isSafeInteger(s) || s < 0 || s > 0xffffffff) || new Set(e.seeds).size !== e.seeds.length) throw new Error('Seeds must be unique unsigned integers');
   for (const k of ['max_runs', 'samples', 'bootstrap_samples', 'permutation_samples']) if (!Number.isInteger(e[k]) || e[k] < 1) throw new Error(`${k} must be a positive integer`);
+  if (!(e.held_out_fraction >= 0.3 && e.held_out_fraction < 1)) throw new Error('held_out_fraction must be at least 0.3 and below 1');
+  if (Number.isInteger(e.seeds)) {
+    if (e.seeds < 1 || e.seeds > e.max_runs) throw new Error(`Seed count must be between 1 and run cap ${e.max_runs}; reduce seeds first`);
+    const held = e.seeds >= 2 ? Math.ceil(e.seeds * e.held_out_fraction) : 0;
+    e.held_out_seeds = Array.from({ length: held }, (_, i) => 101 + i);
+    const reserved = new Set(e.held_out_seeds), training = [];
+    for (let seed = 1; training.length < e.seeds - held; seed++) if (!reserved.has(seed)) training.push(seed);
+    e.seeds = [...training, ...e.held_out_seeds];
+  }
+  if (!Array.isArray(e.seeds) || !e.seeds.length || e.seeds.some((s) => !Number.isSafeInteger(s) || s < 0 || s > 0xffffffff) || new Set(e.seeds).size !== e.seeds.length) throw new Error('Seeds must be unique unsigned integers');
   if (!(e.confidence > 0 && e.confidence < 1) || !(e.wrong_fix_m > 0)) throw new Error('Invalid confidence or error target');
   if (!Array.isArray(e.realism) || !e.realism.length || e.realism.some((m) => !['off', 'on', 'custom'].includes(m))) throw new Error('Invalid realism modes');
   if (!Array.isArray(e.analysis_modes) || !e.analysis_modes.length || e.analysis_modes.some((m) => !['truth_assisted', 'measured_only'].includes(m))) throw new Error('Invalid analysis modes');
   if (e.mode === 'paired' && (!e.configs || e.configs.length !== 2)) throw new Error('Paired mode needs exactly two configs');
   e.sweeps = e.sweeps.map((v) => ({ ...v, values: sweepValues(v) }));
   if (new Set(e.sweeps.map((s) => s.variable)).size !== e.sweeps.length) throw new Error('Sweep variables must be unique');
-  // OAT keeps one base run and omits duplicate base values.
-  if (e.mode === 'one-at-a-time') e.sweeps = e.sweeps.map((s) => ({ ...s, values: s.values.filter((v) => v !== (e.base_values?.[s.variable] ?? VARIABLE_MAP.get(s.variable).base)) }));
-  e.estimated_runs = configCount(e, e.sweeps) * e.scenes.length * e.seeds.length * e.realism.length * e.analysis_modes.length;
+  // Keep requested values: a registry default is not necessarily this scene's or realism state's base.
+  e.estimated_runs = modeRunCount(e) * e.scenes.length * e.seeds.length * e.realism.length;
   if (!Number.isSafeInteger(e.estimated_runs)) throw new Error('Run count exceeds safe integer range');
   return e;
 }
@@ -115,7 +130,7 @@ export function buildJobs(input, { allowAboveCap = false } = {}) {
   if (e.estimated_runs > e.max_runs && !allowAboveCap) throw new Error(`${e.estimated_runs} runs exceeds cap ${e.max_runs}; reduce samples or values`);
   const configs = buildConfigs(e);
   const jobs = [];
-  for (const config of configs) for (const scene of e.scenes) for (const seed of e.seeds) for (const realism of e.realism) for (const analysis_mode of e.analysis_modes) {
+  for (const config of configs) for (const scene of e.scenes) for (const seed of e.seeds) for (const realism of e.realism) for (const analysis_mode of config.values.analysis_mode || config.settings.analysis_mode ? [config.values.analysis_mode ?? config.settings.analysis_mode] : e.analysis_modes) {
     jobs.push({
       id: `${config.id}:${scene}:${seed}:${realism}:${analysis_mode}`, config, scene, seed, realism,
       analysis_mode: config.values.analysis_mode ?? config.settings.analysis_mode ?? analysis_mode,
@@ -135,7 +150,7 @@ export function reduceExperiment(input) {
       delete largest.range;
     } else if (e.seeds.length > 1) e.seeds = e.seeds.slice(0, Math.ceil(e.seeds.length / 2));
     else throw new Error('Scene/mode count alone exceeds cap; pick fewer scenes');
-    e.estimated_runs = configCount(e, e.sweeps) * e.scenes.length * e.seeds.length * e.realism.length * e.analysis_modes.length;
+    e.estimated_runs = modeRunCount(e) * e.scenes.length * e.seeds.length * e.realism.length;
   }
   return e;
 }

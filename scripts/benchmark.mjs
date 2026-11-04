@@ -5,7 +5,7 @@ import { presetExperiment, buildJobs, scenarioForJob, estimateExperiment } from 
 import { buildScene } from '../packages/sim-core/src/benchmark/scenes.js';
 import { nodeExecutor, loadBenchmarkClips, codeManifest } from '../packages/sim-core/src/benchmark/node.js';
 import { runExperiment } from '../packages/sim-core/src/benchmark/runner.js';
-import { compareSummaries } from '../packages/sim-core/src/benchmark/metrics.js';
+import { compareReports } from '../packages/sim-core/src/benchmark/metrics.js';
 import { reportCsv, reportHtml } from '../packages/sim-core/src/benchmark/report.js';
 
 const args = process.argv.slice(2);
@@ -42,7 +42,7 @@ try {
 const baselineFile = option('--compare', null);
 if (baselineFile) {
   const baseline = JSON.parse(await readFile(resolve(baselineFile), 'utf8'));
-  report.comparison = compareSummaries(report.summary, baseline.summary, e.tolerances);
+  report.comparison = compareReports(report, baseline, e.tolerances);
   if (args.includes('--fail-on-regress') && !report.comparison.pass) process.exitCode = 1;
 } else if (args.includes('--fail-on-regress')) throw new Error('--fail-on-regress requires --compare');
 if (controller.signal.aborted) process.exitCode = 130;

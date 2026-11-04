@@ -40,7 +40,10 @@ export const VARIABLE_MAP = new Map(VARIABLES.map((v) => [v.id, v]));
 export function applyValues(original, values, arrays = BUILTIN_ARRAYS) {
   const s = structuredClone(original);
   const centroid = () => [0, 1].map((k) => s.nodes.reduce((a, n) => a + n.position[k], 0) / s.nodes.length);
-  for (const [id, value] of Object.entries(values)) {
+  const geometryOrder = ['node_count', 'mic_array', 'node_height_m', 'layout', 'node_spacing_m', 'source_count', 'clip', 'level_1m_db', 'level_difference_db', 'source_height_m', 'source_speed_mps', 'range_m'];
+  for (const id of [...geometryOrder, ...Object.keys(values).filter((id) => !geometryOrder.includes(id)).sort()]) {
+    if (!Object.hasOwn(values, id)) continue;
+    const value = values[id];
     if (!VARIABLE_MAP.has(id)) throw new Error(`Unknown benchmark variable: ${id}`);
     if (id in DEFAULT_SETTINGS || id === 'analysis_mode') s.settings[id] = value;
     else if (id === 'mic_array') {

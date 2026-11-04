@@ -28,6 +28,9 @@ Use `--compare baselines/baseline-0.json --fail-on-regress` to gate tracked metr
 with explicit `tolerances` (metric to absolute tolerance, default zero). A metric
 becoming unavailable is a regression. Missing configs fail. Runtime is not gated.
 Calibration compares distance from 68.27%/95.45%, not simply bigger-is-better.
+Comparisons match variable values rather than configuration list order, and reject
+different scene/seed populations or wrong-fix targets. A delta on different grading
+data is not a regression result.
 
 ## Variable groups
 
@@ -40,11 +43,21 @@ policies; these gates affect **truth-assisted only**, not the independent measur
 pipeline. Site keeps a fraction of existing buildings; scene picker controls presets.
 Clock, wind and coloured noise are not implemented and are not offered as fake knobs.
 
+Measured-only quality uses PHAT coherence normalised by the fully coherent
+in-band peak, not the much smaller inverse-FFT amplitude. The existing 0.25
+threshold is uncalibrated. Legacy truth-assisted near-zero consensus cost ties
+can diverge across JS runtimes even with identical audio and whole-event bearings.
+A weight-aware repair was rejected after suspect metrics regressed. Browser
+parity exercises the default measured-only pipeline, not that rejected solver.
+
 Each variable in `benchmark/variables.js` specifies group, unit, description,
 default range and render/analysis classification. Add its transform in
 `applyValues`; add tests proving it changes the intended quantity and does not
 mutate the base scenario. A new scene goes in `benchmark/scenes.js`. Freeze the
 split before evaluating it; do not move a poor scene into the training set.
+Transforms have fixed order independent of JSON key order: node count/array/layout,
+spacing, source count/levels/height/motion, then centroid-relative range. Combined
+layout and spacing sweeps therefore preserve the requested spacing.
 
 ## Presets
 
@@ -96,15 +109,22 @@ correction. Do not select thresholds on held-out results.
 
 ## Cache, speed and reproducibility
 
+Integer seed counts with two or more seeds reserve at least 30% as held-out
+(IDs starting at 101, skipped by training IDs). Five seeds are `[1, 2, 3, 101, 102]`.
+One-seed pilots have no seed holdout; explicit lists use `held_out_seeds`, default
+`[101]`. OAT includes the base plus every requested value, because nominal defaults
+are not necessarily the actual base in every scene or realism state.
+
 Node uses a bounded `worker_threads` pool (`--workers`, default at most 2), disk
 cache `.benchmark-cache/`. Cache identity includes exact source content hash,
-clip PCM SHA-256, geometry, effective settings and seed. Analysis-only changes
+clip PCM SHA-256, runtime, geometry, effective settings and seed. Analysis-only changes
 reuse rendered audio; complete-result keys additionally include analysis settings,
 schema and scoring target. Moving-source diagnostics cannot mutate cached audio.
 SIGINT stops dispatch, completes active work and writes an incomplete report;
 rerunning uses cached complete jobs. No result from changed code is resumed.
 
-Every result records git revision (and dirty flag), source content hash, schema,
+Resume validates completed-job identity, custom scene, error target and matching
+audio/code/runtime before reuse. Every result records git revision (and dirty flag), source content hash, schema,
 all settings, seeds, variable values and audio checksums. Schema version alone
 cannot reproduce bearings. Schema 0.6 added audit only; source windows, settings
 and clip content are needed to explain historical bearing differences. This

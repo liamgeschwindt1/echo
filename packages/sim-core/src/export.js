@@ -1,4 +1,4 @@
-// The results export ("Export results" in the sim). Schema 0.7: see EXPORT_CHANGELOG.
+// The results export ("Export results" in the sim). Schema 0.8: see EXPORT_CHANGELOG.
 // Node output is limited to bearings, levels, times, uncertainties, labels, scores and confidences: no audio, spectra or
 // embeddings, and every unmeasured constant or threshold is marked placeholder.
 import { simConstants } from './geometry.js';
@@ -7,9 +7,15 @@ import { LABELLING_NOTE } from './labelling.js';
 import { nextPow2 } from './dsp.js';
 import { MEASURED_DEFAULTS } from './measured.js';
 
-export const EXPORT_SCHEMA = '0.7';
+export const EXPORT_SCHEMA = '0.8';
 
 export const EXPORT_CHANGELOG = [
+  {
+    schema: '0.8',
+    added: ['windowTdoas[].peak_normalized: raw PHAT peak divided by the theoretical fully coherent in-band peak; raw peak and TDOA remain unchanged', 'Benchmark runtime provenance, completed-job resume_identity, summary config settings and held_out_fraction=0.3 (placeholder)'],
+    changed: ['Measured-only min_peak=0.25 now applies to dimensionless coherence, not an inverse-FFT peak whose maximum is below 0.015 in the default band. No threshold tuning, signal or truth-assisted bearing changes.', 'Resume verifies audio, runtime, exact experiment/job settings and scoring target. OAT preserves explicitly requested values; analysis-mode sweeps no longer duplicate runs. Integer seed counts reserve at least 30% held-out seeds when count is at least two.', 'Variable transforms use fixed geometry-before-range order. Regression comparisons match variable values and reject different scene/seed populations or error targets. Unavailable tornado sensitivity is not shown as zero.'],
+    removed: []
+  },
   {
     schema: '0.7',
     added: [

@@ -63,7 +63,7 @@ export class DiskCache {
 }
 
 export async function nodeExecutor({ workers = 2, clips, arrays, manifest, experiment, cacheDirectory }) {
-  manifest = { ...manifest, audio: await audioHash(clips) };
+  manifest = { ...manifest, audio: await audioHash(clips), runtime: { engine: 'node', node: process.versions.node, v8: process.versions.v8 } };
   const pool = Array.from({ length: workers }, () => {
     const worker = new Worker(new URL('./node-worker.js', import.meta.url), { workerData: { clips, arrays, manifest, custom_scenes: experiment.custom_scenes, wrong_fix_m: experiment.wrong_fix_m, cacheDirectory } });
     return { worker, busy: false, reject: null };

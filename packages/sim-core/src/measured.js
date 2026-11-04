@@ -12,7 +12,7 @@ export const MEASURED_DEFAULTS = Object.freeze({
   hop_ms: 25,
   onset_rise_db: 10, // energy rise within one 10 ms frame that marks an onset
   onset_window_ms: 40, // direct-path window after an onset (20-50 ms)
-  min_peak: 0.25, // weakest PHAT peak (worst pair) in an accepted window
+  min_peak: 0.25, // weakest PHAT coherence, normalised by the fully coherent in-band peak (worst pair)
   max_residual_us: 15, // plane-wave fit residual
   neighbour_deg: 5, // windows within this azimuth, within neighbour_s, count as agreeing
   neighbour_s: 0.1,
@@ -101,8 +101,8 @@ export function windowBearing(mics, positions, startSample, endSample, { fs, c, 
     az_deg: toDeg(Math.atan2(hy, hx)),
     h_mag: Math.hypot(hx, hy),
     residual_s: Math.sqrt(sq / rows.length),
-    peak_min: Math.min(...t.map((x) => x.peak)),
-    peak_mean: t.reduce((s, x) => s + x.peak, 0) / t.length
+    peak_min: Math.min(...t.map((x) => x.peak_normalized)),
+    peak_mean: t.reduce((s, x) => s + x.peak_normalized, 0) / t.length
   };
 }
 

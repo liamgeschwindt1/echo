@@ -6,7 +6,7 @@ import { speedOfSound } from '../physics.js';
 import { EXPORT_SCHEMA } from '../export.js';
 import { buildScene } from './scenes.js';
 import { scenarioForJob, buildJobs, BENCHMARK_DEFAULTS } from './experiment.js';
-import { cacheKeys, audioHash } from './cache.js';
+import { cacheKeys, audioHash, canonical } from './cache.js';
 import { scoreAssisted, scoreMeasured } from './score.js';
 import { summariseRuns, failureAtlas, rankingFlips, pairedComparison, detectionByRange } from './metrics.js';
 
@@ -24,7 +24,7 @@ export async function runJob(job, { clips, arrays, custom_scenes = {}, manifest,
   }));
   const durations = new Map([...usedClips].map(([k, v]) => [k, v.length / scenario.settings.render_sample_rate]));
   const audio = (manifest.audio ?? await audioHash(usedClips)).filter((a) => usedClips.has(a.id));
-  const keys = await cacheKeys(scenario, { code_version: manifest.code_version, schema: EXPORT_SCHEMA, audio, analysis_settings: { settings: scenario.settings, mode: job.analysis_mode, wrong_fix_m } });
+  const keys = await cacheKeys(scenario, { code_version: manifest.code_version, runtime: manifest.runtime, schema: EXPORT_SCHEMA, audio, analysis_settings: { settings: scenario.settings, mode: job.analysis_mode, wrong_fix_m } });
   const cached = await cache?.get(keys.run);
   if (cached) return { ...cached, job, cache_hit: true };
   let rendered = await cache?.get(keys.render);
@@ -61,10 +61,14 @@ export async function runJob(job, { clips, arrays, custom_scenes = {}, manifest,
 }
 
 // The same bounded scheduler drives Node workers and browser workers. Pause stops dispatch; in-flight jobs finish.
-export async function runExperiment(input, { execute, completed = [], signal, isPaused = () => false, waitWhilePaused = async () => {}, workers = 2, onProgress = () => {}, manifest = {} }) {
+export async function runExperiment(input, { execute, completed = [], signal, isPaused = () => false, waitWhilePaused = async () => {}, workers = 2, onProgress = () => {}, onResult = async () => {}, manifest = {} }) {
   const { experiment, configs, jobs } = buildJobs(input);
-  const validIds = new Set(jobs.map((j) => j.id));
-  const runs = completed.filter((r) => validIds.has(r.job.id) && r.manifest.code_version === manifest.code_version);
+  const resumeIdentity = (job) => canonical({ job, custom_scene: experiment.custom_scenes?.[job.scene], wrong_fix_m: experiment.wrong_fix_m });
+  const identities = new Map(jobs.map((j) => [j.id, resumeIdentity(j)]));
+  const audioMatches = (audio) => (audio ?? []).every((clip) => canonical(clip) === canonical(manifest.audio?.find((current) => current.id === clip.id)));
+  const runs = [...new Map(completed.filter((r) => identities.has(r.job.id) &&
+    r.resume_identity === identities.get(r.job.id) && r.manifest.code_version === manifest.code_version &&
+    canonical(r.manifest.runtime) === canonical(manifest.runtime) && audioMatches(r.manifest.audio)).map((r) => [r.job.id, r])).values()];
   const done = new Set(runs.map((r) => r.job.id));
   const pending = jobs.filter((j) => !done.has(j.id));
   let cursor = 0;
@@ -75,7 +79,8 @@ export async function runExperiment(input, { execute, completed = [], signal, is
       if (signal?.aborted) return;
       const job = pending[cursor++];
       onProgress({ done: runs.length, total: jobs.length, job });
-      const result = await execute(job);
+      const result = { ...await execute(job), resume_identity: identities.get(job.id) };
+      await onResult(result);
       runs.push(result);
       onProgress({ done: runs.length, total: jobs.length, job, result });
     }

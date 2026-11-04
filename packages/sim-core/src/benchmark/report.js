@@ -70,8 +70,12 @@ export function tornado(summary, metric) {
     const b = bases.find((b) => b.split === r.split && b.realism === r.realism && b.analysis_mode === r.analysis_mode);
     return { variable: r.group, delta: b && Number.isFinite(b.metrics[metric]?.value) && Number.isFinite(r.metrics[metric]?.value) ? r.metrics[metric].value - b.metrics[metric].value : null };
   });
-  const effects = [...new Set(changes.map((r) => r.variable))].map((v) => ({ variable: v, effect: Math.max(...changes.filter((r) => r.variable === v && r.delta !== null).map((r) => Math.abs(r.delta)), 0) })).sort((a, b) => b.effect - a.effect);
-  return `<table><tr><th>Variable</th><th>Largest absolute change from base</th></tr>${effects.map((e) => `<tr><th>${escapeHtml(e.variable)}</th><td><meter min="0" max="${Math.max(...effects.map((e) => e.effect), 1)}" value="${e.effect}"></meter> ${formatNumber(e.effect)}</td></tr>`).join('')}</table>`;
+  const effects = [...new Set(changes.map((r) => r.variable))].map((v) => {
+    const deltas = changes.filter((r) => r.variable === v && r.delta !== null).map((r) => Math.abs(r.delta));
+    return { variable: v, effect: deltas.length ? Math.max(...deltas) : null };
+  }).sort((a, b) => (b.effect ?? -Infinity) - (a.effect ?? -Infinity));
+  const max = Math.max(...effects.map((e) => e.effect).filter(Number.isFinite), 1);
+  return `<table><tr><th>Variable</th><th>Largest absolute change from base</th></tr>${effects.map((e) => `<tr><th>${escapeHtml(e.variable)}</th><td>${e.effect === null ? '' : `<meter min="0" max="${max}" value="${e.effect}"></meter> `}${formatNumber(e.effect)}</td></tr>`).join('')}</table>`;
 }
 
 export function reportHtml(report, targets = {}) {

@@ -6,7 +6,7 @@ The one reference document for the **sim** frontend ([apps/sim](apps/sim)) and i
 
 Coordinates: metres, x east, y north, z up. Time: seconds of scenario time. Inside the physics, pressure is in pascals; digital floats appear only at the microphone output. Angles in the code are in radians unless the name ends in `_deg`.
 
-## Reproducible Testing engine (schema 0.7)
+## Reproducible Testing engine (schema 0.8)
 
 `npm run benchmark -- --experiment smoke --out baselines/smoke.json` runs the shared
 `packages/sim-core/src/benchmark/` engine. CLI and Testing use identical experiment
@@ -29,6 +29,42 @@ Reports separate train/held-out, realism off/on (2.5 deg heading, 1 dB gain,
 5 mm position, correlation 0.3), and analysis modes. Bootstrap resamples complete
 scene/seed runs; within-site seeds remain correlated. See [Testing](docs/testing.md)
 and [overnight log](docs/overnight-log.md) for limitations and retained steps.
+
+### Measured quality and reproducibility (schema 0.8)
+
+Measured-only `min_peak=0.25` applies to dimensionless PHAT coherence. Each raw
+peak is divided by `2 * in_band_bins / (FFT_length * upsample_factor)`, the fully
+coherent peak. Previously the raw maximum was below 0.015 in the default band,
+so even perfectly coherent windows failed the gate. The threshold is unchanged
+and remains an uncalibrated placeholder. Raw peaks, TDOAs, rendered signals and
+truth-assisted bearings are unchanged.
+
+Integer seed counts reserve at least 30% held-out seeds (with two or more seeds);
+explicit seed lists retain their declared split. Single-seed pilots are not
+held-out validation. Resume checks exact job/custom-scene settings, scoring target,
+source code, runtime and audio hashes. OAT retains requested values even when
+they equal a registry default: actual bases differ by scene and realism state.
+Geometry transforms precede source ranges in fixed order. Regression comparisons
+match variable values and reject different scene/seed populations or scoring targets.
+
+Browser/Node testing exposed a legacy consensus tie where
+count-equal pair costs near machine zero chose different node pairs and later
+track windows. Recorded audio hashes and whole-event bearings matched. Schema
+numbers did not cause that difference. Engine/runtime provenance matters. A
+weight-aware repair was rejected because suspect precision and recall regressed;
+see the overnight log. No solver upgrade is claimed.
+
+### Simulated, measured and assumed
+
+| Quantity | Status and permitted use |
+|---|---|
+| Microphone pressure, propagation paths, true geometry and source tracks | Simulated. True geometry, paths and source tracks are scoring/audit inputs, never measured-only inference inputs. |
+| Measured-only onsets, PHAT coherence, bearings and tracks | Estimated from simulated microphone mixtures and nominal geometry, not validated real measurements. |
+| Truth-assisted windows, containment, SNR, overlap, picked path, multipath and dominance | Simulator truth. Kept only as the editor's compatibility pipeline and an explicitly labelled benchmark upper bound. |
+| Heading/gain/position error and noise correlation | Assumed distributions controlled by settings; realism-on is a stress test, not a measured hardware profile. |
+| Bearing sigmas, association gates, benchmark targets and numerical thresholds | Uncalibrated placeholders. Coverage/calibration must be reported with conditional error. |
+| Flat-array elevation | Sign/height assumption, not resolved up/down. Measured-only elevation and 3D error remain unavailable. |
+| Labelling | Actual YAMNet/CLAP results only after runners finish. Benchmark accuracy remains unavailable because benchmarks do not execute labelling. |
 
 Contents:
 
