@@ -185,6 +185,28 @@
   with disk/time preflight before each. Reserve the measured sealed estimate
   and a full hour for reporting/CI. No further localisation tuning is scheduled.
 
+## Round 2 bounded spatial-method amendment (13:58 UTC)
+
+- The earlier no-further-trial plan is amended **before any sealed outcome**:
+  commit6ac185c preregisters one new150-case B5/B4 hypothesis, full-rank3D
+  plane-wave DOA plus stationary spatial intersections. This is not a repeat
+  of rejected global/consensus association; existing pair flags remain.
+- Nominal geometry alone identifies66 eligible cases/11 sites. Their prior
+  measured render+analysis total is995,993ms. Three analytic tests verify known
+  directions, heading/position covariance and a known3D intersection. No
+  experimental scene inference has run yet.
+- Experimental code lives only in scripts; core fingerprint remains2f7230fc.
+  The current sequential range study is untouched. Start this trial only after
+  all current nonsealed studies finish, and only if twice the measured-strata
+  estimate, the entire sealed estimate and60min reporting/CI fit the deadline.
+  All150 cases must complete;84 ineligible geometries retain exact reference
+  inference with explicit mixed-producer provenance. No partial ranking.
+- No empirical multiplier is fitted. Physical covariance is an unvalidated
+  approximation, moving fixes remain horizontal, and static positional radius
+  stays unavailable. Rule four decides acceptance without validation tuning.
+- GitHub Actions41841490921 at87a9687 reports success; the final-head run is
+  still required. Main remains untouched.
+
 ## Rules and decisions (2026-11-04)
 
 - Work only on `overnight/localisation`; no main pushes. Each retained logical step gets its own commit after core tests and benchmark.
