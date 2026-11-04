@@ -1,0 +1,25 @@
+{
+  "name": "Separate noise-first point-of-interest attribution prototype",
+  "registered_before": "Any attribution fixture or mixture-study outcomes",
+  "seeds": [1, 101],
+  "node_counts": [2, 3, 6],
+  "realism": ["off", "on"],
+  "recipes": [[0.6, 0.25, 0.15], [0.2, 0.7, 0.1]],
+  "pois": [
+    {"id": "traffic", "position": [-35, 20, 1.5]},
+    {"id": "venue", "position": [30, 25, 1.5]},
+    {"id": "hvac", "position": [-10, -35, 1.5]}
+  ],
+  "nodes": "Evenly spaced on a25m radius ring, heading0, height1.5m, flat4_100 nominal geometry.",
+  "audio": "Independent seeded Rademacher white-noise clips, four seconds at48kHz, source start1s; semantic POI names are not realistic traffic/music/HVAC recordings. Render5.5s, no buildings/ground/reflections/diffraction; original realism off/on hardware/noise profiles only.",
+  "source_level": "Nominal total70dBSPL at receptor[0,0,1.5], per-source1m level=70+10log10(recipe_share*distance_to_receptor_squared). Actual reference powers include propagation filtering, so recipe is not substituted for scored truth.",
+  "observations": "First mic per node; mean-square power over[2,4]s minus measured quiet power over[0,0.5]s, clamped nonnegative. Estimator receives nominal node/POI coordinates and levels, never component audio, source powers or true mic positions.",
+  "estimator": "Nonnegative least squares with inverse-square transfer, enumerating all active subsets of three declared POIs. Require at least three nodes and full-rank normalized transfer matrix (Gram pivot tolerance1e-8); otherwise shares/error are null with an explicit reason. Report receptor energy shares, not emission-power fractions.",
+  "localiser": "Run the unchanged measured pipeline on every mixture. Associate final fixes to nearest declared POI within10m for diagnostics only. All positions are declared map priors, not inferred truth; no reliable-fix claim or localisation-based position refinement.",
+  "truth": "Isolated source-only, noise-free single-mic renders at the receptor; energy over[2,4]s. Twelve unique seed/recipe/source renders, reused across node-count and realism conditions because reference geometry/physics is identical. Finite-mixture cross terms are not attributed; independent-source energy additivity is an assumption.",
+  "population": {"mixture_renders": 24, "isolated_reference_renders": 12, "total_renders": 36},
+  "metrics": "Mean absolute share error across three POIs, percentage points; per-POI signed error; nonidentifiable rate; actual fix/association counts. Preserve two-node nulls. Equal complete seed/recipe population per node-count/realism condition.",
+  "intervals": "Exact two observed seed-cluster values and their range; no reliable population95%CI from two clusters. No ranking from partial data.",
+  "unit_fixtures": "Three sources with known nonnegative powers on noncollinear3/6-node geometries recover noiseless shares;2nodes and rank-deficient geometries return explicit null; invalid/nonfinite inputs throw.",
+  "assumptions": "Every POI location is known; stationary uncorrelated point sources, inverse-square transfer, measured stationary background, no unknown contributors, ground or occlusion. All are placeholders. Not a validated road/bar percentage product and not a localiser replacement."
+}
