@@ -1,14 +1,56 @@
-// The results export ("Export results" in the sim). Schema 0.6: see EXPORT_CHANGELOG.
+// The results export ("Export results" in the sim). Schema 0.13: see EXPORT_CHANGELOG.
 // Node output is limited to bearings, levels, times, uncertainties, labels, scores and confidences: no audio, spectra or
 // embeddings, and every unmeasured constant or threshold is marked placeholder.
 import { simConstants } from './geometry.js';
 import { ANALYSIS_THRESHOLDS } from './scenario.js';
 import { LABELLING_NOTE } from './labelling.js';
 import { nextPow2 } from './dsp.js';
+import { MEASURED_DEFAULTS } from './measured.js';
 
-export const EXPORT_SCHEMA = '0.6';
+export const EXPORT_SCHEMA = '0.13';
 
 export const EXPORT_CHANGELOG = [
+  {
+    schema: '0.13',
+    changed: ['Cap reduction preserves actual train/held-out seed IDs and the requested held-out fraction when both partitions exist. It reduces random/LHS samples, then seed repetitions, before dropping variable alternatives, so the default array-ranking preset retains all nine arrays.', 'Explicit held_out_seeds must be unique unsigned integers. An impossible cap fails explicitly instead of silently turning a split experiment into a one-seed pilot. Existing JSON experiment/run fields record the effective retained seeds; inference and rendering are unchanged.', 'Benchmark CLI --help exits without computation. Unknown/missing arguments and --fail-on-regress without --compare fail before rendering. No export fields change.']
+  },
+  {
+    schema: '0.12',
+    added: ['Benchmark manifest snapshots display targets (including placeholder marker) and cache_policy. CLI --discard-renders is opt-in; default retain behavior is unchanged.'],
+    changed: ['Shared scheduler notifies completion only after all consumers of an exact render key finish. Opt-in Node cleanup deletes only that audio/provenance pair, preserving whole results and interrupted groups. No cross-process cleanup safety is claimed; use a separate cache for concurrent discard-mode experiments.']
+  },
+  {
+    schema: '0.11',
+    added: ['Opt-in library ID ball12_d180_sub4_maxvol: exact maximum-volume noncoplanar four-mic subset, with its own new signal golden. No default array changes.'],
+    changed: ['Legacy coplanar ball12_d180_sub4 coordinates and name remain unchanged, but status/notes warn of rank deficiency. Seeded benchmark sites pin the original eight array IDs/order so library additions cannot change held-out inputs.']
+  },
+  {
+    schema: '0.10',
+    added: ['Benchmark scores.fixes contains every assigned measured episode; manifests identify scoring_version and explicit re-scoring provenance. Failure atlas includes every wrong episode and counts unmatched hypotheses separately without inventing their spatial errors.'],
+    changed: ['Measured one-to-one assignment applies to overlapping emission-time intervals, not a whole recording. Disjoint bursts may match the same source. Error, track and calibration metrics include every assigned episode; source coverage stays capped at one per source.', 'Comparisons reject different scoring conventions. benchmark-rescore.mjs preserves original reports and inference, invalidates the old whole-run cache reference, and recomputes scores only. Simultaneous unassigned hypotheses still count wrong.']
+  },
+  {
+    schema: '0.9',
+    added: ['Benchmark manifest.render_code_version and render_source_files: SHA-256 of the complete parsed local renderer dependency graph', 'Run render_provenance preserves actual audio producer code/git/runtime; cache_keys.origin identifies its sidecar'],
+    changed: ['Analysis-only source revisions invalidate complete results but reuse audio only when renderer dependency fingerprint, runtime, inputs and clip hashes match. Unknown/external dependency graphs fail explicitly.', 'Shared worker scheduler single-flights cold audio keys and releases waiting jobs as soon as audio is persisted, before analysis finishes. Equivalent-result cache hits retain requested variable values.'],
+    removed: []
+  },
+  {
+    schema: '0.8',
+    added: ['windowTdoas[].peak_normalized: raw PHAT peak divided by the theoretical fully coherent in-band peak; raw peak and TDOA remain unchanged', 'Benchmark runtime provenance, completed-job resume_identity, summary config settings and held_out_fraction=0.3 (placeholder)'],
+    changed: ['Measured-only min_peak=0.25 now applies to dimensionless coherence, not an inverse-FFT peak whose maximum is below 0.015 in the default band. No threshold tuning, signal or truth-assisted bearing changes.', 'Resume verifies audio, runtime, exact experiment/job settings and scoring target. OAT preserves explicitly requested values; analysis-mode sweeps no longer duplicate runs. Integer seed counts reserve at least 30% held-out seeds when count is at least two.', 'Variable transforms use fixed geometry-before-range order. Regression comparisons match variable values and reject different scene/seed populations or error targets. Unavailable tornado sensitivity is not shown as zero.'],
+    removed: []
+  },
+  {
+    schema: '0.7',
+    added: [
+      'benchmark result kind: experiments, reproducibility manifest with source/audio hashes, scene/seed split, realism and analysis mode, bootstrap CI, paired comparisons, failure atlas and ranking flips',
+      'analysis_mode setting; measured-only inference has no source/path/activity input; scoring truth is isolated after inference',
+      'measured_* placeholder thresholds in exports, including effective defaults'
+    ],
+    changed: ['Benchmark defaults to measured_only; existing editor defaults remain truth_assisted. No rendered signal changes.'],
+    removed: []
+  },
   {
     schema: '0.6',
     added: [
@@ -74,7 +116,10 @@ export const EXPORT_NOTES = [
 
 /** Every analysis threshold with its value in this scenario, marked placeholder. */
 export function thresholdsOf(settings) {
-  return Object.fromEntries(Object.entries(ANALYSIS_THRESHOLDS).map(([k, note]) => [k, { value: settings[k], placeholder: true, note }]));
+  return {
+    ...Object.fromEntries(Object.entries(ANALYSIS_THRESHOLDS).map(([k, note]) => [k, { value: settings[k], placeholder: true, note }])),
+    ...Object.fromEntries(Object.entries(MEASURED_DEFAULTS).map(([k, value]) => [`measured_${k}`, { value: settings[`measured_${k}`] ?? value, placeholder: true, note: 'Existing measured.js heuristic; not calibrated on real recordings.' }]))
+  };
 }
 
 // Fields that must never leave: audio or audio-derived arrays. Labelling results never contain them; this is a guard.

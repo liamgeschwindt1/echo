@@ -42,10 +42,10 @@ export const BUILTIN_ARRAYS = Object.freeze([
   ...[4, 6, 8].map((n) => ({
     id: `ball12_d180_sub${n}`,
     name: `${n}-mic subset of the D180 ball`,
-    status: 'Open item 3 test array. Subset chosen by farthest-point spread, not from the design sheet',
+    status: n === 4 ? 'Legacy coplanar subset. Use the maximum-volume alternative for a noncoplanar comparison' : 'Open item 3 test array. Subset chosen by farthest-point spread, not from the design sheet',
     source: 'subset of ball12_d180',
     assumed: true,
-    notes: 'Same mic positions as ball12_d180, fewer channels.',
+    notes: n === 4 ? 'All four mics have y = 0: a vertical baseline does not imply full 3D rank. Preserved for compatibility.' : 'Same mic positions as ball12_d180, fewer channels.',
     mics: farthestSubset(BALL_MICS, n)
   })),
   {
@@ -74,10 +74,34 @@ export const BUILTIN_ARRAYS = Object.freeze([
     assumed: true,
     notes: 'Three rings of 4; ring gap 40 mm is a guess.',
     mics: puck(210, 4, 40)
+  },
+  {
+    id: 'ball12_d180_sub4_maxvol',
+    name: '4-mic maximum-volume D180 ball subset',
+    status: 'Noncoplanar alternative; exhaustive maximum tetrahedral volume among all 495 ball subsets',
+    source: 'subset of ball12_d180',
+    assumed: true,
+    notes: 'Geometry-only choice, not a measured hardware winner. Ties use original mic order. Legacy sub4 remains unchanged.',
+    mics: maximumVolumeBallFour()
   }
 ]);
 
 // ---------- generators (mm) ----------
+
+function maximumVolumeBallFour() {
+  const names = Object.keys(BALL_MICS);
+  // Fixed coordinates have one decimal place: integer tenths of mm make tied determinants exact.
+  const points = names.map((name) => BALL_MICS[name].map((v) => Math.round(v * 10)));
+  let best = [], volume = -1;
+  for (let a = 0; a < names.length - 3; a++) for (let b = a + 1; b < names.length - 2; b++) {
+    for (let c = b + 1; c < names.length - 1; c++) for (let d = c + 1; d < names.length; d++) {
+      const [u, v, w] = [b, c, d].map((i) => points[i].map((x, k) => x - points[a][k]));
+      const determinant = Math.abs(u[0] * (v[1] * w[2] - v[2] * w[1]) - u[1] * (v[0] * w[2] - v[2] * w[0]) + u[2] * (v[0] * w[1] - v[1] * w[0]));
+      if (determinant > volume) { volume = determinant; best = [a, b, c, d]; }
+    }
+  }
+  return Object.fromEntries(best.map((i) => [names[i], [...BALL_MICS[names[i]]]]));
+}
 
 export function flatSquare(side = 100) {
   const h = side / 2;

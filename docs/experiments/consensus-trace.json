@@ -1,0 +1,233 @@
+{
+  "baseline_producer": "ca41e67bb04098fd15a2d2fdc1d702ea5fcf216cd1d3df56efc65b2729023aff",
+  "scene": "seven_source",
+  "seed": 1,
+  "split": "train",
+  "realism": "off",
+  "analysis_mode": "truth_assisted",
+  "source_id": "s8",
+  "gate_sigma": 3,
+  "input_quality": [
+    {
+      "node_id": "n1",
+      "weight": 0.0581198207264834,
+      "reliable": true,
+      "usable": true,
+      "sigma_deg": 4.147991588053557
+    },
+    {
+      "node_id": "n2",
+      "weight": 0.0001985451475796995,
+      "reliable": false,
+      "usable": true,
+      "sigma_deg": 70.96927379957819
+    },
+    {
+      "node_id": "n3",
+      "weight": 0.0883738153840478,
+      "reliable": true,
+      "usable": true,
+      "sigma_deg": 3.363862205069154
+    },
+    {
+      "node_id": "n7",
+      "weight": 0.0009554370799103403,
+      "reliable": false,
+      "usable": true,
+      "sigma_deg": 32.351837612941004
+    }
+  ],
+  "trace": [
+    {
+      "stage": "pair",
+      "pair": [
+        "n1",
+        "n2"
+      ],
+      "point": [
+        11.663672020378224,
+        23.090780287679458
+      ],
+      "inliers": [
+        "n1",
+        "n2",
+        "n7"
+      ],
+      "cost": 0.0027082243049981265
+    },
+    {
+      "stage": "pair",
+      "pair": [
+        "n1",
+        "n3"
+      ],
+      "point": [
+        19.21481595938723,
+        54.96049980628571
+      ],
+      "inliers": [
+        "n1",
+        "n2",
+        "n3",
+        "n7"
+      ],
+      "cost": 0.956905970611555
+    },
+    {
+      "stage": "pair",
+      "pair": [
+        "n1",
+        "n7"
+      ],
+      "point": [
+        12.051585581002177,
+        24.727975456306012
+      ],
+      "inliers": [
+        "n1",
+        "n2",
+        "n7"
+      ],
+      "cost": 0.00015451669206459416
+    },
+    {
+      "stage": "pair",
+      "pair": [
+        "n2",
+        "n7"
+      ],
+      "point": [
+        10.916366698769657,
+        25.006834587350593
+      ],
+      "inliers": [
+        "n2",
+        "n7"
+      ],
+      "cost": 2.5589758937588394e-32
+    },
+    {
+      "stage": "pair",
+      "pair": [
+        "n3",
+        "n7"
+      ],
+      "point": [
+        76.79091211923236,
+        8.825181179876743
+      ],
+      "inliers": [
+        "n3",
+        "n7"
+      ],
+      "cost": 2.2167617863534066e-30
+    },
+    {
+      "stage": "chosen_pair_consensus",
+      "inliers": [
+        "n1",
+        "n2",
+        "n3",
+        "n7"
+      ],
+      "cost": 0.956905970611555
+    },
+    {
+      "stage": "readmission",
+      "point": [
+        19.294163006721643,
+        54.885654001304495
+      ],
+      "residuals": [
+        {
+          "node_id": "n1",
+          "residual_sigma": 0.0389901306638293
+        },
+        {
+          "node_id": "n2",
+          "residual_sigma": 0.15418375388969174
+        },
+        {
+          "node_id": "n3",
+          "residual_sigma": 0.019454499456372423
+        },
+        {
+          "node_id": "n7",
+          "residual_sigma": 0.9626131257727725
+        }
+      ]
+    },
+    {
+      "stage": "leave_one_out_rejection",
+      "node_id": "n1",
+      "residual_sigma": 160.4549601859838,
+      "other_nodes": [
+        "n2",
+        "n3",
+        "n7"
+      ],
+      "point": [
+        70.80210350273035,
+        13.623925859147661
+      ]
+    },
+    {
+      "stage": "leave_one_out_rejection",
+      "node_id": "n3",
+      "residual_sigma": 24.501943685760757,
+      "other_nodes": [
+        "n2",
+        "n7"
+      ],
+      "point": [
+        10.916366698769675,
+        25.006834587350582
+      ]
+    }
+  ],
+  "final": {
+    "method": "ransac_wls",
+    "position": [
+      10.916366698769675,
+      25.006834587350582,
+      0.112840172656555
+    ],
+    "poorly_conditioned": false,
+    "negative_range": false,
+    "ranges_m": [
+      45.08877456971099,
+      49.855711286094134
+    ],
+    "max_angle_deg": 54.89199345642322,
+    "max_crossing_angle_horizontal_deg": 54.89199345642322,
+    "max_angle_3d_deg": 89.82574256029295,
+    "z_3d_raw_m": 1.6406099582917253,
+    "inlier_nodes": [
+      "n2",
+      "n7"
+    ],
+    "rejected_nodes": [
+      {
+        "node_id": "n1",
+        "reason": "outlier",
+        "residual_sigma": 6.710138713390912
+      },
+      {
+        "node_id": "n3",
+        "reason": "outlier",
+        "residual_sigma": 24.501943685760757
+      }
+    ],
+    "loo_residuals": [],
+    "z_clamped": false,
+    "z_from_nodes": [
+      "n2",
+      "n7"
+    ],
+    "fix_suspect": true,
+    "suspect_reasons": [
+      "weak_consensus"
+    ]
+  },
+  "note": "Read-only instrumentation of the exact legacy solver. Final point, inliers and rejections must deeply match retained baseline inference. No threshold or inference change."
+}

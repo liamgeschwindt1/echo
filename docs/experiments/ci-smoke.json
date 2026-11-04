@@ -1,0 +1,13 @@
+{
+  "name": "CI measured regression: finite fixes, fixed site and seed holdout",
+  "scenes": ["sparse_20", "random_5"],
+  "seeds": [1, 101],
+  "held_out_seeds": [101],
+  "base_settings": {},
+  "sweeps": [],
+  "mode": "grid",
+  "realism": ["off", "on"],
+  "analysis_modes": ["measured_only"],
+  "max_runs": 2000,
+  "metrics": []
+}

@@ -1,0 +1,84 @@
+import { METRICS, rankingFlips } from './metrics.js';
+
+export const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+export const formatNumber = (n) => Number.isFinite(n) ? n.toFixed(3) : 'unavailable';
+const csvCell = (s) => `"${String(s ?? '').replaceAll('"', '""')}"`;
+
+export function reportCsv(report) {
+  const metrics = Object.keys(METRICS);
+  const heads = ['config', 'split', 'realism', 'analysis_mode', 'values', ...metrics.flatMap((m) => [m, `${m}_ci_low`, `${m}_ci_high`])];
+  return [heads, ...report.summary.map((r) => [r.name, r.split, r.realism, r.analysis_mode, JSON.stringify(r.values), ...metrics.flatMap((m) => [r.metrics[m].value, ...(r.metrics[m].ci ?? [null, null])])])].map((r) => r.map(csvCell).join(',')).join('\n') + '\n';
+}
+
+export function plainSummary(report, metric = 'horizontal_median_m') {
+  const ranking = rankingFlips(report.summary, metric);
+  const winners = [...new Set(ranking.rankings.filter((r) => r.realism === 'on' && r.split === 'train' && r.analysis_mode === 'measured_only').map((r) => r.winner).filter(Boolean))];
+  const flipNames = [...new Set(ranking.flips.filter((f) => f.split === 'train').map((f) => f.variable))];
+  const base = `${report.runs.length}/${report.manifest.expected_runs ?? report.runs.length} runs. ${report.manifest.cancelled ? 'Incomplete; cancelled or paused.' : 'Simulated only.'}`;
+  return `${base} ${winners.length === 1 ? `${winners[0]} leads measured-only realism-on by ${metric}, using point estimates.` : 'No single supported array winner.'} ${flipNames.length ? `Ranking changes with ${flipNames.join(', ')}.` : 'No ranking flip demonstrated by this experiment.'}`;
+}
+
+export function metricTable(report, targets = {}) {
+  const columns = ['horizontal_median_m', 'horizontal_p90_m', 'error_3d_median_m', 'scene_fix_rate', 'within_target_rate', 'wrong_fix_rate', 'suspect_recall', 'suspect_precision', 'track_fix_count', 'track_median_error_m', 'bearing_median_deg', 'elevation_median_deg', 'within_1sigma', 'within_2sigma', 'detection_rate'];
+  return `<table><thead><tr><th>Config / split / realism / mode</th>${columns.map((k) => `<th>${escapeHtml(k)}</th>`).join('')}</tr></thead><tbody>${report.summary.map((r) => `<tr><th>${escapeHtml(`${r.name} / ${r.split} / ${r.realism} / ${r.analysis_mode}`)}</th>${columns.map((k) => {
+    const m = r.metrics[k], target = targets.metrics?.[k], value = m.value;
+    const pass = target && Number.isFinite(value) ? (target.max !== undefined ? value <= target.max : value >= target.min) : null;
+    return `<td data-config="${escapeHtml(r.config_id)}" data-split="${escapeHtml(r.split)}" data-realism="${escapeHtml(r.realism)}" data-mode="${escapeHtml(r.analysis_mode)}" class="${pass === null ? '' : pass ? 'pass' : 'fail'}">${formatNumber(value)}${m.ci ? `<small>[${m.ci.map(formatNumber).join(', ')}]</small>` : '<small>CI unavailable</small>'}</td>`;
+  }).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
+export function lineChart(summary, variable, metric) {
+  const rows = summary.filter((r) => Number.isFinite(Number(r.values[variable])) && Number.isFinite(r.metrics[metric]?.value));
+  if (!rows.length) return '<p>No numeric sweep for selected metric.</p>';
+  const xs = rows.map((r) => Number(r.values[variable]));
+  const ys = rows.flatMap((r) => [r.metrics[metric].value, ...(r.metrics[metric].ci ?? [])]);
+  const minX = Math.min(...xs), maxX = Math.max(...xs), maxY = Math.max(...ys, 1), minY = Math.min(...ys, 0);
+  const x = (v) => 60 + (v - minX) / (maxX - minX || 1) * 570;
+  const y = (v) => 260 - (v - minY) / (maxY - minY || 1) * 220;
+  const groups = new Map();
+  for (const r of rows) {
+    const key = JSON.stringify(Object.fromEntries(Object.entries(r.values).filter(([k]) => k !== variable))) + ` ${r.split}/${r.realism}/${r.analysis_mode}`;
+    const group = groups.get(key) ?? [];
+    group.push(r); groups.set(key, group);
+  }
+  const colours = ['#ffb000', '#4cc9f0', '#f72585', '#b8f65a', '#c77dff', '#2dd4bf'];
+  return `<svg viewBox="0 0 700 ${330 + groups.size * 18}" role="img" aria-label="${escapeHtml(`${metric} vs ${variable}, bootstrap confidence bands`)}"><path d="M60 40V260H630" fill="none" stroke="#aaa"/><text x="60" y="285">${formatNumber(minX)}</text><text x="570" y="285">${formatNumber(maxX)}</text><text x="5" y="45">${formatNumber(maxY)}</text><text x="5" y="260">${formatNumber(minY)}</text>${[...groups].map(([key, group], i) => {
+    group.sort((a, b) => Number(a.values[variable]) - Number(b.values[variable]));
+    const colour = colours[i % colours.length];
+    const band = group.every((r) => r.metrics[metric].ci) ? `<polygon fill="${colour}" opacity=".15" points="${[...group.map((r) => `${x(Number(r.values[variable]))},${y(r.metrics[metric].ci[0])}`), ...[...group].reverse().map((r) => `${x(Number(r.values[variable]))},${y(r.metrics[metric].ci[1])}`)].join(' ')}"/>` : '';
+    return `${band}<polyline fill="none" stroke="${colour}" points="${group.map((r) => `${x(Number(r.values[variable]))},${y(r.metrics[metric].value)}`).join(' ')}"/>${group.map((r) => `<circle cx="${x(Number(r.values[variable]))}" cy="${y(r.metrics[metric].value)}" r="3" fill="${colour}"><title>${escapeHtml(r.name)}: ${formatNumber(r.metrics[metric].value)}</title></circle>`).join('')}<text x="60" y="${325 + i * 18}" fill="${colour}">${escapeHtml(key)}</text>`;
+  }).join('')}<text x="250" y="305">${escapeHtml(variable)} / ${escapeHtml(metric)}</text></svg>`;
+}
+
+export function heatmap(summary, xVariable, yVariable, metric) {
+  const rows = summary.filter((r) => r.values[xVariable] !== undefined && r.values[yVariable] !== undefined);
+  if (!rows.length) return '<p>Pick two swept variables for heatmap.</p>';
+  const xs = [...new Set(rows.map((r) => r.values[xVariable]))], ys = [...new Set(rows.map((r) => r.values[yVariable]))];
+  const max = Math.max(...rows.map((r) => r.metrics[metric]?.value).filter(Number.isFinite), 1);
+  return `<table><tr><th>${escapeHtml(yVariable)} / ${escapeHtml(xVariable)}</th>${xs.map((x) => `<th>${escapeHtml(x)}</th>`).join('')}</tr>${ys.map((y) => `<tr><th>${escapeHtml(y)}</th>${xs.map((x) => {
+    const cell = rows.filter((r) => r.values[xVariable] === x && r.values[yVariable] === y);
+    if (cell.length !== 1) return '<td>Filter context: multiple configs</td>';
+    const r = cell[0], m = r.metrics[metric]?.value;
+    return `<td style="background:rgba(255,176,0,${Number.isFinite(m) ? Math.min(0.7, m / max * 0.7) : 0})" data-config="${escapeHtml(r.config_id)}" data-split="${r.split}" data-realism="${r.realism}" data-mode="${r.analysis_mode}">${formatNumber(m)}</td>`;
+  }).join('')}</tr>`).join('')}</table>`;
+}
+
+export function tornado(summary, metric) {
+  const bases = summary.filter((r) => r.group === 'base');
+  if (!bases.length) return '<p>Tornado requires one-at-a-time mode.</p>';
+  const changes = summary.filter((r) => r.group !== 'base').map((r) => {
+    const b = bases.find((b) => b.split === r.split && b.realism === r.realism && b.analysis_mode === r.analysis_mode);
+    return { variable: r.group, delta: b && Number.isFinite(b.metrics[metric]?.value) && Number.isFinite(r.metrics[metric]?.value) ? r.metrics[metric].value - b.metrics[metric].value : null };
+  });
+  const effects = [...new Set(changes.map((r) => r.variable))].map((v) => {
+    const deltas = changes.filter((r) => r.variable === v && r.delta !== null).map((r) => Math.abs(r.delta));
+    return { variable: v, effect: deltas.length ? Math.max(...deltas) : null };
+  }).sort((a, b) => (b.effect ?? -Infinity) - (a.effect ?? -Infinity));
+  const max = Math.max(...effects.map((e) => e.effect).filter(Number.isFinite), 1);
+  return `<table><tr><th>Variable</th><th>Largest absolute change from base</th></tr>${effects.map((e) => `<tr><th>${escapeHtml(e.variable)}</th><td>${e.effect === null ? '' : `<meter min="0" max="${max}" value="${e.effect}"></meter> `}${formatNumber(e.effect)}</td></tr>`).join('')}</table>`;
+}
+
+export function reportHtml(report, targets = {}) {
+  const numeric = report.experiment.sweeps.find((s) => s.values.every((v) => typeof v === 'number'))?.variable;
+  return `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${escapeHtml(report.experiment.name)} benchmark</title><style>body{background:#171b22;color:#ddd;font:14px system-ui;margin:24px}table{border-collapse:collapse;display:block;overflow:auto}td,th{padding:8px;border:1px solid #46505c}small{display:block;color:#aeb8c8}.pass{background:#184431}.fail{background:#58252a}svg{max-width:1000px;width:100%;fill:#ddd}pre{white-space:pre-wrap}</style><h1>${escapeHtml(report.experiment.name)}</h1><p>${escapeHtml(plainSummary(report))}</p>${metricTable(report, targets)}${numeric ? lineChart(report.summary, numeric, 'horizontal_median_m') : ''}${tornado(report.summary, 'horizontal_median_m')}<h2>Ranking</h2><pre>${escapeHtml(JSON.stringify(report.ranking.flips, null, 2))}</pre><h2>Failure atlas</h2><pre>${escapeHtml(JSON.stringify(report.failure_atlas, null, 2))}</pre><h2>Reproducibility</h2><pre>${escapeHtml(JSON.stringify(report.manifest, null, 2))}</pre><h2>Limits</h2>${report.notes.map((n) => `<p>${escapeHtml(n)}</p>`).join('')}</html>`;
+}

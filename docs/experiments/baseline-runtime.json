@@ -1,0 +1,20 @@
+{
+  "observed_at": "2026-11-04T02:26:28.293Z",
+  "producer_pid": 2332,
+  "command": [
+    "node",
+    "scripts/benchmark.mjs",
+    "--experiment",
+    "baseline",
+    "--out",
+    "baselines/baseline-0.json"
+  ],
+  "runtime": {
+    "engine": "node",
+    "node": "26.12.1",
+    "v8": "14.6.202.34-node.40",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "method": "Observed the live baseline process command and queried its exact executable before exit; pre-0.8 manifests lacked runtime."
+}

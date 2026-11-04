@@ -1,0 +1,14 @@
+{
+  "name": "Browser parity",
+  "scenes": ["sparse_20"],
+  "seeds": 1,
+  "base_settings": {},
+  "sweeps": [
+    { "variable": "heading_error_sigma_deg", "values": [0, 2.5], "group": "Hardware errors" }
+  ],
+  "mode": "grid",
+  "samples": 20,
+  "analysis_modes": ["measured_only"],
+  "realism": ["off", "on"],
+  "max_runs": 2000
+}

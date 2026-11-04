@@ -158,6 +158,7 @@ export function windowTdoas(mics, startSample, endSample, { fs, band, maxLagS })
   const n = nextPow2(len * 2);
   const lo = Math.max(1, Math.ceil((band[0] * n) / fs));
   const hi = Math.min(n / 2 - 1, Math.floor((band[1] * n) / fs));
+  if (hi < lo) throw new RangeError('Correlation band contains no usable FFT bins');
   const fsUp = fs * UPSAMPLE;
   const maxLag = Math.ceil(maxLagS * fsUp) + UPSAMPLE;
   const spec = [];
@@ -165,7 +166,11 @@ export function windowTdoas(mics, startSample, endSample, { fs, band, maxLagS })
     const p = pairSpectra(mics[m], mics[m + 1] ?? mics[m], startSample, endSample, n, lo, hi);
     spec.push(p.A, p.B);
   }
-  return micPairs(mics.length).map(([i, j]) => peakTdoa(bandCorrelation(spec[i], spec[j], { n, fs, band, lo, hi, maxLag: maxLag + 1 }), maxLag, fsUp));
+  const coherentPeak = 2 * (hi - lo + 1) / (n * UPSAMPLE);
+  return micPairs(mics.length).map(([i, j]) => {
+    const result = peakTdoa(bandCorrelation(spec[i], spec[j], { n, fs, band, lo, hi, maxLag: maxLag + 1 }), maxLag, fsUp);
+    return { ...result, peak_normalized: result.peak / coherentPeak };
+  });
 }
 
 function solve3(m, v) {

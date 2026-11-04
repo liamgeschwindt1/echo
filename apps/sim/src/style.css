@@ -32,6 +32,36 @@ body.nav-collapsed #sidenav button, body.nav-collapsed #sidenav .nav-check { jus
 #app:not(.view-scene) #mapWrap, #app:not(.view-scene) #inspector, #app:not(.view-scene) #timelineWrap, #app:not(.view-scene) #banner { display: none; }
 .panel { grid-row: 3 / 5; grid-column: 2 / -1; min-height: 0; min-width: 0; overflow: auto; }
 .panel[hidden] { display: none; }
+.testing { padding: 20px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; max-width: 1800px; margin: auto; }
+.testing > * { min-width: 0; }
+.testing h2, .testing h3 { margin: 0; }
+.testing-setup { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+.testing-scenes { max-height: 260px; overflow: auto; margin: 12px 0; }
+.testing .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.testing .row label { gap: 8px; }
+.testing .testing-variable label { justify-content: flex-start; }
+.testing-variable { padding: 12px; border-top: 1px solid var(--edge); }
+.testing-variable p { margin: 2px 0 8px; }
+.testing-variable input:not([type="checkbox"]):not([type="number"]) { min-width: 180px; flex: 1; }
+.testing-variable input[hidden], .testing-variable select[hidden] { display: none; }
+.testing select[multiple] { min-width: 280px; min-height: 100px; max-width: 100%; }
+.testing-group { margin: 10px 0; border: 1px solid var(--edge); border-radius: 6px; }
+.testing-group summary { padding: 10px; cursor: pointer; font-weight: 600; }
+.testing-group > button { margin: 0 12px 8px; }
+.testing progress { width: 100%; margin-top: 16px; height: 14px; }
+.testing-table { overflow-x: auto; }
+.testing table { border-collapse: collapse; width: 100%; font-size: 12px; }
+.testing td, .testing th { padding: 8px; border: 1px solid var(--edge); text-align: left; }
+.testing td[data-config] { cursor: pointer; }
+.testing td[data-config]:hover { outline: 1px solid var(--accent); }
+.testing td small { display: block; color: #aaa; white-space: nowrap; }
+.testing .pass { background: #103420; }
+.testing .fail { background: #451820; }
+.testing svg { display: block; width: 100%; max-width: 1000px; height: auto; max-height: 600px; fill: #ddd; }
+.testing pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 500px; overflow: auto; }
+.testing-saved { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 10px 0; }
+.testing-saved input { max-width: 230px; }
+#testDrilldown button { margin: 4px; }
 #inspector { grid-area: inspector; padding: 16px; border-left: 1px solid var(--edge); overflow: auto; }
 #app:not(.has-inspector) #inspector { display: none; }
 #mapWrap { grid-area: map; position: relative; min-height: 0; }

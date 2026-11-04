@@ -6,6 +6,171 @@ The one reference document for the **sim** frontend ([apps/sim](apps/sim)) and i
 
 Coordinates: metres, x east, y north, z up. Time: seconds of scenario time. Inside the physics, pressure is in pascals; digital floats appear only at the microphone output. Angles in the code are in radians unless the name ends in `_deg`.
 
+## Reproducible Testing engine (schema 0.13)
+
+`npm run benchmark -- --experiment smoke --out baselines/smoke.json` runs the shared
+`packages/sim-core/src/benchmark/` engine. CLI and Testing use identical experiment
+expansion, variable transforms, cache keys, scoring and aggregation. JSON, CSV and
+standalone HTML are written together. Use `--compare baseline.json --fail-on-regress`
+for deterministic metric regression checks. Runtime is recorded but not gated.
+`--help` prints usage without running. Unknown/missing flags and a regression gate
+without a comparison fail before rendering, rather than silently running defaults.
+
+Experiments default to `measured_only`; the existing editor retains
+`truth_assisted` for compatibility. The latter uses true per-source windows,
+SNR, overlap, path selection and track dominance. It is an optimistic upper
+bound, not deployable inference. Measured-only uses the existing horizontal
+mixture-only `measured.js` pipeline, not the source-window solver. Its elevation,
+3D error and labelling accuracy are **unavailable**, not zero. Scoring uses
+truth only after inference. Unmatched fixes count as wrong. Model labelling is
+not run by benchmarks.
+The benchmark manifest snapshots the exact display targets, including their
+placeholder marker, rather than relying on a later copy of `targets.json`.
+
+Cap reduction preserves both actual seed partitions and the requested held-out
+fraction when both are present. It reduces random/LHS samples, then seed repetitions,
+before removing variable alternatives. The default array preset therefore keeps
+all nine arrays at 1800 runs. An impossible cap errors instead of silently turning
+a split study into a one-seed pilot. Explicit held-out IDs are validated.
+
+Seeds `[1, 2, 101]` have `101` held out. Eight of 25 scene IDs are held-out random
+sites; the split is fixed before baseline and held-out data is reporting-only.
+Reports separate train/held-out, realism off/on (2.5 deg heading, 1 dB gain,
+5 mm position, correlation 0.3), and analysis modes. Bootstrap resamples complete
+scene/seed runs; within-site seeds remain correlated. See [Testing](docs/testing.md)
+and [overnight log](docs/overnight-log.md) for limitations and retained steps.
+
+### Measured quality and reproducibility (schema 0.8)
+
+Measured-only `min_peak=0.25` applies to dimensionless PHAT coherence. Each raw
+peak is divided by `2 * in_band_bins / (FFT_length * upsample_factor)`, the fully
+coherent peak. Previously the raw maximum was below 0.015 in the default band,
+so even perfectly coherent windows failed the gate. The threshold is unchanged
+and remains an uncalibrated placeholder. Raw peaks, TDOAs, rendered signals and
+truth-assisted bearings are unchanged.
+
+Integer seed counts reserve at least 30% held-out seeds (with two or more seeds);
+explicit seed lists retain their declared split. Single-seed pilots are not
+held-out validation. Resume checks exact job/custom-scene settings, scoring target,
+source code, runtime and audio hashes. OAT retains requested values even when
+they equal a registry default: actual bases differ by scene and realism state.
+Geometry transforms precede source ranges in fixed order. Regression comparisons
+match variable values and reject different scene/seed populations or scoring targets.
+
+Browser/Node testing exposed a legacy consensus tie where
+count-equal pair costs near machine zero chose different node pairs and later
+track windows. Recorded audio hashes and whole-event bearings matched. Schema
+numbers did not cause that difference. Engine/runtime provenance matters. A
+weight-aware repair was rejected because suspect precision and recall regressed;
+see the overnight log. No solver upgrade is claimed.
+
+### Episode scoring (schema 0.10)
+
+Measured spatial matching is one-to-one only among overlapping emission-time
+intervals. Separate bursts in one recording may belong to the same physical
+source. Previously every burst after the best match was marked unmatched/wrong.
+Every assigned episode now contributes to error quantiles, track counts and
+calibration; source coverage remains capped at one per source. Simultaneous
+unmatched hypotheses still count wrong. Scoring does not validate clip-active
+intervals; this remains a limitation. Editor drill-down displays the best matched
+episode per source, while the export retains all episodes.
+
+Reports identify `scoring_version`; unlike conventions cannot be compared.
+`node scripts/benchmark-rescore.mjs --from old.json --out rescored.json`
+explicitly recomputes scores from stored inference without rendering, changing
+inference or overwriting the original. It records both producers and clears the
+obsolete whole-result cache reference. Re-score both sides before regression
+comparison. This is a measurement correction, not an algorithm accuracy gain.
+
+### Noncoplanar four-mic alternative (schema 0.11)
+
+`ball12_d180_sub4` remains unchanged for compatibility: A1/B2/C1/D2 all have
+y = 0. Its nonzero vertical baseline does not provide full 3D rank.
+Select **4-mic maximum-volume D180 ball subset**
+(`ball12_d180_sub4_maxvol`) explicitly to use A1/C1/C2/C3 instead.
+Exhaustive enumeration of all 495 subsets maximises the absolute tetrahedral
+determinant, equivalently the determinant of the centred geometry Gram matrix.
+Tetrahedral volume is **299297.648 mm3**. Integer tenths-of-mm arithmetic gives
+exact ties, resolved by original mic order. This is a geometry choice, not
+evidence of acoustic superiority or calibrated hardware.
+
+No default array changes. The opt-in layout has its own new signal golden:
+`node scripts/sim-golden.mjs --set array-max-volume`. All older signal and
+analysis golden files are unchanged. Random benchmark sites pin the original
+eight array IDs/order; a SHA-256 regression verifies all eight held-out inputs
+remain identical after extending the library.
+
+`docs/experiments/array-pilot.json` predeclares a 144-run, two-site/two-seed,
+all-nine-array off/on comparison in both pipelines. This is a bounded pilot,
+not the requested full-scene hardware ranking. It reserves 50% of scene IDs
+and seeds as held out and does not tune algorithm thresholds.
+
+`docs/experiments/array-full.json` separately freezes the full measured-only
+ranking: 25 sites, nine arrays, three seeds, realism off/on, 1350 runs.
+Eight 144-run two-site endpoint grids test existing placeholder ranges.
+Their outcomes are reporting-only; none selects an algorithm threshold.
+The original full study was gracefully checkpointed at 167/1350 because of
+observed render cost, not accuracy. Its explicitly cancelled archive is
+`baselines/array-full-partial.json.gz`, not a fair all-array ranking.
+`docs/experiments/array-full-budget.json` preregisters the 900-run replacement:
+all 25 sites and nine arrays, seeds 1/101, both realism profiles. It retains
+32% held-out site IDs and 50% held-out seeds. See the final report for actual
+completion, rather than assuming every declared study ran.
+The replacement completed900/900. Its full-scene conditional median leader
+flips with realism in both splits, but low coverage, wrong fixes and unmodelled
+physics prevent a hardware recommendation; see the report's complete tables.
+
+### Regression CI
+
+The read-only `sim-regression.yml` workflow runs core/app tests and the app build
+on Node 24.22.2, then gates eight measured-only cases with actual fixes against
+`baselines/ci-smoke.json`. Both realism profiles and scene/seed holdout are included.
+It fetches pinned test audio, uses the committed models, and preserves
+JSON/CSV/HTML artifacts even on regression. This infrastructure uses the existing
+schema 0.12; it introduces no inference, export-format or tolerance change.
+
+### Simulated, measured and assumed
+
+| Quantity | Status and permitted use |
+|---|---|
+| Microphone pressure, propagation paths, true geometry and source tracks | Simulated. True geometry, paths and source tracks are scoring/audit inputs, never measured-only inference inputs. |
+| Measured-only onsets, PHAT coherence, bearings and tracks | Estimated from simulated microphone mixtures and nominal geometry, not validated real measurements. |
+| Truth-assisted windows, containment, SNR, overlap, picked path, multipath and dominance | Simulator truth. Kept only as the editor's compatibility pipeline and an explicitly labelled benchmark upper bound. |
+| Heading/gain/position error and noise correlation | Assumed distributions controlled by settings; realism-on is a stress test, not a measured hardware profile. |
+| Microphone gain error | Positive scalar applied to signal plus both noises. It ideally cancels in PHAT; this does not model frequency/phase mismatch or preamplifier noise. |
+| Bearing sigmas, association gates, benchmark targets and numerical thresholds | Uncalibrated placeholders. Coverage/calibration must be reported with conditional error. |
+| Flat-array elevation | Sign/height assumption, not resolved up/down. Measured-only elevation and 3D error remain unavailable. |
+| Labelling | Actual YAMNet/CLAP results only after runners finish. Benchmark accuracy remains unavailable because benchmarks do not execute labelling. |
+
+### Renderer cache identity (schema 0.9)
+
+The manifest hashes the complete parsed local module dependency graph rooted at
+`render.js`, including cyclic dependencies and re-exports. Audio keys include that
+renderer fingerprint, runtime, nominal inputs, render settings, seed and PCM hashes;
+complete-result keys additionally include full analysis source version and schema.
+Changing analysis cannot silently reuse old results, but no longer forces an
+identical renderer to run again. Every cached render retains its actual producer's
+git/source/runtime provenance. Unknown dependency graphs fail explicitly.
+The shared scheduler permits only one cold render per audio key within an
+experiment. Workers notify it as soon as audio is persisted, allowing waiting
+analysis jobs to start without waiting for the first analysis to finish.
+Default retention is unchanged. For large sequential CLI sweeps,
+`--discard-renders` removes each raw audio/provenance pair only after every
+consumer of that exact key completes; whole results remain cached. Interrupted
+groups retain audio for resume. The manifest records `cache_policy`. Do not
+share a cache with another concurrent experiment in discard mode: there is no
+cross-process lease. Use separate `--cache` directories instead.
+
+Pre-0.9 caches need explicit migration, not an automatic assumption of compatibility:
+`node scripts/benchmark-reuse-renders.mjs --from REPORT.json --source-revision REV
+--legacy-runtime OBSERVATION.json --acknowledge-dirty-audit`. It checks the complete
+renderer graph against that revision, exact nominal inputs, PCM hashes and observed
+Node/V8/platform/architecture, and independently re-renders one control, comparing
+every microphone byte plus activity/path diagnostics. Dirty historic source needs
+an explicit audited assumption, retained in exported provenance; it is **not**
+cryptographic proof of the old working tree. Hard links avoid copying audio.
+Whole-run results are never migrated.
+
 Contents:
 
 - 1. Purpose, pipeline and layout
@@ -388,8 +553,14 @@ This replaces the former `micarrays.md`. A model is `{ id, name, status, source,
 | `ball12_d180_sub4` | 4-mic subset of the D180 ball | 4 | 94.6 / 180.0 mm | 143.0 mm | 1.81 kHz | open item 3 test array, farthest-point subset |
 | `ball12_d180_sub6` | 6-mic subset | 6 | 94.6 / 180.0 mm | 143.0 mm | 1.81 kHz | same |
 | `ball12_d180_sub8` | 8-mic subset | 8 | 94.6 / 180.1 mm | 143.0 mm | 1.81 kHz | same |
+| `planar12_d180` | 12-mic planar control, D180 | 12 | 47.3 / 180.0 mm | 0 | 3.63 kHz | Same channel count/aperture control; no vertical baseline |
 | `dome12_d230` | 12-mic downward dome, D230 (assumed) | 12 | 66.0 / 216.2 mm | 54.9 mm | 2.60 kHz | candidate, coordinates assumed |
 | `puck12_d210` | 12-mic squat puck, D210 (assumed) | 12 | 80.0 / 224.7 mm | 80.0 mm | 2.15 kHz | candidate, coordinates assumed |
+| `ball12_d180_sub4_maxvol` | Maximum-volume D180 four-mic alternative | 4 | 94.6 / 153.2 mm | 88.4 mm | 1.81 kHz | Opt-in noncoplanar alternative; legacy subset unchanged |
+
+The aliasing column is the existing nearest-spacing heuristic `c / (2 * nearest)`,
+at20C. It is not a measured alias-free bandwidth guarantee for arbitrary baselines,
+source directions or the complete broadband estimator.
 
 **`flat4_100`: flat 4-mic square, 100 mm.** The array the simulator uses by default (`flat_square`, s = 0.1 m), entered as "layout assumed, confirm": the old project notes only said "flat 4-mic, 10 cm". Known behaviour in the simulator (unvalidated): biased, steep elevations and positions below ground.
 

@@ -1,0 +1,16 @@
+{
+  "name": "Array pilot: microphone gain error endpoints",
+  "scenes": ["sparse_20", "random_5"],
+  "seeds": [1, 101],
+  "held_out_seeds": [101],
+  "base_settings": {},
+  "mode": "grid",
+  "realism": ["off", "on"],
+  "analysis_modes": ["measured_only"],
+  "sweeps": [
+    { "variable": "mic_array", "values": ["flat4_100", "ball12_d180", "ball12_d180_sub4", "ball12_d180_sub6", "ball12_d180_sub8", "planar12_d180", "dome12_d230", "puck12_d210", "ball12_d180_sub4_maxvol"], "group": "Array and nodes" },
+    { "variable": "mic_gain_sigma_db", "values": [0, 2], "group": "Hardware errors" }
+  ],
+  "metrics": [],
+  "max_runs": 2000
+}

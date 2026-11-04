@@ -13,7 +13,7 @@ test('Vite dev server serves the sim with same-origin CSP and forwards /api to t
   const server = await createServer({
     root: fileURLToPath(new URL('../', import.meta.url)),
     configFile: fileURLToPath(new URL('../vite.config.js', import.meta.url)),
-    server: { host: '127.0.0.1', port: 0, open: false },
+    server: { host: '127.0.0.1', port: 0, open: false, preTransformRequests: false },
     logLevel: 'silent'
   });
   try {
