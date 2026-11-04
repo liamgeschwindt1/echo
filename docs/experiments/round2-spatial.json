@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "name": "Full-rank spatial DOA and stationary fix trial",
+  "population": {
+    "scenes": ["near_wall", "overlap", "continuous", "moving", "blocked", "five_node", "seven_source", "drone_2", "drone_3", "sparse_20", "sparse_50", "sparse_100", "simultaneous_0", "simultaneous_6", "simultaneous_10", "corner", "bad_geometry", "random_1", "random_2", "random_3", "random_4", "random_5", "random_6", "random_7", "random_8"],
+    "seeds": [1, 2, 101],
+    "realism": ["off", "on"],
+    "analysis_modes": ["measured_only"],
+    "scene_splits": {
+      "random_1": "validation", "random_2": "validation",
+      "random_3": "validation", "random_4": "validation",
+      "random_5": "validation", "random_6": "validation",
+      "random_7": "validation", "random_8": "validation"
+    },
+    "held_out_seeds": [101],
+    "expected_runs": 150,
+    "reference": "baselines/round2-final-baseline.json.gz",
+    "physical_inputs": "Exactly the committed round2-evaluation.json scenarios, clips, seeds, realism and source/node transforms; no sweeps or population change."
+  },
+  "method": {
+    "purpose": "One additional bounded B5/B4 trial before the sealed test; full 3D geometry is a different hypothesis from the five rejected confidence/consensus/global trials.",
+    "eligibility": "Nominal all-pair 3D geometry Gram matrix determinant exceeds 1e-10 times the cube of its trace. Rank-deficient nodes retain the original nodeTracks unchanged. Runs with no full-rank node reuse identical stored inference.",
+    "doa": "Unweighted all-pair GCC-PHAT 3D plane-wave least squares, then normalise its direction. Existing frequency band, windows and coherence/residual gates. Require direction norm in [0.8,1.2] and nonzero horizontal direction; report elevation only for full-rank nodes.",
+    "tracks": "Same measured defaults and greedy linking, with spherical rather than azimuth-only neighbour/link/onset separation for full-rank nodes. One peak per window; no claim of simultaneous-source separation.",
+    "uncertainty": "For full-rank nodes only: inverse Gram covariance with independent mic-delay variance max(pair-fit residual^2/2, (1/(4*fs*sqrt(12)))^2), plus declared mic-position variance/c^2. Multiply by n_mics*c^2 to account for shared pairs. Propagate through azimuth/elevation Jacobians. Add declared heading sigma in quadrature to azimuth only. Node interval is the median window sigma, without an independence shrinkage. Gain contributes zero. No fitted multiplier or validation threshold search.",
+    "association": "Retain deployed pair association and its flags. This does not retry rejected global assignment or consensus.",
+    "stationary_3d": "For static pairs with at least one full-rank node, fit azimuth planes and available elevation planes by iteratively range-weighted least squares, initialised by the existing horizontal point at z=1.5m. Maximum20 iterations, 1mm convergence. Reject spatial upgrade behind a node or without convergence/rank; retain horizontal fix with an explicit spatial failure reason. Moving fixes remain horizontal.",
+    "position_uncertainty": "No calibrated positional radius claim; upgraded static positions have unavailable sigma_m rather than inheriting the old horizontal EKF sigma.",
+    "scoring": "Existing measured scorer for horizontal acceptance. Static XYZ error additionally scored against matched source truth after inference only; moving XYZ unavailable.",
+    "decision": "Exactly rule four in all four existing train/validation x realism partitions, 1000 paired whole-run bootstrap draws. No tuning on validation. A failure remains offline and core freeze is unchanged.",
+    "scope": "Not full B5: no multi-peak, global association, gated birth/death tracker or moving 3D filter. No real-data validation."
+  },
+  "execution": {
+    "sequential_after": ["node-count", "placement", "attribution", "range-noise"],
+    "raw_audio": "Own cache; discard immediately after analysis. Full-rank cases are rerendered, other cases reuse exact reference inference with explicit provenance.",
+    "budget": "Before starting, use measured timing strata for eligible cases and reserve the complete sealed estimate plus60min reporting/CI. Do not start if disk exceeds85% or reservation exceeds19:25UTC. No sealed execution before this trial is decided."
+  }
+}
