@@ -1,0 +1,4635 @@
+{
+  "kind": "echo-labelling-benchmark",
+  "schema": "0.15",
+  "spec": {
+    "name": "D1 real-model labelling through synthetic propagation",
+    "clips": [
+      "glass_breaking",
+      "car_horn",
+      "dog"
+    ],
+    "ranges_m": [
+      5,
+      50,
+      150
+    ],
+    "noise_floors_db_spl": [
+      30,
+      60
+    ],
+    "seeds": [
+      1,
+      101
+    ],
+    "nodes": [
+      [
+        -15,
+        0,
+        1.5
+      ],
+      [
+        15,
+        0,
+        1.5
+      ]
+    ],
+    "array": "flat4_100",
+    "source": {
+      "position": "[0, range_m, 1.5]",
+      "level_1m_db": 105,
+      "start_s": 1
+    },
+    "settings": {
+      "ground_reflectivity": 0,
+      "reflection_order": 0,
+      "diffraction_order": 0,
+      "realism": "off"
+    },
+    "input_normalisation": [
+      "raw",
+      "whole-record-rms-minus20dbfs"
+    ],
+    "expected_renders": 36,
+    "expected_model_events": 144,
+    "expected_oracle_events": 72,
+    "models": "Existing real Node YAMNet MediaPipe + quantised CLAP with repository catalogue and classify(clap5); no substitute predictions.",
+    "prediction_rule": "Classify full node microphone 0 recording. Highest-confidence labelled period wins, earliest period breaks ties. No source windows or labels supplied to classifier. No label counts as incorrect. Compare against pinned ESC-50 manifest accepted labels only after inference.",
+    "association": "A predicted period associates to a measured fix only if it overlaps accepted windows of that fix's node track. No truth-assisted association. This is a singleton-source study, not validation of separating overlapping classes.",
+    "snr": "Scoring-only peak detection-band per-source 10ms power over renderer detection-band noise power; never used for inference or normalisation.",
+    "oracle": "Known source label/presence oracle, not a detector. Oracle/localiser coverage are separate denominators.",
+    "reporting": "Complete equal populations only, per label/range/noise/normalisation and SNR bins. No classification or hardware ranking from a partial report. Descriptive paired preprocessing experiment, no default change or tuning on outcomes.",
+    "limitations": "One real ESC-50 clip per label through synthetic simulation is a smoke population, not independent recordings, general model accuracy or real-world propagation validation. Normalisation preserves SNR and may change level-trigger behaviour. No new classifier weights."
+  },
+  "manifest": {
+    "git_hash": "ec053a77117dffc7c20acb106c6e5e4b9322e88f",
+    "code_version": "ba69bbf6d5398aec0512c56c2d17e0ea8f2af21cb5b4b297e5ccd93dda367442",
+    "render_code_version": "d94f0f638bcff86b28ce410324e994dcd8836186d2a8b0d3fad9bb89f2198a55",
+    "render_source_files": [
+      {
+        "name": "activity.js",
+        "sha256": "9965a16c9ddd57877f04dceecda489f9f6e52c32be2599ed171ca5024c3b863c"
+      },
+      {
+        "name": "diffraction.js",
+        "sha256": "1fcb78ec1986de677d0e7aa7ab14a9166705df036747e11a1e32882bfffeb0d9"
+      },
+      {
+        "name": "dsp.js",
+        "sha256": "2893fe2c7da6591e182d0618bac7fbc38a31a11bfecc445fa65ef14d4cda4c3f"
+      },
+      {
+        "name": "edges.js",
+        "sha256": "f455cfe3d9eacfba321cfb0fbc2a540628f40b5bbf3f3f6c7823a4fac7cc8d5d"
+      },
+      {
+        "name": "geometry.js",
+        "sha256": "53c46891257f5e03fc6151e919b9ee39afa247422bed1084ed5df79787c430b1"
+      },
+      {
+        "name": "mics.js",
+        "sha256": "dae01b073fc21e68de3e412d466913be669f66a8d59b9757b130e15e286c0a97"
+      },
+      {
+        "name": "motion.js",
+        "sha256": "64d63bc9cfb75f265015391f44b99fb7c446de6c5f6a3e796a5a66f831ee8c4c"
+      },
+      {
+        "name": "physics.js",
+        "sha256": "d99e4e86b406fa2a0617fba14008cbcad2d90db65d8efedab04e035cbb429b7b"
+      },
+      {
+        "name": "profile.js",
+        "sha256": "25b69e19ce39b56e287ee0e03f821ff5679bc81010fbdd9c7c64ac9605e37291"
+      },
+      {
+        "name": "render.js",
+        "sha256": "57c26f314545696e86a512657bd2df2cb35ba46a9f470600bc56b7455ed405c1"
+      },
+      {
+        "name": "rng.js",
+        "sha256": "f40eda0168b4025902bc848c4ce1e0c1721641459fb3c449071a724b22215ca3"
+      }
+    ],
+    "schema": "0.15",
+    "dirty": true,
+    "scoring": "benchmark score.js; post-inference truth only",
+    "audio_source": "repository test-audio recordings, PCM float32 mono at 48000 Hz",
+    "targets": {
+      "schema": 1,
+      "placeholder": true,
+      "scope": "Starting design targets, not validated acceptance limits. Error targets apply to scenes with source reference range up to 50 m; mixed-range tables are indicative only.",
+      "max_reference_range_m": 50,
+      "metrics": {
+        "horizontal_median_m": {
+          "max": 5,
+          "unit": "m"
+        },
+        "horizontal_p90_m": {
+          "max": 10,
+          "unit": "m"
+        },
+        "useful_fix_rate": {
+          "min": 0.8,
+          "unit": "fraction"
+        },
+        "unflagged_wrong_fix_rate": {
+          "max": 0.01,
+          "unit": "fraction"
+        },
+        "risk_coverage_area": {
+          "max": 0.2,
+          "unit": "fraction"
+        },
+        "within_1sigma": {
+          "min": 0.63,
+          "max": 0.73,
+          "unit": "fraction"
+        },
+        "within_2sigma": {
+          "min": 0.9,
+          "max": 0.99,
+          "unit": "fraction"
+        }
+      }
+    },
+    "preregistration_sha256": "2c75ef77e87f0584940803bb95bbf663a420e92fdd7965397e444db3051ae7ac",
+    "cache_policy": "discard-render-immediately",
+    "complete": true,
+    "audio": [
+      {
+        "id": "car_horn",
+        "samples": 240000,
+        "sha256": "dadf04b0e40acf56e5967682f71b249ae7811a4429372212e633fa207a862202"
+      },
+      {
+        "id": "dog",
+        "samples": 240000,
+        "sha256": "20d460c32866c35509072d12b01e719286b07593aa7ce3299c326f5c510b220f"
+      },
+      {
+        "id": "glass_breaking",
+        "samples": 240000,
+        "sha256": "4df4ae3a411444c0f623a773ef45d28579253f9b878c69832aa582d3f7c09512"
+      }
+    ],
+    "model_files": [
+      {
+        "file": "model/yamnet.tflite",
+        "sha256": "4d8b4a53282dc83ef04e3e7dbc4fbc98082e34e44ed798e16c3a0cdd4c584faf"
+      },
+      {
+        "file": "models/Xenova/clap-htsat-unfused/onnx/audio_model_quantized.onnx",
+        "sha256": "3fcff2c8824e7bcb83a983f2a49edab3b60cbcf4872ac70efee517355173bd1f"
+      },
+      {
+        "file": "config/labels.json",
+        "sha256": "8ba577e8b783cdc996e0ab8bceb610b76d1b05154fde0b119eea6a3d06c69f4c"
+      },
+      {
+        "file": "config/priorities.json",
+        "sha256": "885129b35c9a0d7ea3b36fcf849b51daf12563fd5be27a497b2ba72a7d28c85b"
+      },
+      {
+        "file": "config/clap_text_embeddings.json",
+        "sha256": "b3a2bfca29e5390a9c9adc1914eade6b75a6cba9006bf747235c1e0f66d9c8d0"
+      }
+    ]
+  },
+  "events": [
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 52.17317445042731,
+      "input_rms_dbfs": -48.93962131171637,
+      "applied_gain_db": 0,
+      "label": "glass_break",
+      "confidence": 0.69,
+      "correct": true,
+      "period_s": [
+        2,
+        4.3
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1500.421795000001
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 52.17317445042731,
+      "input_rms_dbfs": -48.93962131171637,
+      "applied_gain_db": 28.939621311716376,
+      "label": "glass_break",
+      "confidence": 0.66,
+      "correct": true,
+      "period_s": [
+        2,
+        4.3
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1426.4896119999994
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 52.08703742425964,
+      "input_rms_dbfs": -48.88245979270557,
+      "applied_gain_db": 0,
+      "label": "glass_break",
+      "confidence": 0.67,
+      "correct": true,
+      "period_s": [
+        2,
+        4.3
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1489.1519850000004
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 52.08703742425964,
+      "input_rms_dbfs": -48.88245979270557,
+      "applied_gain_db": 28.882459792705568,
+      "label": "glass_break",
+      "confidence": 0.64,
+      "correct": true,
+      "period_s": [
+        2,
+        4.3
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1350.1611130000001
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 52.188196498882775,
+      "input_rms_dbfs": -48.93874365188297,
+      "applied_gain_db": 0,
+      "label": "glass_break",
+      "confidence": 0.68,
+      "correct": true,
+      "period_s": [
+        2,
+        4.3
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1407.7310609999986
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 52.188196498882775,
+      "input_rms_dbfs": -48.93874365188297,
+      "applied_gain_db": 28.938743651882973,
+      "label": "glass_break",
+      "confidence": 0.66,
+      "correct": true,
+      "period_s": [
+        2,
+        4.3
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1348.8900360000007
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 52.042232487540325,
+      "input_rms_dbfs": -48.88174774694892,
+      "applied_gain_db": 0,
+      "label": "glass_break",
+      "confidence": 0.65,
+      "correct": true,
+      "period_s": [
+        2,
+        4.3
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1298.282482999999
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 52.042232487540325,
+      "input_rms_dbfs": -48.88174774694892,
+      "applied_gain_db": 28.88174774694892,
+      "label": "glass_break",
+      "confidence": 0.65,
+      "correct": true,
+      "period_s": [
+        2,
+        4.3
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1282.2093910000003
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 24.458757948860658,
+      "input_rms_dbfs": -48.64067742671536,
+      "applied_gain_db": 0,
+      "label": "glass_break",
+      "confidence": 0.39,
+      "correct": true,
+      "period_s": [
+        3,
+        3.5
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1290.1993660000007
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 24.458757948860658,
+      "input_rms_dbfs": -48.64067742671536,
+      "applied_gain_db": 28.640677426715357,
+      "label": "glass_break",
+      "confidence": 0.42,
+      "correct": true,
+      "period_s": [
+        3,
+        3.5
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1267.9608090000002
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 24.387881352679553,
+      "input_rms_dbfs": -48.55995378717701,
+      "applied_gain_db": 0,
+      "label": "glass_break",
+      "confidence": 0.41,
+      "correct": true,
+      "period_s": [
+        3,
+        3.5
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1227.5441010000031
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 24.387881352679553,
+      "input_rms_dbfs": -48.55995378717701,
+      "applied_gain_db": 28.559953787177008,
+      "label": "glass_break",
+      "confidence": 0.44,
+      "correct": true,
+      "period_s": [
+        3,
+        3.5
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1243.0498479999987
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 24.52637881473613,
+      "input_rms_dbfs": -48.614190556716764,
+      "applied_gain_db": 0,
+      "label": "glass_break",
+      "confidence": 0.52,
+      "correct": true,
+      "period_s": [
+        3.1,
+        3.5
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1223.104890999999
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 24.52637881473613,
+      "input_rms_dbfs": -48.614190556716764,
+      "applied_gain_db": 28.614190556716768,
+      "label": "glass_break",
+      "confidence": 0.44,
+      "correct": true,
+      "period_s": [
+        3.1,
+        3.5
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1265.2404610000012
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 24.300078096471548,
+      "input_rms_dbfs": -48.53000756818703,
+      "applied_gain_db": 0,
+      "label": "glass_break",
+      "confidence": 0.53,
+      "correct": true,
+      "period_s": [
+        3,
+        3.5
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1340.0609889999978
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 24.300078096471548,
+      "input_rms_dbfs": -48.53000756818703,
+      "applied_gain_db": 28.530007568187038,
+      "label": "glass_break",
+      "confidence": 0.44,
+      "correct": true,
+      "period_s": [
+        3,
+        3.5
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1428.764707000002
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 41.0229426420151,
+      "input_rms_dbfs": -60.44776065313278,
+      "applied_gain_db": 0,
+      "label": "glass_break",
+      "confidence": 0.51,
+      "correct": true,
+      "period_s": [
+        2,
+        4.4
+      ],
+      "associated_measured_fix_indices": [
+        0,
+        1
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1265.0143499999976
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 41.0229426420151,
+      "input_rms_dbfs": -60.44776065313278,
+      "applied_gain_db": 40.44776065313278,
+      "label": "glass_break",
+      "confidence": 0.54,
+      "correct": true,
+      "period_s": [
+        2,
+        4.4
+      ],
+      "associated_measured_fix_indices": [
+        0,
+        1
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1785.0175610000006
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 41.006623127357315,
+      "input_rms_dbfs": -60.451975393983794,
+      "applied_gain_db": 0,
+      "label": "bottle_smash",
+      "confidence": 0.52,
+      "correct": false,
+      "period_s": [
+        2,
+        4.4
+      ],
+      "associated_measured_fix_indices": [
+        0,
+        1
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1250.8084099999978
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 41.006623127357315,
+      "input_rms_dbfs": -60.451975393983794,
+      "applied_gain_db": 40.451975393983794,
+      "label": "glass_break",
+      "confidence": 0.56,
+      "correct": true,
+      "period_s": [
+        2,
+        4.4
+      ],
+      "associated_measured_fix_indices": [
+        0,
+        1
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1215.5128810000024
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 41.05354427026491,
+      "input_rms_dbfs": -60.44965670937849,
+      "applied_gain_db": 0,
+      "label": "glass_break",
+      "confidence": 0.55,
+      "correct": true,
+      "period_s": [
+        2,
+        4.4
+      ],
+      "associated_measured_fix_indices": [
+        0,
+        1
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1239.4682289999982
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 41.05354427026491,
+      "input_rms_dbfs": -60.44965670937849,
+      "applied_gain_db": 40.44965670937849,
+      "label": "glass_break",
+      "confidence": 0.57,
+      "correct": true,
+      "period_s": [
+        2,
+        4.4
+      ],
+      "associated_measured_fix_indices": [
+        0,
+        1
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1262.4423510000051
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 40.95817168111257,
+      "input_rms_dbfs": -60.4467960434775,
+      "applied_gain_db": 0,
+      "label": "glass_break",
+      "confidence": 0.5,
+      "correct": true,
+      "period_s": [
+        2,
+        4.4
+      ],
+      "associated_measured_fix_indices": [
+        0,
+        1
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1221.583583000007
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 40.95817168111257,
+      "input_rms_dbfs": -60.4467960434775,
+      "applied_gain_db": 40.4467960434775,
+      "label": "glass_break",
+      "confidence": 0.56,
+      "correct": true,
+      "period_s": [
+        2,
+        4.4
+      ],
+      "associated_measured_fix_indices": [
+        0,
+        1
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1276.1385739999969
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 13.305264830939223,
+      "input_rms_dbfs": -57.19327537798734,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 2,
+      "model_ms": 1378.0348950000043
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 13.305264830939223,
+      "input_rms_dbfs": -57.19327537798734,
+      "applied_gain_db": 37.19327537798734,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 2,
+      "model_ms": 1331.5409230000005
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 13.30607813914032,
+      "input_rms_dbfs": -57.3214689165604,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 2,
+      "model_ms": 1248.6181250000009
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 13.30607813914032,
+      "input_rms_dbfs": -57.3214689165604,
+      "applied_gain_db": 37.3214689165604,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 2,
+      "model_ms": 1226.932829999998
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 13.400560144320703,
+      "input_rms_dbfs": -57.20693579209368,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 2,
+      "model_ms": 1324.7568809999939
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 13.400560144320703,
+      "input_rms_dbfs": -57.20693579209368,
+      "applied_gain_db": 37.20693579209369,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 2,
+      "model_ms": 1280.5736379999944
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 13.211178627671348,
+      "input_rms_dbfs": -57.250215512983345,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 2,
+      "model_ms": 1271.6535300000032
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 13.211178627671348,
+      "input_rms_dbfs": -57.250215512983345,
+      "applied_gain_db": 37.25021551298335,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 2,
+      "model_ms": 1294.356111000001
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 31.101652214215505,
+      "input_rms_dbfs": -71.14257882133889,
+      "applied_gain_db": 0,
+      "label": "bottle_smash",
+      "confidence": 0.49,
+      "correct": false,
+      "period_s": [
+        2,
+        4.6
+      ],
+      "associated_measured_fix_indices": [
+        0,
+        1
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1278.3053599999985
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 31.101652214215505,
+      "input_rms_dbfs": -71.14257882133889,
+      "applied_gain_db": 51.14257882133889,
+      "label": "vehicle_collision",
+      "confidence": 0.52,
+      "correct": false,
+      "period_s": [
+        2,
+        4.6
+      ],
+      "associated_measured_fix_indices": [
+        0,
+        1
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1528.4068709999992
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 31.101031149987676,
+      "input_rms_dbfs": -71.1486046359316,
+      "applied_gain_db": 0,
+      "label": "bottle_smash",
+      "confidence": 0.46,
+      "correct": false,
+      "period_s": [
+        2,
+        4.6
+      ],
+      "associated_measured_fix_indices": [
+        0,
+        1
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1339.3707890000078
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 31.101031149987676,
+      "input_rms_dbfs": -71.1486046359316,
+      "applied_gain_db": 51.148604635931605,
+      "label": "vehicle_collision",
+      "confidence": 0.53,
+      "correct": false,
+      "period_s": [
+        2,
+        4.6
+      ],
+      "associated_measured_fix_indices": [
+        0,
+        1
+      ],
+      "measured_fix_count": 2,
+      "model_ms": 1294.0955459999968
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 31.140449643693287,
+      "input_rms_dbfs": -71.1321367541479,
+      "applied_gain_db": 0,
+      "label": "bottle_smash",
+      "confidence": 0.18,
+      "correct": false,
+      "period_s": [
+        2,
+        4.6
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1284.907625000007
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 31.140449643693287,
+      "input_rms_dbfs": -71.1321367541479,
+      "applied_gain_db": 51.1321367541479,
+      "label": "vehicle_collision",
+      "confidence": 0.52,
+      "correct": false,
+      "period_s": [
+        2,
+        4.6
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1277.2691369999957
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 31.083905874114237,
+      "input_rms_dbfs": -71.13774597732116,
+      "applied_gain_db": 0,
+      "label": "bottle_smash",
+      "confidence": 0.47,
+      "correct": false,
+      "period_s": [
+        2,
+        4.6
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1278.7538670000067
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 31.083905874114237,
+      "input_rms_dbfs": -71.13774597732116,
+      "applied_gain_db": 51.13774597732117,
+      "label": "vehicle_collision",
+      "confidence": 0.54,
+      "correct": false,
+      "period_s": [
+        2,
+        4.6
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1303.1229040000035
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 3.3930265525038408,
+      "input_rms_dbfs": -59.6797987828835,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1703.4208930000023
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 3.3930265525038408,
+      "input_rms_dbfs": -59.6797987828835,
+      "applied_gain_db": 39.679798782883495,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1443.2453249999962
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 3.396722686743293,
+      "input_rms_dbfs": -59.69714883349984,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1314.8933479999978
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 3.396722686743293,
+      "input_rms_dbfs": -59.69714883349984,
+      "applied_gain_db": 39.69714883349984,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1283.1820450000087
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 3.493682632785754,
+      "input_rms_dbfs": -59.657493697403225,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1388.9505700000009
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 3.493682632785754,
+      "input_rms_dbfs": -59.657493697403225,
+      "applied_gain_db": 39.65749369740322,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1254.5722760000062
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 3.356703698637678,
+      "input_rms_dbfs": -59.68199342404375,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1392.7795849999966
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 3.356703698637678,
+      "input_rms_dbfs": -59.68199342404375,
+      "applied_gain_db": 39.68199342404375,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1268.0127939999948
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 57.27970830036792,
+      "input_rms_dbfs": -56.07916016328239,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1235.7937339999917
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 57.27970830036792,
+      "input_rms_dbfs": -56.07916016328239,
+      "applied_gain_db": 36.07916016328239,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1281.8291809999937
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 57.25344602173594,
+      "input_rms_dbfs": -56.02704384212189,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1249.9731570000004
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 57.25344602173594,
+      "input_rms_dbfs": -56.02704384212189,
+      "applied_gain_db": 36.0270438421219,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1216.2109840000048
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 57.29473034882339,
+      "input_rms_dbfs": -56.08002090262147,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1347.7978810000059
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 57.29473034882339,
+      "input_rms_dbfs": -56.08002090262147,
+      "applied_gain_db": 36.08002090262148,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1255.7418900000048
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 57.208641085016616,
+      "input_rms_dbfs": -56.02809618685627,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1271.6769619999977
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 57.208641085016616,
+      "input_rms_dbfs": -56.02809618685627,
+      "applied_gain_db": 36.02809618685627,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1283.1365959999966
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 29.565291798801276,
+      "input_rms_dbfs": -54.58879865847854,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1362.9310499999992
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 29.565291798801276,
+      "input_rms_dbfs": -54.58879865847854,
+      "applied_gain_db": 34.58879865847853,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1226.5433229999908
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 29.554289950155855,
+      "input_rms_dbfs": -54.558820510933515,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1229.5200929999992
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 29.554289950155855,
+      "input_rms_dbfs": -54.558820510933515,
+      "applied_gain_db": 34.558820510933515,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1223.9177970000019
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 29.632912664676745,
+      "input_rms_dbfs": -54.60168668854121,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1420.6221379999915
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 29.632912664676745,
+      "input_rms_dbfs": -54.60168668854121,
+      "applied_gain_db": 34.60168668854121,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1407.1088569999993
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 29.46648669394785,
+      "input_rms_dbfs": -54.58482401851957,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1371.5279560000054
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 29.46648669394785,
+      "input_rms_dbfs": -54.58482401851957,
+      "applied_gain_db": 34.58482401851957,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1358.326079999999
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 45.641666246988294,
+      "input_rms_dbfs": -66.74724314128784,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1287.8156080000044
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 45.641666246988294,
+      "input_rms_dbfs": -66.74724314128784,
+      "applied_gain_db": 46.747243141287846,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1486.05161699999
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 45.63590514320132,
+      "input_rms_dbfs": -66.7448732542359,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1307.5735170000116
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 45.63590514320132,
+      "input_rms_dbfs": -66.7448732542359,
+      "applied_gain_db": 46.744873254235905,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1271.0218969999987
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 45.67226787523811,
+      "input_rms_dbfs": -66.74637484631464,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1575.799755999993
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 45.67226787523811,
+      "input_rms_dbfs": -66.74637484631464,
+      "applied_gain_db": 46.746374846314644,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1371.053248000011
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 45.58745369695657,
+      "input_rms_dbfs": -66.74416620630771,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1293.8018719999818
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 45.58745369695657,
+      "input_rms_dbfs": -66.74416620630771,
+      "applied_gain_db": 46.74416620630772,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1284.1835169999977
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 17.923988435912424,
+      "input_rms_dbfs": -59.17117446803044,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1235.6126590000058
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 17.923988435912424,
+      "input_rms_dbfs": -59.17117446803044,
+      "applied_gain_db": 39.17117446803044,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1234.4804310000036
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 17.93536015498432,
+      "input_rms_dbfs": -59.179391873659554,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1240.5861129999976
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 17.93536015498432,
+      "input_rms_dbfs": -59.179391873659554,
+      "applied_gain_db": 39.179391873659554,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1223.9836850000138
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 18.019283749293905,
+      "input_rms_dbfs": -59.16219096100609,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1236.2329650000029
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 18.019283749293905,
+      "input_rms_dbfs": -59.16219096100609,
+      "applied_gain_db": 39.16219096100609,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1223.894465999998
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 17.84046064351535,
+      "input_rms_dbfs": -59.17571926807718,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1284.902276000008
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 17.84046064351535,
+      "input_rms_dbfs": -59.17571926807718,
+      "applied_gain_db": 39.17571926807718,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1346.8510250000108
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 35.646691772576546,
+      "input_rms_dbfs": -76.522978286247,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1822.4636339999852
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 35.646691772576546,
+      "input_rms_dbfs": -76.522978286247,
+      "applied_gain_db": 56.522978286246996,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1659.7636460000067
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 35.65730226104459,
+      "input_rms_dbfs": -76.51666112001776,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1823.6073790000228
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 35.65730226104459,
+      "input_rms_dbfs": -76.51666112001776,
+      "applied_gain_db": 56.516661120017766,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1674.721629000007
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 35.68548920205433,
+      "input_rms_dbfs": -76.52575964989319,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1589.012767999986
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 35.68548920205433,
+      "input_rms_dbfs": -76.52575964989319,
+      "applied_gain_db": 56.52575964989319,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1693.1724090000207
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 35.64017698517116,
+      "input_rms_dbfs": -76.5217971801684,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1632.3276049999986
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 35.64017698517116,
+      "input_rms_dbfs": -76.5217971801684,
+      "applied_gain_db": 56.5217971801684,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1547.2799379999924
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 7.938066110864881,
+      "input_rms_dbfs": -59.90781215235351,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1610.8545630000008
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 7.938066110864881,
+      "input_rms_dbfs": -59.90781215235351,
+      "applied_gain_db": 39.90781215235351,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1687.7503859999997
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 7.952993797800215,
+      "input_rms_dbfs": -59.904290962871954,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1717.4463989999786
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 7.952993797800215,
+      "input_rms_dbfs": -59.904290962871954,
+      "applied_gain_db": 39.904290962871954,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1440.853127999988
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 8.038722191146794,
+      "input_rms_dbfs": -59.91261765611316,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1439.6665739999735
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 8.038722191146794,
+      "input_rms_dbfs": -59.91261765611316,
+      "applied_gain_db": 39.91261765611316,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1678.6947159999982
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 7.9129748096945995,
+      "input_rms_dbfs": -59.908915455453,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1558.8742480000074
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 7.9129748096945995,
+      "input_rms_dbfs": -59.908915455453,
+      "applied_gain_db": 39.908915455453,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1699.994910999987
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 54.23083474016623,
+      "input_rms_dbfs": -56.838843742710814,
+      "applied_gain_db": 0,
+      "label": "dog_barking",
+      "confidence": 0.96,
+      "correct": true,
+      "period_s": [
+        3.3,
+        3.6
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1645.4648659999948
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 54.23083474016623,
+      "input_rms_dbfs": -56.838843742710814,
+      "applied_gain_db": 36.838843742710814,
+      "label": "dog_barking",
+      "confidence": 1,
+      "correct": true,
+      "period_s": [
+        3.3,
+        3.6
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1423.6733339999919
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 54.434116667942156,
+      "input_rms_dbfs": -56.7859370102742,
+      "applied_gain_db": 0,
+      "label": "dog_barking",
+      "confidence": 0.96,
+      "correct": true,
+      "period_s": [
+        3.3,
+        3.6
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1469.6754739999888
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 54.434116667942156,
+      "input_rms_dbfs": -56.7859370102742,
+      "applied_gain_db": 36.785937010274196,
+      "label": "dog_barking",
+      "confidence": 0.97,
+      "correct": true,
+      "period_s": [
+        3.3,
+        3.6
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1497.768385000003
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 54.245856788621694,
+      "input_rms_dbfs": -56.839282924888664,
+      "applied_gain_db": 0,
+      "label": "dog_barking",
+      "confidence": 0.95,
+      "correct": true,
+      "period_s": [
+        3.3,
+        3.6
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1738.3865360000054
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 54.245856788621694,
+      "input_rms_dbfs": -56.839282924888664,
+      "applied_gain_db": 36.839282924888664,
+      "label": "dog_barking",
+      "confidence": 0.95,
+      "correct": true,
+      "period_s": [
+        3.3,
+        3.6
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1484.624984999973
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 54.38931173122284,
+      "input_rms_dbfs": -56.785479660075275,
+      "applied_gain_db": 0,
+      "label": "dog_barking",
+      "confidence": 0.95,
+      "correct": true,
+      "period_s": [
+        3.3,
+        3.6
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1709.5737940000254
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 54.38931173122284,
+      "input_rms_dbfs": -56.785479660075275,
+      "applied_gain_db": 36.785479660075275,
+      "label": "dog_barking",
+      "confidence": 0.97,
+      "correct": true,
+      "period_s": [
+        3.3,
+        3.6
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1715.4124199999787
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 26.51641823859958,
+      "input_rms_dbfs": -55.12559233763233,
+      "applied_gain_db": 0,
+      "label": "dog_barking",
+      "confidence": 0.7,
+      "correct": true,
+      "period_s": [
+        3.3,
+        3.5
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1472.3393619999988
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 26.51641823859958,
+      "input_rms_dbfs": -55.12559233763233,
+      "applied_gain_db": 35.12559233763233,
+      "label": "dog_barking",
+      "confidence": 0.7,
+      "correct": true,
+      "period_s": [
+        3.3,
+        3.5
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1811.1802789999929
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 26.734960596362072,
+      "input_rms_dbfs": -55.08577968210488,
+      "applied_gain_db": 0,
+      "label": "dog_barking",
+      "confidence": 0.7,
+      "correct": true,
+      "period_s": [
+        3.3,
+        3.5
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1798.6984670000093
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 26.734960596362072,
+      "input_rms_dbfs": -55.08577968210488,
+      "applied_gain_db": 35.08577968210488,
+      "label": "dog_barking",
+      "confidence": 0.7,
+      "correct": true,
+      "period_s": [
+        3.3,
+        3.5
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1493.9836349999823
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 26.584039104475057,
+      "input_rms_dbfs": -55.134017029544125,
+      "applied_gain_db": 0,
+      "label": "dog_barking",
+      "confidence": 0.7,
+      "correct": true,
+      "period_s": [
+        3.3,
+        3.5
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1536.6814970000123
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 26.584039104475057,
+      "input_rms_dbfs": -55.134017029544125,
+      "applied_gain_db": 35.134017029544125,
+      "label": "dog_barking",
+      "confidence": 0.7,
+      "correct": true,
+      "period_s": [
+        3.3,
+        3.5
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1644.5931039999996
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 26.647157340154063,
+      "input_rms_dbfs": -55.07900001238235,
+      "applied_gain_db": 0,
+      "label": "dog_barking",
+      "confidence": 0.7,
+      "correct": true,
+      "period_s": [
+        3.3,
+        3.5
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 2047.3199249999889
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 26.647157340154063,
+      "input_rms_dbfs": -55.07900001238235,
+      "applied_gain_db": 35.07900001238236,
+      "label": "dog_barking",
+      "confidence": 0.7,
+      "correct": true,
+      "period_s": [
+        3.3,
+        3.5
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1571.088894000015
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 43.90144298861632,
+      "input_rms_dbfs": -67.43839248029663,
+      "applied_gain_db": 0,
+      "label": "dog_barking",
+      "confidence": 0.92,
+      "correct": true,
+      "period_s": [
+        3.4,
+        3.7
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1930.0533660000074
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 43.90144298861632,
+      "input_rms_dbfs": -67.43839248029663,
+      "applied_gain_db": 47.43839248029663,
+      "label": "dog_barking",
+      "confidence": 0.87,
+      "correct": true,
+      "period_s": [
+        3.4,
+        3.7
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1495.6061710000213
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 43.878177437931036,
+      "input_rms_dbfs": -67.43778389976494,
+      "applied_gain_db": 0,
+      "label": "dog_barking",
+      "confidence": 0.91,
+      "correct": true,
+      "period_s": [
+        3.4,
+        3.7
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1876.2568570000003
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 43.878177437931036,
+      "input_rms_dbfs": -67.43778389976494,
+      "applied_gain_db": 47.43778389976494,
+      "label": "dog_barking",
+      "confidence": 0.7,
+      "correct": true,
+      "period_s": [
+        3.4,
+        3.7
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1629.7270089999947
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 43.932044616866136,
+      "input_rms_dbfs": -67.44107238765184,
+      "applied_gain_db": 0,
+      "label": "dog_barking",
+      "confidence": 0.92,
+      "correct": true,
+      "period_s": [
+        3.4,
+        3.7
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1446.7502490000043
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 43.932044616866136,
+      "input_rms_dbfs": -67.44107238765184,
+      "applied_gain_db": 47.44107238765185,
+      "label": "dog_barking",
+      "confidence": 0.88,
+      "correct": true,
+      "period_s": [
+        3.4,
+        3.7
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1665.8060970000224
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 43.82972599168629,
+      "input_rms_dbfs": -67.437797569689,
+      "applied_gain_db": 0,
+      "label": "dog_barking",
+      "confidence": 0.93,
+      "correct": true,
+      "period_s": [
+        3.4,
+        3.7
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1514.7448710000026
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 43.82972599168629,
+      "input_rms_dbfs": -67.437797569689,
+      "applied_gain_db": 47.43779756968899,
+      "label": "dog_barking",
+      "confidence": 0.86,
+      "correct": true,
+      "period_s": [
+        3.4,
+        3.7
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1684.1847560000024
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 16.18376517754044,
+      "input_rms_dbfs": -59.278861439745214,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1567.1440430000075
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 16.18376517754044,
+      "input_rms_dbfs": -59.278861439745214,
+      "applied_gain_db": 39.278861439745214,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1506.6953879999928
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 16.177632449714036,
+      "input_rms_dbfs": -59.29413834240607,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1899.4746380000142
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 16.177632449714036,
+      "input_rms_dbfs": -59.29413834240607,
+      "applied_gain_db": 39.29413834240607,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1840.3952310000022
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 16.27906049092192,
+      "input_rms_dbfs": -59.28389478456908,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 2037.2388659999997
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 16.27906049092192,
+      "input_rms_dbfs": -59.28389478456908,
+      "applied_gain_db": 39.283894784569085,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1504.7506770000036
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 16.082732938245066,
+      "input_rms_dbfs": -59.29099649416305,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1650.8755539999984
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 16.082732938245066,
+      "input_rms_dbfs": -59.29099649416305,
+      "applied_gain_db": 39.29099649416306,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 1,
+      "model_ms": 1741.4537120000168
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 33.83153575633904,
+      "input_rms_dbfs": -77.00060883645287,
+      "applied_gain_db": 0,
+      "label": "dog_barking",
+      "confidence": 0.7,
+      "correct": true,
+      "period_s": [
+        3.7,
+        3.9
+      ],
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1729.1372039999696
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 33.83153575633904,
+      "input_rms_dbfs": -77.00060883645287,
+      "applied_gain_db": 57.00060883645286,
+      "label": "dog_barking",
+      "confidence": 0.87,
+      "correct": true,
+      "period_s": [
+        3.7,
+        3.9
+      ],
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1534.8956530000432
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 33.813088543431974,
+      "input_rms_dbfs": -77.00550324061783,
+      "applied_gain_db": 0,
+      "label": "dog_barking",
+      "confidence": 0.7,
+      "correct": true,
+      "period_s": [
+        3.7,
+        3.9
+      ],
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1492.0574480000068
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 33.813088543431974,
+      "input_rms_dbfs": -77.00550324061783,
+      "applied_gain_db": 57.005503240617834,
+      "label": "dog_barking",
+      "confidence": 0.7,
+      "correct": true,
+      "period_s": [
+        3.7,
+        3.9
+      ],
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1538.6775349999662
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 33.87033318581682,
+      "input_rms_dbfs": -77.00800385554432,
+      "applied_gain_db": 0,
+      "label": "dog_barking",
+      "confidence": 0.7,
+      "correct": true,
+      "period_s": [
+        3.7,
+        3.9
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1763.6091119999764
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 33.87033318581682,
+      "input_rms_dbfs": -77.00800385554432,
+      "applied_gain_db": 57.00800385554431,
+      "label": "dog_barking",
+      "confidence": 0.7,
+      "correct": true,
+      "period_s": [
+        3.7,
+        3.9
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1881.8161320000072
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 33.795963267558534,
+      "input_rms_dbfs": -77.0000268136287,
+      "applied_gain_db": 0,
+      "label": "dog_barking",
+      "confidence": 0.7,
+      "correct": true,
+      "period_s": [
+        3.7,
+        3.9
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1681.1402629999793
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 33.795963267558534,
+      "input_rms_dbfs": -77.0000268136287,
+      "applied_gain_db": 57.000026813628686,
+      "label": "dog_barking",
+      "confidence": 0.7,
+      "correct": true,
+      "period_s": [
+        3.7,
+        3.9
+      ],
+      "associated_measured_fix_indices": [
+        0
+      ],
+      "measured_fix_count": 1,
+      "model_ms": 1836.8110779999988
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 6.122910094627375,
+      "input_rms_dbfs": -59.914768384315465,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1626.4678899999708
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 6.122910094627375,
+      "input_rms_dbfs": -59.914768384315465,
+      "applied_gain_db": 39.914768384315465,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1732.4063490000553
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 6.108780080187591,
+      "input_rms_dbfs": -59.91832560328731,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1652.7376060000388
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 6.108780080187591,
+      "input_rms_dbfs": -59.91832560328731,
+      "applied_gain_db": 39.9183256032873,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1613.048861999996
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "raw",
+      "snr_db": 6.223566174909289,
+      "input_rms_dbfs": -59.919346770884026,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1621.737717000011
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 6.223566174909289,
+      "input_rms_dbfs": -59.919346770884026,
+      "applied_gain_db": 39.919346770884026,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1659.6792419999838
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "raw",
+      "snr_db": 6.068761092081976,
+      "input_rms_dbfs": -59.91557091332939,
+      "applied_gain_db": 0,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1682.881531000021
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "snr_db": 6.068761092081976,
+      "input_rms_dbfs": -59.91557091332939,
+      "applied_gain_db": 39.91557091332939,
+      "label": null,
+      "confidence": null,
+      "correct": false,
+      "period_s": null,
+      "associated_measured_fix_indices": [],
+      "measured_fix_count": 0,
+      "model_ms": 1561.2472089999937
+    }
+  ],
+  "oracles": [
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "glass_break",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "car_horn",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "node_range_m": 15.811388300841898,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "node_range_m": 52.201532544552755,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n1",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "node_id": "n2",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n1",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "node_range_m": 150.74813431681335,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "node_id": "n2",
+      "label": "dog_barking",
+      "correct": true,
+      "note": "Known label and source presence; not measured detection"
+    }
+  ],
+  "renders": [
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "render_ms": 2614.6852460000005
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "render_ms": 1593.4602759999998
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "render_ms": 1633.3256980000006
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 5,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "render_ms": 1743.1001660000002
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "render_ms": 1567.1914140000008
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "render_ms": 1568.7981819999986
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "render_ms": 1575.3532239999986
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 50,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "render_ms": 1652.5501250000016
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "render_ms": 1534.7290190000058
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "render_ms": 1664.027080999993
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "render_ms": 1800.8262610000093
+    },
+    {
+      "clip": "glass_breaking",
+      "range_m": 150,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "render_ms": 1601.1506999999983
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "render_ms": 1543.5727199999965
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "render_ms": 1576.2885529999912
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "render_ms": 1501.067320000002
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 5,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "render_ms": 1532.527952000004
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "render_ms": 1503.3279110000003
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "render_ms": 1844.942316999979
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "render_ms": 1656.0729129999818
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 50,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "render_ms": 1519.536322
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "render_ms": 1861.8262649999815
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "render_ms": 1643.6351950000098
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "render_ms": 1660.8853359999775
+    },
+    {
+      "clip": "car_horn",
+      "range_m": 150,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "render_ms": 1726.6557449999964
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "render_ms": 2051.7192090000026
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "render_ms": 1588.639898000023
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "render_ms": 1712.6336589999846
+    },
+    {
+      "clip": "dog",
+      "range_m": 5,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "render_ms": 1486.7683539999998
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "render_ms": 1621.1393439999956
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "render_ms": 1624.0957859999908
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "render_ms": 1809.9508099999803
+    },
+    {
+      "clip": "dog",
+      "range_m": 50,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "render_ms": 1603.2297360000084
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "noise_floor_db_spl": 30,
+      "seed": 1,
+      "render_ms": 1606.1910250000074
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "noise_floor_db_spl": 30,
+      "seed": 101,
+      "render_ms": 1620.1493279999704
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "noise_floor_db_spl": 60,
+      "seed": 1,
+      "render_ms": 1695.6681499999831
+    },
+    {
+      "clip": "dog",
+      "range_m": 150,
+      "noise_floor_db_spl": 60,
+      "seed": 101,
+      "render_ms": 1656.1221760000335
+    }
+  ],
+  "summary": [
+    {
+      "key": "glass_breaking|5|30|raw",
+      "n": 4,
+      "accuracy": 1,
+      "localised_label_rate": 1,
+      "mean_snr_db": 52.12266021527751
+    },
+    {
+      "key": "glass_breaking|5|30|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 1,
+      "localised_label_rate": 1,
+      "mean_snr_db": 52.12266021527751
+    },
+    {
+      "key": "glass_breaking|5|60|raw",
+      "n": 4,
+      "accuracy": 1,
+      "localised_label_rate": 1,
+      "mean_snr_db": 24.418274053186973
+    },
+    {
+      "key": "glass_breaking|5|60|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 1,
+      "localised_label_rate": 1,
+      "mean_snr_db": 24.418274053186973
+    },
+    {
+      "key": "glass_breaking|50|30|raw",
+      "n": 4,
+      "accuracy": 0.75,
+      "localised_label_rate": 0.75,
+      "mean_snr_db": 41.01032043018748
+    },
+    {
+      "key": "glass_breaking|50|30|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 1,
+      "localised_label_rate": 1,
+      "mean_snr_db": 41.01032043018748
+    },
+    {
+      "key": "glass_breaking|50|60|raw",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 13.305770435517896
+    },
+    {
+      "key": "glass_breaking|50|60|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 13.305770435517896
+    },
+    {
+      "key": "glass_breaking|150|30|raw",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 31.106759720502676
+    },
+    {
+      "key": "glass_breaking|150|30|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 31.106759720502676
+    },
+    {
+      "key": "glass_breaking|150|60|raw",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 3.4100338926676415
+    },
+    {
+      "key": "glass_breaking|150|60|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 3.4100338926676415
+    },
+    {
+      "key": "car_horn|5|30|raw",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 57.25913143898596
+    },
+    {
+      "key": "car_horn|5|30|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 57.25913143898596
+    },
+    {
+      "key": "car_horn|5|60|raw",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 29.55474527689543
+    },
+    {
+      "key": "car_horn|5|60|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 29.55474527689543
+    },
+    {
+      "key": "car_horn|50|30|raw",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 45.634323240596075
+    },
+    {
+      "key": "car_horn|50|30|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 45.634323240596075
+    },
+    {
+      "key": "car_horn|50|60|raw",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 17.929773245926498
+    },
+    {
+      "key": "car_horn|50|60|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 17.929773245926498
+    },
+    {
+      "key": "car_horn|150|30|raw",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 35.65741505521166
+    },
+    {
+      "key": "car_horn|150|30|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 35.65741505521166
+    },
+    {
+      "key": "car_horn|150|60|raw",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 7.960689227376622
+    },
+    {
+      "key": "car_horn|150|60|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 7.960689227376622
+    },
+    {
+      "key": "dog|5|30|raw",
+      "n": 4,
+      "accuracy": 1,
+      "localised_label_rate": 1,
+      "mean_snr_db": 54.32502998198823
+    },
+    {
+      "key": "dog|5|30|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 1,
+      "localised_label_rate": 1,
+      "mean_snr_db": 54.32502998198823
+    },
+    {
+      "key": "dog|5|60|raw",
+      "n": 4,
+      "accuracy": 1,
+      "localised_label_rate": 1,
+      "mean_snr_db": 26.620643819897694
+    },
+    {
+      "key": "dog|5|60|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 1,
+      "localised_label_rate": 1,
+      "mean_snr_db": 26.620643819897694
+    },
+    {
+      "key": "dog|50|30|raw",
+      "n": 4,
+      "accuracy": 1,
+      "localised_label_rate": 1,
+      "mean_snr_db": 43.88534775877494
+    },
+    {
+      "key": "dog|50|30|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 1,
+      "localised_label_rate": 1,
+      "mean_snr_db": 43.88534775877494
+    },
+    {
+      "key": "dog|50|60|raw",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 16.180797764105364
+    },
+    {
+      "key": "dog|50|60|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 16.180797764105364
+    },
+    {
+      "key": "dog|150|30|raw",
+      "n": 4,
+      "accuracy": 1,
+      "localised_label_rate": 0.5,
+      "mean_snr_db": 33.827730188286594
+    },
+    {
+      "key": "dog|150|30|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 1,
+      "localised_label_rate": 0.5,
+      "mean_snr_db": 33.827730188286594
+    },
+    {
+      "key": "dog|150|60|raw",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 6.131004360451557
+    },
+    {
+      "key": "dog|150|60|whole-record-rms-minus20dbfs",
+      "n": 4,
+      "accuracy": 0,
+      "localised_label_rate": 0,
+      "mean_snr_db": 6.131004360451557
+    }
+  ],
+  "models": {
+    "yamnet": {
+      "file": "model/yamnet.tflite",
+      "runtime": "MediaPipe tasks-audio 1.1.0 (WASM, Node)",
+      "sample_rate": 16000
+    },
+    "clap": {
+      "id": "Xenova/clap-htsat-unfused",
+      "file": "onnx/audio_model_quantized.onnx",
+      "runtime": "transformers.js 2 / onnxruntime-node",
+      "sample_rate": 48000,
+      "logit_scale": 18.66,
+      "logit_scale_placeholder": true
+    }
+  },
+  "snr_bins": [
+    {
+      "normalisation": "raw",
+      "min_snr_db": null,
+      "max_snr_db": 0,
+      "n": 0,
+      "accuracy": null
+    },
+    {
+      "normalisation": "raw",
+      "min_snr_db": 0,
+      "max_snr_db": 10,
+      "n": 12,
+      "accuracy": 0
+    },
+    {
+      "normalisation": "raw",
+      "min_snr_db": 10,
+      "max_snr_db": 20,
+      "n": 12,
+      "accuracy": 0
+    },
+    {
+      "normalisation": "raw",
+      "min_snr_db": 20,
+      "max_snr_db": null,
+      "n": 48,
+      "accuracy": 0.5625
+    },
+    {
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "min_snr_db": null,
+      "max_snr_db": 0,
+      "n": 0,
+      "accuracy": null
+    },
+    {
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "min_snr_db": 0,
+      "max_snr_db": 10,
+      "n": 12,
+      "accuracy": 0
+    },
+    {
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "min_snr_db": 10,
+      "max_snr_db": 20,
+      "n": 12,
+      "accuracy": 0
+    },
+    {
+      "normalisation": "whole-record-rms-minus20dbfs",
+      "min_snr_db": 20,
+      "max_snr_db": null,
+      "n": 48,
+      "accuracy": 0.5833333333333334
+    }
+  ]
+}
