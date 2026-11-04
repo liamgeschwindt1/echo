@@ -54,6 +54,29 @@
   training/replay infrastructure remains for reproducibility, not a promoted
   optional failed solver. No claim that positional accuracy improved.
 
+## Round 2 heartbeat and rejected association (10:15 UTC)
+
+- Disk 57%, about 7.6 GiB free. Sealed inputs remain unrun. Current step:
+  completed performance populations, real-model labelling running sequentially,
+  recording/prototype integration and final validation preparation.
+- Both preregistered global-assignment candidates rejected. They generated 82
+  three-plus-node fixes, but ordinary global fusion worsened off-realism
+  calibration; train-fitted empirical intervals still worsened validation/on
+  calibration (0.50 to 0.8923 versus nominal 0.6827). Validation/on paired
+  improvement intervals also touched zero. Full 150-run evidence, models and
+  reasons are retained; default fusion is unchanged.
+- The exact historical leave-one-out trace is in the truth-assisted solver,
+  not `analyseMeasured`. A repair there cannot establish a measured-only gain.
+  No new verdict is claimed for the round-one rejected weighted/LOO repairs.
+- A3 original eight-run population finished: every microphone and inference hash
+  matches. Full-render V8 serialization is unstable even between baseline
+  repetitions. This is invalid instrumentation, not a passing invariant or a
+  demonstrated signal change. Preserve both originals, commit a canonical
+  value/typed-byte hashing amendment before repeating the entire population.
+- Synthetic WAV/truth/calibration CLI round-trip and actual browser/Node consensus
+  parity passed targeted checks. No real data has been evaluated. Prototype
+  protocols explicitly distinguish proposed sample sizes from measurements.
+
 ## Rules and decisions (2026-11-04)
 
 - Work only on `overnight/localisation`; no main pushes. Each retained logical step gets its own commit after core tests and benchmark.

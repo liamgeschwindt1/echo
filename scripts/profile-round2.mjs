@@ -4,6 +4,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { serialize } from 'node:v8';
 import { parseArgs } from 'node:util';
+import { valueHash } from './lib/value-hash.mjs';
 
 const { values } = parseArgs({ options: { variant: { type: 'string' } } });
 if (!['baseline', 'candidate'].includes(values.variant)) throw new Error('--variant baseline|candidate required');
@@ -42,7 +43,8 @@ for (const scene of spec.scenes) for (let repetition = 0; repetition < spec.repe
     scene: scene.id, array_override: scene.array_override, repetition,
     render_ms, analysis_ms: performance.now() - analysisStart, profile,
     audio_sha256: rendered.nodes.map((n) => n.mics.map((pcm) => hash(new Uint8Array(pcm.buffer, pcm.byteOffset, pcm.byteLength)))),
-    render_sha256: hash(serialize(rendered)), inference_sha256: hash(serialize(inference))
+    render_sha256: valueHash(rendered), inference_sha256: valueHash(inference),
+    noncanonical_v8_render_sha256: hash(serialize(rendered))
   });
   console.log(`${values.variant} ${scene.id} repetition ${repetition + 1}/${spec.repetitions}: render ${render_ms.toFixed(0)}ms`);
 }
