@@ -1,0 +1,4447 @@
+{
+  "trials": [
+    {
+      "study": "confidence",
+      "report": "baselines/round2-confidence-trial.json.gz",
+      "sha256": "f5b7041ce9c764760893ff9c35b6bc2513217b9c7db3425b73cc6e760560b436",
+      "accepted": false,
+      "full_acceptance": {
+        "rule": "round2",
+        "pass": false,
+        "rows": [
+          {
+            "key": "c0|train|off|measured_only",
+            "n_pairs": 34,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.7058823529411765,
+                "after": 0.7058823529411765,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.7685185185185185,
+                "after": 0.7685185185185185,
+                "delta": 0,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.7685185185185185,
+                "after": 0.7685185185185185,
+                "delta": 0,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 0.5260673723299998,
+                "after": 0.5260673723299998,
+                "delta": 0,
+                "ci": [
+                  0,
+                  0
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 24.630670579177263,
+                "after": 24.630670579177263,
+                "delta": 0,
+                "ci": [
+                  0,
+                  0
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.5882352941176471,
+                "after": 0.3723075906859846,
+                "delta": -0.21592770343166245,
+                "ci": [
+                  -0.2707806783333533,
+                  -0.12331352819765673
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": true,
+            "pass": true,
+            "reasons": []
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "n_pairs": 34,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.6764705882352942,
+                "after": 0.6764705882352942,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.22340425531914893,
+                "after": 0.22340425531914893,
+                "delta": 0,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.5,
+                "after": 0.5,
+                "delta": 0,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 6.873482224182378,
+                "after": 6.873482224182378,
+                "delta": 0,
+                "ci": [
+                  0,
+                  0
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 24.884515941406285,
+                "after": 24.884515941406285,
+                "delta": 0,
+                "ci": [
+                  0,
+                  0
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.7058823529411764,
+                "after": 0.47708852508989885,
+                "delta": -0.22879382785127755,
+                "ci": [
+                  -0.27367901796408334,
+                  -0.1492360580595875
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": true,
+            "pass": true,
+            "reasons": []
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "n_pairs": 41,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.5121951219512195,
+                "after": 0.5121951219512195,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.8108108108108109,
+                "after": 0.8108108108108109,
+                "delta": 0,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.8243243243243243,
+                "after": 0.8243243243243243,
+                "delta": 0,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 0.4379962606780376,
+                "after": 0.4379962606780376,
+                "delta": 0,
+                "ci": [
+                  0,
+                  0
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 21.773820778817814,
+                "after": 21.773820778817814,
+                "delta": 0,
+                "ci": [
+                  0,
+                  0
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.6585365853658536,
+                "after": 0.5365228042406551,
+                "delta": -0.12201378112519845,
+                "ci": [
+                  -0.17498858115179616,
+                  -0.04799316537121423
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": true,
+            "pass": true,
+            "reasons": []
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "n_pairs": 41,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.3170731707317073,
+                "after": 0.3170731707317073,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.5,
+                "after": 0.5,
+                "delta": 0,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.7884615384615384,
+                "after": 0.7884615384615384,
+                "delta": 0,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 2.4937218191777966,
+                "after": 2.4937218191777966,
+                "delta": 0,
+                "ci": [
+                  0,
+                  0
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 26.746550237115848,
+                "after": 26.746550237115848,
+                "delta": 0,
+                "ci": [
+                  0,
+                  0
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.7560975609756098,
+                "after": 0.7065198351783717,
+                "delta": -0.04957772579723807,
+                "ci": [
+                  -0.09359464065346401,
+                  0
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": false,
+            "pass": false,
+            "reasons": [
+              "No paired median/p90/risk-area improvement with CI excluding zero"
+            ]
+          }
+        ],
+        "regressions": [
+          {
+            "key": "c0|validation|on|measured_only",
+            "reason": "No paired median/p90/risk-area improvement with CI excluding zero"
+          }
+        ],
+        "differences": [
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.7058823529411765,
+            "after": 0.7058823529411765,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.7685185185185185,
+            "after": 0.7685185185185185,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.7685185185185185,
+            "after": 0.7685185185185185,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 0.5260673723299998,
+            "after": 0.5260673723299998,
+            "delta": 0,
+            "ci": [
+              0,
+              0
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 24.630670579177263,
+            "after": 24.630670579177263,
+            "delta": 0,
+            "ci": [
+              0,
+              0
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.5882352941176471,
+            "after": 0.3723075906859846,
+            "delta": -0.21592770343166245,
+            "ci": [
+              -0.2707806783333533,
+              -0.12331352819765673
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.6764705882352942,
+            "after": 0.6764705882352942,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.22340425531914893,
+            "after": 0.22340425531914893,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.5,
+            "after": 0.5,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 6.873482224182378,
+            "after": 6.873482224182378,
+            "delta": 0,
+            "ci": [
+              0,
+              0
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 24.884515941406285,
+            "after": 24.884515941406285,
+            "delta": 0,
+            "ci": [
+              0,
+              0
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.7058823529411764,
+            "after": 0.47708852508989885,
+            "delta": -0.22879382785127755,
+            "ci": [
+              -0.27367901796408334,
+              -0.1492360580595875
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.5121951219512195,
+            "after": 0.5121951219512195,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.8108108108108109,
+            "after": 0.8108108108108109,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.8243243243243243,
+            "after": 0.8243243243243243,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 0.4379962606780376,
+            "after": 0.4379962606780376,
+            "delta": 0,
+            "ci": [
+              0,
+              0
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 21.773820778817814,
+            "after": 21.773820778817814,
+            "delta": 0,
+            "ci": [
+              0,
+              0
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.6585365853658536,
+            "after": 0.5365228042406551,
+            "delta": -0.12201378112519845,
+            "ci": [
+              -0.17498858115179616,
+              -0.04799316537121423
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.3170731707317073,
+            "after": 0.3170731707317073,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.5,
+            "after": 0.5,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.7884615384615384,
+            "after": 0.7884615384615384,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 2.4937218191777966,
+            "after": 2.4937218191777966,
+            "delta": 0,
+            "ci": [
+              0,
+              0
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 26.746550237115848,
+            "after": 26.746550237115848,
+            "delta": 0,
+            "ci": [
+              0,
+              0
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.7560975609756098,
+            "after": 0.7065198351783717,
+            "delta": -0.04957772579723807,
+            "ci": [
+              -0.09359464065346401,
+              0
+            ],
+            "regression": false
+          }
+        ],
+        "method": "Paired bootstrap of whole matching scene/seed runs; aggregate endpoint delta after-before. Missing conditional errors are omitted from endpoint draws, never imputed as zero. Calibration guard is absolute distance to nominal. All-equal compares all non-runtime metric values."
+      },
+      "confidence_evaluation": [
+        {
+          "split": "train",
+          "realism": "off",
+          "n_episodes": 60,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 22,
+              "predicted": 0.04811599413666487,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 8,
+              "predicted": 0.15510966353548633,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 7,
+              "predicted": 0.24264729816838101,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 3,
+              "predicted": 0.3362792013569898,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 1,
+              "predicted": 0.42470901244989917,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 4,
+              "predicted": 0.5452055860683064,
+              "observed": 0.5
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 4,
+              "predicted": 0.645529011734883,
+              "observed": 0.5
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 4,
+              "predicted": 0.7344368806480924,
+              "observed": 0.75
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 3,
+              "predicted": 0.8522291669232654,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 4,
+              "predicted": 0.9697363751748801,
+              "observed": 1
+            }
+          ],
+          "brier_score": 0.08546924577241947,
+          "radius_90_coverage": 0.9259259259259259,
+          "radius_n": 54
+        },
+        {
+          "split": "train",
+          "realism": "on",
+          "n_episodes": 52,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 12,
+              "predicted": 0.07748516129405243,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 8,
+              "predicted": 0.15717246937027265,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 5,
+              "predicted": 0.26268430734106546,
+              "observed": 0.6
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 5,
+              "predicted": 0.3501836987225249,
+              "observed": 0.2
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 4,
+              "predicted": 0.4601541732921351,
+              "observed": 0.5
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 4,
+              "predicted": 0.5688443183785281,
+              "observed": 0.75
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 2,
+              "predicted": 0.6330684794441326,
+              "observed": 0.5
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 2,
+              "predicted": 0.7659259719489051,
+              "observed": 0.5
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 4,
+              "predicted": 0.8303032087836048,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 6,
+              "predicted": 0.9757782558565798,
+              "observed": 1
+            }
+          ],
+          "brier_score": 0.11559813223139524,
+          "radius_90_coverage": 0.9361702127659575,
+          "radius_n": 47
+        },
+        {
+          "split": "validation",
+          "realism": "off",
+          "n_episodes": 39,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 9,
+              "predicted": 0.035917547789950016,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 13,
+              "predicted": 0.14051430759933164,
+              "observed": 0.07692307692307693
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 4,
+              "predicted": 0.23097361475137712,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 3,
+              "predicted": 0.3455430653643452,
+              "observed": 0.3333333333333333
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 0,
+              "predicted": null,
+              "observed": null
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 5,
+              "predicted": 0.5563934389014932,
+              "observed": 0.8
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 2,
+              "predicted": 0.6740714999170023,
+              "observed": 0.5
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 1,
+              "predicted": 0.7313976994997573,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 0,
+              "predicted": null,
+              "observed": null
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 2,
+              "predicted": 0.9699000458227449,
+              "observed": 0.5
+            }
+          ],
+          "brier_score": 0.11862466387107044,
+          "radius_90_coverage": 0.9459459459459459,
+          "radius_n": 37
+        },
+        {
+          "split": "validation",
+          "realism": "on",
+          "n_episodes": 29,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 10,
+              "predicted": 0.054366176091177165,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 3,
+              "predicted": 0.1798922251517758,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 2,
+              "predicted": 0.2703390568387312,
+              "observed": 0.5
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 1,
+              "predicted": 0.36596973117218246,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 2,
+              "predicted": 0.4400602354791173,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 1,
+              "predicted": 0.5101500549031135,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 2,
+              "predicted": 0.6278133321140484,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 2,
+              "predicted": 0.7200732817589908,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 1,
+              "predicted": 0.8979187240638505,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 5,
+              "predicted": 0.9534464292711494,
+              "observed": 0.8
+            }
+          ],
+          "brier_score": 0.14833945404576132,
+          "radius_90_coverage": 0.9230769230769231,
+          "radius_n": 26
+        }
+      ]
+    },
+    {
+      "study": "global",
+      "report": "baselines/round2-global-trial.json.gz",
+      "sha256": "93587e9043a13b06d764c7c1a6c9358cd0e59f0c02504271e8251e90d4c9cb5b",
+      "accepted": false,
+      "full_acceptance": {
+        "rule": "round2",
+        "pass": false,
+        "rows": [
+          {
+            "key": "c0|train|off|measured_only",
+            "n_pairs": 34,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.7058823529411765,
+                "after": 0.7058823529411765,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.7685185185185185,
+                "after": 0.8248175182481752,
+                "delta": 0.056298999729656685,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.7685185185185185,
+                "after": 0.8321167883211679,
+                "delta": 0.06359826980264938,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 0.5260673723299998,
+                "after": 0.35485119433432216,
+                "delta": -0.17121617799567762,
+                "ci": [
+                  -0.941284673257456,
+                  0.19357259579909258
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 24.630670579177263,
+                "after": 20.055874621527362,
+                "delta": -4.574795957649901,
+                "ci": [
+                  -16.253627503764505,
+                  0.3975060780748727
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.5882352941176471,
+                "after": 0.34342156022375836,
+                "delta": -0.24481373389388872,
+                "ci": [
+                  -0.3449181800502463,
+                  -0.12969530949634756
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": true,
+            "pass": false,
+            "reasons": [
+              "within_1sigma fails guard"
+            ]
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "n_pairs": 34,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.6764705882352942,
+                "after": 0.6764705882352942,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.22340425531914893,
+                "after": 0.2545454545454545,
+                "delta": 0.031141199226305594,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.5,
+                "after": 0.5727272727272728,
+                "delta": 0.07272727272727275,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 6.873482224182378,
+                "after": 5.8739484270636595,
+                "delta": -0.9995337971187181,
+                "ci": [
+                  -2.9734667283141833,
+                  0.4943571056815994
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 24.884515941406285,
+                "after": 21.503236760971962,
+                "delta": -3.3812791804343227,
+                "ci": [
+                  -10.656923854842288,
+                  1.0904361264189184
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.7058823529411764,
+                "after": 0.4290378357571314,
+                "delta": -0.276844517184045,
+                "ci": [
+                  -0.3738678519923819,
+                  -0.16472738218094252
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": true,
+            "pass": true,
+            "reasons": []
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "n_pairs": 41,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.5121951219512195,
+                "after": 0.5121951219512195,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.8108108108108109,
+                "after": 0.8144329896907216,
+                "delta": 0.003622178879910787,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.8243243243243243,
+                "after": 0.8350515463917526,
+                "delta": 0.010727222067428266,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 0.4379962606780376,
+                "after": 0.6797852784292877,
+                "delta": 0.2417890177512501,
+                "ci": [
+                  -0.12095515532683687,
+                  3.2014660974483893
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 21.773820778817814,
+                "after": 51.3246907713794,
+                "delta": 29.550869992561587,
+                "ci": [
+                  -7.418417261329228,
+                  57.475729886170285
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.6585365853658536,
+                "after": 0.5240695293949844,
+                "delta": -0.13446705597086916,
+                "ci": [
+                  -0.2101196566885577,
+                  -0.04503595997498433
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": true,
+            "pass": false,
+            "reasons": [
+              "within_1sigma fails guard"
+            ]
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "n_pairs": 41,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.3170731707317073,
+                "after": 0.3170731707317073,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.5,
+                "after": 0.5384615384615384,
+                "delta": 0.038461538461538436,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.7884615384615384,
+                "after": 0.8769230769230769,
+                "delta": 0.08846153846153848,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 2.4937218191777966,
+                "after": 2.154696745373188,
+                "delta": -0.33902507380460856,
+                "ci": [
+                  -1.8675626800040988,
+                  2.0220057713110386
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 26.746550237115848,
+                "after": 23.51445932915317,
+                "delta": -3.2320909079626787,
+                "ci": [
+                  -20.304867888525862,
+                  1.9117228007590485
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.7560975609756098,
+                "after": 0.6887116948092558,
+                "delta": -0.067385866166354,
+                "ci": [
+                  -0.14175035868005725,
+                  0
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": false,
+            "pass": false,
+            "reasons": [
+              "No paired median/p90/risk-area improvement with CI excluding zero"
+            ]
+          }
+        ],
+        "regressions": [
+          {
+            "key": "c0|train|off|measured_only",
+            "reason": "within_1sigma fails guard"
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "reason": "within_1sigma fails guard"
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "reason": "No paired median/p90/risk-area improvement with CI excluding zero"
+          }
+        ],
+        "differences": [
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.7058823529411765,
+            "after": 0.7058823529411765,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.7685185185185185,
+            "after": 0.8248175182481752,
+            "delta": 0.056298999729656685,
+            "ci": null,
+            "regression": true
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.7685185185185185,
+            "after": 0.8321167883211679,
+            "delta": 0.06359826980264938,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 0.5260673723299998,
+            "after": 0.35485119433432216,
+            "delta": -0.17121617799567762,
+            "ci": [
+              -0.941284673257456,
+              0.19357259579909258
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 24.630670579177263,
+            "after": 20.055874621527362,
+            "delta": -4.574795957649901,
+            "ci": [
+              -16.253627503764505,
+              0.3975060780748727
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.5882352941176471,
+            "after": 0.34342156022375836,
+            "delta": -0.24481373389388872,
+            "ci": [
+              -0.3449181800502463,
+              -0.12969530949634756
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.6764705882352942,
+            "after": 0.6764705882352942,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.22340425531914893,
+            "after": 0.2545454545454545,
+            "delta": 0.031141199226305594,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.5,
+            "after": 0.5727272727272728,
+            "delta": 0.07272727272727275,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 6.873482224182378,
+            "after": 5.8739484270636595,
+            "delta": -0.9995337971187181,
+            "ci": [
+              -2.9734667283141833,
+              0.4943571056815994
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 24.884515941406285,
+            "after": 21.503236760971962,
+            "delta": -3.3812791804343227,
+            "ci": [
+              -10.656923854842288,
+              1.0904361264189184
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.7058823529411764,
+            "after": 0.4290378357571314,
+            "delta": -0.276844517184045,
+            "ci": [
+              -0.3738678519923819,
+              -0.16472738218094252
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.5121951219512195,
+            "after": 0.5121951219512195,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.8108108108108109,
+            "after": 0.8144329896907216,
+            "delta": 0.003622178879910787,
+            "ci": null,
+            "regression": true
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.8243243243243243,
+            "after": 0.8350515463917526,
+            "delta": 0.010727222067428266,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 0.4379962606780376,
+            "after": 0.6797852784292877,
+            "delta": 0.2417890177512501,
+            "ci": [
+              -0.12095515532683687,
+              3.2014660974483893
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 21.773820778817814,
+            "after": 51.3246907713794,
+            "delta": 29.550869992561587,
+            "ci": [
+              -7.418417261329228,
+              57.475729886170285
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.6585365853658536,
+            "after": 0.5240695293949844,
+            "delta": -0.13446705597086916,
+            "ci": [
+              -0.2101196566885577,
+              -0.04503595997498433
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.3170731707317073,
+            "after": 0.3170731707317073,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.5,
+            "after": 0.5384615384615384,
+            "delta": 0.038461538461538436,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.7884615384615384,
+            "after": 0.8769230769230769,
+            "delta": 0.08846153846153848,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 2.4937218191777966,
+            "after": 2.154696745373188,
+            "delta": -0.33902507380460856,
+            "ci": [
+              -1.8675626800040988,
+              2.0220057713110386
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 26.746550237115848,
+            "after": 23.51445932915317,
+            "delta": -3.2320909079626787,
+            "ci": [
+              -20.304867888525862,
+              1.9117228007590485
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.7560975609756098,
+            "after": 0.6887116948092558,
+            "delta": -0.067385866166354,
+            "ci": [
+              -0.14175035868005725,
+              0
+            ],
+            "regression": false
+          }
+        ],
+        "method": "Paired bootstrap of whole matching scene/seed runs; aggregate endpoint delta after-before. Missing conditional errors are omitted from endpoint draws, never imputed as zero. Calibration guard is absolute distance to nominal. All-equal compares all non-runtime metric values."
+      },
+      "confidence_evaluation": [
+        {
+          "split": "train",
+          "realism": "off",
+          "n_episodes": 58,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 32,
+              "predicted": 0.04434273826565992,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 1,
+              "predicted": 0.12724266047682375,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 3,
+              "predicted": 0.22778973452949983,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 1,
+              "predicted": 0.39784705123204167,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 3,
+              "predicted": 0.42477413127671654,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 6,
+              "predicted": 0.5321581110272465,
+              "observed": 0.6666666666666666
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 4,
+              "predicted": 0.626186083605167,
+              "observed": 0.75
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 3,
+              "predicted": 0.7604192242377287,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 2,
+              "predicted": 0.8219679494592258,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 3,
+              "predicted": 0.9681065135166859,
+              "observed": 1
+            }
+          ],
+          "brier_score": 0.05742796558383843,
+          "radius_90_coverage": 0.9230769230769231,
+          "radius_n": 52
+        },
+        {
+          "split": "train",
+          "realism": "on",
+          "n_episodes": 51,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 22,
+              "predicted": 0.05341818144387042,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 5,
+              "predicted": 0.13967757246203466,
+              "observed": 0.4
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 3,
+              "predicted": 0.2445854433197927,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 1,
+              "predicted": 0.38329024863407607,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 3,
+              "predicted": 0.44913580858910124,
+              "observed": 0.6666666666666666
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 3,
+              "predicted": 0.5434747600018648,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 4,
+              "predicted": 0.6282749905323726,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 1,
+              "predicted": 0.7117156578423682,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 4,
+              "predicted": 0.8452282024548169,
+              "observed": 0.75
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 5,
+              "predicted": 0.9572332573988881,
+              "observed": 1
+            }
+          ],
+          "brier_score": 0.09951025149518436,
+          "radius_90_coverage": 0.9333333333333333,
+          "radius_n": 45
+        },
+        {
+          "split": "validation",
+          "realism": "off",
+          "n_episodes": 41,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 17,
+              "predicted": 0.0445004441202545,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 3,
+              "predicted": 0.10816044718604,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 4,
+              "predicted": 0.2448547184366249,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 3,
+              "predicted": 0.33266537154472364,
+              "observed": 0.6666666666666666
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 5,
+              "predicted": 0.44283826091350365,
+              "observed": 0.4
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 4,
+              "predicted": 0.5422532362284334,
+              "observed": 0.75
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 1,
+              "predicted": 0.6187940469020448,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 2,
+              "predicted": 0.7182248124709028,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 0,
+              "predicted": null,
+              "observed": null
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 2,
+              "predicted": 0.9149436939964258,
+              "observed": 1
+            }
+          ],
+          "brier_score": 0.08893839407106123,
+          "radius_90_coverage": 0.868421052631579,
+          "radius_n": 38
+        },
+        {
+          "split": "validation",
+          "realism": "on",
+          "n_episodes": 28,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 14,
+              "predicted": 0.04436251414432762,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 2,
+              "predicted": 0.10752279492455125,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 1,
+              "predicted": 0.2515958264875474,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 0,
+              "predicted": null,
+              "observed": null
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 3,
+              "predicted": 0.469435603368252,
+              "observed": 0.3333333333333333
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 2,
+              "predicted": 0.5332831901663249,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 1,
+              "predicted": 0.6738669026884527,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 0,
+              "predicted": null,
+              "observed": null
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 2,
+              "predicted": 0.851725454568701,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 3,
+              "predicted": 0.9526484997545684,
+              "observed": 0.6666666666666666
+            }
+          ],
+          "brier_score": 0.08413641795222344,
+          "radius_90_coverage": 0.96,
+          "radius_n": 25
+        }
+      ]
+    },
+    {
+      "study": "global-uncertainty",
+      "report": "baselines/round2-global-uncertainty-trial.json.gz",
+      "sha256": "eac854d7b6b0ba31ddd2867cc8b342ff24409e01bacbe64eff627f4fab488e22",
+      "accepted": false,
+      "full_acceptance": {
+        "rule": "round2",
+        "pass": false,
+        "rows": [
+          {
+            "key": "c0|train|off|measured_only",
+            "n_pairs": 34,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.7058823529411765,
+                "after": 0.7058823529411765,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.7685185185185185,
+                "after": 0.6934306569343066,
+                "delta": -0.07508786158421188,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.7685185185185185,
+                "after": 0.9635036496350365,
+                "delta": 0.19498513111651805,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 0.5260673723299998,
+                "after": 0.35485119433432216,
+                "delta": -0.17121617799567762,
+                "ci": [
+                  -0.941284673257456,
+                  0.19357259579909258
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 24.630670579177263,
+                "after": 20.055874621527362,
+                "delta": -4.574795957649901,
+                "ci": [
+                  -16.253627503764505,
+                  0.3975060780748727
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.5882352941176471,
+                "after": 0.34342156022375836,
+                "delta": -0.24481373389388872,
+                "ci": [
+                  -0.3449181800502463,
+                  -0.12969530949634756
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": true,
+            "pass": true,
+            "reasons": []
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "n_pairs": 34,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.6764705882352942,
+                "after": 0.6764705882352942,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.22340425531914893,
+                "after": 0.6909090909090909,
+                "delta": 0.467504835589942,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.5,
+                "after": 0.9636363636363636,
+                "delta": 0.4636363636363636,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 6.873482224182378,
+                "after": 5.8739484270636595,
+                "delta": -0.9995337971187181,
+                "ci": [
+                  -2.9734667283141833,
+                  0.4943571056815994
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 24.884515941406285,
+                "after": 21.503236760971962,
+                "delta": -3.3812791804343227,
+                "ci": [
+                  -10.656923854842288,
+                  1.0904361264189184
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.7058823529411764,
+                "after": 0.4290378357571314,
+                "delta": -0.276844517184045,
+                "ci": [
+                  -0.3738678519923819,
+                  -0.16472738218094252
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": true,
+            "pass": true,
+            "reasons": []
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "n_pairs": 41,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.5121951219512195,
+                "after": 0.5121951219512195,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.8108108108108109,
+                "after": 0.6804123711340206,
+                "delta": -0.1303984396767902,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.8243243243243243,
+                "after": 0.9072164948453608,
+                "delta": 0.08289217052103648,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 0.4379962606780376,
+                "after": 0.6797852784292877,
+                "delta": 0.2417890177512501,
+                "ci": [
+                  -0.12095515532683687,
+                  3.2014660974483893
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 21.773820778817814,
+                "after": 51.3246907713794,
+                "delta": 29.550869992561587,
+                "ci": [
+                  -7.418417261329228,
+                  57.475729886170285
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.6585365853658536,
+                "after": 0.5240695293949844,
+                "delta": -0.13446705597086916,
+                "ci": [
+                  -0.2101196566885577,
+                  -0.04503595997498433
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": true,
+            "pass": true,
+            "reasons": []
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "n_pairs": 41,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.3170731707317073,
+                "after": 0.3170731707317073,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.5,
+                "after": 0.8923076923076924,
+                "delta": 0.39230769230769236,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.7884615384615384,
+                "after": 0.9538461538461539,
+                "delta": 0.16538461538461546,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 2.4937218191777966,
+                "after": 2.154696745373188,
+                "delta": -0.33902507380460856,
+                "ci": [
+                  -1.8675626800040988,
+                  2.0220057713110386
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 26.746550237115848,
+                "after": 23.51445932915317,
+                "delta": -3.2320909079626787,
+                "ci": [
+                  -20.304867888525862,
+                  1.9117228007590485
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.7560975609756098,
+                "after": 0.6887116948092558,
+                "delta": -0.067385866166354,
+                "ci": [
+                  -0.14175035868005725,
+                  0
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": false,
+            "pass": false,
+            "reasons": [
+              "within_1sigma fails guard",
+              "No paired median/p90/risk-area improvement with CI excluding zero"
+            ]
+          }
+        ],
+        "regressions": [
+          {
+            "key": "c0|validation|on|measured_only",
+            "reason": "within_1sigma fails guard"
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "reason": "No paired median/p90/risk-area improvement with CI excluding zero"
+          }
+        ],
+        "differences": [
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.7058823529411765,
+            "after": 0.7058823529411765,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.7685185185185185,
+            "after": 0.6934306569343066,
+            "delta": -0.07508786158421188,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.7685185185185185,
+            "after": 0.9635036496350365,
+            "delta": 0.19498513111651805,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 0.5260673723299998,
+            "after": 0.35485119433432216,
+            "delta": -0.17121617799567762,
+            "ci": [
+              -0.941284673257456,
+              0.19357259579909258
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 24.630670579177263,
+            "after": 20.055874621527362,
+            "delta": -4.574795957649901,
+            "ci": [
+              -16.253627503764505,
+              0.3975060780748727
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.5882352941176471,
+            "after": 0.34342156022375836,
+            "delta": -0.24481373389388872,
+            "ci": [
+              -0.3449181800502463,
+              -0.12969530949634756
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.6764705882352942,
+            "after": 0.6764705882352942,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.22340425531914893,
+            "after": 0.6909090909090909,
+            "delta": 0.467504835589942,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.5,
+            "after": 0.9636363636363636,
+            "delta": 0.4636363636363636,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 6.873482224182378,
+            "after": 5.8739484270636595,
+            "delta": -0.9995337971187181,
+            "ci": [
+              -2.9734667283141833,
+              0.4943571056815994
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 24.884515941406285,
+            "after": 21.503236760971962,
+            "delta": -3.3812791804343227,
+            "ci": [
+              -10.656923854842288,
+              1.0904361264189184
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.7058823529411764,
+            "after": 0.4290378357571314,
+            "delta": -0.276844517184045,
+            "ci": [
+              -0.3738678519923819,
+              -0.16472738218094252
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.5121951219512195,
+            "after": 0.5121951219512195,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.8108108108108109,
+            "after": 0.6804123711340206,
+            "delta": -0.1303984396767902,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.8243243243243243,
+            "after": 0.9072164948453608,
+            "delta": 0.08289217052103648,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 0.4379962606780376,
+            "after": 0.6797852784292877,
+            "delta": 0.2417890177512501,
+            "ci": [
+              -0.12095515532683687,
+              3.2014660974483893
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 21.773820778817814,
+            "after": 51.3246907713794,
+            "delta": 29.550869992561587,
+            "ci": [
+              -7.418417261329228,
+              57.475729886170285
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.6585365853658536,
+            "after": 0.5240695293949844,
+            "delta": -0.13446705597086916,
+            "ci": [
+              -0.2101196566885577,
+              -0.04503595997498433
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.3170731707317073,
+            "after": 0.3170731707317073,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.5,
+            "after": 0.8923076923076924,
+            "delta": 0.39230769230769236,
+            "ci": null,
+            "regression": true
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.7884615384615384,
+            "after": 0.9538461538461539,
+            "delta": 0.16538461538461546,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 2.4937218191777966,
+            "after": 2.154696745373188,
+            "delta": -0.33902507380460856,
+            "ci": [
+              -1.8675626800040988,
+              2.0220057713110386
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 26.746550237115848,
+            "after": 23.51445932915317,
+            "delta": -3.2320909079626787,
+            "ci": [
+              -20.304867888525862,
+              1.9117228007590485
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.7560975609756098,
+            "after": 0.6887116948092558,
+            "delta": -0.067385866166354,
+            "ci": [
+              -0.14175035868005725,
+              0
+            ],
+            "regression": false
+          }
+        ],
+        "method": "Paired bootstrap of whole matching scene/seed runs; aggregate endpoint delta after-before. Missing conditional errors are omitted from endpoint draws, never imputed as zero. Calibration guard is absolute distance to nominal. All-equal compares all non-runtime metric values."
+      },
+      "confidence_evaluation": [
+        {
+          "split": "train",
+          "realism": "off",
+          "n_episodes": 58,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 32,
+              "predicted": 0.04434273826565992,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 1,
+              "predicted": 0.12724266047682375,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 3,
+              "predicted": 0.22778973452949983,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 1,
+              "predicted": 0.39784705123204167,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 3,
+              "predicted": 0.42477413127671654,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 6,
+              "predicted": 0.5321581110272465,
+              "observed": 0.6666666666666666
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 4,
+              "predicted": 0.626186083605167,
+              "observed": 0.75
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 3,
+              "predicted": 0.7604192242377287,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 2,
+              "predicted": 0.8219679494592258,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 3,
+              "predicted": 0.9681065135166859,
+              "observed": 1
+            }
+          ],
+          "brier_score": 0.05742796558383843,
+          "radius_90_coverage": 0.9230769230769231,
+          "radius_n": 52
+        },
+        {
+          "split": "train",
+          "realism": "on",
+          "n_episodes": 51,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 22,
+              "predicted": 0.05341818144387042,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 5,
+              "predicted": 0.13967757246203466,
+              "observed": 0.4
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 3,
+              "predicted": 0.2445854433197927,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 1,
+              "predicted": 0.38329024863407607,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 3,
+              "predicted": 0.44913580858910124,
+              "observed": 0.6666666666666666
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 3,
+              "predicted": 0.5434747600018648,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 4,
+              "predicted": 0.6282749905323726,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 1,
+              "predicted": 0.7117156578423682,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 4,
+              "predicted": 0.8452282024548169,
+              "observed": 0.75
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 5,
+              "predicted": 0.9572332573988881,
+              "observed": 1
+            }
+          ],
+          "brier_score": 0.09951025149518436,
+          "radius_90_coverage": 0.9333333333333333,
+          "radius_n": 45
+        },
+        {
+          "split": "validation",
+          "realism": "off",
+          "n_episodes": 41,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 17,
+              "predicted": 0.0445004441202545,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 3,
+              "predicted": 0.10816044718604,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 4,
+              "predicted": 0.2448547184366249,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 3,
+              "predicted": 0.33266537154472364,
+              "observed": 0.6666666666666666
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 5,
+              "predicted": 0.44283826091350365,
+              "observed": 0.4
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 4,
+              "predicted": 0.5422532362284334,
+              "observed": 0.75
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 1,
+              "predicted": 0.6187940469020448,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 2,
+              "predicted": 0.7182248124709028,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 0,
+              "predicted": null,
+              "observed": null
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 2,
+              "predicted": 0.9149436939964258,
+              "observed": 1
+            }
+          ],
+          "brier_score": 0.08893839407106123,
+          "radius_90_coverage": 0.868421052631579,
+          "radius_n": 38
+        },
+        {
+          "split": "validation",
+          "realism": "on",
+          "n_episodes": 28,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 14,
+              "predicted": 0.04436251414432762,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 2,
+              "predicted": 0.10752279492455125,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 1,
+              "predicted": 0.2515958264875474,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 0,
+              "predicted": null,
+              "observed": null
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 3,
+              "predicted": 0.469435603368252,
+              "observed": 0.3333333333333333
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 2,
+              "predicted": 0.5332831901663249,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 1,
+              "predicted": 0.6738669026884527,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 0,
+              "predicted": null,
+              "observed": null
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 2,
+              "predicted": 0.851725454568701,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 3,
+              "predicted": 0.9526484997545684,
+              "observed": 0.6666666666666666
+            }
+          ],
+          "brier_score": 0.08413641795222344,
+          "radius_90_coverage": 0.96,
+          "radius_n": 25
+        }
+      ]
+    },
+    {
+      "study": "weighted",
+      "report": "baselines/round2-weighted-trial.json.gz",
+      "sha256": "cd9b0af38a1b1beb5ab107a3d501e7742cd04666eadec5a655cdf9e61289ea45",
+      "accepted": false,
+      "full_acceptance": {
+        "rule": "round2",
+        "pass": false,
+        "rows": [
+          {
+            "key": "c0|train|off|measured_only",
+            "n_pairs": 34,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.7058823529411765,
+                "after": 0.7058823529411765,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.7685185185185185,
+                "after": 0.8248175182481752,
+                "delta": 0.056298999729656685,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.7685185185185185,
+                "after": 0.8321167883211679,
+                "delta": 0.06359826980264938,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 0.5260673723299998,
+                "after": 0.3667067704630417,
+                "delta": -0.1593606018669581,
+                "ci": [
+                  -0.853511637412748,
+                  0.2548620786721161
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 24.630670579177263,
+                "after": 20.055874621527362,
+                "delta": -4.574795957649901,
+                "ci": [
+                  -13.931997359462128,
+                  2.446505696749611
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.5882352941176471,
+                "after": 0.34342156022375836,
+                "delta": -0.24481373389388872,
+                "ci": [
+                  -0.34484653600801396,
+                  -0.12969530949634756
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": true,
+            "pass": false,
+            "reasons": [
+              "within_1sigma fails guard"
+            ]
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "n_pairs": 34,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.6764705882352942,
+                "after": 0.6764705882352942,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.22340425531914893,
+                "after": 0.5471698113207547,
+                "delta": 0.3237655560016058,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.5,
+                "after": 0.8301886792452831,
+                "delta": 0.33018867924528306,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 6.873482224182378,
+                "after": 6.091731039827004,
+                "delta": -0.7817511843553735,
+                "ci": [
+                  -2.5478797567835256,
+                  0.5231822041665053
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 24.884515941406285,
+                "after": 21.503236760971962,
+                "delta": -3.3812791804343227,
+                "ci": [
+                  -7.0721830306300575,
+                  10.32193679504644
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.7058823529411764,
+                "after": 0.4504613704687639,
+                "delta": -0.2554209824724125,
+                "ci": [
+                  -0.333473118349507,
+                  -0.1592188304774811
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": true,
+            "pass": true,
+            "reasons": []
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "n_pairs": 41,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.5121951219512195,
+                "after": 0.5121951219512195,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.8108108108108109,
+                "after": 0.8144329896907216,
+                "delta": 0.003622178879910787,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.8243243243243243,
+                "after": 0.8350515463917526,
+                "delta": 0.010727222067428266,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 0.4379962606780376,
+                "after": 0.6797852784292877,
+                "delta": 0.2417890177512501,
+                "ci": [
+                  -0.16390387830775316,
+                  2.7700656670955053
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 21.773820778817814,
+                "after": 51.3246907713794,
+                "delta": 29.550869992561587,
+                "ci": [
+                  -7.418417261329228,
+                  57.475729886170285
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.6585365853658536,
+                "after": 0.5240695293949844,
+                "delta": -0.13446705597086916,
+                "ci": [
+                  -0.2101899098274871,
+                  -0.04503595997498433
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": true,
+            "pass": false,
+            "reasons": [
+              "within_1sigma fails guard"
+            ]
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "n_pairs": 41,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.3170731707317073,
+                "after": 0.3170731707317073,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.5,
+                "after": 0.8769230769230769,
+                "delta": 0.3769230769230769,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.7884615384615384,
+                "after": 0.8923076923076924,
+                "delta": 0.10384615384615392,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 2.4937218191777966,
+                "after": 2.301497037879978,
+                "delta": -0.1922247812978184,
+                "ci": [
+                  -2.23500764157773,
+                  2.0602714348210447
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 26.746550237115848,
+                "after": 23.51445932915317,
+                "delta": -3.2320909079626787,
+                "ci": [
+                  -20.686259494320755,
+                  1.9499884642690546
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.7560975609756098,
+                "after": 0.6887116948092558,
+                "delta": -0.067385866166354,
+                "ci": [
+                  -0.14175035868005725,
+                  0
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": false,
+            "pass": false,
+            "reasons": [
+              "within_1sigma fails guard",
+              "No paired median/p90/risk-area improvement with CI excluding zero"
+            ]
+          }
+        ],
+        "regressions": [
+          {
+            "key": "c0|train|off|measured_only",
+            "reason": "within_1sigma fails guard"
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "reason": "within_1sigma fails guard"
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "reason": "within_1sigma fails guard"
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "reason": "No paired median/p90/risk-area improvement with CI excluding zero"
+          }
+        ],
+        "differences": [
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.7058823529411765,
+            "after": 0.7058823529411765,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.7685185185185185,
+            "after": 0.8248175182481752,
+            "delta": 0.056298999729656685,
+            "ci": null,
+            "regression": true
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.7685185185185185,
+            "after": 0.8321167883211679,
+            "delta": 0.06359826980264938,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 0.5260673723299998,
+            "after": 0.3667067704630417,
+            "delta": -0.1593606018669581,
+            "ci": [
+              -0.853511637412748,
+              0.2548620786721161
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 24.630670579177263,
+            "after": 20.055874621527362,
+            "delta": -4.574795957649901,
+            "ci": [
+              -13.931997359462128,
+              2.446505696749611
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.5882352941176471,
+            "after": 0.34342156022375836,
+            "delta": -0.24481373389388872,
+            "ci": [
+              -0.34484653600801396,
+              -0.12969530949634756
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.6764705882352942,
+            "after": 0.6764705882352942,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.22340425531914893,
+            "after": 0.5471698113207547,
+            "delta": 0.3237655560016058,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.5,
+            "after": 0.8301886792452831,
+            "delta": 0.33018867924528306,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 6.873482224182378,
+            "after": 6.091731039827004,
+            "delta": -0.7817511843553735,
+            "ci": [
+              -2.5478797567835256,
+              0.5231822041665053
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 24.884515941406285,
+            "after": 21.503236760971962,
+            "delta": -3.3812791804343227,
+            "ci": [
+              -7.0721830306300575,
+              10.32193679504644
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.7058823529411764,
+            "after": 0.4504613704687639,
+            "delta": -0.2554209824724125,
+            "ci": [
+              -0.333473118349507,
+              -0.1592188304774811
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.5121951219512195,
+            "after": 0.5121951219512195,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.8108108108108109,
+            "after": 0.8144329896907216,
+            "delta": 0.003622178879910787,
+            "ci": null,
+            "regression": true
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.8243243243243243,
+            "after": 0.8350515463917526,
+            "delta": 0.010727222067428266,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 0.4379962606780376,
+            "after": 0.6797852784292877,
+            "delta": 0.2417890177512501,
+            "ci": [
+              -0.16390387830775316,
+              2.7700656670955053
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 21.773820778817814,
+            "after": 51.3246907713794,
+            "delta": 29.550869992561587,
+            "ci": [
+              -7.418417261329228,
+              57.475729886170285
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.6585365853658536,
+            "after": 0.5240695293949844,
+            "delta": -0.13446705597086916,
+            "ci": [
+              -0.2101899098274871,
+              -0.04503595997498433
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.3170731707317073,
+            "after": 0.3170731707317073,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.5,
+            "after": 0.8769230769230769,
+            "delta": 0.3769230769230769,
+            "ci": null,
+            "regression": true
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.7884615384615384,
+            "after": 0.8923076923076924,
+            "delta": 0.10384615384615392,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 2.4937218191777966,
+            "after": 2.301497037879978,
+            "delta": -0.1922247812978184,
+            "ci": [
+              -2.23500764157773,
+              2.0602714348210447
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 26.746550237115848,
+            "after": 23.51445932915317,
+            "delta": -3.2320909079626787,
+            "ci": [
+              -20.686259494320755,
+              1.9499884642690546
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.7560975609756098,
+            "after": 0.6887116948092558,
+            "delta": -0.067385866166354,
+            "ci": [
+              -0.14175035868005725,
+              0
+            ],
+            "regression": false
+          }
+        ],
+        "method": "Paired bootstrap of whole matching scene/seed runs; aggregate endpoint delta after-before. Missing conditional errors are omitted from endpoint draws, never imputed as zero. Calibration guard is absolute distance to nominal. All-equal compares all non-runtime metric values."
+      },
+      "confidence_evaluation": [
+        {
+          "split": "train",
+          "realism": "off",
+          "n_episodes": 58,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 27,
+              "predicted": 0.06437974040605433,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 6,
+              "predicted": 0.12526354520708127,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 3,
+              "predicted": 0.2768713438348315,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 1,
+              "predicted": 0.38875392390680374,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 8,
+              "predicted": 0.42638167759114975,
+              "observed": 0.375
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 4,
+              "predicted": 0.5464815216557211,
+              "observed": 0.75
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 2,
+              "predicted": 0.6657542292766763,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 4,
+              "predicted": 0.7375121138924021,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 0,
+              "predicted": null,
+              "observed": null
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 3,
+              "predicted": 0.956898093193471,
+              "observed": 1
+            }
+          ],
+          "brier_score": 0.06539281269732582,
+          "radius_90_coverage": 0.9230769230769231,
+          "radius_n": 52
+        },
+        {
+          "split": "train",
+          "realism": "on",
+          "n_episodes": 51,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 10,
+              "predicted": 0.07474203170150888,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 14,
+              "predicted": 0.13489924018851268,
+              "observed": 0.21428571428571427
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 4,
+              "predicted": 0.24452587465165682,
+              "observed": 0.25
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 2,
+              "predicted": 0.3354613830831109,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 3,
+              "predicted": 0.43419162281193086,
+              "observed": 0.6666666666666666
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 9,
+              "predicted": 0.5637936406319773,
+              "observed": 0.5555555555555556
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 2,
+              "predicted": 0.6536903501880748,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 1,
+              "predicted": 0.7710791725237988,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 2,
+              "predicted": 0.8316499700858855,
+              "observed": 0.5
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 4,
+              "predicted": 0.9540194476995205,
+              "observed": 1
+            }
+          ],
+          "brier_score": 0.14250009713443182,
+          "radius_90_coverage": 0.9318181818181818,
+          "radius_n": 44
+        },
+        {
+          "split": "validation",
+          "realism": "off",
+          "n_episodes": 40,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 13,
+              "predicted": 0.06389006114580296,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 4,
+              "predicted": 0.12930536677616764,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 6,
+              "predicted": 0.22644236580549545,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 4,
+              "predicted": 0.3369146926761693,
+              "observed": 0.5
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 6,
+              "predicted": 0.4513541596460738,
+              "observed": 0.3333333333333333
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 3,
+              "predicted": 0.5472913107688129,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 3,
+              "predicted": 0.6322925976059386,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 0,
+              "predicted": null,
+              "observed": null
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 1,
+              "predicted": 0.8686144890005856,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 0,
+              "predicted": null,
+              "observed": null
+            }
+          ],
+          "brier_score": 0.09971778687316848,
+          "radius_90_coverage": 0.868421052631579,
+          "radius_n": 38
+        },
+        {
+          "split": "validation",
+          "realism": "on",
+          "n_episodes": 28,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 10,
+              "predicted": 0.07468776724363509,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 5,
+              "predicted": 0.12966878773174328,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 1,
+              "predicted": 0.26333599342086506,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 1,
+              "predicted": 0.3579495638537577,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 1,
+              "predicted": 0.492934908507545,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 4,
+              "predicted": 0.530077214068278,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 1,
+              "predicted": 0.6895692109259075,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 1,
+              "predicted": 0.7992534968315518,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 2,
+              "predicted": 0.8616941711440467,
+              "observed": 0.5
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 2,
+              "predicted": 0.9636053047888999,
+              "observed": 1
+            }
+          ],
+          "brier_score": 0.0966255010800764,
+          "radius_90_coverage": 0.96,
+          "radius_n": 25
+        }
+      ]
+    },
+    {
+      "study": "predictive",
+      "report": "baselines/round2-predictive-trial.json.gz",
+      "sha256": "cbd3d035645d32b05c09f3e2f04f0e82bb899d87d959ceef8a481bcf7e7b15c3",
+      "accepted": false,
+      "full_acceptance": {
+        "rule": "round2",
+        "pass": false,
+        "rows": [
+          {
+            "key": "c0|train|off|measured_only",
+            "n_pairs": 34,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.7058823529411765,
+                "after": 0.7058823529411765,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.7685185185185185,
+                "after": 0.8248175182481752,
+                "delta": 0.056298999729656685,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.7685185185185185,
+                "after": 0.8321167883211679,
+                "delta": 0.06359826980264938,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 0.5260673723299998,
+                "after": 0.3667067704630417,
+                "delta": -0.1593606018669581,
+                "ci": [
+                  -0.853511637412748,
+                  0.2548620786721161
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 24.630670579177263,
+                "after": 20.055874621527362,
+                "delta": -4.574795957649901,
+                "ci": [
+                  -13.931997359462128,
+                  2.446505696749611
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.5882352941176471,
+                "after": 0.34342156022375836,
+                "delta": -0.24481373389388872,
+                "ci": [
+                  -0.34484653600801396,
+                  -0.12969530949634756
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": true,
+            "pass": false,
+            "reasons": [
+              "within_1sigma fails guard"
+            ]
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "n_pairs": 34,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.6764705882352942,
+                "after": 0.6764705882352942,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.22340425531914893,
+                "after": 0.5471698113207547,
+                "delta": 0.3237655560016058,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.5,
+                "after": 0.8301886792452831,
+                "delta": 0.33018867924528306,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 6.873482224182378,
+                "after": 6.091731039827004,
+                "delta": -0.7817511843553735,
+                "ci": [
+                  -2.5478797567835256,
+                  0.5231822041665053
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 24.884515941406285,
+                "after": 21.503236760971962,
+                "delta": -3.3812791804343227,
+                "ci": [
+                  -7.0721830306300575,
+                  10.32193679504644
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.7058823529411764,
+                "after": 0.4504613704687639,
+                "delta": -0.2554209824724125,
+                "ci": [
+                  -0.333473118349507,
+                  -0.1592188304774811
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": true,
+            "pass": true,
+            "reasons": []
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "n_pairs": 41,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.5121951219512195,
+                "after": 0.5121951219512195,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.8108108108108109,
+                "after": 0.8144329896907216,
+                "delta": 0.003622178879910787,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.8243243243243243,
+                "after": 0.8350515463917526,
+                "delta": 0.010727222067428266,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 0.4379962606780376,
+                "after": 0.6797852784292877,
+                "delta": 0.2417890177512501,
+                "ci": [
+                  -0.16390387830775316,
+                  2.7700656670955053
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 21.773820778817814,
+                "after": 51.3246907713794,
+                "delta": 29.550869992561587,
+                "ci": [
+                  -7.418417261329228,
+                  57.475729886170285
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.6585365853658536,
+                "after": 0.5240695293949844,
+                "delta": -0.13446705597086916,
+                "ci": [
+                  -0.2101899098274871,
+                  -0.04503595997498433
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": true,
+            "pass": false,
+            "reasons": [
+              "within_1sigma fails guard"
+            ]
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "n_pairs": 41,
+            "changes": {
+              "scene_fix_rate": {
+                "before": 0.3170731707317073,
+                "after": 0.3170731707317073,
+                "delta": 0,
+                "ci": null
+              },
+              "unflagged_wrong_fix_rate": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "ci": null
+              },
+              "within_1sigma": {
+                "before": 0.5,
+                "after": 0.8769230769230769,
+                "delta": 0.3769230769230769,
+                "ci": null
+              },
+              "within_2sigma": {
+                "before": 0.7884615384615384,
+                "after": 0.8923076923076924,
+                "delta": 0.10384615384615392,
+                "ci": null
+              },
+              "horizontal_median_m": {
+                "before": 2.4937218191777966,
+                "after": 2.301497037879978,
+                "delta": -0.1922247812978184,
+                "ci": [
+                  -2.23500764157773,
+                  2.0602714348210447
+                ]
+              },
+              "horizontal_p90_m": {
+                "before": 26.746550237115848,
+                "after": 23.51445932915317,
+                "delta": -3.2320909079626787,
+                "ci": [
+                  -20.686259494320755,
+                  1.9499884642690546
+                ]
+              },
+              "risk_coverage_area": {
+                "before": 0.7560975609756098,
+                "after": 0.6887116948092558,
+                "delta": -0.067385866166354,
+                "ci": [
+                  -0.14175035868005725,
+                  0
+                ]
+              }
+            },
+            "all_equal": false,
+            "improved": false,
+            "pass": false,
+            "reasons": [
+              "within_1sigma fails guard",
+              "No paired median/p90/risk-area improvement with CI excluding zero"
+            ]
+          }
+        ],
+        "regressions": [
+          {
+            "key": "c0|train|off|measured_only",
+            "reason": "within_1sigma fails guard"
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "reason": "within_1sigma fails guard"
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "reason": "within_1sigma fails guard"
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "reason": "No paired median/p90/risk-area improvement with CI excluding zero"
+          }
+        ],
+        "differences": [
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.7058823529411765,
+            "after": 0.7058823529411765,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.7685185185185185,
+            "after": 0.8248175182481752,
+            "delta": 0.056298999729656685,
+            "ci": null,
+            "regression": true
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.7685185185185185,
+            "after": 0.8321167883211679,
+            "delta": 0.06359826980264938,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 0.5260673723299998,
+            "after": 0.3667067704630417,
+            "delta": -0.1593606018669581,
+            "ci": [
+              -0.853511637412748,
+              0.2548620786721161
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 24.630670579177263,
+            "after": 20.055874621527362,
+            "delta": -4.574795957649901,
+            "ci": [
+              -13.931997359462128,
+              2.446505696749611
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|off|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.5882352941176471,
+            "after": 0.34342156022375836,
+            "delta": -0.24481373389388872,
+            "ci": [
+              -0.34484653600801396,
+              -0.12969530949634756
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.6764705882352942,
+            "after": 0.6764705882352942,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.22340425531914893,
+            "after": 0.5471698113207547,
+            "delta": 0.3237655560016058,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.5,
+            "after": 0.8301886792452831,
+            "delta": 0.33018867924528306,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 6.873482224182378,
+            "after": 6.091731039827004,
+            "delta": -0.7817511843553735,
+            "ci": [
+              -2.5478797567835256,
+              0.5231822041665053
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 24.884515941406285,
+            "after": 21.503236760971962,
+            "delta": -3.3812791804343227,
+            "ci": [
+              -7.0721830306300575,
+              10.32193679504644
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|train|on|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.7058823529411764,
+            "after": 0.4504613704687639,
+            "delta": -0.2554209824724125,
+            "ci": [
+              -0.333473118349507,
+              -0.1592188304774811
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.5121951219512195,
+            "after": 0.5121951219512195,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.8108108108108109,
+            "after": 0.8144329896907216,
+            "delta": 0.003622178879910787,
+            "ci": null,
+            "regression": true
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.8243243243243243,
+            "after": 0.8350515463917526,
+            "delta": 0.010727222067428266,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 0.4379962606780376,
+            "after": 0.6797852784292877,
+            "delta": 0.2417890177512501,
+            "ci": [
+              -0.16390387830775316,
+              2.7700656670955053
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 21.773820778817814,
+            "after": 51.3246907713794,
+            "delta": 29.550869992561587,
+            "ci": [
+              -7.418417261329228,
+              57.475729886170285
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|off|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.6585365853658536,
+            "after": 0.5240695293949844,
+            "delta": -0.13446705597086916,
+            "ci": [
+              -0.2101899098274871,
+              -0.04503595997498433
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "scene_fix_rate",
+            "before": 0.3170731707317073,
+            "after": 0.3170731707317073,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "unflagged_wrong_fix_rate",
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "within_1sigma",
+            "before": 0.5,
+            "after": 0.8769230769230769,
+            "delta": 0.3769230769230769,
+            "ci": null,
+            "regression": true
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "within_2sigma",
+            "before": 0.7884615384615384,
+            "after": 0.8923076923076924,
+            "delta": 0.10384615384615392,
+            "ci": null,
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "horizontal_median_m",
+            "before": 2.4937218191777966,
+            "after": 2.301497037879978,
+            "delta": -0.1922247812978184,
+            "ci": [
+              -2.23500764157773,
+              2.0602714348210447
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "horizontal_p90_m",
+            "before": 26.746550237115848,
+            "after": 23.51445932915317,
+            "delta": -3.2320909079626787,
+            "ci": [
+              -20.686259494320755,
+              1.9499884642690546
+            ],
+            "regression": false
+          },
+          {
+            "key": "c0|validation|on|measured_only",
+            "metric": "risk_coverage_area",
+            "before": 0.7560975609756098,
+            "after": 0.6887116948092558,
+            "delta": -0.067385866166354,
+            "ci": [
+              -0.14175035868005725,
+              0
+            ],
+            "regression": false
+          }
+        ],
+        "method": "Paired bootstrap of whole matching scene/seed runs; aggregate endpoint delta after-before. Missing conditional errors are omitted from endpoint draws, never imputed as zero. Calibration guard is absolute distance to nominal. All-equal compares all non-runtime metric values."
+      },
+      "confidence_evaluation": [
+        {
+          "split": "train",
+          "realism": "off",
+          "n_episodes": 58,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 27,
+              "predicted": 0.06437974040605433,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 6,
+              "predicted": 0.12526354520708127,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 3,
+              "predicted": 0.2768713438348315,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 1,
+              "predicted": 0.38875392390680374,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 8,
+              "predicted": 0.42638167759114975,
+              "observed": 0.375
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 4,
+              "predicted": 0.5464815216557211,
+              "observed": 0.75
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 2,
+              "predicted": 0.6657542292766763,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 4,
+              "predicted": 0.7375121138924021,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 0,
+              "predicted": null,
+              "observed": null
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 3,
+              "predicted": 0.956898093193471,
+              "observed": 1
+            }
+          ],
+          "brier_score": 0.06539281269732582,
+          "radius_90_coverage": 0.9230769230769231,
+          "radius_n": 52
+        },
+        {
+          "split": "train",
+          "realism": "on",
+          "n_episodes": 51,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 10,
+              "predicted": 0.07474203170150888,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 14,
+              "predicted": 0.13489924018851268,
+              "observed": 0.21428571428571427
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 4,
+              "predicted": 0.24452587465165682,
+              "observed": 0.25
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 2,
+              "predicted": 0.3354613830831109,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 3,
+              "predicted": 0.43419162281193086,
+              "observed": 0.6666666666666666
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 9,
+              "predicted": 0.5637936406319773,
+              "observed": 0.5555555555555556
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 2,
+              "predicted": 0.6536903501880748,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 1,
+              "predicted": 0.7710791725237988,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 2,
+              "predicted": 0.8316499700858855,
+              "observed": 0.5
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 4,
+              "predicted": 0.9540194476995205,
+              "observed": 1
+            }
+          ],
+          "brier_score": 0.14250009713443182,
+          "radius_90_coverage": 0.9318181818181818,
+          "radius_n": 44
+        },
+        {
+          "split": "validation",
+          "realism": "off",
+          "n_episodes": 40,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 13,
+              "predicted": 0.06389006114580296,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 4,
+              "predicted": 0.12930536677616764,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 6,
+              "predicted": 0.22644236580549545,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 4,
+              "predicted": 0.3369146926761693,
+              "observed": 0.5
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 6,
+              "predicted": 0.4513541596460738,
+              "observed": 0.3333333333333333
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 3,
+              "predicted": 0.5472913107688129,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 3,
+              "predicted": 0.6322925976059386,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 0,
+              "predicted": null,
+              "observed": null
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 1,
+              "predicted": 0.8686144890005856,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 0,
+              "predicted": null,
+              "observed": null
+            }
+          ],
+          "brier_score": 0.09971778687316848,
+          "radius_90_coverage": 0.868421052631579,
+          "radius_n": 38
+        },
+        {
+          "split": "validation",
+          "realism": "on",
+          "n_episodes": 28,
+          "reliability": [
+            {
+              "min_probability": 0,
+              "max_probability": 0.1,
+              "count": 10,
+              "predicted": 0.07468776724363509,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.1,
+              "max_probability": 0.2,
+              "count": 5,
+              "predicted": 0.12966878773174328,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.2,
+              "max_probability": 0.3,
+              "count": 1,
+              "predicted": 0.26333599342086506,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.3,
+              "max_probability": 0.4,
+              "count": 1,
+              "predicted": 0.3579495638537577,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.4,
+              "max_probability": 0.5,
+              "count": 1,
+              "predicted": 0.492934908507545,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.5,
+              "max_probability": 0.6,
+              "count": 4,
+              "predicted": 0.530077214068278,
+              "observed": 0
+            },
+            {
+              "min_probability": 0.6,
+              "max_probability": 0.7,
+              "count": 1,
+              "predicted": 0.6895692109259075,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.7,
+              "max_probability": 0.8,
+              "count": 1,
+              "predicted": 0.7992534968315518,
+              "observed": 1
+            },
+            {
+              "min_probability": 0.8,
+              "max_probability": 0.9,
+              "count": 2,
+              "predicted": 0.8616941711440467,
+              "observed": 0.5
+            },
+            {
+              "min_probability": 0.9,
+              "max_probability": 1,
+              "count": 2,
+              "predicted": 0.9636053047888999,
+              "observed": 1
+            }
+          ],
+          "brier_score": 0.0966255010800764,
+          "radius_90_coverage": 0.96,
+          "radius_n": 25
+        }
+      ]
+    }
+  ],
+  "diagnostic_not_a_new_acceptance_rule": {
+    "population": "Fixed validation/on population",
+    "n": 41,
+    "wrong_scene_count": 3,
+    "bootstrap_probability_no_wrong_scene": 0.04435977511334336,
+    "implication": "For confidence-only reordering with unchanged fixes/coverage, every bootstrap sample without a wrong scene has exactly zero risk-area delta. More than 2.5% such samples prevent a central 95% upper endpoint strictly below zero even with perfect ordering. No population, rule or threshold was changed in response."
+  }
+}
