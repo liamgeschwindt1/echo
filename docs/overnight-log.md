@@ -263,6 +263,28 @@ The trial will not start if even this recorded-p90 reserve fails the deadline.
 - Sealed inputs remain untouched. Baseline/final labels will remain identical
   unless the entire spatial acceptance/integration gate passes before freeze.
 
+## Round 2 spatial decision and final freeze (15:28 UTC)
+
+- All150 spatial cases completed:66 fresh eligible renders and84 exact
+  reference fallbacks. Verified IDs/scenarios and every reused inference/score
+  against the reference. Core fingerprint remains2f7230fc; disk58%,7.3GiB free.
+- Reject. Validation off/on scene coverage rises51.22%/31.71% to60.98%/39.02%,
+  but2sigma coverage drops82.43%/78.85% to66.98%/76.67%; train/off both
+  calibration guards fail. Validation/on risk delta95%CI[-0.146341,0].
+  All four full tables/paired intervals and source/runtime provenance are
+  archived, not a partial-population decision. No validation retuning.
+- The42 staticXYZ hypotheses(38 off/four on) include unmatched hypotheses;
+  they do not establish42 accurate spatial fixes. No positional radius claim.
+  Experimental code stays offline, with no core revert necessary.
+- All six candidates now rejected. No new study will follow the sealed run.
+  Final solver/configuration remains the previously committed legacy freeze,
+  with identical baseline/final labels. Next: verify40-site hash and consume
+  the single160-job sealed run, then only descriptive reports and final CI.
+- Scheduling interpretation: the recorded sealed estimate is111min, longer
+  than a literal60min last-hour window. Start after all other science finishes,
+  rather than delay until insufficient time remains; reserve the final hour
+  for its completed results/report/CI. No extra study uses the released slack.
+
 ## Rules and decisions (2026-11-04)
 
 - Work only on `overnight/localisation`; no main pushes. Each retained logical step gets its own commit after core tests and benchmark.

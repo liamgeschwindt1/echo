@@ -4,8 +4,8 @@ import { createHash } from 'node:crypto';
 import { reportHtml } from '../packages/sim-core/src/benchmark/report.js';
 
 const root = new URL('../', import.meta.url), trials = [];
-for (const study of ['confidence', 'global', 'global-uncertainty', 'weighted', 'predictive']) {
-  for (const kind of ['baseline', 'trial']) {
+for (const study of ['confidence', 'global', 'global-uncertainty', 'weighted', 'predictive', 'spatial']) {
+  for (const kind of study === 'spatial' ? ['trial'] : ['baseline', 'trial']) {
     const path = `baselines/round2-${study}-${kind}.json.gz`, bytes = await readFile(new URL(path, root));
     const report = JSON.parse(gunzipSync(bytes));
     if (report.manifest.cancelled || report.runs.length !== 150) throw new Error(`Incomplete archived trial: ${path}`);

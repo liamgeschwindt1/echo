@@ -13,7 +13,7 @@ The final round-two report links the frozen sealed-test figures.
 | A 90% radius guarantees field coverage | Not validated | Train-quantile trial and empirical validation coverage | Correlated simulated episodes are not an independent conformal guarantee |
 | Multi-node global assignment improves the product | Simulated, rejected | Complete global/global-uncertainty trial reports | Calibration and/or paired improvement guards failed |
 | Two nodes have discriminative deployed confidence | Not validated | B1 trial can discriminate; retained legacy flags cannot | Useful-rate zero can coexist with zero silent-wrong rate |
-| The measured localiser estimates elevation/3D | Not validated | No retained measured elevation implementation | Editor truth-assisted 3D must not be presented as measured-only |
+| The measured localiser estimates elevation/3D | Simulated, rejected trial only | Complete150-case spatial trial produced42 staticXYZ hypotheses but failed calibration/improvement guards | No retained measured3D; hypotheses include unmatched fixes; editor truth-assisted3D is not measured-only |
 | A particular array is the best hardware | Not validated | Complete2052-case archived regrading and fresh150-case retained-solver check | Old inference, not a new improved-engine rerender; useful-rate ties, endpoint flips and no real measurements |
 | Realism settings represent measured hardware | Not validated | Placeholder ledger and `prototype-plan.md` | Heading, position, noise, reflection and correlation need recording calibration |
 | Scalar gain robustness proves phase robustness | Not validated | Scalar gain cancels ideal PHAT | Frequency/phase mismatch is a different, unbuilt model |

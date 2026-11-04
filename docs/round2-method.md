@@ -34,9 +34,10 @@ At the initial freeze, all five candidates failed; both sealed configurations us
 same retained legacy algorithm. The reserved unused confidence-mode keys are
 removed, not silently treated as a calibrated model. The40 physical inputs and
 their original hash do not change. A subsequently preregistered sixth spatial
-trial is a different hypothesis, not a retuned rejected solver. Its complete
-train/validation decision and any integration gates must precede the final
-seal; partial results cannot change the freeze. No tuning uses test outcomes.
+trial was a different hypothesis, not a retuned rejected solver. Its complete
+150-case train/validation decision also failed, with evidence preserved offline.
+Thus no integration changes the freeze; partial results never changed it.
+No tuning uses test outcomes.
 
 The additional balanced variance study is descriptive research after closing
 these solver trials, not another acceptance attempt. It compares retained and

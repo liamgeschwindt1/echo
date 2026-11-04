@@ -4,7 +4,7 @@
 
 **No algorithm or confidence candidate passed the preregistered acceptance rule.**
 The deployed measured localiser remains the round-one horizontal pair-association
-pipeline. Do not describe this round as a demonstrated accuracy upgrade. Five
+pipeline. Do not describe this round as a demonstrated accuracy upgrade. Six
 complete trials, including renewed weighted/predictive consensus under the new
 rule, were rejected and preserved offline. There is **no robust hardware winner**.
 
@@ -70,7 +70,7 @@ The reference derives unchanged round-one measured inference from
 `baselines/final-1.json`, re-scored with the current aggregation and explicit
 provenance. No original archive is overwritten.
 
-## All five rejected candidates
+## All six rejected candidates
 
 Every trial completed150/150 cases. Full guard tables, paired intervals,
 reliability bins and train-only model coefficients are retained in the linked
@@ -83,6 +83,7 @@ HTML/JSON archives; nulls are not converted to zero.
 | [Global plus empirical intervals](../baselines/round2-global-uncertainty-trial.html) | Train-fitted per-condition intervals; first three partitions pass | Validation/on1sigma0.5000 to0.8923 is farther from nominal; improvement CI also touches zero |
 | [Weighted forward consensus](../baselines/round2-weighted-trial.html) | Train/on median6.8735 to6.0917m; validation/on2.4937 to2.3015m;82 multi-node fixes | Train/off and validation calibration guards fail; validation/on paired improvement is not established |
 | [Predictive leave-one-out](../baselines/round2-predictive-trial.html) | Identical aggregate outcomes to weighted on this population | Same rejection, not a separately favourable result |
+| [Full-rank spatial DOA/static3D](../baselines/round2-spatial-trial.html) | Validation off/on coverage51.22%/31.71% to60.98%/39.02%;42 staticXYZ hypotheses | Train/off and validation2sigma calibration worsen; validation/on risk delta95%CI[-0.146341,0] |
 
 [`round2-decisions.json`](../baselines/round2-decisions.json) contains every
 partition/metric and reason. Weighted/predictive validation/on delta intervals:
@@ -112,7 +113,7 @@ delta even for perfect confidence ordering. Thus the central95% upper endpoint
 cannot be strictly negative for this confidence-only comparison. We did not
 expand validation or waive the rule after seeing this.
 
-### Additional preregistered spatial trial, pending
+### Additional preregistered spatial trial, rejected
 
 After the known descriptive studies, one new B5/B4 hypothesis was registered
 before outcomes: full-rank3D plane-wave DOA, observable/declared physical
@@ -120,10 +121,28 @@ covariance, spherical track agreement and stationary3D intersections.
 Association/flags remain the legacy pairs; moving3D, multi-peak and calibrated
 position radii are not supplied. All150 registered cases are required:
 66 fresh geometry-eligible renders and84 identical reference inferences.
-No partial trial result is an acceptance decision. The trial started14:27UTC
+No partial trial result was used for acceptance. The trial started14:27UTC
 with a recorded cold-p90 budget leaving the entire sealed/reporting reserve.
 An independent audit matches all198 run/clip PCM identities. Core remains
-2f7230fc; experimental schema0.17-spatial is offline only. Outcome pending.
+2f7230fc; experimental schema0.17-spatial is offline only. All150 cases completed
+by15:27UTC, including all66 fresh eligible renders and84 exact reference
+fallbacks. No runtime source was changed, so rejection requires no core revert.
+
+| Partition | Trial coverage | Trial median/p90m | Trial1sigma/2sigma | Trial risk | Paired median/p90/risk delta95%CI |
+|---|---:|---:|---:|---:|---|
+| Train/off |76.47% |1.690/24.631 |56.76%/56.76% |0.5882 |[0,3.557];[-0.939,7.407];[-1.11e-16,2.22e-16] |
+| Train/on |67.65% |6.873/24.885 |22.34%/50.00% |0.7059 |[0,0];[0,0];[0,0] |
+| Validation/off |60.98% |0.680/17.028 |63.21%/66.98% |0.6098 |[-0.568,2.159];[-11.343,4.747];[-0.14634,0.04878] |
+| Validation/on |39.02% |2.574/26.747 |51.67%/76.67% |0.6829 |[-1.035,3.040];[-17.156,2.726];[-0.14634,0] |
+
+Useful and silent-wrong rates remain zero in all four partitions. Compare the
+baseline table above; the full archived guard table marks each pass/fail.
+Train/on is unchanged, not an improvement. The42 upgraded static hypotheses
+(38 off/four on) include unmatched hypotheses: they are not42 accurate3D
+measurements. Moving3D and calibrated positional radii remain unavailable.
+The experimental elevation-summary metric is also unavailable; no zero-error
+elevation claim is made. Calibration and interval failures reject the candidate
+despite better point coverage, without validation-driven parameter adjustment.
 
 ## Exact-output performance and determinism
 
@@ -453,7 +472,7 @@ Final artifact/source follow-through remains pending in this working report.
 | B2 | Both renewed measured consensus methods and high-weight-node regression; both rejected under rule4 |
 | B3 | Blocked-path feature in offline confidence; no retained blocked-edge hypothesis solver |
 | B4 | Rejected empirical/analytic intervals, per-category descriptive reports; no heading self-calibration or calibrated deployed radius |
-| B5 | Separate complete-population spatial trial pending; no new runtime global/multi-peak/moving3D/tracker pipeline |
+| B5 | Complete spatial trial rejected; no new runtime global/multi-peak/moving3D/tracker pipeline |
 | B6/B7 | No alias-aware processing study; complete60-case available-node/spacing diagnostic, still pair-only fusion |
 | C1/C2 | Clock resampling and placeholder weather/coloured noise OFF by default; no sync-gated TDOA |
 | C3-C6 | Scattering/complex mic response/directivity unbuilt; both real OSM sites skipped after upstream/cache failure |
