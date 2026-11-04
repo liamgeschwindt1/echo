@@ -1,0 +1,15 @@
+{
+  "name": "B2/B4 measured-track weighted forward and predictive consensus",
+  "population_reference": "docs/experiments/round2-evaluation.json",
+  "runs_per_candidate": 150,
+  "candidates_in_order": ["weighted", "predictive"],
+  "relationship_to_rejected_trials": "Not a repeat of the rejected truth-assisted solver. Adapt the weighted-forward and predictive ideas to the measured global proposal family, using only stored measured windows and nominal geometry. Retrain the original B1 model on train only and evaluate rule four. Do not claim a changed verdict for the old legacy-only trial.",
+  "proposals": "Reuse preregistered global pair/static multi-node proposals and exact disjoint assignment. Moving pairs unchanged. Robustify only static groups of three or more; retained robust sets with fewer than three defer to the existing pair proposal pool.",
+  "node_sigma": "sqrt(legacy bearing_sigma_deg^2 + declared heading_sigma_deg^2 + (sqrt(2)*declared mic-position sigma / maximum nominal mic baseline * 180/pi)^2). Scalar gain contributes zero to ideal PHAT. Add measured circular window-spread variance and plane-wave residual angular variance for consensus weights only.",
+  "reliability": "Reliable if mean accepted-window PHAT coherence >=0.5 and median plane-wave residual <= half the existing maximum; otherwise support scaled by 0.1.",
+  "weighted": "All forward pair seeds above the existing crossing gate. Maximise sum(reliability scale / sigma_deg^2) of gate-consistent rays, then minimise weighted clipped residual, then canonical pair IDs; costs/support quantised at 1e-10. Weighted refit. LOO may reject only if remaining support >=2 times held-out support.",
+  "predictive": "Same weighted seed/refit. LOO denominator adds held-out perpendicular variance and projected 2D fit covariance of surviving rays. Uncertain low-weight survivors therefore cannot confidently reject a high-weight ray. No validation fitting.",
+  "calibration": "Apply the analytic declared-hardware node sigma and twice sigma in scoring, not the rejected condition-wise empirical intervals. This is a new physical uncertainty candidate, not an accepted default.",
+  "acceptance": "Original rule four in all train/validation off/on partitions, 1000 paired whole-run draws, 95% CI. If both pass choose lower train-on risk area only. Otherwise reject and retain evidence offline.",
+  "unit_checks": "Reconstruct the exact round-one n1/n3 high-weight versus n2/n7 low-weight geometry; keep both high-weight rays, deterministic reversed input, forward validity, and finite predictive covariance. Never read scoring truth in the solver."
+}
