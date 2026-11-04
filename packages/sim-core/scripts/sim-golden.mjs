@@ -7,6 +7,12 @@ import { GOLDEN_SCENES, LEGACY_BUILDING_SCENES, WEDGE_SCENES, ARRAY_VOLUME_SCENE
 const args = process.argv.slice(2);
 const setIdx = args.indexOf('--set');
 const set = setIdx >= 0 ? args[setIdx + 1] : 'base';
+if (set === 'realism') {
+  const { realismGolden } = await import('../test/realism-fixture.js');
+  writeFileSync(new URL('../test/golden/golden-realism.json', import.meta.url), JSON.stringify(realismGolden(), null, 2) + '\n');
+  console.log('wrote test/golden/golden-realism.json (new opt-in physics only)');
+  process.exit(0);
+}
 const SETS = { base: GOLDEN_SCENES, 'legacy-buildings': LEGACY_BUILDING_SCENES, wedge: WEDGE_SCENES };
 if (set === 'analysis-0.4') {
   // Analysis only (schema 0.4), for every scene set; the signal goldens are not touched.

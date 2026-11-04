@@ -7,6 +7,7 @@ import { hatWeight, isMoving, motionKnots, positionAt, referencePosition } from 
 import { diffractionGrid, diffractionOnGrid, gridMap, WEDGE_DESCRIPTION } from './diffraction.js';
 import { computeActivity } from './activity.js';
 import { timed } from './profile.js';
+import { validateRealism, nodeClock, clockSignal, realismNoise, noiseEnvelope, REALISM_NOTE } from './realism.js';
 
 const LEVEL_WINDOW_S = 0.125;
 
@@ -60,6 +61,7 @@ const micGain = (settings, ni, mi) => (settings.mic_gain_sigma_db ? 10 ** ((sett
 /** Everything the per-mic spectra need, computed once per render. */
 export function prepareRender(scenario, clips, lengthS, profile = null) {
   const { settings } = scenario;
+  validateRealism(settings);
   const fs = settings.render_sample_rate;
   const total = Math.ceil(lengthS * fs);
   const n = nextPow2(total);
@@ -333,6 +335,15 @@ export function noiseForMic(ctx, ni, mi, common = null) {
     for (let i = 0; i < total; i++) amb[i] = a * common[i] + b * amb[i];
   }
   const self = whiteNoise(streamFor(settings.seed, ni, mi, 2), total, dbToPa(settings.mic_self_noise_db_spl));
+  ctx.realismNoiseCache ??= new Map();
+  const extra = realismNoise(settings, ni, mi, total, ctx.fs, ctx.realismNoiseCache);
+  if (extra) for (let i = 0; i < total; i++) amb[i] += extra[i];
+  if (settings.noise_variation_db) {
+    ctx.envelopes ??= new Map();
+    if (!ctx.envelopes.has(ni)) ctx.envelopes.set(ni, noiseEnvelope(settings, ni, total, ctx.fs));
+    const envelope = ctx.envelopes.get(ni);
+    for (let i = 0; i < total; i++) amb[i] *= envelope[i];
+  }
   return { amb, self };
 }
 
@@ -355,6 +366,7 @@ export function renderScenario(scenario, clips, { lengthS, onProgress, profile =
   let done = 0;
   scenario.nodes.forEach((node, ni) => {
     const common = commonNoise(ctx, ni);
+    const clock = nodeClock(ctx.settings, ni);
     const auditNode = [];
     const mics = ctx.truePositions[ni].map((_, mi) => {
       const accRe = new Float64Array(bins);
@@ -372,11 +384,14 @@ export function renderScenario(scenario, clips, { lengthS, onProgress, profile =
       const g = micGainFor(ctx, ni, mi);
       for (let i = 0; i < total; i++) out[i] = (out[i] + amb[i] + self[i]) * g;
       onProgress?.(++done / jobs);
-      return out;
+      return clockSignal(out, ctx.fs, clock);
     });
-    nodes.push({ id: node.id, mic_positions: micPositions(node), mic_positions_true: ctx.truePositions[ni], mics });
+    nodes.push({ id: node.id, mic_positions: micPositions(node), mic_positions_true: ctx.truePositions[ni], mics,
+      ...(clock.offset_ms || clock.drift_ppm ? { clock_true: clock } : {}) });
     activity.push(timed(profile, 'activity', () => computeActivity(ctx, ni)));
     audit.push(auditNode);
   });
-  return { sample_rate: ctx.fs, length: total, nodes, paths: ctx.table, source_positions: ctx.sourcePositions, activity, audit };
+  const active = ['clock_offset_sigma_ms', 'clock_drift_sigma_ppm', 'wind_speed_mps', 'urban_noise_db_spl', 'rain_noise_db_spl', 'noise_variation_db'].some((k) => ctx.settings[k] > 0);
+  return { sample_rate: ctx.fs, length: total, nodes, paths: ctx.table, source_positions: ctx.sourcePositions, activity, audit,
+    ...(active ? { realism_note: REALISM_NOTE } : {}) };
 }
