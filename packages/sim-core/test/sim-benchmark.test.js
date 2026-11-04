@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
 import { buildJobs, estimateExperiment, presetExperiment, reduceExperiment, normaliseExperiment } from '../src/benchmark/experiment.js';
 import { SCENES, buildScene } from '../src/benchmark/scenes.js';
 import { applyValues, VARIABLES } from '../src/benchmark/variables.js';
@@ -17,6 +18,21 @@ const source = (error, suspect = false) => ({ horizontal_m: error, error_3d_m: e
 const fakeRun = (error, extra = {}) => ({
   job: { config: { id: 'c0', name: 'Base', values: {}, group: 'base' }, scene: 'sparse_20', seed: 1, split: 'train', realism: 'off', analysis_mode: 'measured_only' },
   scores: { sources: [source(error)], fix_count: error === null ? 0 : 1, unmatched_fixes: 0, unmatched_suspect: 0 }, runtime_ms: 10, manifest: { code_version: 'test' }, ...extra
+});
+
+test('benchmark CLI help exits without starting an experiment', () => {
+  const result = spawnSync(process.execPath, [new URL('../../../scripts/benchmark.mjs', import.meta.url).pathname, '--help'], { encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /^Usage:/);
+  assert.doesNotMatch(result.stdout, /Estimated|Saved/);
+});
+test('benchmark CLI rejects unknown, missing and incompatible arguments before rendering', () => {
+  for (const args of [['--typo'], ['--experiment'], ['--fail-on-regress']]) {
+    const result = spawnSync(process.execPath, [new URL('../../../scripts/benchmark.mjs', import.meta.url).pathname, ...args], { encoding: 'utf8' });
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /Unknown option|argument missing|requires --compare/);
+    assert.doesNotMatch(result.stdout, /Estimated|Saved/);
+  }
 });
 
 test('benchmark scenes have >=30% untouched IDs and every scene validates', () => {

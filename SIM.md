@@ -13,6 +13,8 @@ Coordinates: metres, x east, y north, z up. Time: seconds of scenario time. Insi
 expansion, variable transforms, cache keys, scoring and aggregation. JSON, CSV and
 standalone HTML are written together. Use `--compare baseline.json --fail-on-regress`
 for deterministic metric regression checks. Runtime is recorded but not gated.
+`--help` prints usage without running. Unknown/missing flags and a regression gate
+without a comparison fail before rendering, rather than silently running defaults.
 
 Experiments default to `measured_only`; the existing editor retains
 `truth_assisted` for compatibility. The latter uses true per-source windows,

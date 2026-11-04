@@ -1,0 +1,823 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Full regression (compare with baseline) benchmark</title><style>body{background:#171b22;color:#ddd;font:14px system-ui;margin:24px}table{border-collapse:collapse;display:block;overflow:auto}td,th{padding:8px;border:1px solid #46505c}small{display:block;color:#aeb8c8}.pass{background:#184431}.fail{background:#58252a}svg{max-width:1000px;width:100%;fill:#ddd}pre{white-space:pre-wrap}</style><h1>Full regression (compare with baseline)</h1><p>300/300 runs. Simulated only. No single supported array winner. No ranking flip demonstrated by this experiment.</p><table><thead><tr><th>Config / split / realism / mode</th><th>horizontal_median_m</th><th>horizontal_p90_m</th><th>error_3d_median_m</th><th>scene_fix_rate</th><th>within_target_rate</th><th>wrong_fix_rate</th><th>suspect_recall</th><th>suspect_precision</th><th>track_fix_count</th><th>track_median_error_m</th><th>bearing_median_deg</th><th>elevation_median_deg</th><th>within_1sigma</th><th>within_2sigma</th><th>detection_rate</th></tr></thead><tbody><tr><th>Base / held-out / off / measured_only</th><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="pass">0.438<small>[0.347, 1.996]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="fail">21.774<small>[8.002, 69.956]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">0.512<small>[0.366, 0.659]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">0.769<small>[0.622, 0.898]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">0.231<small>[0.102, 0.378]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">1.000<small>[1.000, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">0.231<small>[0.102, 0.378]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">3478.000<small>[1992.000, 5483.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">0.317<small>[0.214, 0.585]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">0.513<small>[0.362, 0.833]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">0.811<small>[0.674, 0.922]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">0.824<small>[0.691, 0.939]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="measured_only" class="">0.289<small>[0.179, 0.412]</small></td></tr><tr><th>Base / held-out / off / truth_assisted</th><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="pass">1.787<small>[0.798, 6.193]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="fail">15.085<small>[5.737, 25.303]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">2.230<small>[1.164, 6.193]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">0.683<small>[0.537, 0.829]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">0.829<small>[0.619, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">0.171<small>[0.000, 0.381]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">0.500<small>[0.000, 0.600]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">0.375<small>[0.000, 0.692]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">756.000<small>[522.000, 1027.000]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">0.546<small>[0.462, 0.751]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">0.756<small>[0.402, 1.385]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">1.526<small>[1.085, 2.255]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">0.650<small>[0.514, 0.795]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">0.769<small>[0.649, 0.899]</small></td><td data-config="c0" data-split="held-out" data-realism="off" data-mode="truth_assisted" class="">0.876<small>[0.804, 0.942]</small></td></tr><tr><th>Base / held-out / on / measured_only</th><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="pass">2.494<small>[1.891, 9.370]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="fail">26.747<small>[3.131, 47.995]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">0.317<small>[0.195, 0.463]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">0.759<small>[0.486, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">0.241<small>[0.000, 0.514]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">1.000<small>[1.000, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">0.241<small>[0.000, 0.514]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">2229.000<small>[1100.000, 3784.000]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">1.968<small>[1.244, 6.060]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">2.662<small>[2.014, 4.102]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">0.500<small>[0.303, 0.692]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">0.788<small>[0.547, 0.960]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="measured_only" class="">0.184<small>[0.095, 0.297]</small></td></tr><tr><th>Base / held-out / on / truth_assisted</th><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="pass">4.390<small>[2.295, 10.975]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="fail">42.381<small>[18.610, 59.031]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">4.526<small>[2.458, 10.975]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">0.683<small>[0.537, 0.829]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">0.611<small>[0.444, 0.838]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">0.389<small>[0.162, 0.556]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">0.429<small>[0.000, 0.700]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">0.667<small>[0.000, 1.000]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">756.000<small>[523.000, 1007.000]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">3.315<small>[2.319, 5.135]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">2.604<small>[2.038, 3.505]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">2.868<small>[2.204, 4.606]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">0.472<small>[0.358, 0.606]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">0.646<small>[0.528, 0.780]</small></td><td data-config="c0" data-split="held-out" data-realism="on" data-mode="truth_assisted" class="">0.876<small>[0.804, 0.942]</small></td></tr><tr><th>Base / train / off / measured_only</th><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="pass">0.526<small>[0.189, 2.382]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="fail">24.631<small>[7.313, 26.983]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.706<small>[0.559, 0.853]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.717<small>[0.548, 0.870]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.283<small>[0.130, 0.452]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">1.000<small>[1.000, 1.000]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.283<small>[0.130, 0.452]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">5353.000<small>[3552.000, 7433.000]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.526<small>[0.164, 1.690]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.462<small>[0.376, 0.793]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.769<small>[0.639, 0.884]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.769<small>[0.639, 0.884]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="measured_only" class="">0.411<small>[0.260, 0.613]</small></td></tr><tr><th>Base / train / off / truth_assisted</th><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="pass">1.677<small>[0.414, 11.078]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="fail">25.869<small>[11.357, 27.070]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">1.677<small>[0.440, 11.256]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">0.941<small>[0.853, 1.000]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">0.646<small>[0.464, 0.875]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">0.354<small>[0.125, 0.536]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">0.647<small>[0.429, 0.818]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">0.786<small>[0.600, 1.000]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">849.000<small>[655.000, 1048.000]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">0.498<small>[0.410, 0.661]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">0.946<small>[0.424, 2.819]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">2.004<small>[1.508, 2.912]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">0.533<small>[0.429, 0.681]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">0.678<small>[0.592, 0.801]</small></td><td data-config="c0" data-split="train" data-realism="off" data-mode="truth_assisted" class="">0.958<small>[0.890, 1.000]</small></td></tr><tr><th>Base / train / on / measured_only</th><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="fail">6.873<small>[3.817, 9.247]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="fail">24.885<small>[20.756, 28.575]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.676<small>[0.500, 0.824]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.596<small>[0.456, 0.741]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.404<small>[0.259, 0.544]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">1.000<small>[1.000, 1.000]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.404<small>[0.259, 0.544]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">4697.000<small>[2974.000, 6586.000]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">5.874<small>[3.085, 8.481]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">5.161<small>[3.734, 6.821]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">unavailable<small>CI unavailable</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.223<small>[0.137, 0.318]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.500<small>[0.359, 0.619]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="measured_only" class="">0.380<small>[0.240, 0.576]</small></td></tr><tr><th>Base / train / on / truth_assisted</th><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="fail">8.347<small>[4.261, 10.674]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="fail">27.531<small>[15.626, 36.321]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">8.347<small>[4.261, 10.812]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">0.941<small>[0.853, 1.000]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">0.604<small>[0.442, 0.829]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">0.396<small>[0.171, 0.558]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">0.737<small>[0.444, 0.933]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">0.933<small>[0.625, 1.000]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">789.000<small>[594.000, 987.000]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">5.534<small>[3.410, 8.215]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">5.323<small>[3.879, 6.444]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">5.544<small>[4.054, 7.970]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">0.133<small>[0.076, 0.219]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">0.350<small>[0.242, 0.458]</small></td><td data-config="c0" data-split="train" data-realism="on" data-mode="truth_assisted" class="">0.958<small>[0.890, 1.000]</small></td></tr></tbody></table><p>Tornado requires one-at-a-time mode.</p><h2>Ranking</h2><pre>[]</pre><h2>Failure atlas</h2><pre>[
+  {
+    &quot;split&quot;: &quot;train&quot;,
+    &quot;realism&quot;: &quot;off&quot;,
+    &quot;analysis_mode&quot;: &quot;truth_assisted&quot;,
+    &quot;categories&quot;: [
+      {
+        &quot;category&quot;: &quot;overlap&quot;,
+        &quot;failures&quot;: 18,
+        &quot;no_fix&quot;: 6,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.6666666666666666,
+        &quot;median_error_m&quot;: 21.69958166631478,
+        &quot;p90_error_m&quot;: 27.06965107301541
+      },
+      {
+        &quot;category&quot;: &quot;near-wall&quot;,
+        &quot;failures&quot;: 4,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.14814814814814814,
+        &quot;median_error_m&quot;: 25.869276206127736,
+        &quot;p90_error_m&quot;: 25.869276206127736
+      },
+      {
+        &quot;category&quot;: &quot;low-SNR&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 0,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.07407407407407407,
+        &quot;median_error_m&quot;: 48.88889954543366,
+        &quot;p90_error_m&quot;: 48.88889954543366
+      },
+      {
+        &quot;category&quot;: &quot;bad-geometry&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.07407407407407407,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;blocked&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 0,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.037037037037037035,
+        &quot;median_error_m&quot;: 11.356895072902821,
+        &quot;p90_error_m&quot;: 11.356895072902821
+      }
+    ],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 20,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 88,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 76,
+        &quot;detection_rate&quot;: 0.8947368421052632
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 8,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;train&quot;,
+    &quot;realism&quot;: &quot;off&quot;,
+    &quot;analysis_mode&quot;: &quot;measured_only&quot;,
+    &quot;categories&quot;: [
+      {
+        &quot;category&quot;: &quot;overlap&quot;,
+        &quot;failures&quot;: 29,
+        &quot;no_fix&quot;: 14,
+        &quot;unmatched_fixes&quot;: 6,
+        &quot;share&quot;: 0.7435897435897436,
+        &quot;median_error_m&quot;: 23.69149167404898,
+        &quot;p90_error_m&quot;: 52.12416807672482
+      },
+      {
+        &quot;category&quot;: &quot;aerial&quot;,
+        &quot;failures&quot;: 4,
+        &quot;no_fix&quot;: 4,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.10256410256410256,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;moving&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.05128205128205128,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;near-wall&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 0,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.05128205128205128,
+        &quot;median_error_m&quot;: 28.621215987487357,
+        &quot;p90_error_m&quot;: 28.621215987487357
+      },
+      {
+        &quot;category&quot;: &quot;bad-geometry&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.05128205128205128,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      }
+    ],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 20,
+        &quot;detection_rate&quot;: 0.3
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 88,
+        &quot;detection_rate&quot;: 0.5113636363636364
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 76,
+        &quot;detection_rate&quot;: 0.3157894736842105
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 8,
+        &quot;detection_rate&quot;: 0.5
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;train&quot;,
+    &quot;realism&quot;: &quot;on&quot;,
+    &quot;analysis_mode&quot;: &quot;truth_assisted&quot;,
+    &quot;categories&quot;: [
+      {
+        &quot;category&quot;: &quot;overlap&quot;,
+        &quot;failures&quot;: 20,
+        &quot;no_fix&quot;: 6,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.6896551724137931,
+        &quot;median_error_m&quot;: 23.99212541973246,
+        &quot;p90_error_m&quot;: 41.592674999702744
+      },
+      {
+        &quot;category&quot;: &quot;near-wall&quot;,
+        &quot;failures&quot;: 3,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.10344827586206896,
+        &quot;median_error_m&quot;: 15.625800103384785,
+        &quot;p90_error_m&quot;: 15.625800103384785
+      },
+      {
+        &quot;category&quot;: &quot;aerial&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 0,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.06896551724137931,
+        &quot;median_error_m&quot;: 17.62116316163582,
+        &quot;p90_error_m&quot;: 17.62116316163582
+      },
+      {
+        &quot;category&quot;: &quot;low-SNR&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 0,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.06896551724137931,
+        &quot;median_error_m&quot;: 19.77283807581722,
+        &quot;p90_error_m&quot;: 19.77283807581722
+      },
+      {
+        &quot;category&quot;: &quot;bad-geometry&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.06896551724137931,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      }
+    ],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 20,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 88,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 76,
+        &quot;detection_rate&quot;: 0.8947368421052632
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 8,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;train&quot;,
+    &quot;realism&quot;: &quot;on&quot;,
+    &quot;analysis_mode&quot;: &quot;measured_only&quot;,
+    &quot;categories&quot;: [
+      {
+        &quot;category&quot;: &quot;overlap&quot;,
+        &quot;failures&quot;: 31,
+        &quot;no_fix&quot;: 16,
+        &quot;unmatched_fixes&quot;: 5,
+        &quot;share&quot;: 0.6739130434782609,
+        &quot;median_error_m&quot;: 21.609905084135306,
+        &quot;p90_error_m&quot;: 26.528892419575993
+      },
+      {
+        &quot;category&quot;: &quot;aerial&quot;,
+        &quot;failures&quot;: 4,
+        &quot;no_fix&quot;: 4,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.08695652173913043,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;near-wall&quot;,
+        &quot;failures&quot;: 3,
+        &quot;no_fix&quot;: 0,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.06521739130434782,
+        &quot;median_error_m&quot;: 25.438456293157074,
+        &quot;p90_error_m&quot;: 28.57541979160202
+      },
+      {
+        &quot;category&quot;: &quot;low-SNR&quot;,
+        &quot;failures&quot;: 3,
+        &quot;no_fix&quot;: 0,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.06521739130434782,
+        &quot;median_error_m&quot;: 14.27233830621564,
+        &quot;p90_error_m&quot;: 40.27224721003685
+      },
+      {
+        &quot;category&quot;: &quot;moving&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.043478260869565216,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;bad-geometry&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.043478260869565216,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;blocked&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.021739130434782608,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      }
+    ],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 20,
+        &quot;detection_rate&quot;: 0.2
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 88,
+        &quot;detection_rate&quot;: 0.42045454545454547
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 76,
+        &quot;detection_rate&quot;: 0.3684210526315789
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 8,
+        &quot;detection_rate&quot;: 0.5
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 0,
+        &quot;detection_rate&quot;: null
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;held-out&quot;,
+    &quot;realism&quot;: &quot;off&quot;,
+    &quot;analysis_mode&quot;: &quot;truth_assisted&quot;,
+    &quot;categories&quot;: [
+      {
+        &quot;category&quot;: &quot;random&quot;,
+        &quot;failures&quot;: 13,
+        &quot;no_fix&quot;: 12,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.5416666666666666,
+        &quot;median_error_m&quot;: 10.493034980879981,
+        &quot;p90_error_m&quot;: 10.493034980879981
+      },
+      {
+        &quot;category&quot;: &quot;overlap&quot;,
+        &quot;failures&quot;: 9,
+        &quot;no_fix&quot;: 4,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.375,
+        &quot;median_error_m&quot;: 21.50414673917773,
+        &quot;p90_error_m&quot;: 26.93493617511392
+      },
+      {
+        &quot;category&quot;: &quot;near-wall&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.041666666666666664,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;bad-geometry&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.041666666666666664,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      }
+    ],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 10,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 50,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 71,
+        &quot;detection_rate&quot;: 0.9014084507042254
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 67,
+        &quot;detection_rate&quot;: 0.7761194029850746
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 3,
+        &quot;detection_rate&quot;: 0
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;held-out&quot;,
+    &quot;realism&quot;: &quot;off&quot;,
+    &quot;analysis_mode&quot;: &quot;measured_only&quot;,
+    &quot;categories&quot;: [
+      {
+        &quot;category&quot;: &quot;random&quot;,
+        &quot;failures&quot;: 17,
+        &quot;no_fix&quot;: 15,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.4857142857142857,
+        &quot;median_error_m&quot;: 69.95553565174677,
+        &quot;p90_error_m&quot;: 69.95553565174677
+      },
+      {
+        &quot;category&quot;: &quot;overlap&quot;,
+        &quot;failures&quot;: 13,
+        &quot;no_fix&quot;: 7,
+        &quot;unmatched_fixes&quot;: 2,
+        &quot;share&quot;: 0.37142857142857144,
+        &quot;median_error_m&quot;: 21.773820778817814,
+        &quot;p90_error_m&quot;: 27.226265099092625
+      },
+      {
+        &quot;category&quot;: &quot;aerial&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.05714285714285714,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;moving&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.02857142857142857,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;near-wall&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 0,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.02857142857142857,
+        &quot;median_error_m&quot;: 28.371021729135553,
+        &quot;p90_error_m&quot;: 28.371021729135553
+      },
+      {
+        &quot;category&quot;: &quot;bad-geometry&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.02857142857142857,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      }
+    ],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 10,
+        &quot;detection_rate&quot;: 0.1
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 50,
+        &quot;detection_rate&quot;: 0.56
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 71,
+        &quot;detection_rate&quot;: 0.29577464788732394
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 67,
+        &quot;detection_rate&quot;: 0.11940298507462686
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 3,
+        &quot;detection_rate&quot;: 0
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;held-out&quot;,
+    &quot;realism&quot;: &quot;on&quot;,
+    &quot;analysis_mode&quot;: &quot;truth_assisted&quot;,
+    &quot;categories&quot;: [
+      {
+        &quot;category&quot;: &quot;random&quot;,
+        &quot;failures&quot;: 18,
+        &quot;no_fix&quot;: 12,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.5806451612903226,
+        &quot;median_error_m&quot;: 42.3811986319104,
+        &quot;p90_error_m&quot;: 59.03054084148513
+      },
+      {
+        &quot;category&quot;: &quot;overlap&quot;,
+        &quot;failures&quot;: 8,
+        &quot;no_fix&quot;: 3,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.25806451612903225,
+        &quot;median_error_m&quot;: 22.010559618733815,
+        &quot;p90_error_m&quot;: 82.61355912264249
+      },
+      {
+        &quot;category&quot;: &quot;low-SNR&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 0,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.06451612903225806,
+        &quot;median_error_m&quot;: 17.488222512381054,
+        &quot;p90_error_m&quot;: 17.488222512381054
+      },
+      {
+        &quot;category&quot;: &quot;blocked&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 0,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.03225806451612903,
+        &quot;median_error_m&quot;: 16.826003422468563,
+        &quot;p90_error_m&quot;: 16.826003422468563
+      },
+      {
+        &quot;category&quot;: &quot;near-wall&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.03225806451612903,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;bad-geometry&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.03225806451612903,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      }
+    ],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 10,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 50,
+        &quot;detection_rate&quot;: 1
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 71,
+        &quot;detection_rate&quot;: 0.9014084507042254
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 67,
+        &quot;detection_rate&quot;: 0.7761194029850746
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 3,
+        &quot;detection_rate&quot;: 0
+      }
+    ]
+  },
+  {
+    &quot;split&quot;: &quot;held-out&quot;,
+    &quot;realism&quot;: &quot;on&quot;,
+    &quot;analysis_mode&quot;: &quot;measured_only&quot;,
+    &quot;categories&quot;: [
+      {
+        &quot;category&quot;: &quot;random&quot;,
+        &quot;failures&quot;: 23,
+        &quot;no_fix&quot;: 23,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.5348837209302325,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;overlap&quot;,
+        &quot;failures&quot;: 15,
+        &quot;no_fix&quot;: 9,
+        &quot;unmatched_fixes&quot;: 3,
+        &quot;share&quot;: 0.3488372093023256,
+        &quot;median_error_m&quot;: 30.839311158519337,
+        &quot;p90_error_m&quot;: 47.9951775633845
+      },
+      {
+        &quot;category&quot;: &quot;aerial&quot;,
+        &quot;failures&quot;: 2,
+        &quot;no_fix&quot;: 2,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.046511627906976744,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;moving&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.023255813953488372,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      },
+      {
+        &quot;category&quot;: &quot;near-wall&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 0,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.023255813953488372,
+        &quot;median_error_m&quot;: 26.746550237115848,
+        &quot;p90_error_m&quot;: 26.746550237115848
+      },
+      {
+        &quot;category&quot;: &quot;bad-geometry&quot;,
+        &quot;failures&quot;: 1,
+        &quot;no_fix&quot;: 1,
+        &quot;unmatched_fixes&quot;: 0,
+        &quot;share&quot;: 0.023255813953488372,
+        &quot;median_error_m&quot;: null,
+        &quot;p90_error_m&quot;: null
+      }
+    ],
+    &quot;detection_by_range&quot;: [
+      {
+        &quot;min_m&quot;: 0,
+        &quot;max_m&quot;: 20,
+        &quot;count&quot;: 10,
+        &quot;detection_rate&quot;: 0
+      },
+      {
+        &quot;min_m&quot;: 20,
+        &quot;max_m&quot;: 50,
+        &quot;count&quot;: 50,
+        &quot;detection_rate&quot;: 0.38
+      },
+      {
+        &quot;min_m&quot;: 50,
+        &quot;max_m&quot;: 100,
+        &quot;count&quot;: 71,
+        &quot;detection_rate&quot;: 0.2112676056338028
+      },
+      {
+        &quot;min_m&quot;: 100,
+        &quot;max_m&quot;: 200,
+        &quot;count&quot;: 67,
+        &quot;detection_rate&quot;: 0.04477611940298507
+      },
+      {
+        &quot;min_m&quot;: 200,
+        &quot;max_m&quot;: null,
+        &quot;count&quot;: 3,
+        &quot;detection_rate&quot;: 0
+      }
+    ]
+  }
+]</pre><h2>Reproducibility</h2><pre>{
+  &quot;git_hash&quot;: &quot;69397f2682f7612fed5b74b663c0c763c8041077&quot;,
+  &quot;code_version&quot;: &quot;c91e3fd1c2172ad27f85022a6178678a17997eca694eefdba5f13c0b08cc01a6&quot;,
+  &quot;render_code_version&quot;: &quot;08ba89b70c0916cc3f61aa6ce951027c53686b8fd329c8a173564b16f24cc7da&quot;,
+  &quot;render_source_files&quot;: [
+    {
+      &quot;name&quot;: &quot;activity.js&quot;,
+      &quot;sha256&quot;: &quot;9965a16c9ddd57877f04dceecda489f9f6e52c32be2599ed171ca5024c3b863c&quot;
+    },
+    {
+      &quot;name&quot;: &quot;diffraction.js&quot;,
+      &quot;sha256&quot;: &quot;1fcb78ec1986de677d0e7aa7ab14a9166705df036747e11a1e32882bfffeb0d9&quot;
+    },
+    {
+      &quot;name&quot;: &quot;dsp.js&quot;,
+      &quot;sha256&quot;: &quot;2893fe2c7da6591e182d0618bac7fbc38a31a11bfecc445fa65ef14d4cda4c3f&quot;
+    },
+    {
+      &quot;name&quot;: &quot;edges.js&quot;,
+      &quot;sha256&quot;: &quot;f455cfe3d9eacfba321cfb0fbc2a540628f40b5bbf3f3f6c7823a4fac7cc8d5d&quot;
+    },
+    {
+      &quot;name&quot;: &quot;geometry.js&quot;,
+      &quot;sha256&quot;: &quot;53c46891257f5e03fc6151e919b9ee39afa247422bed1084ed5df79787c430b1&quot;
+    },
+    {
+      &quot;name&quot;: &quot;mics.js&quot;,
+      &quot;sha256&quot;: &quot;dae01b073fc21e68de3e412d466913be669f66a8d59b9757b130e15e286c0a97&quot;
+    },
+    {
+      &quot;name&quot;: &quot;motion.js&quot;,
+      &quot;sha256&quot;: &quot;64d63bc9cfb75f265015391f44b99fb7c446de6c5f6a3e796a5a66f831ee8c4c&quot;
+    },
+    {
+      &quot;name&quot;: &quot;physics.js&quot;,
+      &quot;sha256&quot;: &quot;d99e4e86b406fa2a0617fba14008cbcad2d90db65d8efedab04e035cbb429b7b&quot;
+    },
+    {
+      &quot;name&quot;: &quot;profile.js&quot;,
+      &quot;sha256&quot;: &quot;25b69e19ce39b56e287ee0e03f821ff5679bc81010fbdd9c7c64ac9605e37291&quot;
+    },
+    {
+      &quot;name&quot;: &quot;render.js&quot;,
+      &quot;sha256&quot;: &quot;10a001c0a201345b0a6df0c3848e7a98b32e5fd5482ffe8a54cdbaef182c3f5e&quot;
+    },
+    {
+      &quot;name&quot;: &quot;rng.js&quot;,
+      &quot;sha256&quot;: &quot;f40eda0168b4025902bc848c4ce1e0c1721641459fb3c449071a724b22215ca3&quot;
+    }
+  ],
+  &quot;schema&quot;: &quot;0.13&quot;,
+  &quot;dirty&quot;: true,
+  &quot;scoring&quot;: &quot;benchmark score.js; post-inference truth only&quot;,
+  &quot;audio_source&quot;: &quot;repository test-audio recordings, PCM float32 mono at 48000 Hz&quot;,
+  &quot;targets&quot;: {
+    &quot;schema&quot;: 1,
+    &quot;placeholder&quot;: true,
+    &quot;scope&quot;: &quot;Starting design targets, not validated acceptance limits. Error targets apply to scenes with source reference range up to 50 m; mixed-range tables are indicative only.&quot;,
+    &quot;max_reference_range_m&quot;: 50,
+    &quot;metrics&quot;: {
+      &quot;horizontal_median_m&quot;: {
+        &quot;max&quot;: 5,
+        &quot;unit&quot;: &quot;m&quot;
+      },
+      &quot;horizontal_p90_m&quot;: {
+        &quot;max&quot;: 10,
+        &quot;unit&quot;: &quot;m&quot;
+      }
+    }
+  },
+  &quot;cache_policy&quot;: &quot;retain&quot;,
+  &quot;audio&quot;: [
+    {
+      &quot;id&quot;: &quot;car_horn&quot;,
+      &quot;samples&quot;: 240000,
+      &quot;sha256&quot;: &quot;dadf04b0e40acf56e5967682f71b249ae7811a4429372212e633fa207a862202&quot;
+    },
+    {
+      &quot;id&quot;: &quot;chainsaw&quot;,
+      &quot;samples&quot;: 240000,
+      &quot;sha256&quot;: &quot;eb7c39065495f6286ade8b663c76e5e858572568979805d9ea825d332472bfaf&quot;
+    },
+    {
+      &quot;id&quot;: &quot;dog&quot;,
+      &quot;samples&quot;: 240000,
+      &quot;sha256&quot;: &quot;20d460c32866c35509072d12b01e719286b07593aa7ce3299c326f5c510b220f&quot;
+    },
+    {
+      &quot;id&quot;: &quot;engine&quot;,
+      &quot;samples&quot;: 240000,
+      &quot;sha256&quot;: &quot;b6735647f769cb8e044f98675223d3632f194df253a87751145573e938899183&quot;
+    },
+    {
+      &quot;id&quot;: &quot;footsteps&quot;,
+      &quot;samples&quot;: 240000,
+      &quot;sha256&quot;: &quot;4c7b79c77f5689556f97d672e03756c6addc83305c8fd2c263ddee32124b39bf&quot;
+    },
+    {
+      &quot;id&quot;: &quot;glass_breaking&quot;,
+      &quot;samples&quot;: 240000,
+      &quot;sha256&quot;: &quot;4df4ae3a411444c0f623a773ef45d28579253f9b878c69832aa582d3f7c09512&quot;
+    }
+  ],
+  &quot;runtime&quot;: {
+    &quot;engine&quot;: &quot;node&quot;,
+    &quot;node&quot;: &quot;26.12.1&quot;,
+    &quot;v8&quot;: &quot;14.6.202.34-node.40&quot;,
+    &quot;platform&quot;: &quot;linux&quot;,
+    &quot;arch&quot;: &quot;x64&quot;
+  },
+  &quot;cancelled&quot;: false,
+  &quot;expected_runs&quot;: 300,
+  &quot;scoring_version&quot;: &quot;episode-one-to-one-v2&quot;
+}</pre><h2>Limits</h2><p>SIMULATED, not real-world validation. Held-out scenes/seeds are reporting-only.</p><p>Bootstrap unit is a complete scene/seed run. CI is unavailable for fewer than two runs. Repeated seeds within sites are correlated; these are not independent-site population confidence intervals.</p><p>Truth-assisted source windows, SNR, overlap, picked paths, multipath and track gates use simulator truth.</p><p>Measured-only reuses measured.js: horizontal only, pairwise greedy association; 3D error and labelling are unavailable (null), not zero.</p><p>Measured scoring assigns overlapping fix episodes one-to-one to source paths after inference, without an error gate. Disjoint episodes may share a source; every matched episode enters error/track/calibration metrics. Unassigned simultaneous hypotheses count wrong. Scoring does not check clip-active intervals. Calibration uses median accepted track bearing error, not individual windows.</p><p>Measured detection rate means source-associated fused node tracks, not an independent classifier detection rate. No model labelling was run.</p><p>Runtime on cache hits records original execution time; render_ms is zero when audio was cached. It is not a fair cold-render speed comparison.</p></html>

@@ -1,6 +1,7 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { resolve, dirname } from 'node:path';
 import { availableParallelism } from 'node:os';
+import { parseArgs } from 'node:util';
 import { presetExperiment, buildJobs, scenarioForJob, estimateExperiment } from '../packages/sim-core/src/benchmark/experiment.js';
 import { buildScene } from '../packages/sim-core/src/benchmark/scenes.js';
 import { nodeExecutor, loadBenchmarkClips, codeManifest } from '../packages/sim-core/src/benchmark/node.js';
@@ -8,13 +9,18 @@ import { runExperiment } from '../packages/sim-core/src/benchmark/runner.js';
 import { compareReports } from '../packages/sim-core/src/benchmark/metrics.js';
 import { reportCsv, reportHtml } from '../packages/sim-core/src/benchmark/report.js';
 
-const args = process.argv.slice(2);
-const option = (name, fallback) => {
-  const i = args.indexOf(name);
-  if (i < 0) return fallback;
-  if (!args[i + 1] || args[i + 1].startsWith('--')) throw new Error(`Missing value for ${name}`);
-  return args[i + 1];
-};
+const { values: args } = parseArgs({ options: {
+  experiment: { type: 'string' }, compare: { type: 'string' }, out: { type: 'string' },
+  workers: { type: 'string' }, cache: { type: 'string' },
+  'fail-on-regress': { type: 'boolean' }, 'discard-renders': { type: 'boolean' },
+  help: { type: 'boolean', short: 'h' }
+} });
+if (args.help) {
+  console.log('Usage: npm run benchmark -- --experiment <file|preset> [--compare baseline.json] [--fail-on-regress] [--out results.json] [--workers 1..16] [--cache directory] [--discard-renders]');
+  process.exit(0);
+}
+if (args['fail-on-regress'] && !args.compare) throw new Error('--fail-on-regress requires --compare');
+const option = (name, fallback) => args[name.slice(2)] ?? fallback;
 const input = option('--experiment', 'smoke');
 const experiment = input.endsWith('.json') ? JSON.parse(await readFile(resolve(input), 'utf8')) : presetExperiment(input);
 const { experiment: e, jobs } = buildJobs(experiment);
@@ -26,7 +32,7 @@ console.log(`Estimated ${estimate.runs} runs, ${(estimate.milliseconds / 60000 /
 const clipsNeeded = new Set(jobs.flatMap((job) => scenarioForJob(e.custom_scenes?.[job.scene] ?? buildScene(job.scene), job).sources.map((s) => s.clip)));
 const clips = await loadBenchmarkClips(clipsNeeded);
 const manifest = await codeManifest();
-const executor = await nodeExecutor({ workers, clips, manifest, experiment: e, cacheDirectory: resolve(option('--cache', '.benchmark-cache')), discardRenders: args.includes('--discard-renders') });
+const executor = await nodeExecutor({ workers, clips, manifest, experiment: e, cacheDirectory: resolve(option('--cache', '.benchmark-cache')), discardRenders: !!args['discard-renders'] });
 const controller = new AbortController();
 process.once('SIGINT', () => { console.error('Cancellation requested; finish active jobs, then save partial report.'); controller.abort(); });
 let report;
@@ -43,8 +49,8 @@ const baselineFile = option('--compare', null);
 if (baselineFile) {
   const baseline = JSON.parse(await readFile(resolve(baselineFile), 'utf8'));
   report.comparison = compareReports(report, baseline, e.tolerances);
-  if (args.includes('--fail-on-regress') && !report.comparison.pass) process.exitCode = 1;
-} else if (args.includes('--fail-on-regress')) throw new Error('--fail-on-regress requires --compare');
+  if (args['fail-on-regress'] && !report.comparison.pass) process.exitCode = 1;
+}
 if (controller.signal.aborted) process.exitCode = 130;
 await mkdir(dirname(out), { recursive: true });
 await writeFile(out, JSON.stringify(report, null, 2) + '\n');
