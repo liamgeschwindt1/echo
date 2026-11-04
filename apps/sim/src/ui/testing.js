@@ -5,6 +5,18 @@ import { reportCsv, reportHtml, plainSummary, metricTable, riskCoverageChart, li
 import { BUILTIN_ARRAYS } from '@echo/sim-core/arrays.js';
 import { testingStore } from './testing-store.js';
 import targets from '../../../../docs/targets.json' with { type: 'json' };
+import history from '../../../../docs/benchmark-history.json' with { type: 'json' };
+
+export function labellingReportTable(report) {
+  if (report.kind !== 'echo-labelling-benchmark' || !report.manifest?.complete || !Array.isArray(report.summary) ||
+      report.events?.length !== report.spec?.expected_model_events || report.renders?.length !== report.spec?.expected_renders ||
+      report.oracles?.length !== report.spec?.expected_oracle_events) throw new Error('Load a complete preregistered labelling report; partial populations are not compared');
+  return `<p>Real YAMNet/CLAP models; synthetic propagated audio. ${report.events.length} model predictions, ${report.oracles.length} known-label oracles. No real-data accuracy claim.</p><table><tr><th>Label / range / noise / normalisation</th><th>N</th><th>Accuracy</th><th>Correct and associated with measured fix</th><th>Scoring-only peak SNR dB</th></tr>${report.summary.map((r) => `<tr><th>${esc(r.key)}</th><td>${esc(r.n)}</td><td>${formatNumber(r.accuracy)}</td><td>${formatNumber(r.localised_label_rate)}</td><td>${formatNumber(r.mean_snr_db)}</td></tr>`).join('')}</table>`;
+}
+
+export function benchmarkHistoryTable(data, metric) {
+  return `<p>${esc(data.notes)}</p><table><tr><th>Producer / stored report</th><th>Population hash / runs</th><th>Config / split / realism / mode</th><th>${esc(metric)}</th></tr>${data.entries.flatMap((e) => e.summary.map((r) => `<tr><td><code>${esc(e.git_hash?.slice(0, 10))}${e.dirty ? ' (dirty producer)' : ''}</code><small>${esc(e.report)}</small></td><td><code>${esc(e.population_sha256.slice(0, 12))}</code> / ${e.n_runs}</td><td>${esc(r.key)}</td><td>${formatNumber(r.metrics[metric]?.value)}<small>${r.metrics[metric]?.ci?.map(formatNumber).join(' - ') ?? 'CI unavailable'}</small></td></tr>`)).join('')}</table>`;
+}
 
 export function parseVariableValues(variable, text) {
   const strings = variable.values.every((v) => typeof v === 'string');
@@ -30,14 +42,24 @@ export function createTesting({ $, getScenario, getClips, getArrays, onDrilldown
   root.innerHTML = `
     <div class="testing">
       <div class="lib-head"><h2>Testing</h2><span class="grow"></span><select id="testPreset" aria-label="Test preset">${Object.keys(PRESETS).map((name) => `<option>${esc(name)}</option>`).join('')}</select><button id="testApplyPreset">Apply preset</button></div>
-      <p class="note">SIMULATED only. Measured-only uses mixtures, not source windows. Realism-on matters. Missing metrics are unavailable, never zero. Held-out results are reporting-only.</p>
+      <div class="row"><label>Benchmark tier<select id="testTier"><option value="smoke">Smoke (16 runs)</option><option value="standard">Standard (100 measured runs)</option><option value="full">Full (2700 runs; expensive)</option></select></label><button id="testApplyTier">Apply tier</button></div>
+      <p class="note">SIMULATED only. Measured-only uses mixtures, not source windows. Realism-on matters. Missing metrics are unavailable, never zero. Round-one “held-out” sites/seeds have been seen: they are validation, not a new sealed test.</p>
+      <section class="set-card"><h3>Real recording</h3>
+        <p class="note">Ingest a multichannel WAV and node geometry JSON without simulator truth. This path has only been checked on synthetic WAV exports; no real-data accuracy is claimed. Legacy measured inference is horizontal and assumes externally aligned node clocks.</p>
+        <label>Multichannel WAV<input id="recordingWav" type="file" accept=".wav"></label>
+        <label>Node geometry JSON<input id="recordingGeometry" type="file" accept=".json"></label>
+        <button id="recordingStart">Analyse recording</button><button id="recordingDownload" disabled>Download recording inference</button>
+        <p id="recordingStatus" role="status"></p><pre id="recordingResult"></pre>
+      </section>
+      <section class="set-card"><h3>Labelling benchmark</h3><p class="note">Load the complete report from <code>node scripts/benchmark-labelling.mjs --discard-renders</code>. Models actually run in Node; oracle labels are a separate upper bound. One ESC-50 clip per class is not a real-world validation dataset.</p><label>Labelling report JSON<input id="labellingReport" type="file" accept=".json"></label><p id="labellingStatus" role="status"></p><div id="labellingResults" class="testing-table"></div></section>
+      <section class="set-card"><h3>Benchmark history</h3><p class="note">Stored complete reports over producer commits. Compare only equal population hashes and matching conditions; a different population is not an improvement. Nightly artifacts can be regenerated with scripts/benchmark-history.mjs.</p><label>History metric<select id="historyMetric">${Object.keys(METRICS).map((k) => `<option>${k}</option>`).join('')}</select></label><div id="historyResults" class="testing-table"></div></section>
       <div class="testing-setup">
         <section class="set-card">
-          <h3>Scenes</h3><div class="row"><button id="testAll">All</button><button id="testHeldOut">Held-out only</button><button id="testNone">Clear</button></div>
-          <div id="testScenes" class="testing-scenes">${SCENES.map((s) => `<label class="check"><input type="checkbox" value="${s.id}" ${s.id === 'sparse_20' ? 'checked' : ''}>${esc(s.name)} ${s.split === 'held-out' ? '(held-out)' : ''}</label>`).join('')}
+          <h3>Scenes</h3><div class="row"><button id="testAll">All</button><button id="testHeldOut">Validation sites</button><button id="testNone">Clear</button></div>
+          <div id="testScenes" class="testing-scenes">${SCENES.map((s) => `<label class="check"><input type="checkbox" value="${s.id}" ${s.id === 'sparse_20' ? 'checked' : ''}>${esc(s.name)} ${s.split === 'held-out' ? '(validation, seen)' : ''}</label>`).join('')}
           <label class="check"><input type="checkbox" value="current">Current scene in editor (snapshot)</label></div>
           <label>Seeds per scene<input id="testSeeds" type="number" min="1" max="1000" value="5"></label>
-          <p class="note">With 2+ seeds, at least 30% are held out (IDs 101+). Eight random sites are permanently held out.</p>
+          <p class="note">With 2+ seeds, at least 30% use the legacy held-out partition (IDs 101+). Those seeds and eight random sites now count as validation. The sealed test runs once in the CLI, not here.</p>
         </section>
         <section class="set-card">
           <h3>Run</h3>
@@ -54,7 +76,7 @@ export function createTesting({ $, getScenario, getClips, getArrays, onDrilldown
           <p id="testStatus" role="status" aria-live="polite">Ready.</p>
         </section>
       </div>
-      <section class="set-card"><h3>Variable groups</h3><p class="note">Pick variables; use default values, enter a list, or set min/max/steps. Base is the chosen scene's settings. Swept values override realism settings. Clock, drift and wind are not modelled.</p><div id="testVariables"></div></section>
+      <section class="set-card"><h3>Variable groups</h3><p class="note">Pick variables; use default values, enter a list, or set min/max/steps. Base is the chosen scene's settings. Swept values override realism settings. Clock drift and weather/urban noise are opt-in, uncalibrated approximations; no inter-node TDOA, housing scattering or microphone phase response.</p><div id="testVariables"></div></section>
       <section class="set-card" id="testResults" hidden>
         <h3>Results</h3><p id="testSummary"></p>
         <div class="row"><button id="testJson">Download JSON</button><button id="testCsv">Download CSV</button><button id="testHtml">Download HTML</button><button id="testCopy">Copy summary</button><label class="upload">Compare baseline JSON<input id="testBaseline" type="file" accept=".json" hidden></label></div>
@@ -85,6 +107,38 @@ export function createTesting({ $, getScenario, getClips, getArrays, onDrilldown
       <button data-default="${v.id}">Default range</button></div>
     </div>`).join('')}</details>`).join('');
   const find = (attr, id) => root.querySelector(`[data-${attr}="${id}"]`);
+  $('labellingReport').onchange = async () => {
+    try {
+      const report = JSON.parse(await $('labellingReport').files[0].text());
+      $('labellingResults').innerHTML = labellingReportTable(report);
+      $('labellingStatus').textContent = 'Complete fixed-population model report loaded.';
+    } catch (error) { $('labellingStatus').textContent = `Error: ${error.message}`; $('labellingResults').replaceChildren(); }
+  };
+  $('historyMetric').onchange = () => { $('historyResults').innerHTML = benchmarkHistoryTable(history, $('historyMetric').value); };
+  $('historyMetric').onchange();
+  let recordingReport = null;
+  $('recordingStart').onclick = async () => {
+    let recordingWorker;
+    recordingReport = null; $('recordingDownload').disabled = true; $('recordingResult').replaceChildren();
+    try {
+      const wav = $('recordingWav').files[0], geometryFile = $('recordingGeometry').files[0];
+      if (!wav || !geometryFile) throw new Error('Choose both a multichannel WAV and node geometry JSON');
+      $('recordingStart').disabled = true; $('recordingDownload').disabled = true;
+      $('recordingStatus').textContent = 'Analysing measured channels in a worker...';
+      const geometryBytes = await geometryFile.arrayBuffer(), buffer = await wav.arrayBuffer();
+      recordingWorker = new Worker(new URL('../recordingWorker.js', import.meta.url), { type: 'module' });
+      recordingReport = await new Promise((resolve, reject) => {
+        recordingWorker.onmessage = ({ data }) => data.error ? reject(new Error(data.error)) : resolve(data.report);
+        recordingWorker.onerror = (event) => reject(new Error(event.message));
+        recordingWorker.postMessage({ wav: buffer, geometryBytes }, [buffer, geometryBytes]);
+      });
+      $('recordingResult').textContent = JSON.stringify({ fixes: recordingReport.inference.fixes, notes: recordingReport.notes }, null, 2);
+      $('recordingStatus').textContent = `${recordingReport.inference.fixes.length} horizontal fixes; no truth scoring or validated accuracy.`;
+      $('recordingDownload').disabled = false;
+    } catch (error) { $('recordingStatus').textContent = `Error: ${error.message}`; }
+    finally { recordingWorker?.terminate(); $('recordingStart').disabled = false; }
+  };
+  $('recordingDownload').onclick = () => download('recording-inference.json', JSON.stringify(recordingReport, null, 2), 'application/json');
   let worker = null, active = false, paused = false, report = null, baseline = null;
   let started = 0, lastDone = 0, record = null, csv, html;
   const status = (text) => { $('testStatus').textContent = text; };
@@ -103,7 +157,7 @@ export function createTesting({ $, getScenario, getClips, getArrays, onDrilldown
   const refreshEstimate = () => {
     try {
       const e = estimateExperiment(read());
-      $('testEstimate').textContent = `${e.runs} runs; about ${Math.ceil(e.milliseconds / 60000 / 2)} min with 2 workers (rough, before cache).${e.above_cap ? ` Above cap ${e.cap}; reduce before Test.` : ''}`;
+      $('testEstimate').textContent = `${e.runs} runs; about ${Math.ceil(e.milliseconds / 60000 / 2)} min with 2 workers (historical stage p90, before cache; ${e.unmeasured_runs ?? 0} conservatively estimated).${e.above_cap ? ` Above cap ${e.cap}; reduce before Test.` : ''}`;
       $('testEstimate').classList.toggle('accent', e.above_cap);
       $('testStart').disabled = active || e.above_cap;
     } catch (err) { $('testEstimate').textContent = err.message; $('testStart').disabled = true; }
@@ -133,8 +187,13 @@ export function createTesting({ $, getScenario, getClips, getArrays, onDrilldown
   }
   const setBusy = (busy) => {
     active = busy; $('testPause').disabled = $('testCancel').disabled = !busy;
+    $('testApplyTier').disabled = busy;
     for (const el of root.querySelectorAll('.testing-setup input,.testing-setup select,#testVariables input,#testVariables select,#testVariables button,#testAll,#testHeldOut,#testNone,#testApplyPreset,#testReduce')) el.disabled = busy;
     refreshEstimate();
+  };
+  $('testApplyTier').onclick = () => {
+    try { write(normaliseExperiment(presetExperiment($('testTier').value))); }
+    catch (err) { error(err); }
   };
   function makeWorker() {
     if (worker) return worker;
@@ -196,7 +255,8 @@ export function createTesting({ $, getScenario, getClips, getArrays, onDrilldown
     $('testLine').innerHTML = lineChart(rows, $('testX').value, metric);
     $('testHeatmap').innerHTML = heatmap(rows, $('testX').value, $('testY').value, metric);
     $('testTornado').innerHTML = tornado(rows, metric);
-    const ranking = rankingFlips(rows, metric);
+    const ranking = report.manifest.cancelled || report.runs.length !== (report.manifest.expected_runs ?? report.runs.length)
+      ? { rankings: [], flips: [] } : rankingFlips(rows, metric);
     $('testRanking').innerHTML = `<p>${ranking.flips.length ? `RANKING-FLIP: ${esc([...new Set(ranking.flips.map((f) => f.variable))].join(', '))}` : 'No ranking flip demonstrated in selected context.'}</p>${ranking.rankings.length ? `<table><tr><th>Context</th><th>Winner (point estimate)</th><th>Ranking</th></tr>${ranking.rankings.map((r) => `<tr><td>${esc(JSON.stringify(r.context))}</td><td>${esc(r.winner ?? (r.winners.length ? `Tie: ${r.winners.join(', ')}` : 'Unavailable'))}</td><td>${r.rows.map((row) => `${esc(row.values.mic_array)}: ${formatNumber(row.metrics[metric].value)}`).join('; ')}</td></tr>`).join('')}</table>` : '<p>Sweep mic_array to rank arrays.</p>'}`;
   }
   function showComparison(comparison) {

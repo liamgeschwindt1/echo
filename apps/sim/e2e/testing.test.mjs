@@ -10,6 +10,9 @@ import { mkdtemp, readFile, writeFile, mkdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
+import { recordingFixture } from '../../../packages/sim-core/test/recording-fixture.js';
+import { analyseRecording, decodeMultichannelWav } from '@echo/sim-core/recording.js';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 function closeNumbers(a, b, path = '') {
@@ -89,6 +92,25 @@ test('Testing small sweep pauses, survives reload, matches CLI and drills down',
     await page.locator('#testMetricTable td[data-config]').first().click();
     await page.locator('#testDrilldown button').first().click();
     assert.match(await page.locator('#loadNotice').textContent(), /Testing snapshot: sparse_20, seed 1/);
+    await page.locator('[data-view="testing"]').click();
+    const { wav, geometry } = recordingFixture();
+    const geometryBytes = Buffer.from(JSON.stringify(geometry));
+    await page.locator('#recordingWav').setInputFiles({ name: 'synthetic.wav', mimeType: 'audio/wav', buffer: Buffer.from(wav) });
+    await page.locator('#recordingGeometry').setInputFiles({ name: 'geometry.json', mimeType: 'application/json', buffer: geometryBytes });
+    await page.locator('#recordingStart').click();
+    await page.waitForFunction(() => !document.getElementById('recordingDownload').disabled, null, { timeout: 60000 });
+    const recordingDownload = page.waitForEvent('download');
+    await page.locator('#recordingDownload').click();
+    await (await recordingDownload).saveAs(join(directory, 'recording.json'));
+    const recording = JSON.parse(await readFile(join(directory, 'recording.json')));
+    assert.ok(recording.inference.fixes.length > 0);
+    assert.equal(recording.wav_sha256, createHash('sha256').update(Buffer.from(wav)).digest('hex'));
+    assert.equal(recording.geometry_sha256, createHash('sha256').update(geometryBytes).digest('hex'));
+    closeNumbers(recording.inference, analyseRecording(decodeMultichannelWav(wav), geometry).inference);
+    await page.locator('#recordingWav').setInputFiles({ name: 'invalid.wav', mimeType: 'audio/wav', buffer: Buffer.from('not a WAV') });
+    await page.locator('#recordingStart').click();
+    await page.waitForFunction(() => document.getElementById('recordingStatus').textContent.startsWith('Error:'), null, { timeout: 30000 });
+    assert.equal(await page.locator('#recordingDownload').isDisabled(), true);
     assert.deepEqual(errors, []);
     success = true;
   } finally {
