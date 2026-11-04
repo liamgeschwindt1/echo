@@ -1,0 +1,34 @@
+{
+  "name": "Round 2 conditional error and abstention variance decomposition",
+  "registered_before": "Any outcomes from this new population",
+  "benchmark": {
+    "name": "Round 2 balanced variance population",
+    "mode": "grid",
+    "scenes": ["sparse_50"],
+    "seeds": [1, 2, 3, 101, 102],
+    "held_out_seeds": [101, 102],
+    "analysis_modes": ["measured_only"],
+    "realism": ["off", "on"],
+    "base_values": {"layout": "ring"},
+    "base_settings": {"reflection_order": 0, "diffraction_order": 0, "ground_reflectivity": 0},
+    "sweeps": [
+      {"variable": "mic_array", "values": ["ball12_d180", "planar12_d180", "dome12_d230"]},
+      {"variable": "node_count", "values": [2, 3, 6]},
+      {"variable": "node_spacing_m", "values": [20, 40, 80]}
+    ],
+    "max_runs": 300,
+    "expected_runs": 270
+  },
+  "analysis": {
+    "algorithms": ["retained-legacy", "rejected-predictive-diagnostic"],
+    "diagnostic": "Apply the already frozen predictive global solver to identical measured node tracks without refitting confidence. It is not accepted or deployed.",
+    "factors": ["mic_array", "node_count", "node_spacing_m", "algorithm", "realism"],
+    "responses": {
+      "conditional_rmse_m": "Per-run RMS of matched episode horizontal errors. Null without matched fixes; never substitute zero. Report coverage and unmatched counts separately.",
+      "scene_loss": "Maximum min(error/10m,1) among matched episodes; one for any unmatched fix or no fix. Explicit bounded abstention/error loss, not an imputed metre error."
+    },
+    "method": "Additive categorical OLS, no interactions. Shapley decomposition of explained R-squared over all 32 factor subsets; residual fraction one minus full-model R-squared. Missing factor levels or zero response variance yield null, not a ranking.",
+    "intervals": "500 paired whole-seed cluster bootstrap draws, 95% percentile intervals, PRNG seed 781239. Preserve all factors, algorithms and realism profiles within each seed cluster.",
+    "limits": "One fixed single-source free-field site, five noise/hardware seed clusters. The array factor includes aperture (180/230mm), geometry and current processing, not isolated physical shape. No field generalisation, algorithm acceptance, full nine-array ranking or hardware winner."
+  }
+}
