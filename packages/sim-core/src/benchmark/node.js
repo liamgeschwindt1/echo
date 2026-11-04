@@ -1,4 +1,4 @@
-import { readdir, readFile, mkdir, writeFile, rename, unlink } from 'node:fs/promises';
+import { readdir, readFile, mkdir, writeFile, rename, unlink, stat } from 'node:fs/promises';
 import { resolve, relative } from 'node:path';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -24,10 +24,19 @@ export async function codeManifest() {
   await visit(dir);
   const hash = createHash('sha256');
   for (const file of files) { hash.update(relative(dir.pathname, file.pathname)); hash.update(await readFile(file)); }
+  let hasGit = true;
+  try { await stat(new URL('.git', root)); }
+  catch (error) { if (error.code === 'ENOENT') hasGit = false; else throw error; }
+  let git_hash = null, dirty = null;
+  if (hasGit) {
+    git_hash = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
+    dirty = !!execFileSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' }).trim();
+  } else {
+    console.warn('[benchmark] .git metadata is absent; git_hash and dirty are unknown (null). Source content hashes remain available.');
+  }
   return {
-    git_hash: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
+    git_hash, dirty,
     code_version: hash.digest('hex'), ...await renderFingerprint(), schema: EXPORT_SCHEMA,
-    dirty: !!execFileSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' }).trim(),
     scoring: 'benchmark score.js; post-inference truth only',
     audio_source: 'repository test-audio recordings, PCM float32 mono at 48000 Hz',
     targets: JSON.parse(await readFile(new URL('docs/targets.json', root), 'utf8'))

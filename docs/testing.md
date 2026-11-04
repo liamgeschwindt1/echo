@@ -50,6 +50,10 @@ convention before comparing; the command also supports `--compare` and
 `--fail-on-regress`. No audio or inference is recomputed.
 Manifests snapshot display targets, including `placeholder: true`; later edits
 to `docs/targets.json` cannot silently change what an archived report used.
+Builds from source archives or deployment images without `.git` emit a warning
+and record `git_hash: null` and `dirty: null` (unknown, not clean). Source and
+renderer content hashes, schema and target snapshots are still recorded normally.
+When `.git` is present, Git failures remain fatal rather than hiding broken provenance.
 
 Large sequential CLI sweeps may use `--discard-renders`. Default caching is
 unchanged. This opt-in removes raw audio/provenance only after all jobs sharing
