@@ -123,6 +123,9 @@ That replacement completed all900 cases. Exact results are in
 `baselines/array-full-budget.json.gz` and readable CSV/HTML companions. Report
 coverage and tails alongside any conditional median leader; no hardware
 acceptance limit follows from these simulated mixed-range comparisons.
+All eight144-run endpoint grids also completed (1152 total); their lossless
+JSON archives and CSV/HTML companions are in `baselines/`. See
+`overnight-report.md` for the split/profile-specific ranking flips and limits.
 
 Large study JSON files use lossless timestamp-free gzip; CSV and standalone HTML
 remain directly readable. Run `gzip -dk baselines/array-pilot.json.gz` before

@@ -173,4 +173,13 @@
 - Conditional median leader changes with realism: train **dome12_d230 -> flat4_100**; held-out **puck12_d210 -> ball12_d180_sub6**. Held-out on: sub6 median/p90 **3.523/25.446m**, scene coverage **21.2%**; flat square **5.568/29.036m**, coverage **72.7%**, wrong fixes **42.3%**. This is not a hardware winner.
 - Legacy coplanar sub4 has no measured fixes; opt-in maximum-volume subset restores coverage but has held-out on median/p90 **9.254/47.404m**, coverage57.6%, wrong fixes55.6%. Preserve this regression-looking comparison honestly; it is an optional geometry comparison, not a default solver change.
 - All tables preserve nulls. A temporary reporting probe multiplied null percentages by100 and subtracted missing medians; corrected before documentation. Missing results are never reported as zero or a robustness improvement. Repository metrics already handled nulls correctly.
-- Eight fixed endpoint grids continue sequentially. Final required core/smoke verification is running against unchanged source; the smoke16 replay already has zero regressions.
+- Eight fixed endpoint grids continue sequentially. Final required core **248/248** and smoke **16/16,zero regressions** passed against unchanged source. Smoke used the independent validation cache, not the discard-mode study cache.
+
+## Completed endpoint studies and final handoff
+
+- All eight fixed endpoint grids completed **1152/1152**, each144 with36train/108held-out. Every exact job ID/population matches its preregistered JSON, every report is uncancelled, and all full inference is archived losslessly. No graded outcome selected a threshold or changed inference.
+- Conditional point leaders flip in at least one tested context for heading, mic position, ambient floor, ground reflectivity, noise correlation and source level. No scalar-gain or self-noise endpoint flip was observed; neither absence proves hardware robustness. Gain cancellation is built into ideal PHAT under this scalar model.
+- The final source remains byte-identical to revisionef2108c for core/app inference and CLI. Final local core248/smoke16, app32/build and actual browser parity are green; remote final-source CI41778060382 also passed248/32/build/eight-case benchmark.
+- Existing signal/analysis golden files remain unchanged; only the opt-in maximum-volume geometry has a new signal golden. No original baseline is overwritten. Original1350 partial remains explicitly cancelled, not used as a fair ranking.
+- Final report documents all known failures, rejected solver trials, mixed-range/coverage/CI limitations, and deferred tiers. Rough5000ms/run estimates can underestimate expensive seven-source/12-mic work substantially; they are placeholders, not scheduling guarantees.
+- Work finished at approximately09:06UTC after an approximately00:58UTC start (about8h08, including final predeclared grids and reporting). The small overrun completed the last fixed grid rather than leave an ambiguous partial study.
