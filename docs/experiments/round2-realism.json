@@ -15,6 +15,7 @@
     "samples": 48000,
     "nodes": [0, 1],
     "microphones": [0, 1, 2, 3],
+    "integration_scene": "sparse_20 first two flat4_100 nodes, no buildings/ground reflection, source starts at 0.2 s, 0.6 s uniform-white clip from mulberry32(781234), level 105 dB at 1 m, one-second render. Existing ambient/self-noise defaults retained.",
     "goldens": [
       {"wind_speed_mps": 5, "wind_correlation": 0.8},
       {"urban_noise_db_spl": 55},
