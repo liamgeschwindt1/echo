@@ -75,6 +75,9 @@ unavailable 3D error. Drill-down never reconstructs a new inference result.
 
 - The renderer is not validated against real recordings; no housing scattering,
   inter-node clocks, rain, wind or source directivity realism was added.
+- Microphone gain is one positive scalar applied after signal, ambient and self-noise
+  are summed (`render.js`). It ideally cancels in PHAT. Gain-sweep insensitivity
+  does not establish robustness to frequency/phase mismatch or preamplifier noise.
 - Default legacy consensus can choose different tied pair hypotheses on different
   JS runtimes. A weight-aware repair improved errors but regressed suspect flags
   and was removed. It is not available as a hidden experimental option.

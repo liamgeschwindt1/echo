@@ -36,6 +36,21 @@ test('measured bearing quality accepts coherent mixture windows and rejects sile
   assert.throws(() => windowTdoas([signal, signal], 0, signal.length, { ...options, band: [30000, 31000], maxLagS: 0.001 }), /no usable FFT bins/);
 });
 
+test('positive scalar microphone gains cancel in PHAT, not microphone phase or frequency errors', () => {
+  const signal = noise(2500);
+  const mics = [0, 4, 8, 12].map((delay) => signal.slice(delay, delay + 2400));
+  const gains = [0.5, 2, 0.25, 4];
+  const scaled = mics.map((mic, i) => Float32Array.from(mic, (v) => v * gains[i]));
+  const options = { fs, band: [200, 1600], maxLagS: 0.001 };
+  const before = windowTdoas(mics, 0, 2400, options);
+  const after = windowTdoas(scaled, 0, 2400, options);
+  assert.ok(before.some((pair) => Math.abs(pair.tdoa_s) > 1 / fs));
+  for (let i = 0; i < before.length; i++) {
+    assert.ok(Math.abs(before[i].tdoa_s - after[i].tdoa_s) < 1e-10);
+    assert.ok(Math.abs(before[i].peak_normalized - after[i].peak_normalized) < 1e-8);
+  }
+});
+
 test('nonempty measured inference forms tracks without accessing simulator truth', () => {
   const signal = new Float32Array(fs * 0.8);
   signal.set(noise(fs * 0.4), fs * 0.2);

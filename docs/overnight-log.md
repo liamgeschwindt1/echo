@@ -120,3 +120,24 @@
 - Added `docs/experiments/consensus-trace.json` from read-only instrumentation of the retained solver on training seven_source/seed1/off/s8. Final point, inliers and rejected nodes deeply match the original baseline.
 - Initial consensus kept all four usable nodes. Its refit residuals for n1/n3 were **0.03899 / 0.01945 sigma**. Leave-one-out then rejected reliable n1 at **160.45496 sigma** against n2/n3/n7, and reliable n3 at **24.50194 sigma** against n2/n7. Final survivor weights were only **0.0001985 / 0.0009554**, versus rejected **0.05812 / 0.08837**.
 - The exported rejection residual is recalculated at the final surviving fit, **not** the leave-one-out point that triggered rejection. Therefore its number need not equal or exceed the rejection-time gate. The reported exact **0.4** case was not reproduced in the available scene/settings/seeds; do not claim otherwise. This trace confirms the structural cause and low-weight-consensus failure, not a kept solver repair.
+
+## Final default grading (kept)
+
+- `baselines/final-0.json`: **300/300**, **zero tracked regressions** against explicit original-inference scoring v2. **300 audio hits, 0 ms rendering, 16 whole-result hits**. All **150 truth-assisted score objects are deeply identical** to the reference.
+- Measured-only restored actual fixes rather than improving an already functioning measured estimator. Train/off median/p90 **0.5261/24.6307 m**, train/on **6.8735/24.8845 m**; held-out/off **0.4380/21.7738 m**, held-out/on **2.4937/26.7466 m**. Realism-on scene coverage is **67.65% train / 31.71% held-out**; conditional medians must not be used alone.
+- Realism-on measured wrong-fix fractions are **40.38% train / 24.14% held-out**. Every measured two-node fix is low-confidence: **100% suspect recall is not a discriminating classifier**. One-sigma bearing coverage remains **22.34% train / 50.00% held-out**. No calibrated hardware claim follows.
+- Held-out outcomes are now read for reporting only. All array studies/endpoints were fixed beforehand, and no new threshold is selected from these outcomes.
+- Real remote workflow **41769397157**, revision **208a8e2**, completed successfully: **243 core**, **31 app**, production build and eight-run zero-regression benchmark. Logs retained in the session artifacts. The earlier local-only qualification remains historical; remote execution is now observed.
+
+## Predictive leave-one-out experiment (rejected, repository source untouched)
+
+- Tested the first-principles 2D leave-one-out denominator including predicted-point covariance from the other rays, rather than treating that prediction as exact. Uses only bearings/nominal geometry and existing thresholds; no new tuned threshold.
+- In-process module hook records the exact transformed source SHA-256, base hash and trial identity. It reuses protected original audio but never reads/writes inference cache. No repository inference code changed, so concurrent preregistered array studies retain their declared source.
+- Training seven_source/seed1/off: median **21.5058 -> 13.2270 m**, p90 **36.4976 -> 32.9615 m**, within10 m **14.29% -> 28.57%**, track count **20 -> 21**, track median **7.7501 -> 3.6882 m**. s8 **25.3632 -> 6.4801 m**, s11 **36.4976 -> 32.9615 m**.
+- Suspect recall **66.67% -> 60%** and precision **80% -> 60%** regress. Rejected under the same no-regression rule; not extended to held-out cases, not kept behind a hidden option. Evidence is `baselines/predictive-loo-seven-source.json`.
+
+## Gain-model assumption regression (kept)
+
+- Confirmed renderer gain scales signal plus ambient and self-noise together. Positive scalar gains cancel in ideal PHAT. Separate seeded streams prevent gain sweeps from shifting heading/position/noise random draws.
+- Added a nonzero-delay, unequal-positive-gain PHAT invariance regression and documented that gain sweeps do not model microphone frequency/phase response. This is a test/documentation change only: no renderer, inference, threshold or export-format change (schema0.12).
+- Required core **244/244** passed. Sixteen-run default smoke again had **zero tracked regressions**. No goldens changed.

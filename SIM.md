@@ -119,6 +119,7 @@ schema 0.12; it introduces no inference, export-format or tolerance change.
 | Measured-only onsets, PHAT coherence, bearings and tracks | Estimated from simulated microphone mixtures and nominal geometry, not validated real measurements. |
 | Truth-assisted windows, containment, SNR, overlap, picked path, multipath and dominance | Simulator truth. Kept only as the editor's compatibility pipeline and an explicitly labelled benchmark upper bound. |
 | Heading/gain/position error and noise correlation | Assumed distributions controlled by settings; realism-on is a stress test, not a measured hardware profile. |
+| Microphone gain error | Positive scalar applied to signal plus both noises. It ideally cancels in PHAT; this does not model frequency/phase mismatch or preamplifier noise. |
 | Bearing sigmas, association gates, benchmark targets and numerical thresholds | Uncalibrated placeholders. Coverage/calibration must be reported with conditional error. |
 | Flat-array elevation | Sign/height assumption, not resolved up/down. Measured-only elevation and 3D error remain unavailable. |
 | Labelling | Actual YAMNet/CLAP results only after runners finish. Benchmark accuracy remains unavailable because benchmarks do not execute labelling. |

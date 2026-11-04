@@ -70,6 +70,10 @@ threshold is uncalibrated. Legacy truth-assisted near-zero consensus cost ties
 can diverge across JS runtimes even with identical audio and whole-event bearings.
 A weight-aware repair was rejected after suspect metrics regressed. Browser
 parity exercises the default measured-only pipeline, not that rejected solver.
+The current microphone gain term scales signal, ambient and self-noise together.
+Positive scalar gains ideally cancel in PHAT. A flat gain sensitivity curve is
+therefore a model property, not evidence that real microphone phase/frequency
+mismatch is harmless.
 
 Each variable in `benchmark/variables.js` specifies group, unit, description,
 default range and render/analysis classification. Add its transform in
