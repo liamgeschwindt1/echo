@@ -159,6 +159,32 @@
   unchanged. Existing realism/variance archives retain their actual legacy
   "held-out" metadata; that means seen validation, never the sealed test.
 
+## Round 2 heartbeat and completed descriptive evidence (13:43 UTC)
+
+- Disk58% by df at last check, over7GiB available (statfs preflight about60%).
+  Core freeze2f7230fc remains exact. Sealed40-site input remains unrun.
+- Variance completed270/270 renders and540 algorithm rows. One fixed site,
+  three12-mic geometries/five seed clusters: realism explains60.49% of total
+  conditional RMSE variance and59.04% of bounded scene-loss variance; array
+  geometry0.69%/0.76%. This is not a causal all-site hardware conclusion.
+  Full intervals/rows are preserved;499/500 conditional draws identifiable.
+- Independent placement/history views pass281 core,38 app, production build,
+  actual2 browser/CLI tests and16-case rule-four smoke with zero regressions.
+  Geometry assumptions are not a calibrated error radius; runtime fusion stays
+  pair-only. The20 registered placement simulations are still pending.
+- Completed all2052 known array/endpoint archive regradings, preserving source
+  hashes/producers and without rerendering. Useful-rate rankings are all ties.
+  Secondary risk-area point leaders flip with realism, ambient floor and source
+  level; no hardware winner. Initial HTML formatting passed an array instead of
+  a report object: full JSON/CSV were already complete. Fixed presentation and
+  rendered from that exact JSON, without rerunning inference or metrics.
+- The9x360-direction ideal geometry calculation is complete. Its component-only
+  ceilings are not sufficient specifications; self-noise/sync requirements
+  remain null. New math tests pass in the281-case core suite.
+- Sequential node-count, placement, attribution and range/noise studies now run
+  with disk/time preflight before each. Reserve the measured sealed estimate
+  and a full hour for reporting/CI. No further localisation tuning is scheduled.
+
 ## Rules and decisions (2026-11-04)
 
 - Work only on `overnight/localisation`; no main pushes. Each retained logical step gets its own commit after core tests and benchmark.
