@@ -67,14 +67,20 @@ linear speed and height. Array/nodes selects library arrays, node count, spacing
 height and layout. Algorithm thresholds vary existing analysis gates and window
 policies; these gates affect **truth-assisted only**, not the independent measured
 pipeline. Site keeps a fraction of existing buildings; scene picker controls presets.
-Clock, wind and coloured noise are not implemented and are not offered as fake knobs.
+Opt-in clock offset/drift, wind, urban/rain noise and slow ambient variation have
+separate variables and a new physics golden. Defaults are OFF; their spectra,
+levels and interpolation model are placeholders, not calibrated hardware/site
+measurements. Inter-node TDOA, housing scattering and mic phase response are absent.
 
 Measured-only quality uses PHAT coherence normalised by the fully coherent
 in-band peak, not the much smaller inverse-FFT amplitude. The existing 0.25
-threshold is uncalibrated. Legacy truth-assisted near-zero consensus cost ties
-can diverge across JS runtimes even with identical audio and whole-event bearings.
-A weight-aware repair was rejected after suspect metrics regressed. Browser
-parity exercises the default measured-only pipeline, not that rejected solver.
+threshold is uncalibrated. Earlier truth-assisted near-zero consensus ties
+diverged across runtimes despite identical audio/bearings. They now use cost
+quantisation at1e-10 squared-sigma followed by canonical node-pair IDs, with an
+actual Chromium/Node pair/fix regression. Round-one weight-aware repairs failed
+suspect metrics; new measured adaptations fail rule-four calibration/improvement
+guards and remain offline. Separate browser parity covers the retained measured
+pipeline and actual-fix WAV ingestion, not a secretly enabled rejected solver.
 The current microphone gain term scales signal, ambient and self-noise together.
 Positive scalar gains ideally cancel in PHAT. A flat gain sensitivity curve is
 therefore a model property, not evidence that real microphone phase/frequency
@@ -232,9 +238,43 @@ Measured-only scoring assigns inferred tracks one-to-one to true source paths
 **after** inference, with no error gate. Association is greedy, not optimal.
 Measured detection means associated fused node tracks. Its bearing calibration
 unit is median track error at a node, unlike one chosen window in truth-assisted.
-These limitations matter when comparing pipelines. Measured 3D/elevation and
-model labelling metrics are null.
+These limitations matter when comparing pipelines. The localisation benchmark's
+measured3D/elevation and embedded labelling fields remain null; the separate
+Labelling study below does contain actual model results.
 # Round 2 metrics and sealed tests
+
+Tiers: `--experiment smoke` is 16 runs, `standard` is 100 measured runs across all
+25 existing sites, and `full` is 2700 runs across all nine arrays, seeds and both
+pipelines/profiles. Full is expensive, not a nightly default. The Testing tab
+has the same tiers. Estimates now use recorded cold-render and analysis p90
+timings from complete historical reports, not the 5 s placeholder. Unseen
+geometries are conservatively scaled and identified; caches are not discounted.
+Regenerate timing strata using `node scripts/benchmark-timings.mjs`.
+
+The **Labelling benchmark** section loads a complete result from
+`node scripts/benchmark-labelling.mjs --discard-renders`. Its preregistration is
+`docs/experiments/round2-labelling.json`. Models actually run in Node on pinned
+ESC-50 clips through synthetic propagation. Raw vs whole-record RMS-normalised
+inputs share identical renders/SNR. Per-label/range/noise results and measured
+event association have separate denominators; oracle knows label/presence and
+is not a detector. Incomplete reports cannot be compared in that view.
+
+**Benchmark history** shows complete stored reports, producer commits/source
+hashes and population identity. Regenerate with `scripts/benchmark-history.mjs
+<reports...>`. Different populations are not a longitudinal improvement.
+Nightly Actions is configured for 02:20 UTC and archives a standard report/history;
+GitHub schedules run the default-branch workflow, so it only becomes active
+after review/merge. It never consumes the sealed set.
+
+`round2-realism.json` preregisters56 off/on runs for the new physics. The variance
+study preregisters270 runs, five whole-seed bootstrap clusters, three 12-mic
+designs and node count/spacing factors. Its rejected predictive solver is a
+diagnostic factor, not a deployed algorithm; the array effect includes aperture
+and current processing. Neither study is a full nine-array hardware ranking.
+
+See [real-recordings.md](real-recordings.md) for WAV/geometry/external truth
+formats and the Testing tab's real-recording source. Synthetic round-trips are
+not real-data validation.
 
 Reports now include **useful fix rate** (scenes with a correct, unflagged fix /
 all scenes), **unflagged-wrong fix rate** (scenes emitting at least one unflagged

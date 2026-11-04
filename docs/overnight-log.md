@@ -77,6 +77,50 @@
   parity passed targeted checks. No real data has been evaluated. Prototype
   protocols explicitly distinguish proposed sample sizes from measurements.
 
+## Round 2 heartbeat (11:02 UTC)
+
+- Disk57%, 7.6GiB free. Sealed inputs remain unrun. Full core/app/build/browser
+  gates and the16-run rule-four smoke are running before retained-step commits.
+- Corrected canonical eight-render performance comparison matches every audio,
+  render-value and inference hash. Seven-source observed render/analysis ratios
+  are1.006/1.088; 12-mic static ratios0.860/1.018. Two repetitions do not establish
+  a robust speedup; the static render was slower.
+- Weighted-forward and predictive-LOO measured adaptations both failed the full
+  preregistered acceptance rule. The root trace is repaired in offline tests, but
+  off-realism/validation calibration worsens and validation/on intervals touch
+  zero. Neither solver nor the rejected confidence model is a runtime default.
+- Actual labelling study completed36 renders/144 model predictions: raw27/72,
+  normalised28/72 correct. Normalisation does not rescue range collapse.
+- New clocks/weather/urban noise are opt-in placeholders with separate goldens.
+  Their56-run study is still pending. No sync-gated TDOA, scattering or microphone
+  frequency/phase model is claimed. Synthetic WAV round-trip works; no real data.
+
+## Round 2 heartbeat and budget (11:42 UTC)
+
+- Disk58% at last check, over7GiB available. Fresh150-run evaluation is at the
+  expensive seven-source cases; no final/partial accuracy table is reported.
+  Complete56-run opt-in physics study finished; every8-case profile answered
+  all scenes, but this easy population does not establish hardware tolerance.
+- Measured p90 scheduling: fresh evaluation8,173,387ms, descriptive variance
+  6,866,753ms, reserved sealed execution6,649,426ms. Studies run sequentially in
+  separate discard-render caches. A900-run full array rerender estimates
+  36,160,048ms(about10h) alone, so it is not started. No partial array ranking.
+- Five solver/confidence trials are closed/rejected; source freeze and actual
+  retained settings were committed before sealed outcomes. Forty physical
+  inputs still match the original hash; the test remains unrun.
+- Preregistered separate known-POI attribution prototype:24 mixture plus12
+  reference renders. Conservative mixture proxy319,712ms plus references;
+  run only after the current studies, before the sealed test. This is not a
+  new localiser or a validated road/bar share product.
+- Actual remoteCI41820176719 at6eea56b passed279 core,34 app, build,2 browser/CLI
+  cases and measured benchmark. Logs read. First push returned transient500;
+  retry succeeded to branch2 only. No main push.
+- Existing OSM main/fallback upstreams both failed for Canary Wharf/Battersea;
+  no matching offline map cache found. Skip rather than invent footprints.
+- A fixed-population power diagnostic finds only3 wrong validation/on scenes
+  among41:4.436% bootstrap probability of no wrong scene, giving zero delta
+  for confidence-only ordering. Preserve the rule and population unchanged.
+
 ## Rules and decisions (2026-11-04)
 
 - Work only on `overnight/localisation`; no main pushes. Each retained logical step gets its own commit after core tests and benchmark.

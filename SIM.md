@@ -6,7 +6,7 @@ The one reference document for the **sim** frontend ([apps/sim](apps/sim)) and i
 
 Coordinates: metres, x east, y north, z up. Time: seconds of scenario time. Inside the physics, pressure is in pascals; digital floats appear only at the microphone output. Angles in the code are in radians unless the name ends in `_deg`.
 
-## Reproducible Testing engine (schema 0.13)
+## Reproducible Testing engine (schema 0.16)
 
 `npm run benchmark -- --experiment smoke --out baselines/smoke.json` runs the shared
 `packages/sim-core/src/benchmark/` engine. CLI and Testing use identical experiment
@@ -23,7 +23,9 @@ bound, not deployable inference. Measured-only uses the existing horizontal
 mixture-only `measured.js` pipeline, not the source-window solver. Its elevation,
 3D error and labelling accuracy are **unavailable**, not zero. Scoring uses
 truth only after inference. Unmatched fixes count as wrong. Model labelling is
-not run by benchmarks.
+not run by the localisation benchmarks. The separate preregistered
+`scripts/benchmark-labelling.mjs` runs real YAMNet/CLAP models on rendered ESC-50
+mixtures, including raw versus level-normalised inputs.
 The benchmark manifest snapshots the exact display targets, including their
 placeholder marker, rather than relying on a later copy of `targets.json`.
 
@@ -33,8 +35,9 @@ before removing variable alternatives. The default array preset therefore keeps
 all nine arrays at 1800 runs. An impossible cap errors instead of silently turning
 a split study into a one-seed pilot. Explicit held-out IDs are validated.
 
-Seeds `[1, 2, 101]` have `101` held out. Eight of 25 scene IDs are held-out random
-sites; the split is fixed before baseline and held-out data is reporting-only.
+Round-one seeds `[1, 2, 101]` had `101` held out, alongside eight random sites.
+Those outcomes have now been seen and are **validation**, not a fresh test.
+Round two preregisters 40 new sealed sites and a persistent single-attempt ledger.
 Reports separate train/held-out, realism off/on (2.5 deg heading, 1 dB gain,
 5 mm position, correlation 0.3), and analysis modes. Bootstrap resamples complete
 scene/seed runs; within-site seeds remain correlated. See [Testing](docs/testing.md)
@@ -62,7 +65,27 @@ count-equal pair costs near machine zero chose different node pairs and later
 track windows. Recorded audio hashes and whole-event bearings matched. Schema
 numbers did not cause that difference. Engine/runtime provenance matters. A
 weight-aware repair was rejected because suspect precision and recall regressed;
-see the overnight log. No solver upgrade is claimed.
+see the overnight log. Round two resolves only the numerical tie deterministically:
+equal inlier count, cost rounded to 1e-10 squared-sigma units, then canonical node
+pair IDs. This is not a measured-localiser accuracy upgrade.
+
+### Round-two trust/availability table
+
+| Surface | Computed from | Status / limits |
+|---|---|---|
+| Measured horizontal fixes | Mixtures, nominal sensor geometry/settings/buildings | Simulated; legacy pair association and bearing-only EKF retained |
+| Useful/silent-wrong rates, calibration, risk curves | Measured inference followed by simulator scoring truth | Simulated evidence; unanswered scenes and unmatched fixes retained |
+| Confidence/global-association candidates | Train-only fitting, validation accept/reject | Rejected trials; coefficients/evidence retained offline, not runtime options |
+| Real-recording ingestion/truth scoring/calibration | WAV, declared geometry and independent CSV/calibration source | Synthetic round-trip only; no real data tested |
+| Labelling | Real models, real ESC-50 clips through synthetic propagation | Small simulated mixture benchmark, not field label accuracy |
+| Clocks, wind/rain, urban/time-varying noise | Opt-in, default OFF; separate physics golden | Placeholder spectra/levels and linear clock resampling, not measured site/hardware models; no inter-node TDOA constraint |
+| Housing scattering, frequency/phase response, directivity | Not implemented | Scalar gain cancellation does not validate phase robustness |
+
+Schema 0.16 adds explicit placeholder clock/weather export notes to 0.15's
+population-aware ranking/history/timing provenance and separate real-recording
+report formats. Unknown truth and 3D results remain
+null. See [real-recording formats](docs/real-recordings.md) and the
+[prototype measurement plan](docs/prototype-plan.md).
 
 ### Episode scoring (schema 0.10)
 
@@ -1476,7 +1499,7 @@ Back-trace constants (`BACKTRACE_DEFAULTS`): `min_crossing_angle_deg` 20, `clust
                           microphones: [{ mic_index, sources: [{ source_id, applied_paths }] }] }] } }
 ```
 
-`EXPORT_CHANGELOG` lists every added and changed field since 0.3. Schema 0.5 adds trusted-elevation 3D fix methods and `track_pre_fix_elevation_gate_deg`; no field was removed. Fields whose meaning changed: `heard`, `heard_nodes`, `fix.max_angle_deg`, `fix.fix_suspect`, `fix.position[2]`, `picked_path_index`, `track.fixes[].t_s`. `labelling` is included only after label processing completes for the exact exported results; `labelling_enabled: true` is a request to run asynchronously, not proof that a labelling block exists. Exporting before completion or after a failed run leaves the block absent. The caveats go into `notes`: simulated, placeholders, no housing scattering, wind, rain, coloured noise or facade scattering, unvalidated diffraction, which fields are simulator-only, and that labelling accuracy here does not predict real-world accuracy.
+`EXPORT_CHANGELOG` lists every added and changed field since 0.3. Schema 0.5 adds trusted-elevation 3D fix methods and `track_pre_fix_elevation_gate_deg`; no field was removed. Fields whose meaning changed: `heard`, `heard_nodes`, `fix.max_angle_deg`, `fix.fix_suspect`, `fix.position[2]`, `picked_path_index`, `track.fixes[].t_s`. `labelling` is included only after label processing completes for the exact exported results; `labelling_enabled: true` is a request to run asynchronously, not proof that a labelling block exists. Exporting before completion or after a failed run leaves the block absent. The caveats go into `notes`: simulated, placeholders, no housing or facade scattering, unvalidated diffraction, which fields are simulator-only, and that labelling accuracy here does not predict real-world accuracy. Schema0.16 separately labels opt-in clock and wind/urban/rain noise approximations; these are not measured weather or synchronisation models.
 
 Schema 0.6 adds optional scalar `rendering` diagnostics and the actual static-source per-microphone path audit (§6), including delay in samples (source start plus path travel time), 1 kHz gain and the applied filter description. This does not change rendering or localisation. Moving-source piece audits are not recorded; empty audit lists are not evidence of absent sound. FFT size and bin count refer to the full buffer, not each moving-source piece. Audio, spectra, activity-frame arrays and embeddings remain excluded.
 
@@ -2115,10 +2138,10 @@ Three synthesis classes are needed: **continuous** (drones, vehicles; sound is a
 
 | Plan block | Status in code |
 |---|---|
-| Site engine | **Mostly built**: box and OSM-footprint buildings, specular reflections up to order 2, UTD wedge diffraction up to order 2, per-mic delay, 1/r spreading, ISO 9613-1 absorption, synthetic pink ambient and white self-noise (optionally correlated), a moving-source delay per mic with piecewise Doppler. **Missing**: wind, weather, temperature gradients, background noise from real site recordings, facade scattering, source direction patterns (every source is an omnidirectional point) |
+| Site engine | **Mostly built**: box and OSM-footprint buildings, specular reflections up to order 2, UTD wedge diffraction up to order 2, per-mic delay, 1/r spreading, ISO 9613-1 absorption, synthetic pink ambient and white self-noise (optionally correlated), a moving-source delay per mic with piecewise Doppler. Opt-in wind/urban/rain and slow ambient noise are placeholders. **Missing**: weather-dependent propagation/temperature gradients, measured site backgrounds, facade scattering, source direction patterns (every source is an omnidirectional point) |
 | Motion engine | **Partly built**: keyframed polylines with linear interpolation, constant speed per drawn path, the true emitting position (`emittedPosition`), several sources per scene, sweeps over distance scale and settings. **Missing**: controllers, recorded logs, dynamics, per-object state, randomised speed, path or variant |
-| Object twins | **Not built.** Sources are audio clips (ESC-50, uploads) or generated tone, impulse and noise, with a calibrated 1 m level (sound library with a measured-level calibration record). There is no state-driven synthesis, no fingerprint fitting, and no continuous, impulsive or vocal classes |
-| Array model | **Partly built**: arbitrary arrays of 2..64 mics including the 12-mic D180 ball and its subsets, an array library with derived figures, heading, position and gain errors (3.6). **Missing**: mic frequency response, sensitivity spread beyond a broadband gain, sampling other than the render rate, clock drift and inter-node timing, shell diffraction |
+| Object twins | **Not built.** Sources are audio clips (ESC-50, uploads) or generated tone, impulse and noise with an assigned 1m level and loudest-window normalisation. Absolute levels remain placeholders unless an independent calibration record is supplied. There is no state-driven synthesis or fingerprint fitting |
+| Array model | **Partly built**: arbitrary arrays of 2..64 mics including the 12-mic D180 ball and its subsets, an array library with derived figures, heading, position and gain errors (3.6); optional per-node offset/drift resampling. **Missing**: mic frequency/phase response, sensitivity spread beyond broadband gain, arbitrary sampling rates, verified sync/TDOA constraints, jitter and shell diffraction |
 | Simulated recording + ground truth | **Built**: per-node multichannel float signals, WAV export, results with true positions (see §7) |
 | Real pipeline / scoring | **Partly built** (§7): localisation on the render and scoring against the truth; labelling with the echo app's stack and per-label scoring (§7.12), off by default; validation against real recordings not done |
 | Validation loop | **Not built**: no fitting to or comparison with real recordings |
@@ -2131,7 +2154,7 @@ Why not separate the audio first: sources add, and walls add echoes, so the mix 
 
 | Step | What it does | Status in the simulator |
 |---|---|---|
-| 1. Capture and time sync | each node records its array and timestamps frames; nodes share a clock (mesh sync, no GNSS); raw audio stays on the node | rendered per node on one exact clock; no clock drift modelled |
+| 1. Capture and time sync | each node records its array and timestamps frames; nodes share a clock (mesh sync, no GNSS); raw audio stays on the node | exact common clock by default; optional per-node Gaussian offset/drift and linear resampling, not verified mesh synchronisation |
 | 2. Detect and localise | events and positions from arrival-time differences across mics and nodes; site geometry corrects for echoes | §7.2–§7.11, back-trace §7.13 |
 | 3. Direction focus | steer the array to each localised source (beamforming) | delay-and-sum, `beamform.js` (§7.12) |
 | 4. Multi-label tagging | CLAP-style labels with YAMNet as context, on the focused signal; several tags per signal | P9 labelling, `multi_labels` (§7.12) |
@@ -2253,10 +2276,10 @@ Helpers: `reference-render.js` (independent slow renderer), `btm-reference.js` (
   - The ground is an infinite flat rigid plane with a real, frequency-independent reflection coefficient (`ground_reflectivity`, placeholder 0.8). There is no ground impedance, no terrain and no ground effect at edges.
 - **Reflections** are specular only, up to order 2. There is no facade scattering, no diffuse reflection and no frequency-dependent absorption.
 - **Diffraction** is UTD for a rigid wedge, orders 1 and 2. Validation covers only the listed checks (half-plane and 90° corner against exact BTM, continuity, causality, frequency trend, reference renderer). Double diffraction (including same-building grazing chains) and its spreading are unvalidated engineering approximations. Slope and vertex diffraction are omitted. Visibility is sampled (a slit under 1/9 of an edge can be missed). Order 1 cannot connect opposite sides of a building. Nothing is validated against measurements.
-- **Atmosphere**: uniform temperature and humidity, no wind, no temperature or wind gradients (rays never bend), no rain, no turbulence.
+- **Atmosphere**: uniform temperature and humidity, no weather-dependent propagation, gradients or turbulence (rays never bend). Opt-in wind/rain are additive noise placeholders, not atmospheric ray bending or aerodynamic simulation.
 - **Sources**: omnidirectional points. Clip levels are placeholders, calibrated on the loudest 125 ms window. Motion is keyframed polylines at piecewise constant speed. Doppler is piecewise (crossfaded constant-delay pieces, about −40 dB precision against a static render). Moving sources are not audited, have no reflected rings, and the reach map uses their start point.
-- **Microphones**: free-field points, with no housing or shell scattering and no frequency response. The only impairments are broadband gain, position and heading errors. There is no clock jitter or drift and no inter-node timing. The digital scaling (94 dB SPL = −26 dBFS) is an assumed placeholder.
-- **Noise**: synthetic stationary pink (ambient) and white (self) noise, independent per mic unless `noise_correlation` is set. There is no real site background and no wind noise.
+- **Microphones**: free-field points, no housing scattering or frequency/phase response. Broadband gain, position and heading errors are modelled; optional inter-node offset/drift uses common resampling within each node. No clock jitter or sync-gated TDOA constraint. The digital scaling (94 dB SPL = −26 dBFS) is an assumed placeholder.
+- **Noise**: default pink ambient and white self-noise, independent per mic unless `noise_correlation` is set. Optional coloured urban/wind, rain impacts and slow ambient modulation are seeded approximations. No real site background or fitted weather spectra; scalar gain still cancels in ideal PHAT.
 - **Displays**: the rings are a stylised loudness display (no diffraction, no true wavelength). The heatmap and reach map are incoherent energy sums (no interference; a tone can differ by about 10 dB from the coherent render), use whole-clip mean levels, and compute one slice height at a time.
 - **Numerics**: circular FFT rendering relies on the render-length padding. The path cap is 128 per mic (wedge) or 64 (legacy).
 - **Performance**: the per-mic render dominates with many diffracted paths (78 s of 96 s on the 4-node, 4-source, 6-building, 30 s scene).

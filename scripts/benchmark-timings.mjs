@@ -29,7 +29,7 @@ const timings = [...groups].map(([key, r]) => ({
   analysis_p50_ms: percentile(r.analysis, 50), analysis_p90_ms: percentile(r.analysis, 90)
 })).sort((a, b) => a.key.localeCompare(b.key));
 await writeFile(new URL('packages/sim-core/src/benchmark/timings.json', root), JSON.stringify({
-  schema: 1, method: 'Recorded cold render times and analysis stage times from complete round-one studies; per-run p90, no cache discount. Different runtime/CPU load is a source of uncertainty.',
+  schema: 1, method: 'Recorded cold render times and analysis stage times from complete stored studies; per-run p90, no cache discount. Different runtime/CPU load is a source of uncertainty.',
   provenance, timings
 }, null, 2) + '\n');
 console.log(`Stored ${timings.length} measured scene/channel/mode timing strata.`);
