@@ -25,7 +25,7 @@ if (process.argv[2] === 'register') {
     base_settings: { reflection_order: 0, diffraction_order: 0, ground_reflectivity: 0 },
     max_runs: 30, expected_runs: 20,
     placement_method: { helper_sha256: helperHash, bounds, predictions,
-      algorithm: 'Independent Gaussian azimuth Jacobian covariance;2.5deg assumed sigma,100m assumed bearing range,10deg crossing gate; known footprint LOS. Exclude indoor targets. Exhaust all pairs of eight quarter-lattice candidate mounts at5m, then greedy additions. Objective: mean min(major_scale/10m,1) over9x9 cell centres; blind=1; ties quantised1e-12 then candidate order.',
+      algorithm: 'Independent Gaussian azimuth Jacobian covariance;2.5deg assumed sigma,100m assumed bearing range,10deg crossing gate; known footprint LOS. Exclude indoor targets and bearings below1m horizontal range. Exhaust all pairs of eight quarter-lattice candidate mounts at5m, then greedy additions. Objective: mean min(major_scale/10m,1) over9x9 cell centres; blind=1; ties quantised1e-12 then candidate order.',
       analysis: 'Complete20 cases. Compare frozen source-point RMS geometry scale with observed matched-fix RMSE and actual fusion-node count, per seed/profile/N. Preserve no-fix errors/ratios as null. Two seed ranges, not population95%CI. No tuning from outcomes; one source cell does not validate the whole map, model probability or suggested real-world mounts.'
     }
   }, null, 2) + '\n', { flag: 'wx' });

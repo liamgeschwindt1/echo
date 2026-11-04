@@ -140,6 +140,21 @@
   Hardware requirements stay null when the appropriate impairment was not
   swept or target compliance is not demonstrated.
 
+## Round 2 placement method and gates (12:49 UTC)
+
+- Disk58%, over7GiB available. Variance remains the only rendering study.
+  Mandatory sealed inputs remain unrun; default inference/core freeze unchanged.
+- Placement is an independent frontend geometry diagnostic, not another solver.
+  `6486caf` registered exact20 simulated cases and source-point predictions
+  before outcomes. Before any run, clarified the existing1m near-field
+  exclusion and hardened sigma/grid input validation; physical cases and
+  predictions are unchanged. The committed helper hash records this amendment.
+  Measured p90 estimate610,327ms fits the budget before the sealed test.
+- Core279 and frontend38 tests pass. Actual-browser placement/history checks
+  and the retained16-case smoke will run after variance, not concurrently with
+  a science render. History now accepts generated/nightly summaries directly;
+  bad uploads report errors and preserve the previous displayed dataset.
+
 ## Rules and decisions (2026-11-04)
 
 - Work only on `overnight/localisation`; no main pushes. Each retained logical step gets its own commit after core tests and benchmark.
