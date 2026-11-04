@@ -285,6 +285,26 @@ The trial will not start if even this recorded-p90 reserve fails the deadline.
   rather than delay until insufficient time remains; reserve the final hour
   for its completed results/report/CI. No extra study uses the released slack.
 
+## Round 2 sealed storage intervention (15:45 UTC)
+
+- The single sealed attempt started15:29UTC from clean809b527, core2f7230fc.
+  Config-major scheduling retained the first label's raw audio until the second
+  label, growing disk from58% to about80% despite discard mode.
+- A one-off operational script verified all registered consumers of each
+  completed run have exactly identical scenarios, full run/render keys, schema,
+  runtime and clip identity. `runJob` checks the whole-result cache before audio.
+  Only after that proof were63 completed renders/origins(3,940,572,789 raw bytes)
+  removed. All inference/result caches remain immutable; no job/population,
+  producer, measured value or acceptance rule changed, and no render repeated.
+- `baselines/round2-sealed-storage.json` records every cache key/result hash,
+  consumer ID and the cleanup script hash. A storage-amendment entry was flushed
+  to the existing seal ledger before deletion. This is an explicit exception to
+  waiting for both logical labels, not an undocumented change to the original
+  report's automatic discard-policy metadata.
+- Disk returned to59%,7.2GiB available. The same sealed process continues;
+  no restart/override and no partial outcome inspection. Verify every preserved
+  result hash and all second-label cache hits once the full report completes.
+
 ## Rules and decisions (2026-11-04)
 
 - Work only on `overnight/localisation`; no main pushes. Each retained logical step gets its own commit after core tests and benchmark.

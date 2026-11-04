@@ -42,6 +42,20 @@ Random sites are synthetic, many beyond the provisional50m design target.
 Conditional errors omit misses; coverage and useful/silent-wrong rates therefore
 belong beside every error table. Run bootstrap units share site geometry. A
 simulation interval is not a real-world guarantee.
+The sealed population contains160 jobs but only80 physical site/profile cases:
+40 new sites x two realism profiles x two identical algorithm labels. Labels
+are not independent test repetitions. Site-generation seeds are distinct; the
+shared new render seed correlates hardware/noise draws across sites, so these
+intervals do not sample a broad independent hardware-error population.
+
+The single sealed process needed a documented **storage-only intervention**:
+config-major scheduling retained audio for the second identical label. Before
+disk85%, an audited script verified all consumers had the exact completed
+whole-result cache key and removed63 raw renders/origins(3.94GB). It did not
+remove inference or change settings/producer metadata. The seal ledger records
+the amendment; `round2-sealed-storage.json` records every preserved result hash.
+The original automatic discard-policy field remains unchanged; this exception
+must accompany its interpretation. Final cache/hash verification is pending.
 
 ## Baseline versus final
 
@@ -502,7 +516,7 @@ The final report will record the completed-study commits.
 
 Open decisions for the next round, not requests to change this run:
 
-1. Keep the fixed CI rule despite the demonstrated confidence-only power limit,
+1. Keep the fixed acceptance rule despite the demonstrated confidence-only power limit,
    or preregister a larger independent validation population next time?
 2. Prioritise measured3D/global multi-source inference or the separate
    known-POI noise-first product, rather than selecting hardware from weak fixes?
