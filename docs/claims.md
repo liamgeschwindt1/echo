@@ -7,8 +7,8 @@ The final round-two report links the frozen sealed-test figures.
 | Potential claim | Status | Evidence / conditions | Caveat |
 |---|---|---|---|
 | The measured pipeline runs without source truth | Simulated | Restricted runner input; measured-pipeline and recording tests | It still assumes nominal surveyed geometry and declared settings |
-| Fixes are within 10 m at the target range | Not validated | Round-one/final round-two measured reports | Misses and wrong fixes prevent a general accuracy claim |
-| Uncertainty has nominal 68%/95% coverage | Not validated | Per-condition calibration in stored reports | Existing intervals are weak; rejected recalibration is not deployed |
+| Fixes are within 10 m at the target range | Not validated | Sealed errors-on:8/40 sites answered; matched median14.97m, p90100.83m; mixed-range sites | Not a dedicated50m test; misses and wrong fixes prevent a general accuracy claim |
+| Uncertainty has nominal 68%/95% coverage | Not validated | Sealed errors-on bearing coverage44.4%/72.2%; per-condition/category reports | Not calibrated positional ellipses; rejected recalibration is not deployed |
 | A per-fix wrong probability is calibrated | Simulated, rejected | `baselines/round2-confidence-*`, train coefficients and validation bins | Failed rule four; offline only; simulator-to-real shift unmeasured |
 | A 90% radius guarantees field coverage | Not validated | Train-quantile trial and empirical validation coverage | Correlated simulated episodes are not an independent conformal guarantee |
 | Multi-node global assignment improves the product | Simulated, rejected | Complete global/global-uncertainty trial reports | Calibration and/or paired improvement guards failed |

@@ -89,6 +89,11 @@ population-aware ranking/history/timing provenance and separate real-recording
 report formats. Unknown truth and 3D results remain
 null. See [real-recording formats](docs/real-recordings.md) and the
 [prototype measurement plan](docs/prototype-plan.md).
+The consumed40-site sealed test and its metadata-only export recovery are
+documented in the [round-two report](docs/overnight-report-2.md) and
+[plain-language state](docs/state-of-the-engine.md). With simulated hardware
+errors on, only8/40 sites answer and matched median/p90 are14.97/100.83m.
+No candidate was promoted; no real-world accuracy or hardware winner is implied.
 
 ### Episode scoring (schema 0.10)
 

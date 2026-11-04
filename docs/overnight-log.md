@@ -305,6 +305,65 @@ The trial will not start if even this recorded-p90 reserve fails the deadline.
   no restart/override and no partial outcome inspection. Verify every preserved
   result hash and all second-label cache hits once the full report completes.
 
+## Round 2 sealed complete; metadata-only export recovery (15:52 UTC)
+
+- Original execution reached160/160 with80 fresh physical results and80
+  second-label whole-cache hits. All raw audio was removed. Then CLI JSON export
+  failed: producer referenced caller manifest, which referenced seal, forming
+  a cycle. The process exited1; this was not an uninterrupted successful export.
+- Preserved all80 result caches and63 pre-cleanup hashes. Recovered only the
+  export from those immutable results, verifying every original dispatch line,
+  input/run key and exact original pre-dispatch producer. No rendering,
+  inference, scoring, new seal start or override. Original producer809b527,
+  core2f7230fc remains in the report. Recovery script/log/cache/output hashes
+  and explicit failed-export/recovered-completion ledger states are committed
+  alongside the lossless archive.
+- Producer is now deep-snapshotted before caller mutation; targeted regression
+  passes. CLI failure recording now also covers export/close failures. These
+  are metadata/lifecycle repairs after the test, not test-tuned algorithms.
+  Full core and unchanged16-case regression controls are running.
+- Complete sealed off/on: coverage57.5%/20%; conditional median1.619/14.966m,
+  p905.275/100.828m; wrong fixes34.09%/63.64%; bearing calibration100%/100%
+  off and44.44%/72.22% on. Useful/silent-wrong0% throughout because all fixes
+  remain suspect. Baseline/final inference and scores deeply equal.
+- No more scientific studies. Only locked descriptive categories/history,
+  final documents, regression checks and actual final-head GitHub CI remain.
+
+## Round 2 regression and independent archive verification (16:00 UTC)
+
+- Metadata-only repair committed51d0e9e. Full core287/287 and the original
+ 16-case smoke pass, zero rule-four regressions. No physics/inference/scoring
+  file changed after frozen809b527; the sole changed core file is sealed.js.
+  Aggregate source fingerprint2078b5c4, unchanged renderer39d44f7b.
+- Independently unpacked the original80 V8 caches and execution log; every
+  content hash and every original inference/score matches the recovered
+  report. The lossless JSON hash matches the recovery audit. All seven original
+  round-one golden files are unchanged. The actual seal refuses another start
+  without altering its four-entry ledger.
+- New sealed calibration groups retain zero-bearing nulls: all12 errors-on
+  two-available-node sites have no fix;8/28 with more available nodes answer,
+  still using actual two-node fusion. These are observational site groups,
+  not a causal hardware-count ranking.
+- Complete source gate41863063971 at51d0e9e is queued on GitHub; no success
+  assumed. Final documents and retained-result history are ready for final
+  evidence commit after reading actual source CI.
+
+## Round 2 final evidence gate (16:15 UTC)
+
+- Added a non-inference CI check of the complete160-job sealed population,
+  paired identity, all80 archived raw-cache/log hashes, storage proof and
+  recovery script hashes. It passes locally and does not deserialize foreign
+  V8 data. Final workflow runs this alongside the existing core/app/build/
+  Chromium/finite-regression gates.
+- Source-only run41863063971 is still queued; no success claimed. Publish
+  complete artifacts and verify the actual final evidence-head workflow rather
+  than wait for a source-only run and mistake it for the final commit.
+- All requested scientific executions that were feasible are closed. Deferred
+  phases are explicit in the final report's scope table; no genuine solver/
+  confidence improvement, renderer speedup or hardware winner is claimed.
+  Final data/state/claims/protocol/history and immutable recovery proof are
+  ready. Disk59%, about7.3GiB free; no further science is scheduled.
+
 ## Rules and decisions (2026-11-04)
 
 - Work only on `overnight/localisation`; no main pushes. Each retained logical step gets its own commit after core tests and benchmark.

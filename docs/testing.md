@@ -322,6 +322,8 @@ ineligible geometries reuse the exact reference inference with provenance.
 Its cold p90 budget must leave the entire sealed estimate plus60min. Research
 XYZ is stationary-only; moving3D and calibrated positional radii remain absent.
 The same four acceptance partitions decide it without validation tuning.
+Its complete150-case result failed calibration/improvement guards and remains
+offline. Do not run that study again as if the outcome were unseen.
 
 See [real-recordings.md](real-recordings.md) for WAV/geometry/external truth
 formats and the Testing tab's real-recording source. Synthetic round-trips are
@@ -348,3 +350,17 @@ the reason and producer are recorded in the ledger and manifest. Keep this
 ledger with the reports and repository; it is a local persistent guard, not a
 remote access-control mechanism. Explicit `scene_splits` support train,
 validation and test without changing legacy experiment partitions.
+
+The round-two seal has been consumed. The original process completed160 jobs
+but failed during JSON export due to a producer-manifest reference cycle.
+`round2-sealed.json.gz` was recovered strictly from all80 original physical
+result caches, without another render, inference, scoring or seal start.
+Keep its storage/recovery audits and ledger beside the report. The operational
+cleanup proved both labels had the exact completed whole-result key before
+removing raw audio; it was not an unlogged change to the default discard policy.
+The producer snapshot is now regression-guarded; CLI also records export failures.
+`recover-round2-sealed.mjs` is a one-off audited recovery, not a general resume
+command or permission to reopen test data for tuning.
+`node scripts/verify-round2-sealed.mjs` verifies the complete160-job population,
+paired identity and every archived original cache/log hash without inference or
+V8 deserialization. It is also a CI gate, independent of the host's V8 version.

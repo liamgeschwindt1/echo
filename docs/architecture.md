@@ -82,6 +82,11 @@ Explicit scene splits add train/validation/test without reclassifying the old
 held-out data as unseen. Node-only `benchmark/sealed.js` hashes the physical
 population and atomically claims a persistent attempt before dispatch. It never
 runs in the browser or nightly CI. Overrides require a manifest-recorded reason.
+The producer is deep-snapshotted before attaching the seal to its caller, so
+metadata cannot form a reference cycle; CLI lifecycle failure recording covers
+exports as well as inference. Round two required an explicitly audited recovery
+of exports from complete immutable caches after discovering that bug. This
+does not rerun inference or rewrite its original producer.
 Rule-four acceptance uses paired whole-run resampling in every declared
 train/validation and realism partition. Risk curves keep confidence ties intact;
 their area penalises the unanswered tail. Default rankings use useful scene rate

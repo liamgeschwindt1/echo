@@ -58,6 +58,8 @@ jobs:
       - run: npm test -w @echo/sim-core
       - run: npm test -w @echo/sim
       - run: npm run build -w @echo/sim
+      - name: Verify archived single-attempt sealed evidence
+        run: node scripts/verify-round2-sealed.mjs
       - run: npx playwright install --with-deps chromium
       - name: Browser/CLI consensus, sweep and recording parity
         run: npm run test:testing:e2e -w @echo/sim

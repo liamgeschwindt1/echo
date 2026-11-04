@@ -31,7 +31,9 @@ files are unchanged; new physics has its own separate golden.
 - Core source freeze:
   `2f7230fc50b341ad0c3fbd147bad728cc9fe6bb92e2fbc748bc25cf7c1a1bf38`.
   The seal is consumed on start, including failure; an override needs a recorded
-  reason. There has been no test-driven tuning.
+  reason. There has been no test-driven tuning. After execution, a producer
+  snapshot/export-error-handling bug was repaired; inference/physics/scoring
+  files stayed frozen and the original producer hash was not rewritten.
 - Rule4 compares all four train/validation x realism partitions: coverage loss
   at most2 percentage points, no increase in silent-wrong scene rate, calibration
   distance to68.27%/95.45% no worse, and a paired median/p90/risk-area improvement
@@ -55,7 +57,8 @@ whole-result cache key and removed63 raw renders/origins(3.94GB). It did not
 remove inference or change settings/producer metadata. The seal ledger records
 the amendment; `round2-sealed-storage.json` records every preserved result hash.
 The original automatic discard-policy field remains unchanged; this exception
-must accompany its interpretation. Final cache/hash verification is pending.
+must accompany its interpretation. Every preserved hash verified unchanged;
+all80 second-label jobs hit whole-result caches and all raw renders were removed.
 
 ## Baseline versus final
 
@@ -78,7 +81,68 @@ hypotheses. Calibration is associated-node track-median **bearing** coverage,
 not positional ellipse coverage. Every retained two-node fix is suspect, so
 zero silent-wrong rate is vacuous and useful rate is also zero.
 
-The single sealed execution is still pending in this working report.
+### Single sealed test, complete
+
+The single execution completed all160 jobs:40 sites x two profiles x two
+identical solver labels. Every paired inference and score is exactly equal.
+No sealed outcome selected a setting or model. The full report is archived in
+`baselines/round2-sealed.json.gz`, with readable CSV/HTML companions.
+
+| Sealed profile | N | Scenes answered | Median / p90m | Wrong fixes | Useful / silent-wrong scenes |1sigma /2sigma | Risk area |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Off, baseline=final |40 |57.50% |1.619 /5.275 |34.09% |0% /0% |100% /100% |0.7250 |
+| On, baseline=final |40 |20.00% |14.966 /100.828 |63.64% |0% /0% |44.44% /72.22% |0.9250 |
+
+Both labels have the same95% intervals. Off/on scene coverage:
+[42.5%,72.5%]/[7.5%,32.5%]; median error:
+[0.915,3.148]/[4.797,26.700]m; p90:
+[3.208,10.860]/[14.966,100.828]m; risk area:
+[0.575,0.850]/[0.825,1]. On wrong-fix rate is7/11 hypotheses,
+95%CI[25.00%,90.91%]. Associated-node bearing1sigma/2sigma on intervals are
+[18.75%,75.00%]/[55.56%,93.75%]. These are run-bootstrap intervals under
+the recorded seed correlation, not hardware-independent or field guarantees.
+
+**Export failure and recovery, not a second test:** after160/160 jobs, CLI JSON
+serialization failed because `sealed.producer` referenced the caller manifest,
+which then referenced the seal. The original process exited1; do not describe
+it as an uninterrupted successful CLI export. All80 physical inference/score
+caches were complete and immutable. A dedicated recovery checked every original
+dispatch/progress line, cache key, original producer and the63 storage hashes;
+it replaced only that metadata back-reference with the exact pre-dispatch ledger
+snapshot and reconstructed the two recorded labels. Shared aggregation/exports
+then ran without rendering, inference, scoring, a seal start or an override.
+The original producer remains809b527/core2f7230fc. The ledger contains exactly
+one `started`, a storage amendment, the export failure and recovered completion.
+`baselines/round2-sealed-recovery.json` records original cache/log/script/output
+hashes. The producer-snapshot regression now guards against caller mutation;
+CLI also logs failures during export, not just during inference. Export fields
+remain schema0.16's intended structure; no new result field was introduced.
+The80 original cyclic V8 caches and original execution log are independently
+preserved in `baselines/round2-sealed-original.tar.gz`; all hashes and original
+inference/scores verify against the recovered JSON. Summary of those checks:
+`baselines/round2-final-verification.json`. The metadata-only repaired source
+fingerprint is2078b5c4; renderer fingerprint39d44f7b is unchanged. All seven
+round-one golden files are byte-for-byte unchanged.
+
+Per-category baseline/final, rejected-spatial and sealed calibration is in
+`baselines/round2-category-calibration.json`, with declared available-bearing
+counts and unchanged preregistered groups. It is descriptive, not fitted on
+test categories. See the [plain-language state summary](state-of-the-engine.md).
+
+Sealed errors-on physical subgroups (overlapping, not controlled causal
+contrasts) expose the calibration population:
+
+| Category | Scenes | Associated bearing episodes | Scene coverage |1sigma /2sigma |
+|---|---:|---:|---:|---:|
+| Two available nodes |12 |0 |0% |null /null |
+| Three-plus available nodes |28 |18 |28.57% |44.44% /72.22% |
+| Buildings present |31 |12 |16.13% |50.00% /66.67% |
+| No buildings |9 |6 |33.33% |33.33% /83.33% |
+
+Actual retained fusion is still two-node even when more nodes are available.
+All40 new sites have one stationary source below10m: the sealed population does
+not independently establish aerial, moving or simultaneous-source performance.
+No-bearing groups retain null calibration, not perfect or zero coverage.
 
 The reference derives unchanged round-one measured inference from
 `baselines/final-1.json`, re-scored with the current aggregation and explicit
@@ -473,7 +537,15 @@ workflow reaches the default branch. The sealed set is never nightly input.
 Actual GitHub Actions run41848917910 at35a2056 succeeded:286 core,38 app,
 production build,2 Chromium/Node end-to-end cases and the finite measured
 zero-regression benchmark. Logs were read; this is not an assumed CI result.
-Final artifact/source follow-through remains pending in this working report.
+After the sealed export repair, the local complete core gate passes287/287
+and the unchanged16-case smoke passes rule4 with no regressions. Final app
+tests38/38, production build and actual Chromium/Node parity2/2 also pass.
+The small known regression control is not another science population or
+test-set tuning.
+The final evidence-head workflow also verifies the complete sealed population,
+paired equality, original80 cache/log hashes and storage/recovery provenance.
+Its actual conclusion and logs are read from GitHub after publication; a local
+pass or an older remote run is not substituted for that final-head gate.
 
 ## Scope not completed
 
@@ -496,7 +568,7 @@ Final artifact/source follow-through remains pending in this working report.
 | E3 | Complete288-case range/noise grid and ideal component ceilings; controlled detection and required hardware specifications unavailable |
 | E4/E5 | Geometry map/suggester,20 simulated disagreement checks and concrete measurement protocols; not calibrated coverage |
 | F1 | Synthetic-tested WAV/geometry/truth/calibration CLI and Testing source; no real recording seen |
-| G | Claims, architecture/testing/SIM and this report; sealed state summary/final outcome pending |
+| G | Claims, architecture/testing/SIM, plain-language sealed state and this full report |
 
 No retained discriminative confidence, heading self-calibration, blocked-edge
 measured solver, measured elevation/3D/multi-peak pipeline, full global runtime
@@ -512,7 +584,29 @@ calibration-file helper must not be presented as these completed features.
 Review the method/seal commits first, then metrics, offline trials, exact-output
 caches, deterministic ties, recording/physics, model evidence and prototype
 protocol. `git log --reverse 099a0d0..overnight/localisation-2` gives full order.
-The final report will record the completed-study commits.
+Key commits in dependency-oriented review order (preregistrations precede their
+outcomes; the full log includes intervening evidence/clarification commits):
+
+| Review | Commits | Purpose |
+|---|---|---|
+|1 |56c197e,38dcd9c,12e03f7 | Three-way method, seal/metrics and actual retained-solver freeze |
+|2 |a026dd4,91d2ad1,8d22ceb,6eea56b | Train-only confidence and complete rejected consensus/association evidence |
+|3 |ab57058,185e4f1,fbc46fe | Registered profiling, instrumentation correction and exact-output caches |
+|4 |be8713a | Canonical legacy consensus and actual browser parity |
+|5 |800c112,def3648 | Complete-population grading, timing tiers, history and geometry view |
+|6 |0382c8f,6deb4a9,a14a70f | Preregistered opt-in clock/weather physics and complete56-case evidence |
+|7 |ec053a7,20335e5 | Preregistered actual-model labelling and normalisation outcomes |
+|8 |bde3d0c,0ea55b8 | Synthetic-tested recording tools and concrete real-measurement protocols |
+|9 |59adfee,8483834,976b3ab | Preregistered variance design, implementation and complete intervals |
+|10 |3591252,6eea56b,b1ffab9 | Separate known-POI attribution and all36 renders |
+|11 |2924ef5,03d9f1d,deeff83 | Count/spacing and all-nine-array range/noise populations and complete results |
+|12 |6486caf,b61c6f6 | Frozen placement suggestions and20 simulated disagreement checks |
+|13 |d3ed1c6,f170423,6eacb6d,87a9687 | Ideal component ceilings and complete archived array regrading |
+|14 |6ac185c,6b5df48,809b527 | Novel spatial preregistration, offline implementation and rejection/final freeze |
+|15 |64dc91e,51d0e9e | Audited sealed storage intervention and metadata/lifecycle repair |
+
+The final evidence commit contains the single-attempt ledger, immutable original
+cache archive, recovered sealed report, category/history data and final claims.
 
 Open decisions for the next round, not requests to change this run:
 
