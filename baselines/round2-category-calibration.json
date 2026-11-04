@@ -1,0 +1,1732 @@
+{
+  "schema": 1,
+  "registration": {
+    "schema": 1,
+    "kind": "derived-calibration-report-no-new-renders",
+    "population": "Complete fixed150-case train/validation reports and the complete single160-job sealed report; never partial populations. Per-config/split/realism groups remain separate.",
+    "timing": "Descriptive groups chosen after known round-one validation, before any sealed outcome; not an acceptance rule or fitted calibration.",
+    "scene_categories": {
+      "sparse": [
+        "sparse_20",
+        "sparse_50",
+        "sparse_100"
+      ],
+      "moving_or_aerial_presets": [
+        "moving",
+        "drone_2",
+        "drone_3"
+      ],
+      "multiple_or_overlapping_sources": [
+        "overlap",
+        "seven_source",
+        "simultaneous_0",
+        "simultaneous_6",
+        "simultaneous_10"
+      ],
+      "multipath_or_blocked_presets": [
+        "near_wall",
+        "blocked",
+        "corner"
+      ],
+      "node_geometry_presets": [
+        "five_node",
+        "bad_geometry"
+      ],
+      "continuous": [
+        "continuous"
+      ],
+      "old_random_validation": [
+        "random_1",
+        "random_2",
+        "random_3",
+        "random_4",
+        "random_5",
+        "random_6",
+        "random_7",
+        "random_8"
+      ]
+    },
+    "unknown_scene_category": "new_sealed_random_sites",
+    "physical_categories": [
+      "two_available_nodes",
+      "three_plus_available_nodes",
+      "one_source",
+      "multiple_sources",
+      "moving_source_present",
+      "source_at_or_above10m",
+      "buildings_present",
+      "no_buildings"
+    ],
+    "method": "Existing shared metricValues point calibration on associated-node track-median bearings; available-bearing counts reported. Physical subgroups overlap and are scoring-only. Nulls preserved. No subgroup fitting, winner selection or bootstrap claim."
+  },
+  "registration_sha256": "cb49b541873985cfb0650054926f873269b4de0365c9e2ac444953db3c5173b8",
+  "reports": [
+    {
+      "path": "baselines/round2-final-baseline.json.gz",
+      "sha256": "e0b103f23052ad9f70ee9c779f97c3cf73500c153b1e876030996a51eb7fee2b",
+      "producer": {
+        "git_hash": "69397f2682f7612fed5b74b663c0c763c8041077",
+        "code_version": "c91e3fd1c2172ad27f85022a6178678a17997eca694eefdba5f13c0b08cc01a6",
+        "render_code_version": "08ba89b70c0916cc3f61aa6ce951027c53686b8fd329c8a173564b16f24cc7da",
+        "render_source_files": [
+          {
+            "name": "activity.js",
+            "sha256": "9965a16c9ddd57877f04dceecda489f9f6e52c32be2599ed171ca5024c3b863c"
+          },
+          {
+            "name": "diffraction.js",
+            "sha256": "1fcb78ec1986de677d0e7aa7ab14a9166705df036747e11a1e32882bfffeb0d9"
+          },
+          {
+            "name": "dsp.js",
+            "sha256": "2893fe2c7da6591e182d0618bac7fbc38a31a11bfecc445fa65ef14d4cda4c3f"
+          },
+          {
+            "name": "edges.js",
+            "sha256": "f455cfe3d9eacfba321cfb0fbc2a540628f40b5bbf3f3f6c7823a4fac7cc8d5d"
+          },
+          {
+            "name": "geometry.js",
+            "sha256": "53c46891257f5e03fc6151e919b9ee39afa247422bed1084ed5df79787c430b1"
+          },
+          {
+            "name": "mics.js",
+            "sha256": "dae01b073fc21e68de3e412d466913be669f66a8d59b9757b130e15e286c0a97"
+          },
+          {
+            "name": "motion.js",
+            "sha256": "64d63bc9cfb75f265015391f44b99fb7c446de6c5f6a3e796a5a66f831ee8c4c"
+          },
+          {
+            "name": "physics.js",
+            "sha256": "d99e4e86b406fa2a0617fba14008cbcad2d90db65d8efedab04e035cbb429b7b"
+          },
+          {
+            "name": "profile.js",
+            "sha256": "25b69e19ce39b56e287ee0e03f821ff5679bc81010fbdd9c7c64ac9605e37291"
+          },
+          {
+            "name": "render.js",
+            "sha256": "10a001c0a201345b0a6df0c3848e7a98b32e5fd5482ffe8a54cdbaef182c3f5e"
+          },
+          {
+            "name": "rng.js",
+            "sha256": "f40eda0168b4025902bc848c4ce1e0c1721641459fb3c449071a724b22215ca3"
+          }
+        ],
+        "schema": "0.13",
+        "dirty": true,
+        "scoring": "benchmark score.js; post-inference truth only",
+        "audio_source": "repository test-audio recordings, PCM float32 mono at 48000 Hz",
+        "targets": {
+          "schema": 1,
+          "placeholder": true,
+          "scope": "Starting design targets, not validated acceptance limits. Error targets apply to scenes with source reference range up to 50 m; mixed-range tables are indicative only.",
+          "max_reference_range_m": 50,
+          "metrics": {
+            "horizontal_median_m": {
+              "max": 5,
+              "unit": "m"
+            },
+            "horizontal_p90_m": {
+              "max": 10,
+              "unit": "m"
+            },
+            "useful_fix_rate": {
+              "min": 0.8,
+              "unit": "fraction"
+            },
+            "unflagged_wrong_fix_rate": {
+              "max": 0.01,
+              "unit": "fraction"
+            },
+            "risk_coverage_area": {
+              "max": 0.2,
+              "unit": "fraction"
+            },
+            "within_1sigma": {
+              "min": 0.63,
+              "max": 0.73,
+              "unit": "fraction"
+            },
+            "within_2sigma": {
+              "min": 0.9,
+              "max": 0.99,
+              "unit": "fraction"
+            }
+          }
+        },
+        "cache_policy": "retain",
+        "audio": [
+          {
+            "id": "car_horn",
+            "samples": 240000,
+            "sha256": "dadf04b0e40acf56e5967682f71b249ae7811a4429372212e633fa207a862202"
+          },
+          {
+            "id": "chainsaw",
+            "samples": 240000,
+            "sha256": "eb7c39065495f6286ade8b663c76e5e858572568979805d9ea825d332472bfaf"
+          },
+          {
+            "id": "dog",
+            "samples": 240000,
+            "sha256": "20d460c32866c35509072d12b01e719286b07593aa7ce3299c326f5c510b220f"
+          },
+          {
+            "id": "engine",
+            "samples": 240000,
+            "sha256": "b6735647f769cb8e044f98675223d3632f194df253a87751145573e938899183"
+          },
+          {
+            "id": "footsteps",
+            "samples": 240000,
+            "sha256": "4c7b79c77f5689556f97d672e03756c6addc83305c8fd2c263ddee32124b39bf"
+          },
+          {
+            "id": "glass_breaking",
+            "samples": 240000,
+            "sha256": "4df4ae3a411444c0f623a773ef45d28579253f9b878c69832aa582d3f7c09512"
+          }
+        ],
+        "runtime": {
+          "engine": "node",
+          "node": "26.12.1",
+          "v8": "14.6.202.34-node.40",
+          "platform": "linux",
+          "arch": "x64"
+        },
+        "cancelled": false,
+        "expected_runs": 150,
+        "scoring_version": "episode-one-to-one-v2",
+        "round2_baseline_derivation": {
+          "reference": "baselines/final-1.json",
+          "sha256": "4a77f6fca3d99c93aff7253cc288c3c3cd1307d7bd57d0ce88a0c59fc9bff74b",
+          "inference": "Unmodified stored round-one measured inference; old held-out renamed validation. Current scoring aggregation applied equally to baseline and final."
+        },
+        "scoring_provenance": {
+          "code_version": "2f7230fc50b341ad0c3fbd147bad728cc9fe6bb92e2fbc748bc25cf7c1a1bf38",
+          "git_hash": "ef2442da1f8af9ae454e7fe2c4788b6799d34cf0",
+          "dirty": true,
+          "schema": "0.16"
+        },
+        "rescored_from": {
+          "schema": "0.13",
+          "scoring_version": "episode-one-to-one-v2"
+        }
+      },
+      "summary": [
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "overall",
+          "scenes": 34,
+          "available_bearing_episodes": 108,
+          "within_1sigma": 0.7685185185185185,
+          "within_2sigma": 0.7685185185185185,
+          "scene_fix_rate": 0.7058823529411765
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "scene:multipath_or_blocked_presets",
+          "scenes": 6,
+          "available_bearing_episodes": 24,
+          "within_1sigma": 1,
+          "within_2sigma": 1,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "physical:three_plus_available_nodes",
+          "scenes": 30,
+          "available_bearing_episodes": 108,
+          "within_1sigma": 0.7685185185185185,
+          "within_2sigma": 0.7685185185185185,
+          "scene_fix_rate": 0.8
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "physical:one_source",
+          "scenes": 20,
+          "available_bearing_episodes": 48,
+          "within_1sigma": 1,
+          "within_2sigma": 1,
+          "scene_fix_rate": 0.6
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "physical:buildings_present",
+          "scenes": 12,
+          "available_bearing_episodes": 48,
+          "within_1sigma": 0.6875,
+          "within_2sigma": 0.6875,
+          "scene_fix_rate": 0.8333333333333334
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "overall",
+          "scenes": 34,
+          "available_bearing_episodes": 94,
+          "within_1sigma": 0.22340425531914893,
+          "within_2sigma": 0.5,
+          "scene_fix_rate": 0.6764705882352942
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "scene:multipath_or_blocked_presets",
+          "scenes": 6,
+          "available_bearing_episodes": 20,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.75,
+          "scene_fix_rate": 0.8333333333333334
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "physical:three_plus_available_nodes",
+          "scenes": 30,
+          "available_bearing_episodes": 94,
+          "within_1sigma": 0.22340425531914893,
+          "within_2sigma": 0.5,
+          "scene_fix_rate": 0.7666666666666667
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "physical:one_source",
+          "scenes": 20,
+          "available_bearing_episodes": 44,
+          "within_1sigma": 0.3181818181818182,
+          "within_2sigma": 0.6363636363636364,
+          "scene_fix_rate": 0.55
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "physical:buildings_present",
+          "scenes": 12,
+          "available_bearing_episodes": 40,
+          "within_1sigma": 0.3,
+          "within_2sigma": 0.55,
+          "scene_fix_rate": 0.75
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "overall",
+          "scenes": 41,
+          "available_bearing_episodes": 74,
+          "within_1sigma": 0.8108108108108109,
+          "within_2sigma": 0.8243243243243243,
+          "scene_fix_rate": 0.5121951219512195
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "scene:multipath_or_blocked_presets",
+          "scenes": 3,
+          "available_bearing_episodes": 12,
+          "within_1sigma": 1,
+          "within_2sigma": 1,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "physical:three_plus_available_nodes",
+          "scenes": 36,
+          "available_bearing_episodes": 74,
+          "within_1sigma": 0.8108108108108109,
+          "within_2sigma": 0.8243243243243243,
+          "scene_fix_rate": 0.5833333333333334
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "physical:one_source",
+          "scenes": 34,
+          "available_bearing_episodes": 44,
+          "within_1sigma": 0.9545454545454546,
+          "within_2sigma": 0.9772727272727273,
+          "scene_fix_rate": 0.4411764705882353
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "physical:buildings_present",
+          "scenes": 27,
+          "available_bearing_episodes": 44,
+          "within_1sigma": 0.7954545454545454,
+          "within_2sigma": 0.8181818181818182,
+          "scene_fix_rate": 0.5185185185185185
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "overall",
+          "scenes": 41,
+          "available_bearing_episodes": 52,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.7884615384615384,
+          "scene_fix_rate": 0.3170731707317073
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "scene:multipath_or_blocked_presets",
+          "scenes": 3,
+          "available_bearing_episodes": 12,
+          "within_1sigma": 0.75,
+          "within_2sigma": 1,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "physical:three_plus_available_nodes",
+          "scenes": 36,
+          "available_bearing_episodes": 52,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.7884615384615384,
+          "scene_fix_rate": 0.3611111111111111
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "physical:one_source",
+          "scenes": 34,
+          "available_bearing_episodes": 26,
+          "within_1sigma": 0.6923076923076923,
+          "within_2sigma": 0.9615384615384616,
+          "scene_fix_rate": 0.20588235294117646
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "physical:buildings_present",
+          "scenes": 27,
+          "available_bearing_episodes": 26,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.6538461538461539,
+          "scene_fix_rate": 0.2222222222222222
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "scene:multiple_or_overlapping_sources",
+          "scenes": 10,
+          "available_bearing_episodes": 36,
+          "within_1sigma": 0.7222222222222222,
+          "within_2sigma": 0.7222222222222222,
+          "scene_fix_rate": 0.8
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "physical:multiple_sources",
+          "scenes": 14,
+          "available_bearing_episodes": 60,
+          "within_1sigma": 0.5833333333333334,
+          "within_2sigma": 0.5833333333333334,
+          "scene_fix_rate": 0.8571428571428571
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "physical:no_buildings",
+          "scenes": 22,
+          "available_bearing_episodes": 60,
+          "within_1sigma": 0.8333333333333334,
+          "within_2sigma": 0.8333333333333334,
+          "scene_fix_rate": 0.6363636363636364
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "scene:multiple_or_overlapping_sources",
+          "scenes": 10,
+          "available_bearing_episodes": 30,
+          "within_1sigma": 0.16666666666666666,
+          "within_2sigma": 0.4,
+          "scene_fix_rate": 0.8
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "physical:multiple_sources",
+          "scenes": 14,
+          "available_bearing_episodes": 50,
+          "within_1sigma": 0.14,
+          "within_2sigma": 0.38,
+          "scene_fix_rate": 0.8571428571428571
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "physical:no_buildings",
+          "scenes": 22,
+          "available_bearing_episodes": 54,
+          "within_1sigma": 0.16666666666666666,
+          "within_2sigma": 0.46296296296296297,
+          "scene_fix_rate": 0.6363636363636364
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "scene:multiple_or_overlapping_sources",
+          "scenes": 5,
+          "available_bearing_episodes": 18,
+          "within_1sigma": 0.7222222222222222,
+          "within_2sigma": 0.7222222222222222,
+          "scene_fix_rate": 0.8
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "physical:multiple_sources",
+          "scenes": 7,
+          "available_bearing_episodes": 30,
+          "within_1sigma": 0.6,
+          "within_2sigma": 0.6,
+          "scene_fix_rate": 0.8571428571428571
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "physical:no_buildings",
+          "scenes": 14,
+          "available_bearing_episodes": 30,
+          "within_1sigma": 0.8333333333333334,
+          "within_2sigma": 0.8333333333333334,
+          "scene_fix_rate": 0.5
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "scene:multiple_or_overlapping_sources",
+          "scenes": 5,
+          "available_bearing_episodes": 14,
+          "within_1sigma": 0.35714285714285715,
+          "within_2sigma": 0.8571428571428571,
+          "scene_fix_rate": 0.8
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "physical:multiple_sources",
+          "scenes": 7,
+          "available_bearing_episodes": 26,
+          "within_1sigma": 0.3076923076923077,
+          "within_2sigma": 0.6153846153846154,
+          "scene_fix_rate": 0.8571428571428571
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "physical:no_buildings",
+          "scenes": 14,
+          "available_bearing_episodes": 26,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.9230769230769231,
+          "scene_fix_rate": 0.5
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "scene:continuous",
+          "scenes": 2,
+          "available_bearing_episodes": 16,
+          "within_1sigma": 0.3125,
+          "within_2sigma": 0.3125,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "scene:continuous",
+          "scenes": 2,
+          "available_bearing_episodes": 12,
+          "within_1sigma": 0.08333333333333333,
+          "within_2sigma": 0.3333333333333333,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "scene:continuous",
+          "scenes": 1,
+          "available_bearing_episodes": 8,
+          "within_1sigma": 0.375,
+          "within_2sigma": 0.375,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "scene:continuous",
+          "scenes": 1,
+          "available_bearing_episodes": 8,
+          "within_1sigma": 0.125,
+          "within_2sigma": 0.25,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "scene:moving_or_aerial_presets",
+          "scenes": 6,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "physical:moving_source_present",
+          "scenes": 8,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "scene:moving_or_aerial_presets",
+          "scenes": 6,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "physical:moving_source_present",
+          "scenes": 8,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "scene:moving_or_aerial_presets",
+          "scenes": 3,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "physical:moving_source_present",
+          "scenes": 4,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "scene:moving_or_aerial_presets",
+          "scenes": 3,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "physical:moving_source_present",
+          "scenes": 4,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "scene:node_geometry_presets",
+          "scenes": 4,
+          "available_bearing_episodes": 8,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.5,
+          "scene_fix_rate": 0.5
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "scene:node_geometry_presets",
+          "scenes": 4,
+          "available_bearing_episodes": 8,
+          "within_1sigma": 0.125,
+          "within_2sigma": 0.375,
+          "scene_fix_rate": 0.5
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "scene:node_geometry_presets",
+          "scenes": 2,
+          "available_bearing_episodes": 4,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.5,
+          "scene_fix_rate": 0.5
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "scene:node_geometry_presets",
+          "scenes": 2,
+          "available_bearing_episodes": 4,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.5,
+          "scene_fix_rate": 0.5
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "physical:two_available_nodes",
+          "scenes": 4,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "physical:source_at_or_above10m",
+          "scenes": 4,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "physical:two_available_nodes",
+          "scenes": 4,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "physical:source_at_or_above10m",
+          "scenes": 4,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "physical:two_available_nodes",
+          "scenes": 5,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "physical:source_at_or_above10m",
+          "scenes": 2,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "physical:two_available_nodes",
+          "scenes": 5,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "physical:source_at_or_above10m",
+          "scenes": 2,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "scene:sparse",
+          "scenes": 6,
+          "available_bearing_episodes": 24,
+          "within_1sigma": 1,
+          "within_2sigma": 1,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "scene:sparse",
+          "scenes": 6,
+          "available_bearing_episodes": 24,
+          "within_1sigma": 0.16666666666666666,
+          "within_2sigma": 0.5416666666666666,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "scene:sparse",
+          "scenes": 3,
+          "available_bearing_episodes": 12,
+          "within_1sigma": 1,
+          "within_2sigma": 1,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "scene:sparse",
+          "scenes": 3,
+          "available_bearing_episodes": 12,
+          "within_1sigma": 0.6666666666666666,
+          "within_2sigma": 1,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "scene:old_random_validation",
+          "scenes": 24,
+          "available_bearing_episodes": 20,
+          "within_1sigma": 0.9,
+          "within_2sigma": 0.95,
+          "scene_fix_rate": 0.375
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "scene:old_random_validation",
+          "scenes": 24,
+          "available_bearing_episodes": 2,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.5,
+          "scene_fix_rate": 0.041666666666666664
+        }
+      ]
+    },
+    {
+      "path": "baselines/round2-final.json.gz",
+      "sha256": "3b0b3dbf1d94382be14c7c08bede557caba658927271aeb20f0fe3b3187f01c7",
+      "producer": {
+        "git_hash": "0ea55b881b60789760a8bc5da3402f75ec676fd5",
+        "code_version": "2f7230fc50b341ad0c3fbd147bad728cc9fe6bb92e2fbc748bc25cf7c1a1bf38",
+        "render_code_version": "39d44f7b80a96220844fabdc2b11bff172055a20a311c35a84603f308f2ffbe4",
+        "render_source_files": [
+          {
+            "name": "activity.js",
+            "sha256": "9965a16c9ddd57877f04dceecda489f9f6e52c32be2599ed171ca5024c3b863c"
+          },
+          {
+            "name": "diffraction.js",
+            "sha256": "1fcb78ec1986de677d0e7aa7ab14a9166705df036747e11a1e32882bfffeb0d9"
+          },
+          {
+            "name": "dsp.js",
+            "sha256": "2893fe2c7da6591e182d0618bac7fbc38a31a11bfecc445fa65ef14d4cda4c3f"
+          },
+          {
+            "name": "edges.js",
+            "sha256": "f455cfe3d9eacfba321cfb0fbc2a540628f40b5bbf3f3f6c7823a4fac7cc8d5d"
+          },
+          {
+            "name": "geometry.js",
+            "sha256": "53c46891257f5e03fc6151e919b9ee39afa247422bed1084ed5df79787c430b1"
+          },
+          {
+            "name": "mics.js",
+            "sha256": "dae01b073fc21e68de3e412d466913be669f66a8d59b9757b130e15e286c0a97"
+          },
+          {
+            "name": "motion.js",
+            "sha256": "64d63bc9cfb75f265015391f44b99fb7c446de6c5f6a3e796a5a66f831ee8c4c"
+          },
+          {
+            "name": "physics.js",
+            "sha256": "d99e4e86b406fa2a0617fba14008cbcad2d90db65d8efedab04e035cbb429b7b"
+          },
+          {
+            "name": "profile.js",
+            "sha256": "25b69e19ce39b56e287ee0e03f821ff5679bc81010fbdd9c7c64ac9605e37291"
+          },
+          {
+            "name": "realism.js",
+            "sha256": "ad2b98407c3ff6bd5688eb5323abf3a86b1f1496de6491040f55afcc6f8575fd"
+          },
+          {
+            "name": "render.js",
+            "sha256": "0edc46d44c0a7072d764fde43ca51c45c9439f7c87dc7299592b6797101ff4f3"
+          },
+          {
+            "name": "rng.js",
+            "sha256": "f40eda0168b4025902bc848c4ce1e0c1721641459fb3c449071a724b22215ca3"
+          }
+        ],
+        "schema": "0.16",
+        "dirty": true,
+        "scoring": "benchmark score.js; post-inference truth only",
+        "audio_source": "repository test-audio recordings, PCM float32 mono at 48000 Hz",
+        "targets": {
+          "schema": 1,
+          "placeholder": true,
+          "scope": "Starting design targets, not validated acceptance limits. Error targets apply to scenes with source reference range up to 50 m; mixed-range tables are indicative only.",
+          "max_reference_range_m": 50,
+          "metrics": {
+            "horizontal_median_m": {
+              "max": 5,
+              "unit": "m"
+            },
+            "horizontal_p90_m": {
+              "max": 10,
+              "unit": "m"
+            },
+            "useful_fix_rate": {
+              "min": 0.8,
+              "unit": "fraction"
+            },
+            "unflagged_wrong_fix_rate": {
+              "max": 0.01,
+              "unit": "fraction"
+            },
+            "risk_coverage_area": {
+              "max": 0.2,
+              "unit": "fraction"
+            },
+            "within_1sigma": {
+              "min": 0.63,
+              "max": 0.73,
+              "unit": "fraction"
+            },
+            "within_2sigma": {
+              "min": 0.9,
+              "max": 0.99,
+              "unit": "fraction"
+            }
+          }
+        },
+        "cache_policy": "discard_render_after_consumers",
+        "audio": [
+          {
+            "id": "car_horn",
+            "samples": 240000,
+            "sha256": "dadf04b0e40acf56e5967682f71b249ae7811a4429372212e633fa207a862202"
+          },
+          {
+            "id": "chainsaw",
+            "samples": 240000,
+            "sha256": "eb7c39065495f6286ade8b663c76e5e858572568979805d9ea825d332472bfaf"
+          },
+          {
+            "id": "dog",
+            "samples": 240000,
+            "sha256": "20d460c32866c35509072d12b01e719286b07593aa7ce3299c326f5c510b220f"
+          },
+          {
+            "id": "engine",
+            "samples": 240000,
+            "sha256": "b6735647f769cb8e044f98675223d3632f194df253a87751145573e938899183"
+          },
+          {
+            "id": "footsteps",
+            "samples": 240000,
+            "sha256": "4c7b79c77f5689556f97d672e03756c6addc83305c8fd2c263ddee32124b39bf"
+          },
+          {
+            "id": "glass_breaking",
+            "samples": 240000,
+            "sha256": "4df4ae3a411444c0f623a773ef45d28579253f9b878c69832aa582d3f7c09512"
+          }
+        ],
+        "runtime": {
+          "engine": "node",
+          "node": "26.12.1",
+          "v8": "14.6.202.34-node.40",
+          "platform": "linux",
+          "arch": "x64"
+        },
+        "cancelled": false,
+        "expected_runs": 150,
+        "scoring_version": "episode-one-to-one-v2"
+      },
+      "summary": [
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "overall",
+          "scenes": 34,
+          "available_bearing_episodes": 108,
+          "within_1sigma": 0.7685185185185185,
+          "within_2sigma": 0.7685185185185185,
+          "scene_fix_rate": 0.7058823529411765
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "scene:multipath_or_blocked_presets",
+          "scenes": 6,
+          "available_bearing_episodes": 24,
+          "within_1sigma": 1,
+          "within_2sigma": 1,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "physical:three_plus_available_nodes",
+          "scenes": 30,
+          "available_bearing_episodes": 108,
+          "within_1sigma": 0.7685185185185185,
+          "within_2sigma": 0.7685185185185185,
+          "scene_fix_rate": 0.8
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "physical:one_source",
+          "scenes": 20,
+          "available_bearing_episodes": 48,
+          "within_1sigma": 1,
+          "within_2sigma": 1,
+          "scene_fix_rate": 0.6
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "physical:buildings_present",
+          "scenes": 12,
+          "available_bearing_episodes": 48,
+          "within_1sigma": 0.6875,
+          "within_2sigma": 0.6875,
+          "scene_fix_rate": 0.8333333333333334
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "overall",
+          "scenes": 34,
+          "available_bearing_episodes": 94,
+          "within_1sigma": 0.22340425531914893,
+          "within_2sigma": 0.5,
+          "scene_fix_rate": 0.6764705882352942
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "scene:multipath_or_blocked_presets",
+          "scenes": 6,
+          "available_bearing_episodes": 20,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.75,
+          "scene_fix_rate": 0.8333333333333334
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "physical:three_plus_available_nodes",
+          "scenes": 30,
+          "available_bearing_episodes": 94,
+          "within_1sigma": 0.22340425531914893,
+          "within_2sigma": 0.5,
+          "scene_fix_rate": 0.7666666666666667
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "physical:one_source",
+          "scenes": 20,
+          "available_bearing_episodes": 44,
+          "within_1sigma": 0.3181818181818182,
+          "within_2sigma": 0.6363636363636364,
+          "scene_fix_rate": 0.55
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "physical:buildings_present",
+          "scenes": 12,
+          "available_bearing_episodes": 40,
+          "within_1sigma": 0.3,
+          "within_2sigma": 0.55,
+          "scene_fix_rate": 0.75
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "overall",
+          "scenes": 41,
+          "available_bearing_episodes": 74,
+          "within_1sigma": 0.8108108108108109,
+          "within_2sigma": 0.8243243243243243,
+          "scene_fix_rate": 0.5121951219512195
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "scene:multipath_or_blocked_presets",
+          "scenes": 3,
+          "available_bearing_episodes": 12,
+          "within_1sigma": 1,
+          "within_2sigma": 1,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "physical:three_plus_available_nodes",
+          "scenes": 36,
+          "available_bearing_episodes": 74,
+          "within_1sigma": 0.8108108108108109,
+          "within_2sigma": 0.8243243243243243,
+          "scene_fix_rate": 0.5833333333333334
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "physical:one_source",
+          "scenes": 34,
+          "available_bearing_episodes": 44,
+          "within_1sigma": 0.9545454545454546,
+          "within_2sigma": 0.9772727272727273,
+          "scene_fix_rate": 0.4411764705882353
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "physical:buildings_present",
+          "scenes": 27,
+          "available_bearing_episodes": 44,
+          "within_1sigma": 0.7954545454545454,
+          "within_2sigma": 0.8181818181818182,
+          "scene_fix_rate": 0.5185185185185185
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "overall",
+          "scenes": 41,
+          "available_bearing_episodes": 52,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.7884615384615384,
+          "scene_fix_rate": 0.3170731707317073
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "scene:multipath_or_blocked_presets",
+          "scenes": 3,
+          "available_bearing_episodes": 12,
+          "within_1sigma": 0.75,
+          "within_2sigma": 1,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "physical:three_plus_available_nodes",
+          "scenes": 36,
+          "available_bearing_episodes": 52,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.7884615384615384,
+          "scene_fix_rate": 0.3611111111111111
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "physical:one_source",
+          "scenes": 34,
+          "available_bearing_episodes": 26,
+          "within_1sigma": 0.6923076923076923,
+          "within_2sigma": 0.9615384615384616,
+          "scene_fix_rate": 0.20588235294117646
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "physical:buildings_present",
+          "scenes": 27,
+          "available_bearing_episodes": 26,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.6538461538461539,
+          "scene_fix_rate": 0.2222222222222222
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "scene:multiple_or_overlapping_sources",
+          "scenes": 10,
+          "available_bearing_episodes": 36,
+          "within_1sigma": 0.7222222222222222,
+          "within_2sigma": 0.7222222222222222,
+          "scene_fix_rate": 0.8
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "physical:multiple_sources",
+          "scenes": 14,
+          "available_bearing_episodes": 60,
+          "within_1sigma": 0.5833333333333334,
+          "within_2sigma": 0.5833333333333334,
+          "scene_fix_rate": 0.8571428571428571
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "physical:no_buildings",
+          "scenes": 22,
+          "available_bearing_episodes": 60,
+          "within_1sigma": 0.8333333333333334,
+          "within_2sigma": 0.8333333333333334,
+          "scene_fix_rate": 0.6363636363636364
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "scene:multiple_or_overlapping_sources",
+          "scenes": 10,
+          "available_bearing_episodes": 30,
+          "within_1sigma": 0.16666666666666666,
+          "within_2sigma": 0.4,
+          "scene_fix_rate": 0.8
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "physical:multiple_sources",
+          "scenes": 14,
+          "available_bearing_episodes": 50,
+          "within_1sigma": 0.14,
+          "within_2sigma": 0.38,
+          "scene_fix_rate": 0.8571428571428571
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "physical:no_buildings",
+          "scenes": 22,
+          "available_bearing_episodes": 54,
+          "within_1sigma": 0.16666666666666666,
+          "within_2sigma": 0.46296296296296297,
+          "scene_fix_rate": 0.6363636363636364
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "scene:multiple_or_overlapping_sources",
+          "scenes": 5,
+          "available_bearing_episodes": 18,
+          "within_1sigma": 0.7222222222222222,
+          "within_2sigma": 0.7222222222222222,
+          "scene_fix_rate": 0.8
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "physical:multiple_sources",
+          "scenes": 7,
+          "available_bearing_episodes": 30,
+          "within_1sigma": 0.6,
+          "within_2sigma": 0.6,
+          "scene_fix_rate": 0.8571428571428571
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "physical:no_buildings",
+          "scenes": 14,
+          "available_bearing_episodes": 30,
+          "within_1sigma": 0.8333333333333334,
+          "within_2sigma": 0.8333333333333334,
+          "scene_fix_rate": 0.5
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "scene:multiple_or_overlapping_sources",
+          "scenes": 5,
+          "available_bearing_episodes": 14,
+          "within_1sigma": 0.35714285714285715,
+          "within_2sigma": 0.8571428571428571,
+          "scene_fix_rate": 0.8
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "physical:multiple_sources",
+          "scenes": 7,
+          "available_bearing_episodes": 26,
+          "within_1sigma": 0.3076923076923077,
+          "within_2sigma": 0.6153846153846154,
+          "scene_fix_rate": 0.8571428571428571
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "physical:no_buildings",
+          "scenes": 14,
+          "available_bearing_episodes": 26,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.9230769230769231,
+          "scene_fix_rate": 0.5
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "scene:continuous",
+          "scenes": 2,
+          "available_bearing_episodes": 16,
+          "within_1sigma": 0.3125,
+          "within_2sigma": 0.3125,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "scene:continuous",
+          "scenes": 2,
+          "available_bearing_episodes": 12,
+          "within_1sigma": 0.08333333333333333,
+          "within_2sigma": 0.3333333333333333,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "scene:continuous",
+          "scenes": 1,
+          "available_bearing_episodes": 8,
+          "within_1sigma": 0.375,
+          "within_2sigma": 0.375,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "scene:continuous",
+          "scenes": 1,
+          "available_bearing_episodes": 8,
+          "within_1sigma": 0.125,
+          "within_2sigma": 0.25,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "scene:moving_or_aerial_presets",
+          "scenes": 6,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "physical:moving_source_present",
+          "scenes": 8,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "scene:moving_or_aerial_presets",
+          "scenes": 6,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "physical:moving_source_present",
+          "scenes": 8,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "scene:moving_or_aerial_presets",
+          "scenes": 3,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "physical:moving_source_present",
+          "scenes": 4,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "scene:moving_or_aerial_presets",
+          "scenes": 3,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "physical:moving_source_present",
+          "scenes": 4,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "scene:node_geometry_presets",
+          "scenes": 4,
+          "available_bearing_episodes": 8,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.5,
+          "scene_fix_rate": 0.5
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "scene:node_geometry_presets",
+          "scenes": 4,
+          "available_bearing_episodes": 8,
+          "within_1sigma": 0.125,
+          "within_2sigma": 0.375,
+          "scene_fix_rate": 0.5
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "scene:node_geometry_presets",
+          "scenes": 2,
+          "available_bearing_episodes": 4,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.5,
+          "scene_fix_rate": 0.5
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "scene:node_geometry_presets",
+          "scenes": 2,
+          "available_bearing_episodes": 4,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.5,
+          "scene_fix_rate": 0.5
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "physical:two_available_nodes",
+          "scenes": 4,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "physical:source_at_or_above10m",
+          "scenes": 4,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "physical:two_available_nodes",
+          "scenes": 4,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "physical:source_at_or_above10m",
+          "scenes": 4,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "physical:two_available_nodes",
+          "scenes": 5,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "physical:source_at_or_above10m",
+          "scenes": 2,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "physical:two_available_nodes",
+          "scenes": 5,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "physical:source_at_or_above10m",
+          "scenes": 2,
+          "available_bearing_episodes": 0,
+          "within_1sigma": null,
+          "within_2sigma": null,
+          "scene_fix_rate": 0
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "off",
+          "group": "scene:sparse",
+          "scenes": 6,
+          "available_bearing_episodes": 24,
+          "within_1sigma": 1,
+          "within_2sigma": 1,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "train",
+          "realism": "on",
+          "group": "scene:sparse",
+          "scenes": 6,
+          "available_bearing_episodes": 24,
+          "within_1sigma": 0.16666666666666666,
+          "within_2sigma": 0.5416666666666666,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "scene:sparse",
+          "scenes": 3,
+          "available_bearing_episodes": 12,
+          "within_1sigma": 1,
+          "within_2sigma": 1,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "scene:sparse",
+          "scenes": 3,
+          "available_bearing_episodes": 12,
+          "within_1sigma": 0.6666666666666666,
+          "within_2sigma": 1,
+          "scene_fix_rate": 1
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "off",
+          "group": "scene:old_random_validation",
+          "scenes": 24,
+          "available_bearing_episodes": 20,
+          "within_1sigma": 0.9,
+          "within_2sigma": 0.95,
+          "scene_fix_rate": 0.375
+        },
+        {
+          "config": "c0",
+          "split": "validation",
+          "realism": "on",
+          "group": "scene:old_random_validation",
+          "scenes": 24,
+          "available_bearing_episodes": 2,
+          "within_1sigma": 0.5,
+          "within_2sigma": 0.5,
+          "scene_fix_rate": 0.041666666666666664
+        }
+      ]
+    }
+  ]
+}
