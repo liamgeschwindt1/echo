@@ -1,0 +1,526 @@
+{
+  "sources": [
+    {
+      "name": "array-full-budget",
+      "file": "baselines/array-full-budget.json.gz",
+      "sha256": "6bf0bb412a129cc446a3822075901a46e9c1e029ed3c2db234b8872be1d49f0c",
+      "expected_runs": 900,
+      "experiment": {
+        "name": "All-library full-scene measured ranking: budgeted two-seed study",
+        "scenes": [
+          "near_wall",
+          "overlap",
+          "continuous",
+          "moving",
+          "blocked",
+          "five_node",
+          "seven_source",
+          "drone_2",
+          "drone_3",
+          "sparse_20",
+          "sparse_50",
+          "sparse_100",
+          "simultaneous_0",
+          "simultaneous_6",
+          "simultaneous_10",
+          "corner",
+          "bad_geometry",
+          "random_1",
+          "random_2",
+          "random_3",
+          "random_4",
+          "random_5",
+          "random_6",
+          "random_7",
+          "random_8"
+        ],
+        "seeds": [
+          1,
+          101
+        ],
+        "held_out_seeds": [
+          101
+        ],
+        "base_settings": {},
+        "sweeps": [
+          {
+            "variable": "mic_array",
+            "values": [
+              "flat4_100",
+              "ball12_d180",
+              "ball12_d180_sub4",
+              "ball12_d180_sub6",
+              "ball12_d180_sub8",
+              "planar12_d180",
+              "dome12_d230",
+              "puck12_d210",
+              "ball12_d180_sub4_maxvol"
+            ],
+            "group": "Array and nodes"
+          }
+        ],
+        "mode": "grid",
+        "realism": [
+          "off",
+          "on"
+        ],
+        "analysis_modes": [
+          "measured_only"
+        ],
+        "max_runs": 2000,
+        "metrics": []
+      }
+    },
+    {
+      "name": "array-heading",
+      "file": "baselines/array-heading.json.gz",
+      "sha256": "f59014af070064f9b91a84beb88d68a31871a624663de0885d6a02e86d738d23",
+      "expected_runs": 144,
+      "experiment": {
+        "name": "Array pilot: heading error endpoints",
+        "scenes": [
+          "sparse_20",
+          "random_5"
+        ],
+        "seeds": [
+          1,
+          101
+        ],
+        "held_out_seeds": [
+          101
+        ],
+        "base_settings": {},
+        "mode": "grid",
+        "realism": [
+          "off",
+          "on"
+        ],
+        "analysis_modes": [
+          "measured_only"
+        ],
+        "sweeps": [
+          {
+            "variable": "mic_array",
+            "values": [
+              "flat4_100",
+              "ball12_d180",
+              "ball12_d180_sub4",
+              "ball12_d180_sub6",
+              "ball12_d180_sub8",
+              "planar12_d180",
+              "dome12_d230",
+              "puck12_d210",
+              "ball12_d180_sub4_maxvol"
+            ],
+            "group": "Array and nodes"
+          },
+          {
+            "variable": "heading_error_sigma_deg",
+            "values": [
+              0,
+              5
+            ],
+            "group": "Hardware errors"
+          }
+        ],
+        "metrics": [],
+        "max_runs": 2000
+      }
+    },
+    {
+      "name": "array-gain",
+      "file": "baselines/array-gain.json.gz",
+      "sha256": "a5bc6576342a0229583c204fcbe4dd01296111c878ffcdb09ba0f63bc393f078",
+      "expected_runs": 144,
+      "experiment": {
+        "name": "Array pilot: microphone gain error endpoints",
+        "scenes": [
+          "sparse_20",
+          "random_5"
+        ],
+        "seeds": [
+          1,
+          101
+        ],
+        "held_out_seeds": [
+          101
+        ],
+        "base_settings": {},
+        "mode": "grid",
+        "realism": [
+          "off",
+          "on"
+        ],
+        "analysis_modes": [
+          "measured_only"
+        ],
+        "sweeps": [
+          {
+            "variable": "mic_array",
+            "values": [
+              "flat4_100",
+              "ball12_d180",
+              "ball12_d180_sub4",
+              "ball12_d180_sub6",
+              "ball12_d180_sub8",
+              "planar12_d180",
+              "dome12_d230",
+              "puck12_d210",
+              "ball12_d180_sub4_maxvol"
+            ],
+            "group": "Array and nodes"
+          },
+          {
+            "variable": "mic_gain_sigma_db",
+            "values": [
+              0,
+              2
+            ],
+            "group": "Hardware errors"
+          }
+        ],
+        "metrics": [],
+        "max_runs": 2000
+      }
+    },
+    {
+      "name": "array-position",
+      "file": "baselines/array-position.json.gz",
+      "sha256": "0b5d67aa0c83fac444ad04102a91b2276d831ce521f9098f013a9b4c3fb26d60",
+      "expected_runs": 144,
+      "experiment": {
+        "name": "Array pilot: microphone position error endpoints",
+        "scenes": [
+          "sparse_20",
+          "random_5"
+        ],
+        "seeds": [
+          1,
+          101
+        ],
+        "held_out_seeds": [
+          101
+        ],
+        "base_settings": {},
+        "mode": "grid",
+        "realism": [
+          "off",
+          "on"
+        ],
+        "analysis_modes": [
+          "measured_only"
+        ],
+        "sweeps": [
+          {
+            "variable": "mic_array",
+            "values": [
+              "flat4_100",
+              "ball12_d180",
+              "ball12_d180_sub4",
+              "ball12_d180_sub6",
+              "ball12_d180_sub8",
+              "planar12_d180",
+              "dome12_d230",
+              "puck12_d210",
+              "ball12_d180_sub4_maxvol"
+            ],
+            "group": "Array and nodes"
+          },
+          {
+            "variable": "mic_position_sigma_mm",
+            "values": [
+              0,
+              10
+            ],
+            "group": "Hardware errors"
+          }
+        ],
+        "metrics": [],
+        "max_runs": 2000
+      }
+    },
+    {
+      "name": "array-correlation",
+      "file": "baselines/array-correlation.json.gz",
+      "sha256": "2fb456b24e64d3cfd0fef5022d882bb24b6bc766dc8139594a7217d933c6397e",
+      "expected_runs": 144,
+      "experiment": {
+        "name": "Array pilot: within-node noise correlation endpoints",
+        "scenes": [
+          "sparse_20",
+          "random_5"
+        ],
+        "seeds": [
+          1,
+          101
+        ],
+        "held_out_seeds": [
+          101
+        ],
+        "base_settings": {},
+        "mode": "grid",
+        "realism": [
+          "off",
+          "on"
+        ],
+        "analysis_modes": [
+          "measured_only"
+        ],
+        "sweeps": [
+          {
+            "variable": "mic_array",
+            "values": [
+              "flat4_100",
+              "ball12_d180",
+              "ball12_d180_sub4",
+              "ball12_d180_sub6",
+              "ball12_d180_sub8",
+              "planar12_d180",
+              "dome12_d230",
+              "puck12_d210",
+              "ball12_d180_sub4_maxvol"
+            ],
+            "group": "Array and nodes"
+          },
+          {
+            "variable": "noise_correlation",
+            "values": [
+              0,
+              0.6
+            ],
+            "group": "Hardware errors"
+          }
+        ],
+        "metrics": [],
+        "max_runs": 2000
+      }
+    },
+    {
+      "name": "array-noise-floor",
+      "file": "baselines/array-noise-floor.json.gz",
+      "sha256": "3d20f1cba3c3861aafb9c87e756da98a9a062740902e0668fba6e3d029c8a57a",
+      "expected_runs": 144,
+      "experiment": {
+        "name": "Array pilot: ambient noise endpoints",
+        "scenes": [
+          "sparse_20",
+          "random_5"
+        ],
+        "seeds": [
+          1,
+          101
+        ],
+        "held_out_seeds": [
+          101
+        ],
+        "base_settings": {},
+        "mode": "grid",
+        "realism": [
+          "off",
+          "on"
+        ],
+        "analysis_modes": [
+          "measured_only"
+        ],
+        "sweeps": [
+          {
+            "variable": "mic_array",
+            "values": [
+              "flat4_100",
+              "ball12_d180",
+              "ball12_d180_sub4",
+              "ball12_d180_sub6",
+              "ball12_d180_sub8",
+              "planar12_d180",
+              "dome12_d230",
+              "puck12_d210",
+              "ball12_d180_sub4_maxvol"
+            ],
+            "group": "Array and nodes"
+          },
+          {
+            "variable": "noise_floor_db_spl",
+            "values": [
+              30,
+              60
+            ],
+            "group": "Environment"
+          }
+        ],
+        "metrics": [],
+        "max_runs": 2000
+      }
+    },
+    {
+      "name": "array-self-noise",
+      "file": "baselines/array-self-noise.json.gz",
+      "sha256": "ace602f2fdbab5de1389ab4625f61cddffa4ff9905288f5e49601611f85e9f6e",
+      "expected_runs": 144,
+      "experiment": {
+        "name": "Array pilot: microphone self-noise endpoints",
+        "scenes": [
+          "sparse_20",
+          "random_5"
+        ],
+        "seeds": [
+          1,
+          101
+        ],
+        "held_out_seeds": [
+          101
+        ],
+        "base_settings": {},
+        "mode": "grid",
+        "realism": [
+          "off",
+          "on"
+        ],
+        "analysis_modes": [
+          "measured_only"
+        ],
+        "sweeps": [
+          {
+            "variable": "mic_array",
+            "values": [
+              "flat4_100",
+              "ball12_d180",
+              "ball12_d180_sub4",
+              "ball12_d180_sub6",
+              "ball12_d180_sub8",
+              "planar12_d180",
+              "dome12_d230",
+              "puck12_d210",
+              "ball12_d180_sub4_maxvol"
+            ],
+            "group": "Array and nodes"
+          },
+          {
+            "variable": "mic_self_noise_db_spl",
+            "values": [
+              20,
+              40
+            ],
+            "group": "Environment"
+          }
+        ],
+        "metrics": [],
+        "max_runs": 2000
+      }
+    },
+    {
+      "name": "array-ground",
+      "file": "baselines/array-ground.json.gz",
+      "sha256": "259b362d288b28985be2542cc2ac184d4f036c91d4d442e02b00ff5e37a64381",
+      "expected_runs": 144,
+      "experiment": {
+        "name": "Array pilot: ground reflection endpoints",
+        "scenes": [
+          "sparse_20",
+          "random_5"
+        ],
+        "seeds": [
+          1,
+          101
+        ],
+        "held_out_seeds": [
+          101
+        ],
+        "base_settings": {},
+        "mode": "grid",
+        "realism": [
+          "off",
+          "on"
+        ],
+        "analysis_modes": [
+          "measured_only"
+        ],
+        "sweeps": [
+          {
+            "variable": "mic_array",
+            "values": [
+              "flat4_100",
+              "ball12_d180",
+              "ball12_d180_sub4",
+              "ball12_d180_sub6",
+              "ball12_d180_sub8",
+              "planar12_d180",
+              "dome12_d230",
+              "puck12_d210",
+              "ball12_d180_sub4_maxvol"
+            ],
+            "group": "Array and nodes"
+          },
+          {
+            "variable": "ground_reflectivity",
+            "values": [
+              0,
+              0.8
+            ],
+            "group": "Environment"
+          }
+        ],
+        "metrics": [],
+        "max_runs": 2000
+      }
+    },
+    {
+      "name": "array-source-level",
+      "file": "baselines/array-source-level.json.gz",
+      "sha256": "182723b183b0899a025d6501c5dbf25d005b3095b6c88ba5263c36c0c717f406",
+      "expected_runs": 144,
+      "experiment": {
+        "name": "Array pilot: source level endpoints",
+        "scenes": [
+          "sparse_20",
+          "random_5"
+        ],
+        "seeds": [
+          1,
+          101
+        ],
+        "held_out_seeds": [
+          101
+        ],
+        "base_settings": {},
+        "mode": "grid",
+        "realism": [
+          "off",
+          "on"
+        ],
+        "analysis_modes": [
+          "measured_only"
+        ],
+        "sweeps": [
+          {
+            "variable": "mic_array",
+            "values": [
+              "flat4_100",
+              "ball12_d180",
+              "ball12_d180_sub4",
+              "ball12_d180_sub6",
+              "ball12_d180_sub8",
+              "planar12_d180",
+              "dome12_d230",
+              "puck12_d210",
+              "ball12_d180_sub4_maxvol"
+            ],
+            "group": "Array and nodes"
+          },
+          {
+            "variable": "level_1m_db",
+            "values": [
+              90,
+              110
+            ],
+            "group": "Sources"
+          }
+        ],
+        "metrics": [],
+        "max_runs": 2000
+      }
+    }
+  ],
+  "bootstrap_samples": 500,
+  "confidence": 0.95,
+  "method": "Re-aggregate ALL original900 full-array and8x144 endpoint stored inferences with current metrics. No rerender, solver change, new test or claim of improved-engine hardware validation. Existing outcomes are already known; only the new complete coverage-aware analysis is preregistered. Preserve exact archives/producer hashes. Map legacy held-out metadata to seen validation in derived summaries only. Primary useful-fix rate; secondary risk-coverage area (both over all scenes). Include every array, suppress comparisons on missing/unequal populations, preserve nulls and ties. Shared bootstrap500 whole scene/seed runs; within-site seeds remain correlated, not independent field sites. Point-leader flips are descriptive, not significant superiority or hardware winners."
+}
