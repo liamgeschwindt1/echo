@@ -10,6 +10,9 @@ export const METRICS = Object.freeze({
   error_3d_median_m: { direction: 'lower', unit: 'm', tolerance: 0 },
   error_3d_p90_m: { direction: 'lower', unit: 'm', tolerance: 0 },
   scene_fix_rate: { direction: 'higher', unit: 'fraction', tolerance: 0 },
+  useful_fix_rate: { direction: 'higher', unit: 'fraction', tolerance: 0 },
+  unflagged_wrong_fix_rate: { direction: 'lower', unit: 'fraction', tolerance: 0 },
+  risk_coverage_area: { direction: 'lower', unit: 'fraction', tolerance: 0 },
   source_fix_rate: { direction: 'higher', unit: 'fraction', tolerance: 0 },
   within_target_rate: { direction: 'higher', unit: 'fraction', tolerance: 0 },
   wrong_fix_rate: { direction: 'lower', unit: 'fraction', tolerance: 0 },
@@ -29,13 +32,52 @@ export const METRICS = Object.freeze({
 const ratio = (a, b) => b ? a / b : null;
 const finite = (a) => a.filter(Number.isFinite);
 
+export function riskCoverage(runs, { wrong_fix_m = 10 } = {}) {
+  const answered = runs.filter((r) => r.scores.fix_count > 0).map((r) => {
+    const fixes = r.scores.fixes ?? r.scores.sources.filter((s) => Number.isFinite(s.horizontal_m));
+    const unmatched = r.scores.unmatched_fixes ?? 0;
+    const probabilities = [...fixes.map((s) => Number.isFinite(s.p_wrong) ? s.p_wrong : s.suspect ? 1 : 0),
+      ...(r.scores.unmatched_predictions ?? []).map((s) => Number.isFinite(s.p_wrong) ? s.p_wrong : s.suspect ? 1 : 0)];
+    if (unmatched && !r.scores.unmatched_predictions) probabilities.push(r.scores.unmatched_suspect === unmatched ? 1 : 0);
+    return {
+      confidence: 1 - Math.max(...probabilities, 0),
+      wrong: unmatched > 0 || fixes.some((s) => s.horizontal_m > wrong_fix_m),
+      error_m: unmatched ? null : fixes.length ? Math.max(...fixes.map((s) => s.horizontal_m)) : null
+    };
+  }).sort((a, b) => b.confidence - a.confidence);
+  const curve = [{ coverage: 0, risk: null, mean_error_m: null, n_scenes: 0, confidence: null }];
+  let count = 0, wrong = 0, area = 0, errorSum = 0, missingErrors = 0;
+  for (let i = 0; i < answered.length;) {
+    let j = i;
+    while (j < answered.length && answered[j].confidence === answered[i].confidence) {
+      const scene = answered[j++];
+      wrong += Number(scene.wrong); count++;
+      if (Number.isFinite(scene.error_m)) errorSum += scene.error_m;
+      else missingErrors++;
+    }
+    const coverage = count / runs.length, risk = wrong / count;
+    area += (coverage - curve.at(-1).coverage) * risk;
+    curve.push({ coverage, risk, mean_error_m: missingErrors ? null : errorSum / count, n_scenes: count, confidence: answered[i].confidence });
+    i = j;
+  }
+  // Unanswered scenes cost one, so abstaining from everything cannot win.
+  return {
+    curve, area: runs.length ? area + 1 - answered.length / runs.length : null,
+    max_coverage: ratio(answered.length, runs.length),
+    definition: 'Scene risk = any wrong/unmatched emitted fix. Rank by worst emitted confidence; equal-confidence groups stay together. Step integral over all scenes; unanswered tail costs 1. Mean metre error is unavailable if an unmatched hypothesis has unknown error.'
+  };
+}
+
 export function metricValues(runs, { wrong_fix_m = 10 } = {}) {
   const sources = runs.flatMap((r) => r.scores.sources);
   const scoredFixes = runs.flatMap((r) => r.scores.fixes ?? r.scores.sources);
   const fixes = scoredFixes.filter((s) => Number.isFinite(s.horizontal_m));
   const nodes = sources.flatMap((s) => s.nodes);
   const bearingNodes = scoredFixes.flatMap((s) => s.nodes);
-  const bearings = bearingNodes.filter((n) => Number.isFinite(n.az_error_deg) && Number.isFinite(n.sigma_deg));
+  const eligibleBearings = bearingNodes.filter((n) => Number.isFinite(n.az_error_deg));
+  const bearings = eligibleBearings.filter((n) => Number.isFinite(n.sigma_deg) && n.sigma_deg >= 0);
+  const twoSigma = (n) => Object.hasOwn(n, 'two_sigma_deg') ? n.two_sigma_deg : Number.isFinite(n.sigma_deg) ? 2 * n.sigma_deg : null;
+  const bearings2 = eligibleBearings.filter((n) => Number.isFinite(twoSigma(n)) && twoSigma(n) >= 0);
   const wrong = fixes.filter((s) => s.horizontal_m > wrong_fix_m);
   const flagged = fixes.filter((s) => s.suspect);
   const unmatched = runs.reduce((a, r) => a + r.scores.unmatched_fixes, 0);
@@ -47,6 +89,9 @@ export function metricValues(runs, { wrong_fix_m = 10 } = {}) {
     error_3d_median_m: percentile(finite(fixes.map((s) => s.error_3d_m)), 50),
     error_3d_p90_m: percentile(finite(fixes.map((s) => s.error_3d_m)), 90),
     scene_fix_rate: ratio(runs.filter((r) => r.scores.fix_count > 0).length, runs.length),
+    useful_fix_rate: ratio(runs.filter((r) => (r.scores.fixes ?? r.scores.sources).some((s) => Number.isFinite(s.horizontal_m) && s.horizontal_m <= wrong_fix_m && !s.suspect)).length, runs.length),
+    unflagged_wrong_fix_rate: ratio(runs.filter((r) => (r.scores.fixes ?? r.scores.sources).some((s) => Number.isFinite(s.horizontal_m) && s.horizontal_m > wrong_fix_m && !s.suspect) || r.scores.unmatched_fixes > r.scores.unmatched_suspect).length, runs.length),
+    risk_coverage_area: riskCoverage(runs, { wrong_fix_m }).area,
     source_fix_rate: ratio(sources.filter((s) => Number.isFinite(s.horizontal_m)).length, sources.length),
     within_target_rate: ratio(fixes.filter((s) => s.horizontal_m <= wrong_fix_m).length, fixes.length + unmatched),
     wrong_fix_rate: ratio(wrong.length + unmatched, fixes.length + unmatched),
@@ -57,8 +102,8 @@ export function metricValues(runs, { wrong_fix_m = 10 } = {}) {
     track_median_error_m: percentile(finite(tracks), 50),
     bearing_median_deg: percentile(finite(bearingNodes.map((n) => n.az_error_deg)), 50),
     elevation_median_deg: percentile(finite(bearingNodes.map((n) => n.el_error_deg)), 50),
-    within_1sigma: ratio(bearings.filter((n) => n.az_error_deg <= n.sigma_deg).length, bearings.length),
-    within_2sigma: ratio(bearings.filter((n) => n.az_error_deg <= 2 * n.sigma_deg).length, bearings.length),
+    within_1sigma: bearings.length === eligibleBearings.length ? ratio(bearings.filter((n) => n.az_error_deg <= n.sigma_deg).length, bearings.length) : null,
+    within_2sigma: bearings2.length === eligibleBearings.length ? ratio(bearings2.filter((n) => n.az_error_deg <= twoSigma(n)).length, bearings2.length) : null,
     detection_rate: ratio(detection.filter((n) => n.detected).length, detection.length),
     labelling_accuracy: null,
     runtime_ms: runs.reduce((a, r) => a + r.runtime_ms, 0)
@@ -88,7 +133,7 @@ export function summariseRuns(runs, options = {}) {
   return keys.map((key) => {
     const subset = runs.filter((r) => [r.job.config.id, r.job.split, r.job.realism, r.job.analysis_mode].join('|') === key);
     const job = subset[0].job;
-    return { key, config_id: job.config.id, name: job.config.name, values: job.config.values, settings: job.config.settings, group: job.config.group, split: job.split, realism: job.realism, analysis_mode: job.analysis_mode, metrics: aggregate(subset, options) };
+    return { key, config_id: job.config.id, name: job.config.name, values: job.config.values, settings: job.config.settings, group: job.config.group, split: job.split, realism: job.realism, analysis_mode: job.analysis_mode, population: subset.map((r) => `${r.job.scene}|${r.job.seed}`).sort(), metrics: aggregate(subset, options), risk_coverage: riskCoverage(subset, options) };
   });
 }
 
@@ -161,7 +206,7 @@ export function pairedComparison(runs, metric, options = {}) {
   return { metric, n_pairs: delta.length, delta: observed, ci: draws.length ? [percentile(draws, tail), percentile(draws, 100 - tail)] : null, p_value: (extreme + 1) / (o.permutation_samples + 1), method: 'paired sign-flip randomisation; complete scene/seed pairs; mean per-run metric delta B-A' };
 }
 
-export function rankingFlips(summary, metric = 'horizontal_median_m', rankVariable = 'mic_array') {
+export function rankingFlips(summary, metric = 'useful_fix_rate', rankVariable = 'mic_array') {
   const definition = METRICS[metric];
   if (!definition) throw new Error(`Unknown ranking metric: ${metric}`);
   const partitions = new Map();
@@ -174,6 +219,9 @@ export function rankingFlips(summary, metric = 'horizontal_median_m', rankVariab
     partitions.set(key, group);
   }
   const rankings = [...partitions.values()].map((g) => {
+    const populations = g.rows.map((r) => Array.isArray(r.population) && r.population.length ? canonical([...r.population].sort()) : null);
+    if (populations.includes(null) || new Set(populations).size > 1) return { ...g, rows: [], winners: [], winner: null, reason: 'Unequal or unknown scene/seed populations; ranking suppressed' };
+    if (g.rows.some((r) => !Number.isFinite(r.metrics[metric]?.value))) return { ...g, rows: g.rows, winners: [], winner: null, reason: 'Ranking metric unavailable for at least one array; no comparison against null' };
     const rows = g.rows.filter((r) => Number.isFinite(r.metrics[metric]?.value)).sort((a, b) => loss(a.metrics[metric].value, definition) - loss(b.metrics[metric].value, definition));
     const best = rows[0]?.metrics[metric].value;
     const winners = rows.filter((r) => Math.abs(r.metrics[metric].value - best) < 1e-10).map((r) => r.values[rankVariable]);

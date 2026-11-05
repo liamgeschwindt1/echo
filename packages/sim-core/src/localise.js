@@ -3,13 +3,42 @@ import { micPairs } from './mics.js';
 import { distance } from './physics.js';
 
 const UPSAMPLE = 4;
+const windowCache = new Map();
+const phasorCache = new Map();
+
+function hannWindow(len) {
+  let window = windowCache.get(len);
+  if (!window) {
+    window = Float64Array.from({ length: len }, (_, i) => 0.5 - 0.5 * Math.cos((2 * Math.PI * (i + 0.5)) / len));
+    if (windowCache.size >= 16) windowCache.delete(windowCache.keys().next().value);
+    windowCache.set(len, window);
+  }
+  return window;
+}
+
+function correlationPhasors(n, lo, hi, maxLag) {
+  const key = `${n}:${lo}:${hi}:${maxLag}`;
+  let value = phasorCache.get(key);
+  if (!value) {
+    value = { dr: new Float64Array(hi + 1), di: new Float64Array(hi + 1), pr: new Float64Array(hi + 1), pi: new Float64Array(hi + 1) };
+    for (let k = Math.max(1, lo); k <= hi; k++) {
+      const theta = (2 * Math.PI * k) / (n * UPSAMPLE);
+      value.dr[k] = Math.cos(theta); value.di[k] = Math.sin(theta);
+      value.pr[k] = Math.cos(theta * maxLag); value.pi[k] = -Math.sin(theta * maxLag);
+    }
+    if (phasorCache.size >= 32) phasorCache.delete(phasorCache.keys().next().value);
+    phasorCache.set(key, value);
+  }
+  return value;
+}
 
 // Hann-windowed segment spectrum (half) at size n.
 function segmentSpectrum(signal, start, end, n) {
   const len = end - start;
   const re = new Float64Array(n);
   const im = new Float64Array(n);
-  for (let i = 0; i < len; i++) re[i] = signal[start + i] * (0.5 - 0.5 * Math.cos((2 * Math.PI * (i + 0.5)) / len));
+  const window = hannWindow(len);
+  for (let i = 0; i < len; i++) re[i] = signal[start + i] * window[i];
   fft(re, im);
   return { re, im };
 }
@@ -82,8 +111,9 @@ function pairSpectra(sigA, sigB, start, end, n, lo, hi) {
   const len = end - start;
   const re = new Float64Array(n);
   const im = new Float64Array(n);
+  const window = hannWindow(len);
   for (let i = 0; i < len; i++) {
-    const w = 0.5 - 0.5 * Math.cos((2 * Math.PI * (i + 0.5)) / len);
+    const w = window[i];
     re[i] = sigA[start + i] * w;
     im[i] = sigB[start + i] * w;
   }
@@ -111,17 +141,17 @@ function bandCorrelation(X, Y, { n, fs, band, lo, hi, maxLag }) {
   const big = n * UPSAMPLE;
   const count = 2 * maxLag + 1;
   const out = new Float64Array(count);
+  const phasors = correlationPhasors(n, lo, hi, maxLag);
   for (let k = Math.max(1, lo); k <= hi; k++) {
     const cr = X.re[k] * Y.re[k] + X.im[k] * Y.im[k];
     const ci = X.im[k] * Y.re[k] - X.re[k] * Y.im[k];
     const m = Math.hypot(cr, ci) || 1;
     const xr = cr / m;
     const xi = ci / m;
-    const theta = (2 * Math.PI * k) / big;
-    const dr = Math.cos(theta);
-    const di = Math.sin(theta);
-    let pr = Math.cos(theta * maxLag);
-    let pi = -Math.sin(theta * maxLag);
+    const dr = phasors.dr[k];
+    const di = phasors.di[k];
+    let pr = phasors.pr[k];
+    let pi = phasors.pi[k];
     for (let l = 0; l < count; l++) {
       out[l] += xr * pr - xi * pi;
       const nr = pr * dr - pi * di;

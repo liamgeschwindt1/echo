@@ -1,0 +1,23 @@
+{
+  "name": "A3 byte-identical renderer and analysis performance",
+  "baseline_revision": "099a0d0",
+  "scenes": [
+    { "id": "seven_source", "array_override": null },
+    { "id": "sparse_20", "array_override": "ball12_d180" }
+  ],
+  "seed": 1,
+  "realism": "off",
+  "analysis_mode": "measured_only",
+  "repetitions": 2,
+  "workers": 1,
+  "discard_renders": true,
+  "order": "Complete baseline population first, then candidate. No accuracy inspection or partial comparison.",
+  "invariants": ["SHA-256 of every float32 microphone byte", "Canonical value SHA-256 of complete render including diagnostics and every typed-array byte", "Canonical value SHA-256 of measured inference"],
+  "acceptance": "Every hash identical in both repetitions; core signal goldens untouched; full baseline and candidate populations required. Report wall timings per repetition and median speed ratio; sequential-order thermal/runtime noise is a limitation.",
+  "candidate": "Cache moving-source per-knot spectra shared across microphones; cache identical Hann windows and correlation phasors. Do not reorder arithmetic.",
+  "measurement_amendment": {
+    "reason": "The original Node V8 serialize hash is not canonical: equal-input baseline repetitions yielded different complete-render hashes. It therefore cannot establish an output change. All four candidate microphone-audio and inference hashes matched, but no optimisation is accepted on that incomplete invariant.",
+    "replacement": "scripts/lib/value-hash.mjs hashes sorted object keys, ordered array elements, exact primitive values and typed-array constructor/length/raw bytes. Repeated references are compared by output value, not allocator identity/alignment. Unsupported object types throw.",
+    "repeat": "Preserve the complete original eight-run evidence with an invalid-serialization suffix. Repeat the same complete eight-run population, baseline first then candidate, only after this amendment is committed. No accuracy or population changes."
+  }
+}

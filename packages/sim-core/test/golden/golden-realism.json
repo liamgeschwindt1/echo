@@ -1,0 +1,150 @@
+[
+  {
+    "settings": {
+      "wind_speed_mps": 5,
+      "wind_correlation": 0.8
+    },
+    "clocks": [
+      {
+        "offset_ms": 0,
+        "drift_ppm": 0
+      },
+      {
+        "offset_ms": 0,
+        "drift_ppm": 0
+      }
+    ],
+    "microphones": [
+      [
+        "91663f9b9d90fca064e4f3265ebddc8b4d8df58bf7f781776a5291c98626dad4",
+        "e96f845ec77b82100e09ef2b6bf4e10c95b88bd97b65afdf91871def366a07b2",
+        "752f7ffb9782e82d14d1c81cb494423c5c263040989bfee777239f5f85c42e4c",
+        "ff071f35eaa18e48440fdadef9017be293c3ab01ef302a47c847cc767c4b8dde"
+      ],
+      [
+        "07313fe570ba641072f4cd0cf1b48af54c5fa64814313de4271852dd4c14fdbb",
+        "7dce010d657d831a0caa701dc208ca82a4b14adf8051142588bda4b2312d41f7",
+        "5521d0dd98b0996ec9e2fe43a3ddd6eb4e6ed356f5c1283abedf7f3092c3b9d9",
+        "07c7cafe36832fda78b7b1f723562639e8b40fab2231ad5ceee76d867f6925c8"
+      ]
+    ]
+  },
+  {
+    "settings": {
+      "urban_noise_db_spl": 55
+    },
+    "clocks": [
+      {
+        "offset_ms": 0,
+        "drift_ppm": 0
+      },
+      {
+        "offset_ms": 0,
+        "drift_ppm": 0
+      }
+    ],
+    "microphones": [
+      [
+        "26fe803658941cb0ce4c45be2f1c78d7d8acab72da4bfdb286cf4ca38dc42a0b",
+        "c25cecbce5b5b1cec946e054207f49255eca25fd895406f489a30fec60d4df2a",
+        "229a79a1176ea1e20fdc43c9dce2e9a292cbc11b9a8d34b8157e54cdeaa3674c",
+        "3d8d15b52470280ff13ce00a68332b9d04acd7aa70691a5d749ebe703bf5bb4a"
+      ],
+      [
+        "cac4f392ceb3b211a5218331e164a09694d52437ee0d8c91095bc6d2a8ef6a32",
+        "1622559c6cec552ba4287706a2d36a7e37a2f50573bc71ebd358b1cfaf9dbae3",
+        "78bff35cda36660a7f48d08e860e35fa9cd48352a13929a0319b68375f45b62f",
+        "ee221014ae69606116f11bc61e10b17e2792f5db1c52cf7fd5bf2e65394d799d"
+      ]
+    ]
+  },
+  {
+    "settings": {
+      "rain_noise_db_spl": 55
+    },
+    "clocks": [
+      {
+        "offset_ms": 0,
+        "drift_ppm": 0
+      },
+      {
+        "offset_ms": 0,
+        "drift_ppm": 0
+      }
+    ],
+    "microphones": [
+      [
+        "c9cc481f21129176701d32659eb6a00a3a5df5d0de3910db150c1795c840d1e8",
+        "1a95c16ff1dfb7b1f7d952707dd94736e46b736d1af91013ebb7c93d8b83bffc",
+        "8091b8fb29bbd0a2ed6b9b12a36f6fe1b89965b10ce5320b2984380ef639a528",
+        "8cb9d382c1f8700e5bb1934b227bce3dd69bf2d018a50dff2266a637297d5eb0"
+      ],
+      [
+        "e386d86131e6afe6fb4eeb9948ddd30ebffc9e4d4a008e35c32f0f864c072f31",
+        "04e9b2f057f66b5da925f5d5d3a7e82f0a34d34dabbfcf5174b88c059f99adad",
+        "914dd29d552fc9d99c9f1ed9e60c87ab231696d26a69e7f9a2f767c935f0afd7",
+        "5c202bb595469adadd5e601f1038c130b27130c439add5c1ac01ff3e12a32f51"
+      ]
+    ]
+  },
+  {
+    "settings": {
+      "noise_variation_db": 6,
+      "urban_noise_db_spl": 55
+    },
+    "clocks": [
+      {
+        "offset_ms": 0,
+        "drift_ppm": 0
+      },
+      {
+        "offset_ms": 0,
+        "drift_ppm": 0
+      }
+    ],
+    "microphones": [
+      [
+        "23ac7d8405988cb89da2747ddc12fdfc143677f7b55ad971d30c28e2cf1ff4e3",
+        "ab297bac4a210c3614c585af7ce78b15b89a5979a0fb60f6531b71eee1e1a111",
+        "ba17a591c46421d83543116e0596e7fe832a6fc75a049026b2bd8666353f1c78",
+        "8db0dbe165abef972a7572b3a02fc9dceeec5dd1b05077eee0a454f19ed9e45e"
+      ],
+      [
+        "9e2ec6785c3693945eb587198538d0c959414893f43e6d8d9355d4a9cfc6dd4c",
+        "ae5966773582e33f5680c2f6391ffe4b55f3337d5809c73f3b51b1c7fafb91aa",
+        "ac40351b0a4ff71b1352a48c0d0c232f979ffaa7bb827b0bfdcf331a4d43c955",
+        "bd801287063a58895197ea37a1bfafd2ffae87834edc22e48f51d86f09debf33"
+      ]
+    ]
+  },
+  {
+    "settings": {
+      "clock_offset_sigma_ms": 5,
+      "clock_drift_sigma_ppm": 100
+    },
+    "clocks": [
+      {
+        "offset_ms": -3.2393858376960076,
+        "drift_ppm": 177.64884904592893
+      },
+      {
+        "offset_ms": -5.362008175602957,
+        "drift_ppm": -3.568442453046388
+      }
+    ],
+    "microphones": [
+      [
+        "b9ddd37c4da2b82037906b46a40f0538a92bd0fe187dcd06a7f14d93b36f6322",
+        "d144592628b6a2f60b36a2c1f5baf6c87bc0af0c88b3c67992b6ef43313aa553",
+        "f9fedeb2b37ccf9426ab9224cc74451bd1847b870c184e658f65b4f80ac5cd55",
+        "974472b144da6608ccc2fa8bedabbe0e33791e0e03d08a60bb03479ee36cd36f"
+      ],
+      [
+        "773d4ebb8f915b09d1cf55b100fdda29b2b50561dd30fcd374a649bd44f873e9",
+        "4fd27bc59c62d49443a453f4607899aef794c78f7d07de2273d77fdf38d8c55d",
+        "dad447a92ed47587dc42623c540ff0a75e11419f20fca95ad9af00e0f751cc03",
+        "c54dad65e311042029eeb2deb0c20466ed7a27e91696abe2aa46cfb1c32481b5"
+      ]
+    ]
+  }
+]

@@ -71,14 +71,20 @@ linear speed and height. Array/nodes selects library arrays, node count, spacing
 height and layout. Algorithm thresholds vary existing analysis gates and window
 policies; these gates affect **truth-assisted only**, not the independent measured
 pipeline. Site keeps a fraction of existing buildings; scene picker controls presets.
-Clock, wind and coloured noise are not implemented and are not offered as fake knobs.
+Opt-in clock offset/drift, wind, urban/rain noise and slow ambient variation have
+separate variables and a new physics golden. Defaults are OFF; their spectra,
+levels and interpolation model are placeholders, not calibrated hardware/site
+measurements. Inter-node TDOA, housing scattering and mic phase response are absent.
 
 Measured-only quality uses PHAT coherence normalised by the fully coherent
 in-band peak, not the much smaller inverse-FFT amplitude. The existing 0.25
-threshold is uncalibrated. Legacy truth-assisted near-zero consensus cost ties
-can diverge across JS runtimes even with identical audio and whole-event bearings.
-A weight-aware repair was rejected after suspect metrics regressed. Browser
-parity exercises the default measured-only pipeline, not that rejected solver.
+threshold is uncalibrated. Earlier truth-assisted near-zero consensus ties
+diverged across runtimes despite identical audio/bearings. They now use cost
+quantisation at1e-10 squared-sigma followed by canonical node-pair IDs, with an
+actual Chromium/Node pair/fix regression. Round-one weight-aware repairs failed
+suspect metrics; new measured adaptations fail rule-four calibration/improvement
+guards and remain offline. Separate browser parity covers the retained measured
+pipeline and actual-fix WAV ingestion, not a secretly enabled rejected solver.
 The current microphone gain term scales signal, ambient and self-noise together.
 Positive scalar gains ideally cancel in PHAT. A flat gain sensitivity curve is
 therefore a model property, not evidence that real microphone phase/frequency
@@ -157,6 +163,31 @@ grading and array studies. Runtime is recorded rather than performance-gated.
 
 ## Reading results
 
+The **Placement and geometry coverage** section in Testing maps the current
+editor's nominal nodes/buildings without reading source truth. Its21x21 cells
+show a linearised independent-bearing geometry scale, not a calibrated error
+radius or detection probability. Bearing sigma, usable range, source plane1.5m,
+candidate mount height5m and10degree minimum crossing are assumptions.
+Bearings within1m horizontal range are excluded; offered sigma is0.1..30degrees.
+Known footprint intersections block direct bearings; reflections/diffraction,
+heading bias, signal quality and the retained pair-only fusion are not predicted.
+Indoor cells are grey; blind cells red. Green means only that the assumed major
+scale is at most10m, not that a real target passes.
+
+The deterministic N2..6 suggester searches all pairs of eight quarter-lattice
+candidate mounts, then adds greedily. It minimises bounded major scale over9x9
+exterior cell centres; ties quantise at1e-12 then use candidate order. Suggestions
+are not applied to the editor and do not establish safe/accessible mount sites.
+`docs/experiments/round2-placement.json` preregisters20 simulated checks and
+source-point predictions before outcomes; one source cell/two seeds cannot
+validate the whole map or a real mounting plan.
+
+History initially shows the committed complete reports. Generate a schema2
+summary with `node scripts/benchmark-history.mjs report-a.json report-b.json.gz`
+and load `docs/benchmark-history.json` using **History JSON**. This also supports
+downloaded nightly artifacts without rebuilding the app. Uploaded summaries are
+not authenticated; retain their full reports/provenance for audit.
+
 Open **Testing** in the simulator side menu. Select scenes (or snapshot the editor),
 expand a variable group, tick variables and enter values/ranges, then click **Test**.
 The default small experiment is one 20 m scene, five seeds, realism off/on and
@@ -186,6 +217,10 @@ episodes remain in benchmark metrics and exported inference.
 
 Summary cells show point estimates and bootstrap confidence intervals. No-fix
 errors are null and excluded from error quantiles; coverage is reported separately.
+Conditional-error bootstrap draws without any matched error are also unavailable.
+With only one answered scene, an error interval can therefore degenerate to that
+one value; it is not evidence of high precision. Read coverage/risk and the
+available error population, not just the conditional interval.
 Wrong fixes exceed `wrong_fix_m` (10 m default, placeholder target). Suspect recall
 is the fraction of wrong fixes flagged; precision is the fraction of flags wrong.
 No wrong fixes means recall is unavailable, not 100%. Unmatched measured fixes
@@ -236,5 +271,100 @@ Measured-only scoring assigns inferred tracks one-to-one to true source paths
 **after** inference, with no error gate. Association is greedy, not optimal.
 Measured detection means associated fused node tracks. Its bearing calibration
 unit is median track error at a node, unlike one chosen window in truth-assisted.
-These limitations matter when comparing pipelines. Measured 3D/elevation and
-model labelling metrics are null.
+These limitations matter when comparing pipelines. The localisation benchmark's
+measured3D/elevation and embedded labelling fields remain null; the separate
+Labelling study below does contain actual model results.
+# Round 2 metrics and sealed tests
+
+Tiers: `--experiment smoke` is 16 runs, `standard` is 100 measured runs across all
+25 existing sites, and `full` is 2700 runs across all nine arrays, seeds and both
+pipelines/profiles. Full is expensive, not a nightly default. The Testing tab
+has the same tiers. Estimates now use recorded cold-render and analysis p90
+timings from complete historical reports, not the 5 s placeholder. Unseen
+geometries are conservatively scaled and identified; caches are not discounted.
+Regenerate timing strata using `node scripts/benchmark-timings.mjs`.
+
+The **Labelling benchmark** section loads a complete result from
+`node scripts/benchmark-labelling.mjs --discard-renders`. Its preregistration is
+`docs/experiments/round2-labelling.json`. Models actually run in Node on pinned
+ESC-50 clips through synthetic propagation. Raw vs whole-record RMS-normalised
+inputs share identical renders/SNR. Per-label/range/noise results and measured
+event association have separate denominators; oracle knows label/presence and
+is not a detector. Incomplete reports cannot be compared in that view.
+
+**Benchmark history** shows complete stored reports, producer commits/source
+hashes and population identity. Regenerate with `scripts/benchmark-history.mjs
+<reports...>`. Different populations are not a longitudinal improvement.
+Nightly Actions is configured for 02:20 UTC and archives a standard report/history;
+GitHub schedules run the default-branch workflow, so it only becomes active
+after review/merge. It never consumes the sealed set.
+
+`round2-realism.json` preregisters56 off/on runs for the new physics. The variance
+study preregisters270 runs, five whole-seed bootstrap clusters, three 12-mic
+designs and node count/spacing factors. Its rejected predictive solver is a
+diagnostic factor, not a deployed algorithm; the array effect includes aperture
+and current processing. Neither study is a full nine-array hardware ranking.
+
+`round2-node-count.json`, `round2-range-noise.json` and `round2-placement.json`
+freeze60/288/20 further cases. Their seed101 is validation. Descriptive summaries
+show both observed seed values/ranges, not a reliable95% population interval.
+The count/spacing study varies **available** nodes; inspect
+`actual_fusion_node_counts` because the retained runtime still uses pairs.
+The range study's stable-track rate is a detection proxy, not a false-alarm
+controlled detector or a derivation of microphone self-noise requirements.
+
+`node scripts/benchmark-attribution.mjs` runs the separate known-POI prototype:
+24 mixtures plus12 isolated reference renders. Its three source labels stand
+for independent synthetic continuous noises, not actual traffic/venue/HVAC
+recordings. Two nodes cannot identify three independent powers and yield null
+shares/errors. Level/propagation/POI assumptions and each share error remain in
+`baselines/round2-attribution.json`; this does not change the localiser.
+
+`node scripts/benchmark-spatial.mjs --discard-renders` is a preregistered,
+offline150-case experiment, not a deployed mode. Full-rank cases are rerendered;
+ineligible geometries reuse the exact reference inference with provenance.
+Its cold p90 budget must leave the entire sealed estimate plus60min. Research
+XYZ is stationary-only; moving3D and calibrated positional radii remain absent.
+The same four acceptance partitions decide it without validation tuning.
+Its complete150-case result failed calibration/improvement guards and remains
+offline. Do not run that study again as if the outcome were unseen.
+
+See [real-recordings.md](real-recordings.md) for WAV/geometry/external truth
+formats and the Testing tab's real-recording source. Synthetic round-trips are
+not real-data validation.
+
+Reports now include **useful fix rate** (scenes with a correct, unflagged fix /
+all scenes), **unflagged-wrong fix rate** (scenes emitting at least one unflagged
+wrong or unmatched fix / all scenes), and risk-coverage curves. Useful and
+silent-wrong rates may both be positive in a multi-source scene; useful does not
+certify that every event was correct. Risk is the fraction of answered scenes
+with any wrong/unmatched fix. Confidence orders whole scenes by their least
+confident emitted fix; ties are admitted together, never ordered using truth.
+Metre error is unavailable if an unmatched hypothesis has unknown error.
+Risk area integrates the step curve over all scenes, charging unanswered
+coverage a risk of 1. This prevents a nearly silent array winning on a
+conditional median. Default array rankings use useful scene rate. All new target
+colours are provisional and preserve nulls.
+
+`--sealed` is required for a sealed experiment. Its registered site/input hash
+is checked before inference. A durable, exclusive-create ledger under
+`docs/experiments/sealed-runs/` consumes the test attempt at start, including
+failed or cancelled attempts. Repeating requires `--sealed-override "reason"`;
+the reason and producer are recorded in the ledger and manifest. Keep this
+ledger with the reports and repository; it is a local persistent guard, not a
+remote access-control mechanism. Explicit `scene_splits` support train,
+validation and test without changing legacy experiment partitions.
+
+The round-two seal has been consumed. The original process completed160 jobs
+but failed during JSON export due to a producer-manifest reference cycle.
+`round2-sealed.json.gz` was recovered strictly from all80 original physical
+result caches, without another render, inference, scoring or seal start.
+Keep its storage/recovery audits and ledger beside the report. The operational
+cleanup proved both labels had the exact completed whole-result key before
+removing raw audio; it was not an unlogged change to the default discard policy.
+The producer snapshot is now regression-guarded; CLI also records export failures.
+`recover-round2-sealed.mjs` is a one-off audited recovery, not a general resume
+command or permission to reopen test data for tuning.
+`node scripts/verify-round2-sealed.mjs` verifies the complete160-job population,
+paired identity and every archived original cache/log hash without inference or
+V8 deserialization. It is also a CI gate, independent of the host's V8 version.

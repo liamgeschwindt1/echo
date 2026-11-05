@@ -1,0 +1,24 @@
+{
+  "name": "Round 2 available-node count and spacing, retained localiser",
+  "mode": "grid",
+  "scenes": ["sparse_50"],
+  "seeds": [1, 101],
+  "held_out_seeds": [101],
+  "scene_splits": {},
+  "analysis_modes": ["measured_only"],
+  "realism": ["off", "on"],
+  "base_values": {"layout": "ring", "mic_array": "flat4_100"},
+  "base_settings": {"reflection_order": 0, "diffraction_order": 0, "ground_reflectivity": 0},
+  "sweeps": [
+    {"variable": "node_count", "values": [2, 3, 4, 5, 6]},
+    {"variable": "node_spacing_m", "values": [20, 40, 80]}
+  ],
+  "max_runs": 100,
+  "expected_runs": 60,
+  "preregistration": {
+    "registered_before": "Any outcomes from this node-count population",
+    "purpose": "Quantify available2..6 nodes and mean pair spacing; record actual nodes used per fix, error, coverage and suspect flags. No new algorithm or confidence fitting.",
+    "limits": "One fixed single-source free-field site, two noise/hardware seeds. Ring geometry changes with count at fixed mean pair spacing. Added nodes do not keep all earlier positions fixed. Report paired seed values/ranges, not a robust population95%CI or a forced third-node benefit. Retained fusion still selects pairs.",
+    "population": "All60 cases required. Never pool this single flat4 design with the distinct12-mic variance population to rank arrays."
+  }
+}

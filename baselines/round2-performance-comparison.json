@@ -1,0 +1,28 @@
+{
+  "byte_identical": true,
+  "completed": 8,
+  "mismatches": [],
+  "summary": [
+    {
+      "scene": "seven_source",
+      "array_override": null,
+      "render_before_ms": 387504.338964,
+      "render_after_ms": 385057.98830799997,
+      "analysis_before_ms": 15874.948371999984,
+      "analysis_after_ms": 14591.617422499985,
+      "render_speedup": 1.006353200635441,
+      "analysis_speedup": 1.0879498764490034
+    },
+    {
+      "scene": "sparse_20",
+      "array_override": "ball12_d180",
+      "render_before_ms": 5605.264464499953,
+      "render_after_ms": 6515.57772349997,
+      "analysis_before_ms": 6563.895120500005,
+      "analysis_after_ms": 6446.593582999951,
+      "render_speedup": 0.8602866395535799,
+      "analysis_speedup": 1.0181958946209027
+    }
+  ],
+  "note": "Canonical output values and every typed-array byte checked. Two sequential repetitions per variant/site; arithmetic mean equals sample median for n=2. Sequential timing is not a robust cross-machine speed guarantee."
+}

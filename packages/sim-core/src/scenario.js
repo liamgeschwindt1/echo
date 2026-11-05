@@ -1,6 +1,7 @@
 import { distance, speedOfSound } from './physics.js';
 import { insideBuilding } from './geometry.js';
 import { isMoving, motionSpan, samplePath } from './motion.js';
+import { validateRealism } from './realism.js';
 
 export const SCENARIO_VERSION = '0.2';
 const LOADABLE_VERSIONS = ['0.1', '0.2'];
@@ -165,6 +166,7 @@ export function validateScenario(s) {
   if (!s || typeof s !== 'object') throw new Error('not a scenario');
   if (!LOADABLE_VERSIONS.includes(s.version)) throw new Error(`unsupported scenario version ${s.version}`);
   const settings = { ...DEFAULT_SETTINGS, ...s.settings };
+  validateRealism(settings);
   const vec3 = (v) => Array.isArray(v) && v.length === 3 && v.every(Number.isFinite);
   for (const n of s.nodes || []) {
     if (!vec3(n.position)) throw new Error(`node ${n.id}: bad position`);

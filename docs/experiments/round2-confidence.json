@@ -1,0 +1,15 @@
+{
+  "name": "B1 interpretable train-only confidence",
+  "population": "Exactly all 150 measured_only runs in baselines/final-1.json, as partitioned by round2-evaluation.json. No rendering or detection/position changes.",
+  "training": "68 train runs, 17 scene IDs with seed 1 or 2 and both realism profiles. Every matched fix episode and unmatched emitted fix is a binary training label; misses are not fabricated labels.",
+  "validation": "82 remaining runs, seen round-one held-out data; accept/reject only.",
+  "features": ["log_range_m", "log_range_ratio", "crossing_sine", "bearing_spread_deg", "residual_us", "incoherence", "horizontal_magnitude_deviation", "log_chi2", "log_nis", "onset_skew_s", "onset_missing", "blocked_fraction", "competing_tracks", "reliable_nodes", "declared_heading_sigma_deg", "node_count"],
+  "unavailable_features": ["window SNR in dB (not stored in round-one inference)", "true overlap", "true path identity", "true heading", "true mic offsets"],
+  "logistic": { "lambda": 0.1, "iterations": 3000, "learning_rate": 0.05, "standardise_on_training_only": true, "sample_unit": "fix episode, unweighted" },
+  "cross_fitting": "Five folds by lexically sorted training scene ID index modulo five; all seeds and realism variants of a scene stay together.",
+  "probability_calibration": { "method": "Platt intercept and slope fit only on train-site out-of-fold logits", "iterations": 2000, "learning_rate": 0.05, "slope_l2": 0.1, "slope_target": 1 },
+  "flag_threshold": "Half the minimum predicted probability among wrong train fixes across full-fit and out-of-fold predictions. If no wrong train fixes, threshold 0 (flag all; insufficient labels). No validation threshold search.",
+  "radius": "Per realism profile, finite-sample corrected empirical 90th percentile of training horizontal error divided by geometric scale = max_range * radians(hypot(declared_heading_sigma, bearing_sigma)) / max(0.05, crossing_sine), floored at 0.1 m. Unmatched fixes have unknown error and do not enter radius fitting. Quantile unavailable if ceil(0.9*(n+1)) exceeds n.",
+  "acceptance": "Mission rule 4 on all four train/validation by realism partitions. Exact paired bootstrap aggregate deltas, 1000 draws, 95% CI. No promotion if any partition fails.",
+  "limitations": "Cross-conformal-style empirical radius only; correlated episodes/sites and synthetic propagation invalidate a guaranteed real-world coverage claim. Report reliability bins, Brier score, flags and radius coverage per partition."
+}

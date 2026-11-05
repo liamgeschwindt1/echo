@@ -1,12 +1,13 @@
 import { DEFAULT_SETTINGS } from '../scenario.js';
 import { BUILTIN_ARRAYS, applyArrayToNode } from '../arrays.js';
+import { REALISM_DEFAULTS } from '../realism.js';
 
 const setting = (id, group, unit, values, description, analysisOnly = false) => ({
   id, group, unit, values, description, affects: analysisOnly ? 'analysis' : 'render', base: DEFAULT_SETTINGS[id]
 });
 export const VARIABLES = Object.freeze([
   setting('heading_error_sigma_deg', 'Hardware errors', 'deg sigma', [0, 1, 2.5, 5], 'Unmeasured per-node heading offset.'),
-  setting('mic_gain_sigma_db', 'Hardware errors', 'dB sigma', [0, 0.5, 1, 2], 'Independent microphone gain mismatch.'),
+  setting('mic_gain_sigma_db', 'Hardware errors', 'dB sigma', [0, 0.5, 1, 2], 'Scalar gain mismatch; ideally cancels in PHAT. Does not model frequency/phase response.'),
   setting('mic_position_sigma_mm', 'Hardware errors', 'mm sigma', [0, 1, 5, 10], 'Actual mic offsets differ from geometry used for inference.'),
   setting('noise_correlation', 'Hardware errors', 'fraction', [0, 0.3, 0.6], 'Shared component of noise within a node.'),
   setting('noise_floor_db_spl', 'Environment', 'dB SPL', [30, 45, 60], 'Ambient pressure noise.'),
@@ -16,6 +17,15 @@ export const VARIABLES = Object.freeze([
   setting('ground_reflectivity', 'Environment', 'fraction', [0, 0.4, 0.8], 'Unmeasured pressure reflection coefficient.'),
   setting('reflection_order', 'Environment', 'order', [0, 1, 2], 'Maximum wall reflections.'),
   setting('diffraction_order', 'Environment', 'order', [0, 1, 2], 'Maximum edge path order.'),
+  ...[
+    ['clock_offset_sigma_ms', 'ms sigma', [0, 1, 5], 'Opt-in seeded per-node clock offset. Common to all node microphones. No inter-node TDOA constraint.'],
+    ['clock_drift_sigma_ppm', 'ppm sigma', [0, 20, 100], 'Opt-in node sample-clock drift. Linear interpolation and zero-padded record edges are approximations.'],
+    ['wind_speed_mps', 'm/s', [0, 3, 7], 'PLACEHOLDER low-frequency wind noise; 55 dB SPL at 5 m/s, pressure proportional to speed squared. Zero is OFF.'],
+    ['wind_correlation', 'fraction', [0, 0.5, 1], 'Shared wind-noise power within a node; only active with nonzero wind speed.'],
+    ['urban_noise_db_spl', 'dB SPL / 0 OFF', [0, 45, 60], 'PLACEHOLDER additive 250 Hz low-pass urban rumble plus 75 Hz tone; not a measured city recording.'],
+    ['rain_noise_db_spl', 'dB SPL / 0 OFF', [0, 45, 60], 'PLACEHOLDER broadband rain plus sparse impacts; no calibrated rainfall or housing response.'],
+    ['noise_variation_db', 'peak dB depth', [0, 3, 6], 'PLACEHOLDER shared-node slow amplitude modulation of ambient/weather noise, not self-noise or source signals.']
+  ].map(([id, unit, values, description]) => ({ id, unit, values, description, group: 'Opt-in realism (placeholders)', base: REALISM_DEFAULTS[id], affects: 'render' })),
   { id: 'level_1m_db', group: 'Sources', unit: 'dB SPL', values: [90, 100, 110], base: 100, affects: 'render', description: 'Set level of all sources at 1 m.' },
   { id: 'clip', group: 'Sources', unit: 'clip ID', values: ['glass_breaking', 'car_horn', 'engine'], base: 'glass_breaking', affects: 'render', description: 'Recorded clip for all sources; not a classifier label.' },
   { id: 'range_m', group: 'Sources', unit: 'm', values: [20, 50, 100, 200], base: 50, affects: 'render', description: 'Move source reference positions to this range from node centroid.' },
@@ -45,7 +55,7 @@ export function applyValues(original, values, arrays = BUILTIN_ARRAYS) {
     if (!Object.hasOwn(values, id)) continue;
     const value = values[id];
     if (!VARIABLE_MAP.has(id)) throw new Error(`Unknown benchmark variable: ${id}`);
-    if (id in DEFAULT_SETTINGS || id === 'analysis_mode') s.settings[id] = value;
+    if (id in DEFAULT_SETTINGS || id in REALISM_DEFAULTS || id === 'analysis_mode') s.settings[id] = value;
     else if (id === 'mic_array') {
       const a = arrays.find((a) => a.id === value);
       if (!a) throw new Error(`Unknown array: ${value}`);

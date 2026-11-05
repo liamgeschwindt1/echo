@@ -1,0 +1,2509 @@
+{
+  "schema": 1,
+  "method": "Recorded cold render times and analysis stage times from complete round-one studies; per-run p90, no cache discount. Different runtime/CPU load is a source of uncertainty.",
+  "provenance": [
+    {
+      "path": "baselines/baseline-0.json",
+      "sha256": "980f964a025c7c31b8beda31f00a95ea8acc3858b31149dfac2fa23c98e20cc0",
+      "expected_runs": 300,
+      "runs": 300
+    },
+    {
+      "path": "baselines/array-full-budget.json.gz",
+      "sha256": "6bf0bb412a129cc446a3822075901a46e9c1e029ed3c2db234b8872be1d49f0c",
+      "expected_runs": 900,
+      "runs": 900
+    }
+  ],
+  "timings": [
+    {
+      "key": "bad_geometry|12|measured_only",
+      "scene": "bad_geometry",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 2386.1035599997267,
+      "render_p90_ms": 2427.2243339996785,
+      "analysis_p50_ms": 1062.1285729994997,
+      "analysis_p90_ms": 1100.7512550000101
+    },
+    {
+      "key": "bad_geometry|16|measured_only",
+      "scene": "bad_geometry",
+      "total_mics": 16,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 2950.9219009997323,
+      "render_p90_ms": 3189.843053999357,
+      "analysis_p50_ms": 1704.046040999703,
+      "analysis_p90_ms": 1795.078835000284
+    },
+    {
+      "key": "bad_geometry|24|measured_only",
+      "scene": "bad_geometry",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 3909.4440890001133,
+      "render_p90_ms": 4186.879119999707,
+      "analysis_p50_ms": 3466.120978999883,
+      "analysis_p90_ms": 3740.183569001034
+    },
+    {
+      "key": "bad_geometry|8|measured_only",
+      "scene": "bad_geometry",
+      "total_mics": 8,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 18,
+      "render_p50_ms": 2535.4769369997084,
+      "render_p90_ms": 2978.5682499995455,
+      "analysis_p50_ms": 770.1428360000718,
+      "analysis_p90_ms": 1015.4599190000445
+    },
+    {
+      "key": "bad_geometry|8|truth_assisted",
+      "scene": "bad_geometry",
+      "total_mics": 8,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 5,
+      "analysis_n": 6,
+      "render_p50_ms": 2940.0050699999556,
+      "render_p90_ms": 3138.008171999827,
+      "analysis_p50_ms": 604.0177640002221,
+      "analysis_p90_ms": 624.3950739996508
+    },
+    {
+      "key": "blocked|12|measured_only",
+      "scene": "blocked",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 18,
+      "render_p50_ms": 3251.964208001271,
+      "render_p90_ms": 4619.20706700001,
+      "analysis_p50_ms": 1091.321624000091,
+      "analysis_p90_ms": 1481.866737000004
+    },
+    {
+      "key": "blocked|12|truth_assisted",
+      "scene": "blocked",
+      "total_mics": 12,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 5,
+      "analysis_n": 6,
+      "render_p50_ms": 3972.9138650000095,
+      "render_p90_ms": 4757.91784899999,
+      "analysis_p50_ms": 1519.0843010000244,
+      "analysis_p90_ms": 2042.810282999999
+    },
+    {
+      "key": "blocked|18|measured_only",
+      "scene": "blocked",
+      "total_mics": 18,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 4199.00192900002,
+      "render_p90_ms": 4300.283195999917,
+      "analysis_p50_ms": 1985.846874000039,
+      "analysis_p90_ms": 1991.9420809997246
+    },
+    {
+      "key": "blocked|24|measured_only",
+      "scene": "blocked",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 5746.880718999542,
+      "render_p90_ms": 6320.038014000282,
+      "analysis_p50_ms": 3032.4993900004774,
+      "analysis_p90_ms": 3086.2595650004223
+    },
+    {
+      "key": "blocked|36|measured_only",
+      "scene": "blocked",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 7337.581175999716,
+      "render_p90_ms": 11539.839679999975,
+      "analysis_p50_ms": 6965.910016000271,
+      "analysis_p90_ms": 9494.904982000124
+    },
+    {
+      "key": "continuous|12|measured_only",
+      "scene": "continuous",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 18,
+      "render_p50_ms": 4259.578486000013,
+      "render_p90_ms": 4676.634835001081,
+      "analysis_p50_ms": 1737.4235540004447,
+      "analysis_p90_ms": 2139.537791000679
+    },
+    {
+      "key": "continuous|12|truth_assisted",
+      "scene": "continuous",
+      "total_mics": 12,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 4143.541391999999,
+      "render_p90_ms": 4264.134914000002,
+      "analysis_p50_ms": 1737.3081740000052,
+      "analysis_p90_ms": 1830.3329599999997
+    },
+    {
+      "key": "continuous|18|measured_only",
+      "scene": "continuous",
+      "total_mics": 18,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 5786.12147699995,
+      "render_p90_ms": 5820.438376999926,
+      "analysis_p50_ms": 3273.6793949999847,
+      "analysis_p90_ms": 3364.2891420000233
+    },
+    {
+      "key": "continuous|24|measured_only",
+      "scene": "continuous",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 7783.157517999411,
+      "render_p90_ms": 7832.859559999779,
+      "analysis_p50_ms": 5342.5784550001845,
+      "analysis_p90_ms": 5516.225518000312
+    },
+    {
+      "key": "continuous|36|measured_only",
+      "scene": "continuous",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 10502.321441999637,
+      "render_p90_ms": 14879.595796999987,
+      "analysis_p50_ms": 12594.461286999285,
+      "analysis_p90_ms": 17448.043947000057
+    },
+    {
+      "key": "corner|12|measured_only",
+      "scene": "corner",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 18,
+      "render_p50_ms": 5536.127455000067,
+      "render_p90_ms": 9502.852190000005,
+      "analysis_p50_ms": 1415.7592249999288,
+      "analysis_p90_ms": 2164.2978650005534
+    },
+    {
+      "key": "corner|12|truth_assisted",
+      "scene": "corner",
+      "total_mics": 12,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 5,
+      "analysis_n": 6,
+      "render_p50_ms": 7271.270907999948,
+      "render_p90_ms": 8241.102602999657,
+      "analysis_p50_ms": 2557.6458669994026,
+      "analysis_p90_ms": 5971.746643000282
+    },
+    {
+      "key": "corner|18|measured_only",
+      "scene": "corner",
+      "total_mics": 18,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 5702.156959999353,
+      "render_p90_ms": 5818.0197050003335,
+      "analysis_p50_ms": 1842.7204780001193,
+      "analysis_p90_ms": 1922.1760390000418
+    },
+    {
+      "key": "corner|24|measured_only",
+      "scene": "corner",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 6316.515739000402,
+      "render_p90_ms": 7283.326572999358,
+      "analysis_p50_ms": 2947.8566120006144,
+      "analysis_p90_ms": 3191.249264999293
+    },
+    {
+      "key": "corner|36|measured_only",
+      "scene": "corner",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 8704.225649999455,
+      "render_p90_ms": 9489.816711999942,
+      "analysis_p50_ms": 6050.186803998426,
+      "analysis_p90_ms": 7089.795329999179
+    },
+    {
+      "key": "drone_2|12|measured_only",
+      "scene": "drone_2",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 1,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 7928.059197999537,
+      "render_p90_ms": 8001.990908000618,
+      "analysis_p50_ms": 2067.0787709997967,
+      "analysis_p90_ms": 2087.190860000439
+    },
+    {
+      "key": "drone_2|16|measured_only",
+      "scene": "drone_2",
+      "total_mics": 16,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 1,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 9882.027445000596,
+      "render_p90_ms": 9892.527514999732,
+      "analysis_p50_ms": 3554.0378090003505,
+      "analysis_p90_ms": 3650.5840650005266
+    },
+    {
+      "key": "drone_2|24|measured_only",
+      "scene": "drone_2",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 1,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 22,
+      "render_p50_ms": 13096.84037199989,
+      "render_p90_ms": 17610.120488000102,
+      "analysis_p50_ms": 7495.416702000424,
+      "analysis_p90_ms": 10033.762434999924
+    },
+    {
+      "key": "drone_2|24|truth_assisted",
+      "scene": "drone_2",
+      "total_mics": 24,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 1,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 5,
+      "analysis_n": 6,
+      "render_p50_ms": 13015.1533540003,
+      "render_p90_ms": 19931.464146999642,
+      "analysis_p50_ms": 7097.671128000133,
+      "analysis_p90_ms": 9570.699222000316
+    },
+    {
+      "key": "drone_2|8|measured_only",
+      "scene": "drone_2",
+      "total_mics": 8,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 1,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 12,
+      "analysis_n": 12,
+      "render_p50_ms": 5758.78578600008,
+      "render_p90_ms": 10941.91457699996,
+      "analysis_p50_ms": 1143.2087600002997,
+      "analysis_p90_ms": 2293.6032489999197
+    },
+    {
+      "key": "drone_3|12|measured_only",
+      "scene": "drone_3",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 1,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 12,
+      "analysis_n": 12,
+      "render_p50_ms": 7813.446849000175,
+      "render_p90_ms": 18308.878001000034,
+      "analysis_p50_ms": 1804.058060000185,
+      "analysis_p90_ms": 3769.943383999984
+    },
+    {
+      "key": "drone_3|18|measured_only",
+      "scene": "drone_3",
+      "total_mics": 18,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 1,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 11582.813952000812,
+      "render_p90_ms": 11865.873904999346,
+      "analysis_p50_ms": 3161.1480790004134,
+      "analysis_p90_ms": 3215.4629370002076
+    },
+    {
+      "key": "drone_3|24|measured_only",
+      "scene": "drone_3",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 1,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 13033.60485299956,
+      "render_p90_ms": 13336.037456999533,
+      "analysis_p50_ms": 4846.776924000122,
+      "analysis_p90_ms": 5104.618055999279
+    },
+    {
+      "key": "drone_3|36|measured_only",
+      "scene": "drone_3",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 1,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 22,
+      "render_p50_ms": 19506.381188000552,
+      "render_p90_ms": 33474.31057099998,
+      "analysis_p50_ms": 11384.276897000149,
+      "analysis_p90_ms": 16000.507836999837
+    },
+    {
+      "key": "drone_3|36|truth_assisted",
+      "scene": "drone_3",
+      "total_mics": 36,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 1,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 20282.34413699992,
+      "render_p90_ms": 59450.13972599991,
+      "analysis_p50_ms": 9988.71767800022,
+      "analysis_p90_ms": 35356.77061400004
+    },
+    {
+      "key": "five_node|20|measured_only",
+      "scene": "five_node",
+      "total_mics": 20,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 2,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 18,
+      "render_p50_ms": 15205.19511,
+      "render_p90_ms": 23614.029536999995,
+      "analysis_p50_ms": 2140.191942000296,
+      "analysis_p90_ms": 3063.148153000002
+    },
+    {
+      "key": "five_node|20|truth_assisted",
+      "scene": "five_node",
+      "total_mics": 20,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 2,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 16139.961276000016,
+      "render_p90_ms": 17676.336057999986,
+      "analysis_p50_ms": 2374.613798000035,
+      "analysis_p90_ms": 2720.3250659999903
+    },
+    {
+      "key": "five_node|30|measured_only",
+      "scene": "five_node",
+      "total_mics": 30,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 2,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 15724.045288000256,
+      "render_p90_ms": 15835.97068099957,
+      "analysis_p50_ms": 2639.3531080000103,
+      "analysis_p90_ms": 2709.3372140000574
+    },
+    {
+      "key": "five_node|40|measured_only",
+      "scene": "five_node",
+      "total_mics": 40,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 2,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 18722.111938000657,
+      "render_p90_ms": 18914.828972999938,
+      "analysis_p50_ms": 3981.437444999814,
+      "analysis_p90_ms": 4160.720637000166
+    },
+    {
+      "key": "five_node|60|measured_only",
+      "scene": "five_node",
+      "total_mics": 60,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 2,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 27630.05776100047,
+      "render_p90_ms": 44757.281468999805,
+      "analysis_p50_ms": 8993.55006399937,
+      "analysis_p90_ms": 12841.84308900009
+    },
+    {
+      "key": "moving|12|measured_only",
+      "scene": "moving",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 1,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 18,
+      "render_p50_ms": 10238.545094000016,
+      "render_p90_ms": 11401.958851000003,
+      "analysis_p50_ms": 1562.6919900001958,
+      "analysis_p90_ms": 1710.6569000000018
+    },
+    {
+      "key": "moving|12|truth_assisted",
+      "scene": "moving",
+      "total_mics": 12,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 1,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 10168.678276999999,
+      "render_p90_ms": 10582.197380000027,
+      "analysis_p50_ms": 1453.1707720000122,
+      "analysis_p90_ms": 2194.1328470000008
+    },
+    {
+      "key": "moving|18|measured_only",
+      "scene": "moving",
+      "total_mics": 18,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 1,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 14176.988433000166,
+      "render_p90_ms": 15404.702147999778,
+      "analysis_p50_ms": 2978.9572530002333,
+      "analysis_p90_ms": 3544.0697780000046
+    },
+    {
+      "key": "moving|24|measured_only",
+      "scene": "moving",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 1,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 17693.906605999917,
+      "render_p90_ms": 18267.008992999792,
+      "analysis_p50_ms": 4718.5187739999965,
+      "analysis_p90_ms": 4980.42456500046
+    },
+    {
+      "key": "moving|36|measured_only",
+      "scene": "moving",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 1,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 27377.08302900009,
+      "render_p90_ms": 43079.70956200012,
+      "analysis_p50_ms": 11072.49450599961,
+      "analysis_p90_ms": 14983.316546000075
+    },
+    {
+      "key": "near_wall|12|measured_only",
+      "scene": "near_wall",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 18,
+      "render_p50_ms": 3562.6235909999996,
+      "render_p90_ms": 4770.670204999999,
+      "analysis_p50_ms": 1143.5124430004507,
+      "analysis_p90_ms": 1532.536231
+    },
+    {
+      "key": "near_wall|12|truth_assisted",
+      "scene": "near_wall",
+      "total_mics": 12,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 3603.451287,
+      "render_p90_ms": 3741.8654239999996,
+      "analysis_p50_ms": 1705.0159600000006,
+      "analysis_p90_ms": 1738.1241929999997
+    },
+    {
+      "key": "near_wall|18|measured_only",
+      "scene": "near_wall",
+      "total_mics": 18,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 4560.165841999929,
+      "render_p90_ms": 4562.704404000193,
+      "analysis_p50_ms": 2526.134387999773,
+      "analysis_p90_ms": 2620.4929520003498
+    },
+    {
+      "key": "near_wall|24|measured_only",
+      "scene": "near_wall",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 5490.1951759997755,
+      "render_p90_ms": 6189.605564000085,
+      "analysis_p50_ms": 3181.7885079998523,
+      "analysis_p90_ms": 3217.6049270005897
+    },
+    {
+      "key": "near_wall|36|measured_only",
+      "scene": "near_wall",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 7598.098691999912,
+      "render_p90_ms": 11668.067945000017,
+      "analysis_p50_ms": 7419.117978999391,
+      "analysis_p90_ms": 10506.113683999982
+    },
+    {
+      "key": "overlap|12|measured_only",
+      "scene": "overlap",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 18,
+      "render_p50_ms": 3092.1389229999986,
+      "render_p90_ms": 3367.395644,
+      "analysis_p50_ms": 1198.356874000001,
+      "analysis_p90_ms": 1279.1521630003117
+    },
+    {
+      "key": "overlap|12|truth_assisted",
+      "scene": "overlap",
+      "total_mics": 12,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 5,
+      "analysis_n": 6,
+      "render_p50_ms": 2907.655869999995,
+      "render_p90_ms": 3157.9469699999972,
+      "analysis_p50_ms": 1695.843015999999,
+      "analysis_p90_ms": 1840.709885999997
+    },
+    {
+      "key": "overlap|18|measured_only",
+      "scene": "overlap",
+      "total_mics": 18,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 4035.9101489996538,
+      "render_p90_ms": 4164.660705000162,
+      "analysis_p50_ms": 2299.616199000273,
+      "analysis_p90_ms": 2362.4707300001755
+    },
+    {
+      "key": "overlap|24|measured_only",
+      "scene": "overlap",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 4903.977164000273,
+      "render_p90_ms": 5127.904931999743,
+      "analysis_p50_ms": 3476.266219000332,
+      "analysis_p90_ms": 3536.9245959995314
+    },
+    {
+      "key": "overlap|36|measured_only",
+      "scene": "overlap",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 6612.549972999841,
+      "render_p90_ms": 10341.035846999846,
+      "analysis_p50_ms": 7863.339059000835,
+      "analysis_p90_ms": 11049.512690000003
+    },
+    {
+      "key": "random_1|20|measured_only",
+      "scene": "random_1",
+      "total_mics": 20,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 12,
+      "analysis_n": 12,
+      "render_p50_ms": 4684.641931001097,
+      "render_p90_ms": 6941.143069999991,
+      "analysis_p50_ms": 2726.5151869999245,
+      "analysis_p90_ms": 4014.532405999955
+    },
+    {
+      "key": "random_1|30|measured_only",
+      "scene": "random_1",
+      "total_mics": 30,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 5888.3491159994155,
+      "render_p90_ms": 5962.493941999972,
+      "analysis_p50_ms": 4853.860601000488,
+      "analysis_p90_ms": 4911.976223000325
+    },
+    {
+      "key": "random_1|40|measured_only",
+      "scene": "random_1",
+      "total_mics": 40,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 7072.98881699983,
+      "render_p90_ms": 7137.653188000433,
+      "analysis_p50_ms": 7915.7079849997535,
+      "analysis_p90_ms": 7976.874596000649
+    },
+    {
+      "key": "random_1|46|measured_only",
+      "scene": "random_1",
+      "total_mics": 46,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 5,
+      "analysis_n": 6,
+      "render_p50_ms": 7985.122086999996,
+      "render_p90_ms": 12156.405063999817,
+      "analysis_p50_ms": 11257.098313999995,
+      "analysis_p90_ms": 17327.719347000122
+    },
+    {
+      "key": "random_1|46|truth_assisted",
+      "scene": "random_1",
+      "total_mics": 46,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 8038.855447000002,
+      "render_p90_ms": 12768.555426999927,
+      "analysis_p50_ms": 8448.188878999994,
+      "analysis_p90_ms": 12969.55816499982
+    },
+    {
+      "key": "random_1|60|measured_only",
+      "scene": "random_1",
+      "total_mics": 60,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 9913.149612999987,
+      "render_p90_ms": 11114.248591000214,
+      "analysis_p50_ms": 17706.71845600009,
+      "analysis_p90_ms": 19402.123997000977
+    },
+    {
+      "key": "random_2|24|measured_only",
+      "scene": "random_2",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 3,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 12,
+      "analysis_n": 12,
+      "render_p50_ms": 11697.451264000032,
+      "render_p90_ms": 17109.641797000077,
+      "analysis_p50_ms": 1800.0092599997297,
+      "analysis_p90_ms": 2631.5492329999106
+    },
+    {
+      "key": "random_2|36|measured_only",
+      "scene": "random_2",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 3,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 15167.196005000733,
+      "render_p90_ms": 16007.434847999364,
+      "analysis_p50_ms": 2567.7753539998084,
+      "analysis_p90_ms": 2622.7515829997137
+    },
+    {
+      "key": "random_2|40|measured_only",
+      "scene": "random_2",
+      "total_mics": 40,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 3,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 16352.27739599999,
+      "render_p90_ms": 21459.487964000553,
+      "analysis_p50_ms": 3684.8017739998177,
+      "analysis_p90_ms": 4141.070906999521
+    },
+    {
+      "key": "random_2|40|truth_assisted",
+      "scene": "random_2",
+      "total_mics": 40,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 3,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 15592.086071000434,
+      "render_p90_ms": 20848.50618499983,
+      "analysis_p50_ms": 1518.6967409998178,
+      "analysis_p90_ms": 2129.4611420007423
+    },
+    {
+      "key": "random_2|48|measured_only",
+      "scene": "random_2",
+      "total_mics": 48,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 3,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 18211.37876500003,
+      "render_p90_ms": 18841.564289000817,
+      "analysis_p50_ms": 3756.7693290002644,
+      "analysis_p90_ms": 4003.870746999979
+    },
+    {
+      "key": "random_2|72|measured_only",
+      "scene": "random_2",
+      "total_mics": 72,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 3,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 26011.582367999945,
+      "render_p90_ms": 27815.36120700091,
+      "analysis_p50_ms": 8156.523022999987,
+      "analysis_p90_ms": 9101.001883000135
+    },
+    {
+      "key": "random_3|24|measured_only",
+      "scene": "random_3",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 12,
+      "analysis_n": 12,
+      "render_p50_ms": 7275.539189999923,
+      "render_p90_ms": 11082.978496000054,
+      "analysis_p50_ms": 2753.8581639998592,
+      "analysis_p90_ms": 3818.055522999959
+    },
+    {
+      "key": "random_3|36|measured_only",
+      "scene": "random_3",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 9196.887419999577,
+      "render_p90_ms": 9238.9486870002,
+      "analysis_p50_ms": 4782.798955999315,
+      "analysis_p90_ms": 4793.568527000025
+    },
+    {
+      "key": "random_3|48|measured_only",
+      "scene": "random_3",
+      "total_mics": 48,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 11374.07059300039,
+      "render_p90_ms": 13234.51890499983,
+      "analysis_p50_ms": 7777.303162999451,
+      "analysis_p90_ms": 8543.520887999795
+    },
+    {
+      "key": "random_3|56|measured_only",
+      "scene": "random_3",
+      "total_mics": 56,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 13699.732526999898,
+      "render_p90_ms": 14536.844982000068,
+      "analysis_p50_ms": 13435.456364000216,
+      "analysis_p90_ms": 13969.47559699975
+    },
+    {
+      "key": "random_3|56|truth_assisted",
+      "scene": "random_3",
+      "total_mics": 56,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 13804.395777000114,
+      "render_p90_ms": 14310.388178000227,
+      "analysis_p50_ms": 5933.486583000049,
+      "analysis_p90_ms": 6066.860656000674
+    },
+    {
+      "key": "random_3|72|measured_only",
+      "scene": "random_3",
+      "total_mics": 72,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 17014.359508999623,
+      "render_p90_ms": 17853.644060999155,
+      "analysis_p50_ms": 17072.51543499902,
+      "analysis_p90_ms": 18183.914393000305
+    },
+    {
+      "key": "random_4|12|measured_only",
+      "scene": "random_4",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 3,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 5379.425669000484,
+      "render_p90_ms": 5529.452015999705,
+      "analysis_p50_ms": 2065.240894000046,
+      "analysis_p90_ms": 2074.553385000676
+    },
+    {
+      "key": "random_4|16|measured_only",
+      "scene": "random_4",
+      "total_mics": 16,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 3,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 6773.303763000295,
+      "render_p90_ms": 7017.367339000106,
+      "analysis_p50_ms": 3265.5190000003204,
+      "analysis_p90_ms": 3335.540374999866
+    },
+    {
+      "key": "random_4|24|measured_only",
+      "scene": "random_4",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 3,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 22,
+      "render_p50_ms": 9443.170257000253,
+      "render_p90_ms": 10582.013819999993,
+      "analysis_p50_ms": 7318.118059,
+      "analysis_p90_ms": 7777.0162689997815
+    },
+    {
+      "key": "random_4|24|truth_assisted",
+      "scene": "random_4",
+      "total_mics": 24,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 3,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 9302.303674000315,
+      "render_p90_ms": 11011.620801999234,
+      "analysis_p50_ms": 6881.495457000099,
+      "analysis_p90_ms": 9749.391471000388
+    },
+    {
+      "key": "random_4|8|measured_only",
+      "scene": "random_4",
+      "total_mics": 8,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 3,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 12,
+      "analysis_n": 12,
+      "render_p50_ms": 4098.0886080004275,
+      "render_p90_ms": 6075.972635000013,
+      "analysis_p50_ms": 1232.0844250004739,
+      "analysis_p90_ms": 1994.5384370000102
+    },
+    {
+      "key": "random_5|12|measured_only",
+      "scene": "random_5",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 2,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 12,
+      "analysis_n": 12,
+      "render_p50_ms": 4133.483122998849,
+      "render_p90_ms": 6172.444598999922,
+      "analysis_p50_ms": 1109.530636999756,
+      "analysis_p90_ms": 1768.84728300001
+    },
+    {
+      "key": "random_5|18|measured_only",
+      "scene": "random_5",
+      "total_mics": 18,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 2,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 5551.779200999998,
+      "render_p90_ms": 6402.665179999545,
+      "analysis_p50_ms": 1996.1231069993228,
+      "analysis_p90_ms": 2016.3946060007438
+    },
+    {
+      "key": "random_5|20|measured_only",
+      "scene": "random_5",
+      "total_mics": 20,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 2,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 6140.281497000717,
+      "render_p90_ms": 6252.802293000743,
+      "analysis_p50_ms": 2853.4889270002022,
+      "analysis_p90_ms": 3042.7907829992473
+    },
+    {
+      "key": "random_5|20|truth_assisted",
+      "scene": "random_5",
+      "total_mics": 20,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 2,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 6029.184669999406,
+      "render_p90_ms": 6587.110997000709,
+      "analysis_p50_ms": 981.047195000574,
+      "analysis_p90_ms": 1068.4557649996132
+    },
+    {
+      "key": "random_5|24|measured_only",
+      "scene": "random_5",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 2,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 6797.916869999841,
+      "render_p90_ms": 7299.524048999883,
+      "analysis_p50_ms": 3325.973779999651,
+      "analysis_p90_ms": 3471.542182999663
+    },
+    {
+      "key": "random_5|36|measured_only",
+      "scene": "random_5",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 2,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 9175.389987999573,
+      "render_p90_ms": 10498.741415000055,
+      "analysis_p50_ms": 6173.66526899999,
+      "analysis_p90_ms": 6964.564737999812
+    },
+    {
+      "key": "random_6|12|measured_only",
+      "scene": "random_6",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 2,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 12,
+      "analysis_n": 12,
+      "render_p50_ms": 4028.1955199986696,
+      "render_p90_ms": 6506.442700000014,
+      "analysis_p50_ms": 1662.7045420003124,
+      "analysis_p90_ms": 2443.67173000006
+    },
+    {
+      "key": "random_6|18|measured_only",
+      "scene": "random_6",
+      "total_mics": 18,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 2,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 5575.1015770006925,
+      "render_p90_ms": 6143.763539000414,
+      "analysis_p50_ms": 2965.342702999711,
+      "analysis_p90_ms": 3022.7890119999647
+    },
+    {
+      "key": "random_6|24|measured_only",
+      "scene": "random_6",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 2,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 6958.593819999136,
+      "render_p90_ms": 7089.41337600071,
+      "analysis_p50_ms": 4902.479419000447,
+      "analysis_p90_ms": 5083.922718999907
+    },
+    {
+      "key": "random_6|36|measured_only",
+      "scene": "random_6",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 2,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 22,
+      "analysis_n": 22,
+      "render_p50_ms": 9837.414079999551,
+      "render_p90_ms": 10980.504564000294,
+      "analysis_p50_ms": 10951.799293000251,
+      "analysis_p90_ms": 24416.77699699998
+    },
+    {
+      "key": "random_6|36|truth_assisted",
+      "scene": "random_6",
+      "total_mics": 36,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 2,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 6,
+      "render_p50_ms": 9739.145500999875,
+      "render_p90_ms": 39470.381139999256,
+      "analysis_p50_ms": 35556.8251110008,
+      "analysis_p90_ms": 56667.10876999982
+    },
+    {
+      "key": "random_7|20|measured_only",
+      "scene": "random_7",
+      "total_mics": 20,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 12,
+      "analysis_n": 12,
+      "render_p50_ms": 6293.267401998863,
+      "render_p90_ms": 8799.516752999974,
+      "analysis_p50_ms": 2718.0902249999344,
+      "analysis_p90_ms": 3800.3311120000435
+    },
+    {
+      "key": "random_7|30|measured_only",
+      "scene": "random_7",
+      "total_mics": 30,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 8172.832623000257,
+      "render_p90_ms": 8464.297042000107,
+      "analysis_p50_ms": 5036.66666499991,
+      "analysis_p90_ms": 5697.532080999576
+    },
+    {
+      "key": "random_7|40|measured_only",
+      "scene": "random_7",
+      "total_mics": 40,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 9890.730476000346,
+      "render_p90_ms": 9962.145942999981,
+      "analysis_p50_ms": 7894.9076859997585,
+      "analysis_p90_ms": 7989.695803999901
+    },
+    {
+      "key": "random_7|52|measured_only",
+      "scene": "random_7",
+      "total_mics": 52,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 21135.2016750006,
+      "render_p90_ms": 25300.071142999455,
+      "analysis_p50_ms": 22450.136117000133,
+      "analysis_p90_ms": 23566.753998000175
+    },
+    {
+      "key": "random_7|52|truth_assisted",
+      "scene": "random_7",
+      "total_mics": 52,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 6,
+      "render_p50_ms": 18917.514487000182,
+      "render_p90_ms": 19655.7328329999,
+      "analysis_p50_ms": 31487.198840999976,
+      "analysis_p90_ms": 33113.51349900011
+    },
+    {
+      "key": "random_7|60|measured_only",
+      "scene": "random_7",
+      "total_mics": 60,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 13872.650531999767,
+      "render_p90_ms": 15387.51282200031,
+      "analysis_p50_ms": 18029.069707999937,
+      "analysis_p90_ms": 19481.544014999643
+    },
+    {
+      "key": "random_8|20|measured_only",
+      "scene": "random_8",
+      "total_mics": 20,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 12,
+      "analysis_n": 12,
+      "render_p50_ms": 5966.550642000511,
+      "render_p90_ms": 9279.605778999976,
+      "analysis_p50_ms": 1649.5037779998966,
+      "analysis_p90_ms": 2387.213295000023
+    },
+    {
+      "key": "random_8|30|measured_only",
+      "scene": "random_8",
+      "total_mics": 30,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 7638.6681590005755,
+      "render_p90_ms": 7938.490907999687,
+      "analysis_p50_ms": 2630.5599429998547,
+      "analysis_p90_ms": 2814.8780699996278
+    },
+    {
+      "key": "random_8|40|measured_only",
+      "scene": "random_8",
+      "total_mics": 40,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 9258.348092,
+      "render_p90_ms": 9572.808209000155,
+      "analysis_p50_ms": 4026.4654549993575,
+      "analysis_p90_ms": 4288.077462000772
+    },
+    {
+      "key": "random_8|52|measured_only",
+      "scene": "random_8",
+      "total_mics": 52,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 17285.477185999975,
+      "render_p90_ms": 19786.82909000013,
+      "analysis_p50_ms": 10170.070875000209,
+      "analysis_p90_ms": 10733.287464000285
+    },
+    {
+      "key": "random_8|52|truth_assisted",
+      "scene": "random_8",
+      "total_mics": 52,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 5,
+      "analysis_n": 6,
+      "render_p50_ms": 17557.97434299998,
+      "render_p90_ms": 20040.257840999402,
+      "analysis_p50_ms": 5677.086750000715,
+      "analysis_p90_ms": 6668.246669000015
+    },
+    {
+      "key": "random_8|60|measured_only",
+      "scene": "random_8",
+      "total_mics": 60,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 1,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 13713.157174999826,
+      "render_p90_ms": 14721.817885000259,
+      "analysis_p50_ms": 9124.776978000998,
+      "analysis_p90_ms": 9754.421326000243
+    },
+    {
+      "key": "seven_source|16|measured_only",
+      "scene": "seven_source",
+      "total_mics": 16,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 7,
+        "moving_sources": 3,
+        "building_count": 3,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 12,
+      "analysis_n": 12,
+      "render_p50_ms": 136083.74627,
+      "render_p90_ms": 283551.448031,
+      "analysis_p50_ms": 2614.563012999948,
+      "analysis_p90_ms": 5334.51573600003
+    },
+    {
+      "key": "seven_source|24|measured_only",
+      "scene": "seven_source",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 7,
+        "moving_sources": 3,
+        "building_count": 3,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 196075.59193199966,
+      "render_p90_ms": 196114.082405,
+      "analysis_p50_ms": 4830.141703999601,
+      "analysis_p90_ms": 4936.433623000048
+    },
+    {
+      "key": "seven_source|32|measured_only",
+      "scene": "seven_source",
+      "total_mics": 32,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 7,
+        "moving_sources": 3,
+        "building_count": 3,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 256895.01080199983,
+      "render_p90_ms": 258050.43060899992,
+      "analysis_p50_ms": 7834.484159999527,
+      "analysis_p90_ms": 8344.943703999743
+    },
+    {
+      "key": "seven_source|48|measured_only",
+      "scene": "seven_source",
+      "total_mics": 48,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 7,
+        "moving_sources": 3,
+        "building_count": 3,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 22,
+      "analysis_n": 22,
+      "render_p50_ms": 393960.5437859995,
+      "render_p90_ms": 900535.4024,
+      "analysis_p50_ms": 18270.23609500006,
+      "analysis_p90_ms": 25803.044175000396
+    },
+    {
+      "key": "seven_source|48|truth_assisted",
+      "scene": "seven_source",
+      "total_mics": 48,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 7,
+        "moving_sources": 3,
+        "building_count": 3,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 847502.9313010001,
+      "render_p90_ms": 1119006.434281,
+      "analysis_p50_ms": 55525.74183199997,
+      "analysis_p90_ms": 96603.93699900014
+    },
+    {
+      "key": "simultaneous_0|12|measured_only",
+      "scene": "simultaneous_0",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 18,
+      "render_p50_ms": 4065.7885110005736,
+      "render_p90_ms": 4949.5682439999655,
+      "analysis_p50_ms": 2165.194724000059,
+      "analysis_p90_ms": 2495.014142
+    },
+    {
+      "key": "simultaneous_0|12|truth_assisted",
+      "scene": "simultaneous_0",
+      "total_mics": 12,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 6,
+      "render_p50_ms": 4859.06875800062,
+      "render_p90_ms": 5006.901200999506,
+      "analysis_p50_ms": 4516.553557999432,
+      "analysis_p90_ms": 4599.150186999701
+    },
+    {
+      "key": "simultaneous_0|18|measured_only",
+      "scene": "simultaneous_0",
+      "total_mics": 18,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 3986.3737690001726,
+      "render_p90_ms": 3993.185686999932,
+      "analysis_p50_ms": 2991.2547269994393,
+      "analysis_p90_ms": 3011.110356999561
+    },
+    {
+      "key": "simultaneous_0|24|measured_only",
+      "scene": "simultaneous_0",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 4662.608645999804,
+      "render_p90_ms": 4803.591534000821,
+      "analysis_p50_ms": 4790.484348000027,
+      "analysis_p90_ms": 4935.856629000045
+    },
+    {
+      "key": "simultaneous_0|36|measured_only",
+      "scene": "simultaneous_0",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 6605.856796000153,
+      "render_p90_ms": 10140.422218999825,
+      "analysis_p50_ms": 10979.637679999694,
+      "analysis_p90_ms": 13667.283292999957
+    },
+    {
+      "key": "simultaneous_10|12|measured_only",
+      "scene": "simultaneous_10",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 18,
+      "render_p50_ms": 4117.470700999955,
+      "render_p90_ms": 8584.326116000302,
+      "analysis_p50_ms": 2371.226306000026,
+      "analysis_p90_ms": 4107.040665000677
+    },
+    {
+      "key": "simultaneous_10|12|truth_assisted",
+      "scene": "simultaneous_10",
+      "total_mics": 12,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 3,
+      "analysis_n": 6,
+      "render_p50_ms": 7812.516180999577,
+      "render_p90_ms": 7923.08554999996,
+      "analysis_p50_ms": 7808.070423999801,
+      "analysis_p90_ms": 8882.087110999972
+    },
+    {
+      "key": "simultaneous_10|18|measured_only",
+      "scene": "simultaneous_10",
+      "total_mics": 18,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 4016.2666159998626,
+      "render_p90_ms": 4194.5509669994935,
+      "analysis_p50_ms": 3010.2704320000485,
+      "analysis_p90_ms": 3074.1962040001526
+    },
+    {
+      "key": "simultaneous_10|24|measured_only",
+      "scene": "simultaneous_10",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 4615.156775999814,
+      "render_p90_ms": 4623.190343999304,
+      "analysis_p50_ms": 4831.211550000124,
+      "analysis_p90_ms": 4874.862840999849
+    },
+    {
+      "key": "simultaneous_10|36|measured_only",
+      "scene": "simultaneous_10",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 6346.581187998876,
+      "render_p90_ms": 7294.164850999601,
+      "analysis_p50_ms": 10912.572233999148,
+      "analysis_p90_ms": 11429.420879999176
+    },
+    {
+      "key": "simultaneous_6|12|measured_only",
+      "scene": "simultaneous_6",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 18,
+      "render_p50_ms": 3985.8780949999345,
+      "render_p90_ms": 6066.545222999528,
+      "analysis_p50_ms": 2094.5887270001695,
+      "analysis_p90_ms": 4141.6997520001605
+    },
+    {
+      "key": "simultaneous_6|12|truth_assisted",
+      "scene": "simultaneous_6",
+      "total_mics": 12,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 3,
+      "analysis_n": 6,
+      "render_p50_ms": 5258.939039999619,
+      "render_p90_ms": 7666.515901000239,
+      "analysis_p50_ms": 7567.885311000049,
+      "analysis_p90_ms": 8495.294633000158
+    },
+    {
+      "key": "simultaneous_6|18|measured_only",
+      "scene": "simultaneous_6",
+      "total_mics": 18,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 4481.994442000054,
+      "render_p90_ms": 4979.761789999902,
+      "analysis_p50_ms": 3261.075251000002,
+      "analysis_p90_ms": 4050.7786290002987
+    },
+    {
+      "key": "simultaneous_6|24|measured_only",
+      "scene": "simultaneous_6",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 5109.643055999652,
+      "render_p90_ms": 5661.942148000002,
+      "analysis_p50_ms": 5063.491159999743,
+      "analysis_p90_ms": 5389.2667870000005
+    },
+    {
+      "key": "simultaneous_6|36|measured_only",
+      "scene": "simultaneous_6",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 2,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 6612.42707500048,
+      "render_p90_ms": 7697.891162999906,
+      "analysis_p50_ms": 10899.636424999684,
+      "analysis_p90_ms": 11544.90025800094
+    },
+    {
+      "key": "sparse_100|12|measured_only",
+      "scene": "sparse_100",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 18,
+      "render_p50_ms": 3921.515824000002,
+      "render_p90_ms": 5377.318026000052,
+      "analysis_p50_ms": 1380.8355950000696,
+      "analysis_p90_ms": 1624.2269779993221
+    },
+    {
+      "key": "sparse_100|12|truth_assisted",
+      "scene": "sparse_100",
+      "total_mics": 12,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 4666.729867999442,
+      "render_p90_ms": 5934.196208999492,
+      "analysis_p50_ms": 966.9170399997383,
+      "analysis_p90_ms": 1539.1932309996337
+    },
+    {
+      "key": "sparse_100|18|measured_only",
+      "scene": "sparse_100",
+      "total_mics": 18,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 3651.930815000087,
+      "render_p90_ms": 3681.378639999777,
+      "analysis_p50_ms": 1705.4695079997182,
+      "analysis_p90_ms": 1775.360743000172
+    },
+    {
+      "key": "sparse_100|24|measured_only",
+      "scene": "sparse_100",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 4418.944412999786,
+      "render_p90_ms": 4452.083490000106,
+      "analysis_p50_ms": 2678.305085000582,
+      "analysis_p90_ms": 2737.381537999958
+    },
+    {
+      "key": "sparse_100|36|measured_only",
+      "scene": "sparse_100",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 6105.611604999751,
+      "render_p90_ms": 9139.410360000096,
+      "analysis_p50_ms": 6422.596889999695,
+      "analysis_p90_ms": 8160.2863570000045
+    },
+    {
+      "key": "sparse_20|12|measured_only",
+      "scene": "sparse_20",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 18,
+      "render_p50_ms": 2764.927331,
+      "render_p90_ms": 5912.987476999988,
+      "analysis_p50_ms": 1182.6185720000003,
+      "analysis_p90_ms": 2374.3821600000374
+    },
+    {
+      "key": "sparse_20|12|truth_assisted",
+      "scene": "sparse_20",
+      "total_mics": 12,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 6,
+      "analysis_n": 6,
+      "render_p50_ms": 3057.182992,
+      "render_p90_ms": 6142.850034000352,
+      "analysis_p50_ms": 1763.936971,
+      "analysis_p90_ms": 3077.56519700028
+    },
+    {
+      "key": "sparse_20|18|measured_only",
+      "scene": "sparse_20",
+      "total_mics": 18,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 3623.163398999721,
+      "render_p90_ms": 3635.912642000243,
+      "analysis_p50_ms": 2026.9786499999464,
+      "analysis_p90_ms": 2039.4336090004072
+    },
+    {
+      "key": "sparse_20|24|measured_only",
+      "scene": "sparse_20",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 4068.6827149996534,
+      "render_p90_ms": 4159.836316999979,
+      "analysis_p50_ms": 3147.180162999779,
+      "analysis_p90_ms": 3206.372568999417
+    },
+    {
+      "key": "sparse_20|36|measured_only",
+      "scene": "sparse_20",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 5815.247615000233,
+      "render_p90_ms": 10121.329322000034,
+      "analysis_p50_ms": 7281.464261000976,
+      "analysis_p90_ms": 9995.809887999669
+    },
+    {
+      "key": "sparse_50|12|measured_only",
+      "scene": "sparse_50",
+      "total_mics": 12,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 18,
+      "analysis_n": 18,
+      "render_p50_ms": 3962.1178820002824,
+      "render_p90_ms": 5506.6802599999355,
+      "analysis_p50_ms": 1590.9772469997406,
+      "analysis_p90_ms": 2286.3997840000084
+    },
+    {
+      "key": "sparse_50|12|truth_assisted",
+      "scene": "sparse_50",
+      "total_mics": 12,
+      "analysis_mode": "truth_assisted",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 5,
+      "analysis_n": 6,
+      "render_p50_ms": 4552.084470000118,
+      "render_p90_ms": 5230.408784999512,
+      "analysis_p50_ms": 1586.3718179995194,
+      "analysis_p90_ms": 2200.2959890002385
+    },
+    {
+      "key": "sparse_50|18|measured_only",
+      "scene": "sparse_50",
+      "total_mics": 18,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 3457.7368180006742,
+      "render_p90_ms": 3518.1735700005665,
+      "analysis_p50_ms": 1922.6519909994677,
+      "analysis_p90_ms": 1931.8380820006132
+    },
+    {
+      "key": "sparse_50|24|measured_only",
+      "scene": "sparse_50",
+      "total_mics": 24,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 4,
+      "analysis_n": 4,
+      "render_p50_ms": 4232.102855999954,
+      "render_p90_ms": 4928.448994999751,
+      "analysis_p50_ms": 3046.8636739999056,
+      "analysis_p90_ms": 3434.7503630006686
+    },
+    {
+      "key": "sparse_50|36|measured_only",
+      "scene": "sparse_50",
+      "total_mics": 36,
+      "analysis_mode": "measured_only",
+      "descriptor": {
+        "source_count": 1,
+        "moving_sources": 0,
+        "building_count": 0,
+        "reflection_order": 1,
+        "diffraction_order": 2
+      },
+      "render_n": 16,
+      "analysis_n": 16,
+      "render_p50_ms": 5848.359024001285,
+      "render_p90_ms": 9084.864837999921,
+      "analysis_p50_ms": 6606.000541999936,
+      "analysis_p90_ms": 9124.974132000003
+    }
+  ]
+}

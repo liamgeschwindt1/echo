@@ -1,0 +1,21 @@
+{
+  "name": "B5/B4 global static association and uncertainty candidates",
+  "population_reference": "docs/experiments/round2-evaluation.json",
+  "runs_per_candidate": 150,
+  "inputs": "Stored measured node tracks from baselines/final-1.json; no source truth in inference; no rerendering.",
+  "candidates_in_order": ["global", "global-uncertainty"],
+  "global": {
+    "pair_proposals": "Reuse every legacy pair proposal before greedy selection, with unchanged score<=25 and onset skew gates.",
+    "multi_node_proposals": "For each static pair, add at most one compatible track from every other node, choosing minimum RMS angular residual at seed point. Require common propagation-adjusted time interval, forward bearings and RMS residual<=3*bearing_sigma. Refit all windows with equal total weight per node. Retain only static chi2<=4 proposals. Deduplicate identical track sets.",
+    "assignment": "Exact maximum-utility disjoint track-set assignment over all nodes. Utility=n_nodes-1+0.01/(1+score). Deterministic lexicographic ties. Dynamic programming over remaining track bitmask, explicit failure above 250000 visited states (not a silent greedy fallback).",
+    "moving": "Legacy pair bearing-only EKF proposals remain; no new multi-source peaks or 3D claim.",
+    "confidence": "Retrain the exact preregistered B1 feature/logistic/Platt/threshold procedure on changed train inference only. Validation accept/reject only."
+  },
+  "global-uncertainty": {
+    "base": "Exactly global candidate above, same train-only model procedure.",
+    "intervals": "From train scored associated node track-median absolute azimuth errors only, empirical finite-sample corrected 68.27% and 95.45% quantiles per declared realism profile. Apply to runtime node bearing intervals. These are nonparametric central coverage intervals, not a Gaussian sigma and twice-sigma assertion; report both explicitly.",
+    "unavailable": "If quantile rank exceeds sample count, interval is null and the calibration guard fails if baseline was finite. No validation fitting, no category-specific tuning."
+  },
+  "acceptance": "Rule 4, every train/validation off/on partition, 1000 paired whole-run bootstrap draws, 95% confidence. Keep only a passing candidate. If both pass choose lower train realism-on risk area (not validation).",
+  "limitations": "Candidate association considers a finite proposal family, not every possible group. New proposal uncertainty assumes accepted windows are correlated within a node; radius is simulator-trained. No measured elevation, new EKF, heading self-calibration or SRP-PHAT added."
+}

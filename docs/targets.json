@@ -5,6 +5,11 @@
   "max_reference_range_m": 50,
   "metrics": {
     "horizontal_median_m": { "max": 5, "unit": "m" },
-    "horizontal_p90_m": { "max": 10, "unit": "m" }
+    "horizontal_p90_m": { "max": 10, "unit": "m" },
+    "useful_fix_rate": { "min": 0.8, "unit": "fraction" },
+    "unflagged_wrong_fix_rate": { "max": 0.01, "unit": "fraction" },
+    "risk_coverage_area": { "max": 0.2, "unit": "fraction" },
+    "within_1sigma": { "min": 0.63, "max": 0.73, "unit": "fraction" },
+    "within_2sigma": { "min": 0.90, "max": 0.99, "unit": "fraction" }
   }
 }

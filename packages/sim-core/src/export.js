@@ -1,4 +1,4 @@
-// The results export ("Export results" in the sim). Schema 0.13: see EXPORT_CHANGELOG.
+// The results export ("Export results" in the sim). Schema 0.16: see EXPORT_CHANGELOG.
 // Node output is limited to bearings, levels, times, uncertainties, labels, scores and confidences: no audio, spectra or
 // embeddings, and every unmeasured constant or threshold is marked placeholder.
 import { simConstants } from './geometry.js';
@@ -6,10 +6,26 @@ import { ANALYSIS_THRESHOLDS } from './scenario.js';
 import { LABELLING_NOTE } from './labelling.js';
 import { nextPow2 } from './dsp.js';
 import { MEASURED_DEFAULTS } from './measured.js';
+import { REALISM_DEFAULTS, REALISM_NOTE } from './realism.js';
 
-export const EXPORT_SCHEMA = '0.13';
+export const EXPORT_SCHEMA = '0.16';
 
 export const EXPORT_CHANGELOG = [
+  {
+    schema: '0.16',
+    added: ['Opt-in inter-node offset/drift and placeholder wind, urban, rain and nonstationary ambient noise. Explicit zero/absent settings are OFF; old DEFAULT_SETTINGS/frozen sites and older signal goldens remain unchanged. Exported realism parameters are marked placeholder; rendered clock draws are simulator-only diagnostics.'],
+    changed: ['Calibration coverage is unavailable if an eligible bearing has a missing interval; missing intervals cannot improve a conditional coverage score. Default runtime localisation remains unchanged. No inter-node TDOA, housing scattering or microphone frequency/phase response is implemented.']
+  },
+  {
+    schema: '0.15',
+    added: ['Exact scene/seed populations and complete-population ranking guards; measured historical timing estimates and compact benchmark history; synthetic-tested real WAV, geometry, truth-track and calibration reports with their own versioned formats.'],
+    changed: ['Legacy truth-assisted consensus uses quantised-cost, canonical node-pair ties. Failed confidence/global-association candidates remain offline experiments, not selectable runtime solvers. Optional trial bearing intervals distinguish explicit unavailable values from legacy Gaussian intervals.']
+  },
+  {
+    schema: '0.14',
+    added: ['Scene-level useful and unflagged-wrong rates, tie-grouped risk-coverage curve, coverage-penalised risk area, three-way scene splits, and persistent single-attempt sealed-run ledger with explicit override reasons.'],
+    changed: ['Default array ranking uses useful scene rate, not conditional median error. No renderer or signal golden changes.']
+  },
   {
     schema: '0.13',
     changed: ['Cap reduction preserves actual train/held-out seed IDs and the requested held-out fraction when both partitions exist. It reduces random/LHS samples, then seed repetitions, before dropping variable alternatives, so the default array-ranking preset retains all nine arrays.', 'Explicit held_out_seeds must be unique unsigned integers. An impossible cap fails explicitly instead of silently turning a split experiment into a one-seed pilot. Existing JSON experiment/run fields record the effective retained seeds; inference and rendering are unchanged.', 'Benchmark CLI --help exits without computation. Unknown/missing arguments and --fail-on-regress without --compare fail before rendering. No export fields change.']
@@ -108,7 +124,8 @@ export const EXPORT_CHANGELOG = [
 
 export const EXPORT_NOTES = [
   'SIMULATED results. Physics constants that are not measured are marked placeholder; nothing here is validated against real recordings.',
-  'No housing scattering, wind, rain, coloured noise or facade scattering; the diffraction model is unvalidated beyond its listed checks.',
+  'No housing/facade scattering or microphone phase-response model. Clocks and weather/urban noise are opt-in placeholders, OFF by default; the diffraction model is unvalidated beyond its listed checks.',
+  REALISM_NOTE,
   'weight_terms.uncertainty_deg (multipath term), picked_path_* and multipath_suspect use the true source position (simulator-only); track_overlap_max_db uses per-source levels (simulator-only). fix_suspect does not use ground truth.',
   'rendering contains actual static-source per-microphone path audits, not waveform samples. Moving-source piece audits, FFT spectra, pairwise TDOAs and solver iteration matrices are not retained.',
   LABELLING_NOTE
@@ -139,6 +156,7 @@ export function buildExport({ scenario, nodes, results, labelling = null, render
     notes: EXPORT_NOTES,
     constants: simConstants(),
     thresholds: thresholdsOf(scenario.settings),
+    realism: { placeholder: true, note: REALISM_NOTE, parameters: Object.fromEntries(Object.entries(REALISM_DEFAULTS).map(([k, value]) => [k, { value: scenario.settings[k] ?? value, placeholder: true }])) },
     scenario,
     nodes,
     results: scrub(results),
@@ -153,6 +171,7 @@ export function buildExport({ scenario, nodes, results, labelling = null, render
           node_id: node.id,
           noise_band_power: rendered.activity?.[ni]?.noise_band_power ?? null,
           noise_detection_power: rendered.activity?.[ni]?.noise_detection_power ?? null,
+          ...(node.clock_true ? { clock_true: { ...node.clock_true, simulator_only: true } } : {}),
           microphones: (rendered.audit?.[ni] ?? []).map((mic, mi) => ({
             mic_index: mi,
             sources: mic.map((paths, si) => ({

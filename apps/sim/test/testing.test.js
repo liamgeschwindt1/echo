@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { testingExperiment, parseVariableValues } from '../src/ui/testing.js';
+import { testingExperiment, parseVariableValues, labellingReportTable, benchmarkHistoryTable } from '../src/ui/testing.js';
 import { testingEditorResults } from '../src/ui/testing-view.js';
 import { VARIABLES, estimateExperiment, buildJobs, presetExperiment, reduceExperiment } from '@echo/sim-core/benchmark/experiment.js';
 
@@ -17,6 +17,21 @@ test('Testing parses list types strictly', () => {
   assert.deepEqual(parseVariableValues(number, '3, 6, 12'), [3, 6, 12]);
   assert.deepEqual(parseVariableValues(string, 'fixed, auto'), ['fixed', 'auto']);
   assert.throws(() => parseVariableValues(number, 'bad'), /comma-separated/);
+});
+test('labelling view rejects partial populations and escapes labels', () => {
+  const report = { kind: 'echo-labelling-benchmark', manifest: { complete: true }, spec: { expected_model_events: 1, expected_renders: 1, expected_oracle_events: 1 },
+    events: [{}], renders: [{}], oracles: [{}], summary: [{ key: '<script>', n: 1, accuracy: null, localised_label_rate: 0, mean_snr_db: null }] };
+  assert.match(labellingReportTable(report), /&lt;script&gt;/);
+  assert.match(labellingReportTable(report), /unavailable/);
+  assert.throws(() => labellingReportTable({ ...report, events: [] }), /partial/);
+  assert.throws(() => labellingReportTable({ ...report, manifest: { complete: false } }), /complete/);
+});
+test('history view preserves null metrics and identifies unlike populations', () => {
+  const html = benchmarkHistoryTable({ schema: 2, notes: '<note>', entries: [{ git_hash: 'abc', population_sha256: '123'.padEnd(64, '0'), n_runs: 2, report: 'a.json',
+    summary: [{ key: 'c0|validation|on', metrics: { useful_fix_rate: { value: null, ci: null } } }] }] }, 'useful_fix_rate');
+  assert.match(html, /unavailable/); assert.match(html, /123/); assert.match(html, /&lt;note&gt;/);
+  assert.throws(() => benchmarkHistoryTable({ schema: 1, entries: [] }, 'useful_fix_rate'), /schema2/);
+  assert.throws(() => benchmarkHistoryTable({ schema: 2, entries: [{ n_runs: '<img>' }] }, 'useful_fix_rate'), /complete/);
 });
 test('Testing paired A/B uses chosen first/last variable values or explicit realism pair', () => {
   const e = testingExperiment({ scenes: ['sparse_20'], seeds: 1, mode: 'paired', sweeps: [{ variable: 'min_snr_db', values: [3, 6, 12] }] });

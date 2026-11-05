@@ -1,5 +1,369 @@
 # Overnight localisation log
 
+## Round 2 start (2026-11-04 09:25 UTC)
+
+- Branch `overnight/localisation-2` starts at round-one final `099a0d0`.
+- Read the round-one log/report, rejected solver manifests and exact consensus
+  trace. Preserve all originals and signal goldens.
+- No standalone sealed-baseline files exist in this checkout. The round-one
+  frozen eight random sites and previously held-out seed now count as validation.
+- Generate and commit 40 new random sites with fresh high-range site/render seeds
+  before outcomes. Exact populations and acceptance interpretation are recorded
+  in `docs/round2-method.md` and `docs/experiments/round2-*.json`.
+- Initial disk 50% (8.8 GiB available), 2 CPUs. Sequential discard-mode studies
+  use distinct caches. Previous seven-source rendering averaged 202.24 s on the
+  four-mic study; do not use the 5 s placeholder for scheduling.
+
+## Round 2 A1/A2 retained (09:42 UTC)
+
+- Preregistration commit `56c197e` froze 40 new sites and render seed3103170130,
+  input SHA-256 `a93368c737533c8988a0a8301a5bbde304dcc298661a0367ca6c365d52971ce6`.
+  The sealed study has not run. Train68 / validation82 measured runs are fixed.
+- Added exclusive-create persistent sealed-attempt ledger, input-hash validation,
+  mandatory explicit override reason, three-way splits and 85% startup disk guard.
+- Added scene-level useful/silent-wrong rates, confidence-tie-grouped risk curve,
+  unanswered-tail-penalised area, provisional target colours, and useful-rate
+  default ranking. No conditional median can silently substitute for coverage.
+- Added paired aggregate bootstrap rule-4 comparison (`--acceptance round2`);
+  legacy strict comparisons remain available for the original CI contract.
+- Restored dependencies only after the missing `@echo/shared` validation failure.
+  Corrected schema assertion for explicit0.14 bump. Core255/app32/build passed;
+  16-run preregistered smoke passed rule4 with all inference outcomes equal.
+  All existing signal/analysis golden files are untouched. Disk53%.
+
+## Round 2 B1 trial rejected (09:42 UTC)
+
+- Hyperparameters/features/population were committed in `a026dd4` before fitting.
+  Runtime features see nominal geometry, accepted mixture windows and buildings,
+  not source positions, true overlap, path identity or hidden hardware errors.
+- Train-only standardised L2 logistic regression and scene-fold Platt calibration
+  produce exported coefficients. Training has112 fix episodes. Threshold0.0567794
+  is fixed from training wrong predictions; no validation threshold search.
+- Full150-run stored-inference replay keeps every position/track/calibration
+  unchanged. Risk areas: train off0.588235→0.372308, on0.705882→0.477089;
+  validation off0.658537→0.536523, on0.756098→0.706520.
+- Three partitions pass; validation/on paired95% interval includes zero
+  [-0.093595,0]. Therefore reject **despite** the favourable point estimate.
+  Silent-wrong scene rate remains0 throughout. The flag is discriminative:
+  useful rates26.47%/2.94% train off/on and9.76%/4.88% validation off/on.
+- Proposed90% geometric radius empirical coverage92.59%/93.62% train,
+  94.59%/92.31% validation. These are correlated simulated episodes, not an
+  independent real-world conformal guarantee. Brier scores and reliability
+  bins, complete tables and exact model are preserved in `baselines/round2-confidence-*`.
+- Confidence is **not wired as the default inference** after rejection. Offline
+  training/replay infrastructure remains for reproducibility, not a promoted
+  optional failed solver. No claim that positional accuracy improved.
+
+## Round 2 heartbeat and rejected association (10:15 UTC)
+
+- Disk 57%, about 7.6 GiB free. Sealed inputs remain unrun. Current step:
+  completed performance populations, real-model labelling running sequentially,
+  recording/prototype integration and final validation preparation.
+- Both preregistered global-assignment candidates rejected. They generated 82
+  three-plus-node fixes, but ordinary global fusion worsened off-realism
+  calibration; train-fitted empirical intervals still worsened validation/on
+  calibration (0.50 to 0.8923 versus nominal 0.6827). Validation/on paired
+  improvement intervals also touched zero. Full 150-run evidence, models and
+  reasons are retained; default fusion is unchanged.
+- The exact historical leave-one-out trace is in the truth-assisted solver,
+  not `analyseMeasured`. A repair there cannot establish a measured-only gain.
+  No new verdict is claimed for the round-one rejected weighted/LOO repairs.
+- A3 original eight-run population finished: every microphone and inference hash
+  matches. Full-render V8 serialization is unstable even between baseline
+  repetitions. This is invalid instrumentation, not a passing invariant or a
+  demonstrated signal change. Preserve both originals, commit a canonical
+  value/typed-byte hashing amendment before repeating the entire population.
+- Synthetic WAV/truth/calibration CLI round-trip and actual browser/Node consensus
+  parity passed targeted checks. No real data has been evaluated. Prototype
+  protocols explicitly distinguish proposed sample sizes from measurements.
+
+## Round 2 heartbeat (11:02 UTC)
+
+- Disk57%, 7.6GiB free. Sealed inputs remain unrun. Full core/app/build/browser
+  gates and the16-run rule-four smoke are running before retained-step commits.
+- Corrected canonical eight-render performance comparison matches every audio,
+  render-value and inference hash. Seven-source observed render/analysis ratios
+  are1.006/1.088; 12-mic static ratios0.860/1.018. Two repetitions do not establish
+  a robust speedup; the static render was slower.
+- Weighted-forward and predictive-LOO measured adaptations both failed the full
+  preregistered acceptance rule. The root trace is repaired in offline tests, but
+  off-realism/validation calibration worsens and validation/on intervals touch
+  zero. Neither solver nor the rejected confidence model is a runtime default.
+- Actual labelling study completed36 renders/144 model predictions: raw27/72,
+  normalised28/72 correct. Normalisation does not rescue range collapse.
+- New clocks/weather/urban noise are opt-in placeholders with separate goldens.
+  Their56-run study is still pending. No sync-gated TDOA, scattering or microphone
+  frequency/phase model is claimed. Synthetic WAV round-trip works; no real data.
+
+## Round 2 heartbeat and budget (11:42 UTC)
+
+- Disk58% at last check, over7GiB available. Fresh150-run evaluation is at the
+  expensive seven-source cases; no final/partial accuracy table is reported.
+  Complete56-run opt-in physics study finished; every8-case profile answered
+  all scenes, but this easy population does not establish hardware tolerance.
+- Measured p90 scheduling: fresh evaluation8,173,387ms, descriptive variance
+  6,866,753ms, reserved sealed execution6,649,426ms. Studies run sequentially in
+  separate discard-render caches. A900-run full array rerender estimates
+  36,160,048ms(about10h) alone, so it is not started. No partial array ranking.
+- Five solver/confidence trials are closed/rejected; source freeze and actual
+  retained settings were committed before sealed outcomes. Forty physical
+  inputs still match the original hash; the test remains unrun.
+- Preregistered separate known-POI attribution prototype:24 mixture plus12
+  reference renders. Conservative mixture proxy319,712ms plus references;
+  run only after the current studies, before the sealed test. This is not a
+  new localiser or a validated road/bar share product.
+- Actual remoteCI41820176719 at6eea56b passed279 core,34 app, build,2 browser/CLI
+  cases and measured benchmark. Logs read. First push returned transient500;
+  retry succeeded to branch2 only. No main push.
+- Existing OSM main/fallback upstreams both failed for Canary Wharf/Battersea;
+  no matching offline map cache found. Skip rather than invent footprints.
+- A fixed-population power diagnostic finds only3 wrong validation/on scenes
+  among41:4.436% bootstrap probability of no wrong scene, giving zero delta
+  for confidence-only ordering. Preserve the rule and population unchanged.
+
+## Round 2 heartbeat and complete evaluation (12:22 UTC)
+
+- Disk58%,7.3GiB free. Fresh150/150 final evaluation completed; all inference
+  and scoring objects exactly equal the re-scored reference. Every train/
+  validation x realism partition passes rule4 by all-equal, not improvement.
+  The270-run variance population is now running; no partial ranking is reported.
+- Committed `2924ef5` before outcomes:60 available-node/spacing cases and288
+  equal nine-design range/ambient-floor cases. Measured p90 estimates are
+  1,292,465ms and3,521,018ms. With the conservative variance, attribution and
+  sealed reservations plus an hour for reporting/CI, these fit the19:25UTC
+  budget. Start them only after the current study, sequentially with distinct
+  discard caches and disk preflight; seal remains the last study.
+- These are descriptive studies of the retained solver, not another algorithm
+  tuning attempt or the full improved-engine array ranking. Report actual
+  nodes used, not just nodes available. Track presence is only a detection
+  proxy. Two observed seed ranges are not reliable population95% intervals.
+  Hardware requirements stay null when the appropriate impairment was not
+  swept or target compliance is not demonstrated.
+
+## Round 2 placement method and gates (12:46 UTC)
+
+- Disk58%, over7GiB available. Variance remains the only rendering study.
+  Mandatory sealed inputs remain unrun; default inference/core freeze unchanged.
+- Placement is an independent frontend geometry diagnostic, not another solver.
+  `6486caf` registered exact20 simulated cases and source-point predictions
+  before outcomes. Before any run, clarified the existing1m near-field
+  exclusion and hardened sigma/grid input validation; physical cases and
+  predictions are unchanged. The committed helper hash records this amendment.
+  Measured p90 estimate610,327ms fits the budget before the sealed test.
+- Core279 and frontend38 tests pass. Actual-browser placement/history checks
+  and the retained16-case smoke will run after variance, not concurrently with
+  a science render. History now accepts generated/nightly summaries directly;
+  bad uploads report errors and preserve the previous displayed dataset.
+- Before their first runs, node-count/range/placement registrations explicitly
+  use validation labels for seed101. Scene/seed/variable populations are
+  unchanged. Existing realism/variance archives retain their actual legacy
+  "held-out" metadata; that means seen validation, never the sealed test.
+
+## Round 2 heartbeat and completed descriptive evidence (13:43 UTC)
+
+- Disk58% by df at last check, over7GiB available (statfs preflight about60%).
+  Core freeze2f7230fc remains exact. Sealed40-site input remains unrun.
+- Variance completed270/270 renders and540 algorithm rows. One fixed site,
+  three12-mic geometries/five seed clusters: realism explains60.49% of total
+  conditional RMSE variance and59.04% of bounded scene-loss variance; array
+  geometry0.69%/0.76%. This is not a causal all-site hardware conclusion.
+  Full intervals/rows are preserved;499/500 conditional draws identifiable.
+- Independent placement/history views pass281 core,38 app, production build,
+  actual2 browser/CLI tests and16-case rule-four smoke with zero regressions.
+  Geometry assumptions are not a calibrated error radius; runtime fusion stays
+  pair-only. The20 registered placement simulations are still pending.
+- Completed all2052 known array/endpoint archive regradings, preserving source
+  hashes/producers and without rerendering. Useful-rate rankings are all ties.
+  Secondary risk-area point leaders flip with realism, ambient floor and source
+  level; no hardware winner. Initial HTML formatting passed an array instead of
+  a report object: full JSON/CSV were already complete. Fixed presentation and
+  rendered from that exact JSON, without rerunning inference or metrics.
+- The9x360-direction ideal geometry calculation is complete. Its component-only
+  ceilings are not sufficient specifications; self-noise/sync requirements
+  remain null. New math tests pass in the281-case core suite.
+- Sequential node-count, placement, attribution and range/noise studies now run
+  with disk/time preflight before each. Reserve the measured sealed estimate
+  and a full hour for reporting/CI. No further localisation tuning is scheduled.
+
+## Round 2 bounded spatial-method amendment (13:58 UTC)
+
+- The earlier no-further-trial plan is amended **before any sealed outcome**:
+  commit6ac185c preregisters one new150-case B5/B4 hypothesis, full-rank3D
+  plane-wave DOA plus stationary spatial intersections. This is not a repeat
+  of rejected global/consensus association; existing pair flags remain.
+- Nominal geometry alone identifies66 eligible cases/11 sites. Their prior
+  measured render+analysis total is995,993ms. Three analytic tests verify known
+  directions, heading/position covariance and a known3D intersection. No
+  experimental scene inference has run yet.
+- Experimental code lives only in scripts; core fingerprint remains2f7230fc.
+  The current sequential range study is untouched. Start this trial only after
+  all current nonsealed studies finish, and only if twice the measured-strata
+  estimate, the entire sealed estimate and60min reporting/CI fit the deadline.
+  All150 cases must complete;84 ineligible geometries retain exact reference
+  inference with explicit mixed-producer provenance. No partial ranking.
+- No empirical multiplier is fitted. Physical covariance is an unvalidated
+  approximation, moving fixes remain horizontal, and static positional radius
+  stays unavailable. Rule four decides acceptance without validation tuning.
+- GitHub Actions41841490921 at87a9687 reports success; the final-head run is
+  still required. Main remains untouched.
+
+## Round 2 resource amendment before spatial outcomes
+
+The spatial population's measured-strata p90 estimate is7,376,922ms(123min),
+despite only995,993ms of recorded render+analysis in the reused reference
+(cached render timings are not cold-render estimates). Do not use that smaller
+sum as a fresh-render budget. Remove the additional2x whole-estimate multiplier:
+the123min upper-tail reservation already assumes **every eligible render cold**,
+the core renderer is unchanged, and the window/FFT population is unchanged.
+Keep the full sealed6,649,426ms plus60min reporting/CI. This is a resource-policy
+amendment before any spatial outcomes, not an acceptance/population amendment.
+The trial will not start if even this recorded-p90 reserve fails the deadline.
+
+## Round 2 heartbeat and sequential handoff (14:29 UTC)
+
+- Disk58% by df/60.1% conservative statfs, about7.3GiB available. Core freeze
+  remains2f7230fc; no sealed attempt has been claimed.
+- All registered60 node-count,20 placement,24 attribution-mixture plus12
+  reference, and288 range/noise renders completed sequentially. Exact ID checks
+  passed; descriptive summaries contain30/144 paired-seed conditions.
+- Node-count results still fuse pairs. In this fixed site, three available
+  nodes improve realism-on coverage50% to100%, but conditional error does not
+  improve and N4..6 generate unmatched duplicates. No universal node optimum.
+- Placement has18/20 matched fixes; both N2/on cases miss despite finite ideal
+  geometry. Matched on RMSE is1.12..2.55x the assumed scale. Map not calibrated.
+- Attribution preserves all eight underdetermined N2 results as null. Three-node
+  mean absolute share error3.00pp off/9.24pp on; six-node2.44/10.31pp.
+  Synthetic continuous noises/known POIs are not field contribution truth.
+- Full range/noise output shows all nine200m/on/60dB cells without a fused fix.
+  Stable tracks and fused coverage differ; nonmonotonic gates prohibit a
+  derived detection/noise requirement. All hardware-requirement entries null.
+- Spatial trial began14:27:18 only after all of the above completed. Reserved
+  end19:21:05 uses recorded cold p90, full sealed estimate and60min reporting/CI.
+  At14:29 it has reused36 exact reference rows and is rendering its first
+  eligible seven-source case; no partial metric/ranking is reported.
+- Independent current PCM audit matches198 registered run/clip identities.
+  All286 core tests passed, including five new spatial analytic/boundary tests.
+  Existing app/build/browser/smoke gates and read GitHub success remain intact.
+
+## Round 2 heartbeat and final-study reserve (15:10 UTC)
+
+- Disk58% by df,7.3GiB available. Spatial trial is still running sequentially;
+  no partial metric table or ranking has been inspected. Its recorded startup
+  reserve includes123min for eligible renders,111min for the complete sealed
+  population and60min for reporting/CI, ending19:21UTC.
+- Read actual GitHub run41848917910 at35a2056:286 core and38 app tests,
+  production build,2 Chromium/Node parity cases and the finite measured
+  benchmark all passed. This is observed CI evidence, not the eventual final
+  artifact-head check.
+- All earlier descriptive studies are complete. Additional microphone-response
+  physics was considered but not registered, executed or implemented: adding
+  another renderer changeset while the final solver trial is running risks the
+  mandatory sealed reserve. No new science population will be started after
+  the sealed execution. C3-C5 remain explicitly unbuilt.
+- Sealed inputs remain untouched. Baseline/final labels will remain identical
+  unless the entire spatial acceptance/integration gate passes before freeze.
+
+## Round 2 spatial decision and final freeze (15:28 UTC)
+
+- All150 spatial cases completed:66 fresh eligible renders and84 exact
+  reference fallbacks. Verified IDs/scenarios and every reused inference/score
+  against the reference. Core fingerprint remains2f7230fc; disk58%,7.3GiB free.
+- Reject. Validation off/on scene coverage rises51.22%/31.71% to60.98%/39.02%,
+  but2sigma coverage drops82.43%/78.85% to66.98%/76.67%; train/off both
+  calibration guards fail. Validation/on risk delta95%CI[-0.146341,0].
+  All four full tables/paired intervals and source/runtime provenance are
+  archived, not a partial-population decision. No validation retuning.
+- The42 staticXYZ hypotheses(38 off/four on) include unmatched hypotheses;
+  they do not establish42 accurate spatial fixes. No positional radius claim.
+  Experimental code stays offline, with no core revert necessary.
+- All six candidates now rejected. No new study will follow the sealed run.
+  Final solver/configuration remains the previously committed legacy freeze,
+  with identical baseline/final labels. Next: verify40-site hash and consume
+  the single160-job sealed run, then only descriptive reports and final CI.
+- Scheduling interpretation: the recorded sealed estimate is111min, longer
+  than a literal60min last-hour window. Start after all other science finishes,
+  rather than delay until insufficient time remains; reserve the final hour
+  for its completed results/report/CI. No extra study uses the released slack.
+
+## Round 2 sealed storage intervention (15:45 UTC)
+
+- The single sealed attempt started15:29UTC from clean809b527, core2f7230fc.
+  Config-major scheduling retained the first label's raw audio until the second
+  label, growing disk from58% to about80% despite discard mode.
+- A one-off operational script verified all registered consumers of each
+  completed run have exactly identical scenarios, full run/render keys, schema,
+  runtime and clip identity. `runJob` checks the whole-result cache before audio.
+  Only after that proof were63 completed renders/origins(3,940,572,789 raw bytes)
+  removed. All inference/result caches remain immutable; no job/population,
+  producer, measured value or acceptance rule changed, and no render repeated.
+- `baselines/round2-sealed-storage.json` records every cache key/result hash,
+  consumer ID and the cleanup script hash. A storage-amendment entry was flushed
+  to the existing seal ledger before deletion. This is an explicit exception to
+  waiting for both logical labels, not an undocumented change to the original
+  report's automatic discard-policy metadata.
+- Disk returned to59%,7.2GiB available. The same sealed process continues;
+  no restart/override and no partial outcome inspection. Verify every preserved
+  result hash and all second-label cache hits once the full report completes.
+
+## Round 2 sealed complete; metadata-only export recovery (15:52 UTC)
+
+- Original execution reached160/160 with80 fresh physical results and80
+  second-label whole-cache hits. All raw audio was removed. Then CLI JSON export
+  failed: producer referenced caller manifest, which referenced seal, forming
+  a cycle. The process exited1; this was not an uninterrupted successful export.
+- Preserved all80 result caches and63 pre-cleanup hashes. Recovered only the
+  export from those immutable results, verifying every original dispatch line,
+  input/run key and exact original pre-dispatch producer. No rendering,
+  inference, scoring, new seal start or override. Original producer809b527,
+  core2f7230fc remains in the report. Recovery script/log/cache/output hashes
+  and explicit failed-export/recovered-completion ledger states are committed
+  alongside the lossless archive.
+- Producer is now deep-snapshotted before caller mutation; targeted regression
+  passes. CLI failure recording now also covers export/close failures. These
+  are metadata/lifecycle repairs after the test, not test-tuned algorithms.
+  Full core and unchanged16-case regression controls are running.
+- Complete sealed off/on: coverage57.5%/20%; conditional median1.619/14.966m,
+  p905.275/100.828m; wrong fixes34.09%/63.64%; bearing calibration100%/100%
+  off and44.44%/72.22% on. Useful/silent-wrong0% throughout because all fixes
+  remain suspect. Baseline/final inference and scores deeply equal.
+- No more scientific studies. Only locked descriptive categories/history,
+  final documents, regression checks and actual final-head GitHub CI remain.
+
+## Round 2 regression and independent archive verification (16:00 UTC)
+
+- Metadata-only repair committed51d0e9e. Full core287/287 and the original
+ 16-case smoke pass, zero rule-four regressions. No physics/inference/scoring
+  file changed after frozen809b527; the sole changed core file is sealed.js.
+  Aggregate source fingerprint2078b5c4, unchanged renderer39d44f7b.
+- Independently unpacked the original80 V8 caches and execution log; every
+  content hash and every original inference/score matches the recovered
+  report. The lossless JSON hash matches the recovery audit. All seven original
+  round-one golden files are unchanged. The actual seal refuses another start
+  without altering its four-entry ledger.
+- New sealed calibration groups retain zero-bearing nulls: all12 errors-on
+  two-available-node sites have no fix;8/28 with more available nodes answer,
+  still using actual two-node fusion. These are observational site groups,
+  not a causal hardware-count ranking.
+- Complete source gate41863063971 at51d0e9e is queued on GitHub; no success
+  assumed. Final documents and retained-result history are ready for final
+  evidence commit after reading actual source CI.
+
+## Round 2 final evidence gate (16:15 UTC)
+
+- Added a non-inference CI check of the complete160-job sealed population,
+  paired identity, all80 archived raw-cache/log hashes, storage proof and
+  recovery script hashes. It passes locally and does not deserialize foreign
+  V8 data. Final workflow runs this alongside the existing core/app/build/
+  Chromium/finite-regression gates.
+- Source-only run41863063971 is still queued; no success claimed. Publish
+  complete artifacts and verify the actual final evidence-head workflow rather
+  than wait for a source-only run and mistake it for the final commit.
+- All requested scientific executions that were feasible are closed. Deferred
+  phases are explicit in the final report's scope table; no genuine solver/
+  confidence improvement, renderer speedup or hardware winner is claimed.
+  Final data/state/claims/protocol/history and immutable recovery proof are
+  ready. Disk59%, about7.3GiB free; no further science is scheduled.
+
 ## Rules and decisions (2026-11-04)
 
 - Work only on `overnight/localisation`; no main pushes. Each retained logical step gets its own commit after core tests and benchmark.

@@ -60,13 +60,16 @@ export function scoreMeasured(scenario, measured, { c }) {
       return {
         node_id: node.id, range_m: distance(sourcePosition(src), node.position),
         az_error_deg: median(errors), el_error_deg: null,
-        sigma_deg: fix ? measured.options.bearing_sigma_deg : null,
+        sigma_deg: fix ? measured.nodes[ni].bearing_intervals ? measured.nodes[ni].bearing_intervals.sigma_deg : measured.options.bearing_sigma_deg : null,
+        ...(measured.nodes[ni].bearing_intervals ? { two_sigma_deg: measured.nodes[ni].bearing_intervals.two_sigma_deg } : {}),
         detected: tracks.has(ni), calibration_unit: 'median accepted track bearing error'
       };
     });
     return {
       source_id: src.id, horizontal_m: match?.error ?? null, error_3d_m: null,
-      suspect: fix ? fix.low_confidence || fix.ambiguous || !fix.reliable : false,
+      suspect: fix ? fix.confidence?.suspect ?? (fix.low_confidence || fix.ambiguous || !fix.reliable) : false,
+      ...(fix?.confidence ? { p_wrong: fix.confidence.p_wrong, radius_90_m: fix.confidence.radius_90_m,
+        radius_90_covered: match && Number.isFinite(fix.confidence.radius_90_m) ? match.error <= fix.confidence.radius_90_m : null } : {}),
       track_errors_m: matches.flatMap((p) => measured.fixes[p.fi].positions).map((f) => {
         const truth = isMoving(src) ? positionAt(src, f.t_e) : sourcePosition(src);
         return Math.hypot(f.position[0] - truth[0], f.position[1] - truth[1]);
@@ -76,5 +79,7 @@ export function scoreMeasured(scenario, measured, { c }) {
   const sources = scenario.sources.map((src, si) => scoreMatch(src, assigned.get(si) ?? []));
   const fixes = [...assigned].flatMap(([si, matches]) => matches.map((p) => scoreMatch(scenario.sources[si], [p])));
   const unmatched = measured.fixes.filter((_, fi) => !used.has(fi));
-  return { sources, fixes, fix_count: measured.fixes.length, unmatched_fixes: unmatched.length, unmatched_suspect: unmatched.filter((f) => f.low_confidence || f.ambiguous || !f.reliable).length };
+  return { sources, fixes, fix_count: measured.fixes.length, unmatched_fixes: unmatched.length,
+    unmatched_suspect: unmatched.filter((f) => f.confidence?.suspect ?? (f.low_confidence || f.ambiguous || !f.reliable)).length,
+    ...(measured.fixes.some((f) => f.confidence) ? { unmatched_predictions: unmatched.map((f) => ({ p_wrong: f.confidence?.p_wrong ?? null, suspect: f.confidence?.suspect ?? (f.low_confidence || f.ambiguous || !f.reliable) })) } : {}) };
 }

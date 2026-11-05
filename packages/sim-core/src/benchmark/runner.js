@@ -133,6 +133,7 @@ export async function runExperiment(input, { execute, renderGroup = (job) => job
 
 export function finishExperiment(experiment, configs, runs, manifest) {
   const summary = summariseRuns(runs, experiment);
+  const complete = !manifest.cancelled && runs.length === (manifest.expected_runs ?? runs.length);
   const paired = experiment.mode === 'paired' ? [...new Set(runs.map((r) => `${r.job.split}|${r.job.realism}|${r.job.analysis_mode}`))].flatMap((key) => {
     const subset = runs.filter((r) => `${r.job.split}|${r.job.realism}|${r.job.analysis_mode}` === key);
     return ['horizontal_median_m', 'scene_fix_rate', 'within_target_rate', 'wrong_fix_rate', 'track_median_error_m'].map((metric) => ({ key, ...pairedComparison(subset, metric, experiment) }));
@@ -140,8 +141,8 @@ export function finishExperiment(experiment, configs, runs, manifest) {
   return {
     schema: EXPORT_SCHEMA, kind: 'echo-sim-benchmark', experiment, configs, manifest: { ...manifest, scoring_version: SCORING_VERSION },
     thresholds: Object.fromEntries(Object.keys(BENCHMARK_DEFAULTS).map((k) => [k, { value: experiment[k], placeholder: true }])),
-    runs, summary, paired, ranking: rankingFlips(summary),
-    failure_atlas: ['train', 'held-out'].flatMap((split) => ['off', 'on', 'custom'].flatMap((realism) => ['truth_assisted', 'measured_only'].flatMap((analysis_mode) => {
+    runs, summary, paired, ranking: complete ? rankingFlips(summary) : { metric: 'useful_fix_rate', rank_variable: 'mic_array', rankings: [], flips: [], note: 'Incomplete population; rankings suppressed' },
+    failure_atlas: ['train', 'held-out', 'validation', 'test'].flatMap((split) => ['off', 'on', 'custom'].flatMap((realism) => ['truth_assisted', 'measured_only'].flatMap((analysis_mode) => {
       const subset = runs.filter((r) => r.job.split === split && r.job.realism === realism && r.job.analysis_mode === analysis_mode);
       return subset.length ? [{ split, realism, analysis_mode, categories: failureAtlas(subset, experiment.wrong_fix_m), detection_by_range: detectionByRange(subset) }] : [];
     }))),

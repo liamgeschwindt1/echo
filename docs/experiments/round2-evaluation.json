@@ -1,0 +1,76 @@
+{
+  "mode": "grid",
+  "sweeps": [],
+  "analysis_modes": [
+    "measured_only"
+  ],
+  "realism": [
+    "off",
+    "on"
+  ],
+  "wrong_fix_m": 10,
+  "bootstrap_samples": 1000,
+  "permutation_samples": 4000,
+  "max_runs": 2000,
+  "name": "Round 2 fixed train and validation population",
+  "scenes": [
+    "near_wall",
+    "overlap",
+    "continuous",
+    "moving",
+    "blocked",
+    "five_node",
+    "seven_source",
+    "drone_2",
+    "drone_3",
+    "sparse_20",
+    "sparse_50",
+    "sparse_100",
+    "simultaneous_0",
+    "simultaneous_6",
+    "simultaneous_10",
+    "corner",
+    "bad_geometry",
+    "random_1",
+    "random_2",
+    "random_3",
+    "random_4",
+    "random_5",
+    "random_6",
+    "random_7",
+    "random_8"
+  ],
+  "seeds": [
+    1,
+    2,
+    101
+  ],
+  "held_out_seeds": [
+    101
+  ],
+  "scene_splits": {
+    "random_1": "validation",
+    "random_2": "validation",
+    "random_3": "validation",
+    "random_4": "validation",
+    "random_5": "validation",
+    "random_6": "validation",
+    "random_7": "validation",
+    "random_8": "validation"
+  },
+  "preregistration": {
+    "created_at": "2026-11-04T09:26:39.090Z",
+    "reference": "baselines/final-1.json",
+    "training": "Round-one train scene AND seed 1 or 2 (68 measured runs including realism).",
+    "validation": "Any round-one held-out scene OR seed 101 (82 measured runs including realism).",
+    "model": "Standardised L2 logistic regression, deterministic gradient descent; train-only site cross-fitting for conformal residual calibration. No validation threshold search.",
+    "acceptance": "Rule 4, every train/validation x off/on partition: coverage loss <=0.02; silent-wrong/scene no increase; 1/2 sigma distance from nominal no worse; paired median/p90/risk-area CI strictly better or every inference and score equal.",
+    "candidates": [
+      "calibrated confidence only",
+      "weighted forward consensus",
+      "predictive leave-one-out",
+      "realism-scaled uncertainty"
+    ],
+    "ranking": "No ranking from partial or unequal populations; useful scene rate is primary coverage-adjusted endpoint."
+  }
+}

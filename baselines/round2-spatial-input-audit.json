@@ -1,0 +1,46 @@
+{
+  "complete": true,
+  "checked_at": "2026-11-04T14:29:52.063Z",
+  "reference_sha256": "e0b103f23052ad9f70ee9c779f97c3cf73500c153b1e876030996a51eb7fee2b",
+  "run_clip_checks": 198,
+  "audio": [
+    {
+      "id": "car_horn",
+      "samples": 240000,
+      "sha256": "dadf04b0e40acf56e5967682f71b249ae7811a4429372212e633fa207a862202"
+    },
+    {
+      "id": "chainsaw",
+      "samples": 240000,
+      "sha256": "eb7c39065495f6286ade8b663c76e5e858572568979805d9ea825d332472bfaf"
+    },
+    {
+      "id": "dog",
+      "samples": 240000,
+      "sha256": "20d460c32866c35509072d12b01e719286b07593aa7ce3299c326f5c510b220f"
+    },
+    {
+      "id": "engine",
+      "samples": 240000,
+      "sha256": "b6735647f769cb8e044f98675223d3632f194df253a87751145573e938899183"
+    },
+    {
+      "id": "footsteps",
+      "samples": 240000,
+      "sha256": "4c7b79c77f5689556f97d672e03756c6addc83305c8fd2c263ddee32124b39bf"
+    },
+    {
+      "id": "glass_breaking",
+      "samples": 240000,
+      "sha256": "4df4ae3a411444c0f623a773ef45d28579253f9b878c69832aa582d3f7c09512"
+    }
+  ],
+  "runtime": {
+    "node": "26.12.1",
+    "v8": "14.6.202.34-node.40",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "core": "2f7230fc50b341ad0c3fbd147bad728cc9fe6bb92e2fbc748bc25cf7c1a1bf38",
+  "note": "Independent current-PCM identity audit against every registered reference run; no model outcome or parameter used."
+}

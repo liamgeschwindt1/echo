@@ -193,7 +193,7 @@ export function intersect2(pa, azA, pb, azB, minCrossDeg) {
   return [pa[0] + s * da[0], pa[1] + s * da[1]];
 }
 
-function solveStatic(obs, start, sigmaRad) {
+export function solveStatic(obs, start, sigmaRad) {
   // Gauss-Newton on a single point; obs: { pos, az_deg, w }
   let p = [...start];
   for (let it = 0; it < 15; it++) {
@@ -272,7 +272,7 @@ function trackFilter(obs, init, { c, sigmaRad, accel = 3 }) {
  * Associates tracks across nodes, filters them, stamps emission time. Only measured quantities are used.
  * Returns fixes: { tracks, positions[], static, final_position, reliable, low_confidence, ... }.
  */
-export function fuseTracks(nodeResults, { c, options = {} }) {
+export function trackCandidates(nodeResults, { c, options = {} }) {
   const o = { ...MEASURED_DEFAULTS, ...options };
   const sigmaRad = toRad(o.bearing_sigma_deg);
   const flat = [];
@@ -331,6 +331,11 @@ export function fuseTracks(nodeResults, { c, options = {} }) {
     p.score = staticOk(p) ? p.st.chi2_mean : Math.max(p.nisMean, p.st.chi2_mean) + 5;
     p.static = staticOk(p);
   }
+  return { pairs, options: o };
+}
+
+export function fuseTracks(nodeResults, context) {
+  const { pairs, options: o } = trackCandidates(nodeResults, context);
   pairs.sort((x, y) => x.score - y.score);
   const used = new Set();
   const fixes = [];

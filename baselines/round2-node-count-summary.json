@@ -1,0 +1,2619 @@
+{
+  "kind": "echo-round2-descriptive",
+  "schema": 1,
+  "complete": true,
+  "study": "node-count",
+  "registration": {
+    "name": "Round 2 available-node count and spacing, retained localiser",
+    "mode": "grid",
+    "scenes": [
+      "sparse_50"
+    ],
+    "seeds": [
+      1,
+      101
+    ],
+    "held_out_seeds": [
+      101
+    ],
+    "scene_splits": {},
+    "analysis_modes": [
+      "measured_only"
+    ],
+    "realism": [
+      "off",
+      "on"
+    ],
+    "base_values": {
+      "layout": "ring",
+      "mic_array": "flat4_100"
+    },
+    "base_settings": {
+      "reflection_order": 0,
+      "diffraction_order": 0,
+      "ground_reflectivity": 0
+    },
+    "sweeps": [
+      {
+        "variable": "node_count",
+        "values": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "variable": "node_spacing_m",
+        "values": [
+          20,
+          40,
+          80
+        ]
+      }
+    ],
+    "max_runs": 100,
+    "expected_runs": 60,
+    "preregistration": {
+      "registered_before": "Any outcomes from this node-count population",
+      "purpose": "Quantify available2..6 nodes and mean pair spacing; record actual nodes used per fix, error, coverage and suspect flags. No new algorithm or confidence fitting.",
+      "limits": "One fixed single-source free-field site, two noise/hardware seeds. Ring geometry changes with count at fixed mean pair spacing. Added nodes do not keep all earlier positions fixed. Report paired seed values/ranges, not a robust population95%CI or a forced third-node benefit. Retained fusion still selects pairs.",
+      "population": "All60 cases required. Never pool this single flat4 design with the distinct12-mic variance population to rank arrays."
+    }
+  },
+  "registration_sha256": "5c009a707a8f197e38c7f378bb2deca5692c3bd71999e02926c4579509173fd2",
+  "input_sha256": "dc0398e500b792732d0c02541f885f8a0dd895f5e62dfaa5057266f6c6dd5ef1",
+  "producer": {
+    "git_hash": "def364829fe46a4cfd3946d359bff85fd8bf9c1c",
+    "code_version": "2f7230fc50b341ad0c3fbd147bad728cc9fe6bb92e2fbc748bc25cf7c1a1bf38",
+    "render_code_version": "39d44f7b80a96220844fabdc2b11bff172055a20a311c35a84603f308f2ffbe4",
+    "render_source_files": [
+      {
+        "name": "activity.js",
+        "sha256": "9965a16c9ddd57877f04dceecda489f9f6e52c32be2599ed171ca5024c3b863c"
+      },
+      {
+        "name": "diffraction.js",
+        "sha256": "1fcb78ec1986de677d0e7aa7ab14a9166705df036747e11a1e32882bfffeb0d9"
+      },
+      {
+        "name": "dsp.js",
+        "sha256": "2893fe2c7da6591e182d0618bac7fbc38a31a11bfecc445fa65ef14d4cda4c3f"
+      },
+      {
+        "name": "edges.js",
+        "sha256": "f455cfe3d9eacfba321cfb0fbc2a540628f40b5bbf3f3f6c7823a4fac7cc8d5d"
+      },
+      {
+        "name": "geometry.js",
+        "sha256": "53c46891257f5e03fc6151e919b9ee39afa247422bed1084ed5df79787c430b1"
+      },
+      {
+        "name": "mics.js",
+        "sha256": "dae01b073fc21e68de3e412d466913be669f66a8d59b9757b130e15e286c0a97"
+      },
+      {
+        "name": "motion.js",
+        "sha256": "64d63bc9cfb75f265015391f44b99fb7c446de6c5f6a3e796a5a66f831ee8c4c"
+      },
+      {
+        "name": "physics.js",
+        "sha256": "d99e4e86b406fa2a0617fba14008cbcad2d90db65d8efedab04e035cbb429b7b"
+      },
+      {
+        "name": "profile.js",
+        "sha256": "25b69e19ce39b56e287ee0e03f821ff5679bc81010fbdd9c7c64ac9605e37291"
+      },
+      {
+        "name": "realism.js",
+        "sha256": "ad2b98407c3ff6bd5688eb5323abf3a86b1f1496de6491040f55afcc6f8575fd"
+      },
+      {
+        "name": "render.js",
+        "sha256": "0edc46d44c0a7072d764fde43ca51c45c9439f7c87dc7299592b6797101ff4f3"
+      },
+      {
+        "name": "rng.js",
+        "sha256": "f40eda0168b4025902bc848c4ce1e0c1721641459fb3c449071a724b22215ca3"
+      }
+    ],
+    "schema": "0.16",
+    "dirty": true,
+    "scoring": "benchmark score.js; post-inference truth only",
+    "audio_source": "repository test-audio recordings, PCM float32 mono at 48000 Hz",
+    "targets": {
+      "schema": 1,
+      "placeholder": true,
+      "scope": "Starting design targets, not validated acceptance limits. Error targets apply to scenes with source reference range up to 50 m; mixed-range tables are indicative only.",
+      "max_reference_range_m": 50,
+      "metrics": {
+        "horizontal_median_m": {
+          "max": 5,
+          "unit": "m"
+        },
+        "horizontal_p90_m": {
+          "max": 10,
+          "unit": "m"
+        },
+        "useful_fix_rate": {
+          "min": 0.8,
+          "unit": "fraction"
+        },
+        "unflagged_wrong_fix_rate": {
+          "max": 0.01,
+          "unit": "fraction"
+        },
+        "risk_coverage_area": {
+          "max": 0.2,
+          "unit": "fraction"
+        },
+        "within_1sigma": {
+          "min": 0.63,
+          "max": 0.73,
+          "unit": "fraction"
+        },
+        "within_2sigma": {
+          "min": 0.9,
+          "max": 0.99,
+          "unit": "fraction"
+        }
+      }
+    },
+    "cache_policy": "discard_render_after_consumers",
+    "audio": [
+      {
+        "id": "glass_breaking",
+        "samples": 240000,
+        "sha256": "4df4ae3a411444c0f623a773ef45d28579253f9b878c69832aa582d3f7c09512"
+      }
+    ],
+    "runtime": {
+      "engine": "node",
+      "node": "26.12.1",
+      "v8": "14.6.202.34-node.40",
+      "platform": "linux",
+      "arch": "x64"
+    },
+    "cancelled": false,
+    "expected_runs": 60,
+    "scoring_version": "episode-one-to-one-v2"
+  },
+  "notes": "Two observed seed-cluster values/range, not a reliable population95%CI. Stable track presence is a detection proxy, not verified event/classification accuracy. No hardware winner; all no-fix errors remain null.",
+  "summary": [
+    {
+      "realism": "off",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 2,
+        "node_spacing_m": 20
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 1,
+        "horizontal_median_m": 0.8158054720228709,
+        "horizontal_p90_m": 0.8846539838625189,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 0
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 1,
+            "horizontal_median_m": 0.8846539838625189,
+            "horizontal_p90_m": 0.8846539838625189,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 2,
+          "available_nodes": 2,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 1,
+            "horizontal_median_m": 0.8158054720228709,
+            "horizontal_p90_m": 0.8158054720228709,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 2,
+          "available_nodes": 2,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "on",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 2,
+        "node_spacing_m": 20
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 0.5,
+        "source_fix_rate": 0.5,
+        "detection_rate": 0.5,
+        "horizontal_median_m": 8.227267093869484,
+        "horizontal_p90_m": 8.227267093869484,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 0.5
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 1,
+            "horizontal_median_m": 8.227267093869484,
+            "horizontal_p90_m": 8.227267093869484,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 2,
+          "available_nodes": 2,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 0,
+            "source_fix_rate": 0,
+            "detection_rate": 0,
+            "horizontal_median_m": null,
+            "horizontal_p90_m": null,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": null,
+            "within_1sigma": null,
+            "within_2sigma": null,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 1,
+          "available_nodes": 2,
+          "nodes_used_per_fix": []
+        }
+      ],
+      "stable_track_node_rate": 0.75,
+      "stable_track_seed_range": [
+        0.5,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "off",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 2,
+        "node_spacing_m": 40
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 1,
+        "horizontal_median_m": 0.39301184697750174,
+        "horizontal_p90_m": 0.4067533767837206,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 0
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 1,
+            "horizontal_median_m": 0.4067533767837206,
+            "horizontal_p90_m": 0.4067533767837206,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 2,
+          "available_nodes": 2,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 1,
+            "horizontal_median_m": 0.39301184697750174,
+            "horizontal_p90_m": 0.39301184697750174,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 2,
+          "available_nodes": 2,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "on",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 2,
+        "node_spacing_m": 40
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 0.5,
+        "source_fix_rate": 0.5,
+        "detection_rate": 0.5,
+        "horizontal_median_m": 3.3430493243944936,
+        "horizontal_p90_m": 3.3430493243944936,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 0.5
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 1,
+            "horizontal_median_m": 3.3430493243944936,
+            "horizontal_p90_m": 3.3430493243944936,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 2,
+          "available_nodes": 2,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 0,
+            "source_fix_rate": 0,
+            "detection_rate": 0,
+            "horizontal_median_m": null,
+            "horizontal_p90_m": null,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": null,
+            "within_1sigma": null,
+            "within_2sigma": null,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 1,
+          "available_nodes": 2,
+          "nodes_used_per_fix": []
+        }
+      ],
+      "stable_track_node_rate": 0.75,
+      "stable_track_seed_range": [
+        0.5,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "off",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 2,
+        "node_spacing_m": 80
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 1,
+        "horizontal_median_m": 0.3187572731139955,
+        "horizontal_p90_m": 0.45295290841105706,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 0
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 1,
+            "horizontal_median_m": 0.3187572731139955,
+            "horizontal_p90_m": 0.3187572731139955,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 2,
+          "available_nodes": 2,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 1,
+            "horizontal_median_m": 0.45295290841105706,
+            "horizontal_p90_m": 0.45295290841105706,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 2,
+          "available_nodes": 2,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "on",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 2,
+        "node_spacing_m": 80
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 0.5,
+        "source_fix_rate": 0.5,
+        "detection_rate": 0.5,
+        "horizontal_median_m": 2.109955346624463,
+        "horizontal_p90_m": 2.109955346624463,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 0.5
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 1,
+            "horizontal_median_m": 2.109955346624463,
+            "horizontal_p90_m": 2.109955346624463,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 2,
+          "available_nodes": 2,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 0,
+            "source_fix_rate": 0,
+            "detection_rate": 0,
+            "horizontal_median_m": null,
+            "horizontal_p90_m": null,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": null,
+            "within_1sigma": null,
+            "within_2sigma": null,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 1,
+          "available_nodes": 2,
+          "nodes_used_per_fix": []
+        }
+      ],
+      "stable_track_node_rate": 0.75,
+      "stable_track_seed_range": [
+        0.5,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "off",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 3,
+        "node_spacing_m": 20
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.8333333333333334,
+        "horizontal_median_m": 0.2441238249823211,
+        "horizontal_p90_m": 0.720924328308354,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 0
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 1,
+            "horizontal_median_m": 0.2441238249823211,
+            "horizontal_p90_m": 0.2441238249823211,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 3,
+          "available_nodes": 3,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.6666666666666666,
+            "horizontal_median_m": 0.720924328308354,
+            "horizontal_p90_m": 0.720924328308354,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 3,
+          "available_nodes": 3,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "on",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 3,
+        "node_spacing_m": 20
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.6666666666666666,
+        "horizontal_median_m": 9.255680790808285,
+        "horizontal_p90_m": 9.867175985549913,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 0
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.6666666666666666,
+            "horizontal_median_m": 9.867175985549913,
+            "horizontal_p90_m": 9.867175985549913,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 3,
+          "available_nodes": 3,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.6666666666666666,
+            "horizontal_median_m": 7.985021567502594,
+            "horizontal_p90_m": 7.985021567502594,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 2,
+          "available_nodes": 3,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 0.8333333333333333,
+      "stable_track_seed_range": [
+        0.6666666666666666,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "off",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 3,
+        "node_spacing_m": 40
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.8333333333333334,
+        "horizontal_median_m": 0.24033489140574896,
+        "horizontal_p90_m": 0.2925897007936354,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 0
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 1,
+            "horizontal_median_m": 0.2925897007936354,
+            "horizontal_p90_m": 0.2925897007936354,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 3,
+          "available_nodes": 3,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.6666666666666666,
+            "horizontal_median_m": 0.18636065961567022,
+            "horizontal_p90_m": 0.18636065961567022,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 3,
+          "available_nodes": 3,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "on",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 3,
+        "node_spacing_m": 40
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.8333333333333334,
+        "horizontal_median_m": 5.425631343315126,
+        "horizontal_p90_m": 10.950350087892597,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.25,
+        "within_1sigma": 0.625,
+        "within_2sigma": 0.875,
+        "risk_coverage_area": 0.5
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 1,
+            "horizontal_median_m": 10.950350087892597,
+            "horizontal_p90_m": 10.950350087892597,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.5,
+            "within_1sigma": 0.75,
+            "within_2sigma": 0.75,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 3,
+          "available_nodes": 3,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.6666666666666666,
+            "horizontal_median_m": 5.425631343315126,
+            "horizontal_p90_m": 5.425631343315126,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 0.5,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 2,
+          "available_nodes": 3,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 0.8333333333333333,
+      "stable_track_seed_range": [
+        0.6666666666666666,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "off",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 3,
+        "node_spacing_m": 80
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 1,
+        "horizontal_median_m": 0.48513299092504786,
+        "horizontal_p90_m": 0.6416376653067147,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 0
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 1,
+            "horizontal_median_m": 0.48513299092504786,
+            "horizontal_p90_m": 0.48513299092504786,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 3,
+          "available_nodes": 3,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 1,
+            "horizontal_median_m": 0.6416376653067147,
+            "horizontal_p90_m": 0.6416376653067147,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 3,
+          "available_nodes": 3,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "on",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 3,
+        "node_spacing_m": 80
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.6666666666666666,
+        "horizontal_median_m": 4.519536548217733,
+        "horizontal_p90_m": 4.921036887250751,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0,
+        "within_1sigma": 0.75,
+        "within_2sigma": 1,
+        "risk_coverage_area": 0
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.6666666666666666,
+            "horizontal_median_m": 1.914455092595492,
+            "horizontal_p90_m": 1.914455092595492,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 3,
+          "available_nodes": 3,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.6666666666666666,
+            "horizontal_median_m": 4.921036887250751,
+            "horizontal_p90_m": 4.921036887250751,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 0.5,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 2,
+          "available_nodes": 3,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 0.8333333333333333,
+      "stable_track_seed_range": [
+        0.6666666666666666,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "off",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 4,
+        "node_spacing_m": 20
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.75,
+        "horizontal_median_m": 0.3687830573951965,
+        "horizontal_p90_m": 0.3831457080060338,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.42857142857142855,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 1
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.75,
+            "horizontal_median_m": 0.3687830573951965,
+            "horizontal_p90_m": 0.3687830573951965,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.5,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 4,
+          "available_nodes": 4,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.75,
+            "horizontal_median_m": 0.3831457080060338,
+            "horizontal_p90_m": 0.3831457080060338,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.3333333333333333,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 4,
+          "available_nodes": 4,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "on",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 4,
+        "node_spacing_m": 20
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.625,
+        "horizontal_median_m": 19.330040687487966,
+        "horizontal_p90_m": 19.377099680843557,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.75,
+        "within_1sigma": 0.625,
+        "within_2sigma": 0.75,
+        "risk_coverage_area": 1
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.5,
+            "horizontal_median_m": 19.377099680843557,
+            "horizontal_p90_m": 19.377099680843557,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 1,
+            "within_1sigma": 0.5,
+            "within_2sigma": 0.5,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 4,
+          "available_nodes": 4,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.75,
+            "horizontal_median_m": 10.074582901055374,
+            "horizontal_p90_m": 10.074582901055374,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.5,
+            "within_1sigma": 0.75,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 3,
+          "available_nodes": 4,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 0.875,
+      "stable_track_seed_range": [
+        0.75,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "off",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 4,
+        "node_spacing_m": 40
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.5,
+        "horizontal_median_m": 0.09674704677240484,
+        "horizontal_p90_m": 0.5124696968209628,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.5,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 1
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.5,
+            "horizontal_median_m": 0.5124696968209628,
+            "horizontal_p90_m": 0.5124696968209628,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.5,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 4,
+          "available_nodes": 4,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.5,
+            "horizontal_median_m": 0.06466111980680167,
+            "horizontal_p90_m": 0.06466111980680167,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.5,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 4,
+          "available_nodes": 4,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "on",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 4,
+        "node_spacing_m": 40
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.625,
+        "horizontal_median_m": 8.130811191297147,
+        "horizontal_p90_m": 13.779773208320218,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.4,
+        "within_1sigma": 0.5,
+        "within_2sigma": 0.75,
+        "risk_coverage_area": 0.5
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.75,
+            "horizontal_median_m": 13.779773208320218,
+            "horizontal_p90_m": 13.779773208320218,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.6666666666666666,
+            "within_1sigma": 0.5,
+            "within_2sigma": 0.5,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 4,
+          "available_nodes": 4,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.5,
+            "horizontal_median_m": 3.4604029191818784,
+            "horizontal_p90_m": 3.4604029191818784,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 0.5,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 3,
+          "available_nodes": 4,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 0.875,
+      "stable_track_seed_range": [
+        0.75,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "off",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 4,
+        "node_spacing_m": 80
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.75,
+        "horizontal_median_m": 0.33605152182553377,
+        "horizontal_p90_m": 0.6886250771736361,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.2,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 0.5
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.75,
+            "horizontal_median_m": 0.33605152182553377,
+            "horizontal_p90_m": 0.33605152182553377,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 0
+          },
+          "nodes_with_stable_tracks": 4,
+          "available_nodes": 4,
+          "nodes_used_per_fix": [
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.75,
+            "horizontal_median_m": 0.6886250771736361,
+            "horizontal_p90_m": 0.6886250771736361,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.3333333333333333,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 4,
+          "available_nodes": 4,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "on",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 4,
+        "node_spacing_m": 80
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.75,
+        "horizontal_median_m": 2.546400383214674,
+        "horizontal_p90_m": 22.229925072007077,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.6666666666666666,
+        "within_1sigma": 0.3333333333333333,
+        "within_2sigma": 0.5,
+        "risk_coverage_area": 1
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 1,
+            "horizontal_median_m": 22.229925072007077,
+            "horizontal_p90_m": 22.229925072007077,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.6666666666666666,
+            "within_1sigma": 0.25,
+            "within_2sigma": 0.5,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 4,
+          "available_nodes": 4,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.5,
+            "horizontal_median_m": 0.16788134468811292,
+            "horizontal_p90_m": 0.16788134468811292,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.6666666666666666,
+            "within_1sigma": 0.5,
+            "within_2sigma": 0.5,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 4,
+          "available_nodes": 4,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "off",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 5,
+        "node_spacing_m": 20
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.4,
+        "horizontal_median_m": 0.30988232246388914,
+        "horizontal_p90_m": 0.44640182075285934,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.5,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 1
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.4,
+            "horizontal_median_m": 0.30988232246388914,
+            "horizontal_p90_m": 0.30988232246388914,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.5,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 5,
+          "available_nodes": 5,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.4,
+            "horizontal_median_m": 0.44640182075285934,
+            "horizontal_p90_m": 0.44640182075285934,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.5,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 5,
+          "available_nodes": 5,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "on",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 5,
+        "node_spacing_m": 20
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.5,
+        "horizontal_median_m": 16.553585490199506,
+        "horizontal_p90_m": 40.96076132520213,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 1,
+        "within_1sigma": 0.375,
+        "within_2sigma": 0.625,
+        "risk_coverage_area": 1
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.6,
+            "horizontal_median_m": 40.96076132520213,
+            "horizontal_p90_m": 40.96076132520213,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 1,
+            "within_1sigma": 0.25,
+            "within_2sigma": 0.25,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 5,
+          "available_nodes": 5,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.4,
+            "horizontal_median_m": 16.553585490199506,
+            "horizontal_p90_m": 16.553585490199506,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 1,
+            "within_1sigma": 0.5,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 4,
+          "available_nodes": 5,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 0.9,
+      "stable_track_seed_range": [
+        0.8,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "off",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 5,
+        "node_spacing_m": 40
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.5,
+        "horizontal_median_m": 0.12935333161821166,
+        "horizontal_p90_m": 0.28778922127629525,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.5,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 1
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.4,
+            "horizontal_median_m": 0.04675355038998937,
+            "horizontal_p90_m": 0.04675355038998937,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.5,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 5,
+          "available_nodes": 5,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.6,
+            "horizontal_median_m": 0.28778922127629525,
+            "horizontal_p90_m": 0.28778922127629525,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.5,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 5,
+          "available_nodes": 5,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "on",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 5,
+        "node_spacing_m": 40
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.5,
+        "horizontal_median_m": 7.417335824769306,
+        "horizontal_p90_m": 7.453351028603494,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.5,
+        "within_1sigma": 0.375,
+        "within_2sigma": 0.75,
+        "risk_coverage_area": 1
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.4,
+            "horizontal_median_m": 7.453351028603494,
+            "horizontal_p90_m": 7.453351028603494,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.5,
+            "within_1sigma": 0,
+            "within_2sigma": 0.5,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 5,
+          "available_nodes": 5,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.6,
+            "horizontal_median_m": 3.086363559341983,
+            "horizontal_p90_m": 3.086363559341983,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.5,
+            "within_1sigma": 0.75,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 5,
+          "available_nodes": 5,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "off",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 5,
+        "node_spacing_m": 80
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.7,
+        "horizontal_median_m": 0.16048479904119867,
+        "horizontal_p90_m": 0.254978983318256,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.5,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 1
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.8,
+            "horizontal_median_m": 0.254978983318256,
+            "horizontal_p90_m": 0.254978983318256,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.5,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 5,
+          "available_nodes": 5,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.6,
+            "horizontal_median_m": 0.06230540522431768,
+            "horizontal_p90_m": 0.06230540522431768,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.5,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 5,
+          "available_nodes": 5,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "on",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 5,
+        "node_spacing_m": 80
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.6,
+        "horizontal_median_m": 5.928693133773859,
+        "horizontal_p90_m": 11.568743404240374,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.625,
+        "within_1sigma": 0.5,
+        "within_2sigma": 0.875,
+        "risk_coverage_area": 1
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.6,
+            "horizontal_median_m": 11.568743404240374,
+            "horizontal_p90_m": 11.568743404240374,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.75,
+            "within_1sigma": 0.75,
+            "within_2sigma": 0.75,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 5,
+          "available_nodes": 5,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.6,
+            "horizontal_median_m": 5.928693133773859,
+            "horizontal_p90_m": 5.928693133773859,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.5,
+            "within_1sigma": 0.25,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 5,
+          "available_nodes": 5,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "off",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 6,
+        "node_spacing_m": 20
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.4166666666666667,
+        "horizontal_median_m": 0.36445824283787437,
+        "horizontal_p90_m": 0.6785824224501471,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.6363636363636364,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 1
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.5,
+            "horizontal_median_m": 0.6785824224501471,
+            "horizontal_p90_m": 0.6785824224501471,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.6,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 6,
+          "available_nodes": 6,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.3333333333333333,
+            "horizontal_median_m": 0.16910582601746774,
+            "horizontal_p90_m": 0.16910582601746774,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.6666666666666666,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 6,
+          "available_nodes": 6,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "on",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 6,
+        "node_spacing_m": 20
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.3333333333333333,
+        "horizontal_median_m": 12.471005345323082,
+        "horizontal_p90_m": 12.937943411287915,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.75,
+        "within_1sigma": 0.625,
+        "within_2sigma": 0.75,
+        "risk_coverage_area": 1
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.3333333333333333,
+            "horizontal_median_m": 12.937943411287915,
+            "horizontal_p90_m": 12.937943411287915,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 1,
+            "within_1sigma": 0.25,
+            "within_2sigma": 0.5,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 6,
+          "available_nodes": 6,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.3333333333333333,
+            "horizontal_median_m": 4.335533018470779,
+            "horizontal_p90_m": 4.335533018470779,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.5,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 5,
+          "available_nodes": 6,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 0.9166666666666667,
+      "stable_track_seed_range": [
+        0.8333333333333334,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "off",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 6,
+        "node_spacing_m": 40
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.5,
+        "horizontal_median_m": 0.10294938975228388,
+        "horizontal_p90_m": 0.4266871584124972,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.6363636363636364,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 1
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.5,
+            "horizontal_median_m": 0.4266871584124972,
+            "horizontal_p90_m": 0.4266871584124972,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.6,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 6,
+          "available_nodes": 6,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.5,
+            "horizontal_median_m": 0.10294938975228388,
+            "horizontal_p90_m": 0.10294938975228388,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.6666666666666666,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 6,
+          "available_nodes": 6,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "on",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 6,
+        "node_spacing_m": 40
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.4166666666666667,
+        "horizontal_median_m": 5.522911389437713,
+        "horizontal_p90_m": 5.5853156535482995,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.6363636363636364,
+        "within_1sigma": 0.5,
+        "within_2sigma": 0.75,
+        "risk_coverage_area": 1
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.3333333333333333,
+            "horizontal_median_m": 5.5853156535482995,
+            "horizontal_p90_m": 5.5853156535482995,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.6,
+            "within_1sigma": 0,
+            "within_2sigma": 0.5,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 6,
+          "available_nodes": 6,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.5,
+            "horizontal_median_m": 2.396402839655758,
+            "horizontal_p90_m": 2.396402839655758,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.6666666666666666,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 6,
+          "available_nodes": 6,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "off",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 6,
+        "node_spacing_m": 80
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.5833333333333334,
+        "horizontal_median_m": 0.3079760758271702,
+        "horizontal_p90_m": 0.46826459546730226,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.6666666666666666,
+        "within_1sigma": 1,
+        "within_2sigma": 1,
+        "risk_coverage_area": 1
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.5,
+            "horizontal_median_m": 0.46826459546730226,
+            "horizontal_p90_m": 0.46826459546730226,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.6666666666666666,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 6,
+          "available_nodes": 6,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.6666666666666666,
+            "horizontal_median_m": 0.17482944328627023,
+            "horizontal_p90_m": 0.17482944328627023,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.6666666666666666,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 6,
+          "available_nodes": 6,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    },
+    {
+      "realism": "on",
+      "values": {
+        "layout": "ring",
+        "mic_array": "flat4_100",
+        "node_count": 6,
+        "node_spacing_m": 80
+      },
+      "runs": 2,
+      "metrics": {
+        "scene_fix_rate": 1,
+        "source_fix_rate": 1,
+        "detection_rate": 0.4166666666666667,
+        "horizontal_median_m": 3.952294142052639,
+        "horizontal_p90_m": 4.118356474075824,
+        "useful_fix_rate": 0,
+        "unflagged_wrong_fix_rate": 0,
+        "wrong_fix_rate": 0.6363636363636364,
+        "within_1sigma": 0.75,
+        "within_2sigma": 1,
+        "risk_coverage_area": 1
+      },
+      "seed_values": [
+        {
+          "seed": 1,
+          "split": "train",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.3333333333333333,
+            "horizontal_median_m": 4.118356474075824,
+            "horizontal_p90_m": 4.118356474075824,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.6,
+            "within_1sigma": 1,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 6,
+          "available_nodes": 6,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "seed": 101,
+          "split": "validation",
+          "metrics": {
+            "scene_fix_rate": 1,
+            "source_fix_rate": 1,
+            "detection_rate": 0.5,
+            "horizontal_median_m": 3.952294142052639,
+            "horizontal_p90_m": 3.952294142052639,
+            "useful_fix_rate": 0,
+            "unflagged_wrong_fix_rate": 0,
+            "wrong_fix_rate": 0.6666666666666666,
+            "within_1sigma": 0.5,
+            "within_2sigma": 1,
+            "risk_coverage_area": 1
+          },
+          "nodes_with_stable_tracks": 6,
+          "available_nodes": 6,
+          "nodes_used_per_fix": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "stable_track_node_rate": 1,
+      "stable_track_seed_range": [
+        1,
+        1
+      ],
+      "actual_fusion_node_counts": [
+        2
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "D1 real-model labelling through synthetic propagation",
+  "clips": ["glass_breaking", "car_horn", "dog"],
+  "ranges_m": [5, 50, 150],
+  "noise_floors_db_spl": [30, 60],
+  "seeds": [1, 101],
+  "nodes": [[-15, 0, 1.5], [15, 0, 1.5]],
+  "array": "flat4_100",
+  "source": { "position": "[0, range_m, 1.5]", "level_1m_db": 105, "start_s": 1 },
+  "settings": { "ground_reflectivity": 0, "reflection_order": 0, "diffraction_order": 0, "realism": "off" },
+  "input_normalisation": ["raw", "whole-record-rms-minus20dbfs"],
+  "expected_renders": 36,
+  "expected_model_events": 144,
+  "expected_oracle_events": 72,
+  "models": "Existing real Node YAMNet MediaPipe + quantised CLAP with repository catalogue and classify(clap5); no substitute predictions.",
+  "prediction_rule": "Classify full node microphone 0 recording. Highest-confidence labelled period wins, earliest period breaks ties. No source windows or labels supplied to classifier. No label counts as incorrect. Compare against pinned ESC-50 manifest accepted labels only after inference.",
+  "association": "A predicted period associates to a measured fix only if it overlaps accepted windows of that fix's node track. No truth-assisted association. This is a singleton-source study, not validation of separating overlapping classes.",
+  "snr": "Scoring-only peak detection-band per-source 10ms power over renderer detection-band noise power; never used for inference or normalisation.",
+  "oracle": "Known source label/presence oracle, not a detector. Oracle/localiser coverage are separate denominators.",
+  "reporting": "Complete equal populations only, per label/range/noise/normalisation and SNR bins. No classification or hardware ranking from a partial report. Descriptive paired preprocessing experiment, no default change or tuning on outcomes.",
+  "limitations": "One real ESC-50 clip per label through synthetic simulation is a smoke population, not independent recordings, general model accuracy or real-world propagation validation. Normalisation preserves SNR and may change level-trigger behaviour. No new classifier weights."
+}

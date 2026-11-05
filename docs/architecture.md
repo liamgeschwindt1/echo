@@ -76,16 +76,72 @@ report components. `testing-view.js` is a display adapter for saved inference,
 not another solver. Horizontal fixes have explicitly assumed display height and
 unavailable 3D error. Drill-down never reconstructs a new inference result.
 
+## Round-two evaluation and external recordings
+
+Explicit scene splits add train/validation/test without reclassifying the old
+held-out data as unseen. Node-only `benchmark/sealed.js` hashes the physical
+population and atomically claims a persistent attempt before dispatch. It never
+runs in the browser or nightly CI. Overrides require a manifest-recorded reason.
+The producer is deep-snapshotted before attaching the seal to its caller, so
+metadata cannot form a reference cycle; CLI lifecycle failure recording covers
+exports as well as inference. Round two required an explicitly audited recovery
+of exports from complete immutable caches after discovering that bug. This
+does not rerun inference or rewrite its original producer.
+Rule-four acceptance uses paired whole-run resampling in every declared
+train/validation and realism partition. Risk curves keep confidence ties intact;
+their area penalises the unanswered tail. Default rankings use useful scene rate
+and refuse unequal/partial scene-seed populations.
+
+Rejected logistic confidence and exact global-assignment solvers live in
+`scripts/lib/`, with exported train-only coefficients and full trial evidence.
+They are not settings in `analyseMeasured`. Default pair association remains
+unchanged; extracting pair proposals enables offline research without enabling
+a hidden failed solver. Nonparametric trial intervals are explicitly different
+from Gaussian sigma/twice-sigma intervals.
+
+`recording.js` decodes channel-preserving RIFF PCM/float WAV, validates nominal
+geometry and invokes the same restricted measured pipeline. Independent
+timestamped truth is converted to local ENU only for post-inference scoring;
+missing/out-of-gap truth stays null. Calibration requires declared disjoint
+quiet/signal intervals and a surveyed source. CLI and `recordingWorker.js` share
+these APIs. WAV truth is never used to pick bearings or fixes. No real recording
+has been evaluated; synthetic round-trip tests are a software integration check.
+
+Testing's history/labelling views load stored reports rather than rerunning or
+refitting them. Historical timing strata come from complete recorded runs.
+Nightly Actions is configured but only becomes scheduled after the workflow is
+present on the default branch.
+
+`ui/placement.js` is independent of inference. It uses nominal nodes, known
+footprints and explicit sigma/range assumptions to show a21x21 linearised
+geometry map and deterministic N2..6 suggestions. It neither reads source truth
+nor changes the editor. Its predictions must not be confused with the retained
+pair-only solver, obstruction-aware acoustic propagation or calibrated coverage.
+Uploaded schema2 history preserves the prior display on validation errors and
+does not authenticate externally supplied reports.
+
+The variance and noise-attribution research scripts are separate from runtime
+localisation. The former compares a frozen rejected diagnostic solver without
+refitting; the latter estimates three declared POI powers from nominal geometry
+and node levels. Actual localiser fixes are association diagnostics, not hidden
+source truth or position priors inferred by an oracle. Underdetermined shares
+are explicitly unavailable. Neither is a validated hardware/product model.
+
 ## Important limitations
 
-- The renderer is not validated against real recordings; no housing scattering,
-  inter-node clocks, rain, wind or source directivity realism was added.
+- The renderer is not validated against real recordings. Opt-in clock offset/drift
+  uses common per-node linear resampling; default is OFF. Wind/urban/rain and slow
+  ambient variation are seeded placeholder spectra, not fitted measurements.
+  Clock audit is simulator-only; activity times remain global and noise powers
+  are record averages. No sync-gated TDOA, housing scattering, microphone
+  frequency/phase response or source directivity is implemented.
 - Microphone gain is one positive scalar applied after signal, ambient and self-noise
   are summed (`render.js`). It ideally cancels in PHAT. Gain-sweep insensitivity
   does not establish robustness to frequency/phase mismatch or preamplifier noise.
-- Default legacy consensus can choose different tied pair hypotheses on different
-  JS runtimes. A weight-aware repair improved errors but regressed suspect flags
-  and was removed. It is not available as a hidden experimental option.
+- Legacy consensus now resolves count/cost ties by quantised cost and canonical
+  pair IDs, with a real Chromium/Node parity regression. This fixes reproducibility,
+  not the high-weight-node leave-one-out root cause. Round-one weight-aware
+  repairs remain rejected; no measured-only improvement follows from that path.
 - Measured-only PHAT quality now uses coherence normalised by the fully coherent
   in-band peak. The previous raw-peak unit mismatch rejected every coherent
   default-band window. The unchanged 0.25 gate is still not empirically calibrated.

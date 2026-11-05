@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "at": "2026-11-04T16:00:09.526Z",
+  "sealed": {
+    "input_sha256": "a93368c737533c8988a0a8301a5bbde304dcc298661a0367ca6c365d52971ce6",
+    "original_producer": "809b527171684a30a132c934d79537a14d01b158",
+    "original_code": "2f7230fc50b341ad0c3fbd147bad728cc9fe6bb92e2fbc748bc25cf7c1a1bf38",
+    "output_json_sha256": "15ce138f398e29a1a448ae23b6e539482e0ba37b80bb6e91dc6fa7442c7b7b93",
+    "gzip_sha256": "11aaeab2d8c1a0422ce3e45d86e0dab9c21554e87916adad8637c02fde2e82c6",
+    "original_archive_sha256": "fbac47e466a3cf08fc8c0cd4163fb34412d2e4733b65ae4e44bb05ba8cbe1f52",
+    "original_cache_files_verified": 80,
+    "original_log_verified": true,
+    "all_original_inference_and_scores_equal_to_export": true
+  },
+  "post_test_core_changes": [
+    "packages/sim-core/src/benchmark/sealed.js"
+  ],
+  "core_regression": {
+    "tests": 287,
+    "passed": 287,
+    "failed": 0,
+    "log_sha256": "faa83b076f531cb42f3da5a561fe7049b251be29a1760473b01c7df5de958463"
+  },
+  "known_population_smoke": {
+    "runs": 16,
+    "rule": "round2",
+    "pass": true,
+    "report": "baselines/round2-postseal-smoke.json.gz"
+  },
+  "note": "Derived artifact checks only; no rerender, inference, scoring or model tuning.",
+  "original_golden_files_unchanged": 7,
+  "post_test_metadata_code": "2078b5c425587f4fee1cf2555f943e0454400888f0eda2ab24fa7024a1e68862",
+  "unchanged_renderer_code": "39d44f7b80a96220844fabdc2b11bff172055a20a311c35a84603f308f2ffbe4"
+}

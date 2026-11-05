@@ -197,11 +197,11 @@ test('tornado never reports unavailable sensitivity as a zero effect', () => {
   assert.ok(!html.includes('<meter'));
 });
 test('array ranking flips identify only single changing variables, ties have no winner', () => {
-  const row = (array, heading, value) => ({ values: { mic_array: array, heading_error_sigma_deg: heading }, split: 'train', realism: 'on', analysis_mode: 'measured_only', metrics: { horizontal_median_m: { value } } });
-  const result = rankingFlips([row('a', 0, 1), row('b', 0, 2), row('a', 3, 5), row('b', 3, 2)]);
+  const row = (array, heading, value) => ({ population: ['site|1'], values: { mic_array: array, heading_error_sigma_deg: heading }, split: 'train', realism: 'on', analysis_mode: 'measured_only', metrics: { horizontal_median_m: { value } } });
+  const result = rankingFlips([row('a', 0, 1), row('b', 0, 2), row('a', 3, 5), row('b', 3, 2)], 'horizontal_median_m');
   assert.equal(result.flips[0].variable, 'heading_error_sigma_deg');
   assert.equal(result.flips[0].from, 'a'); assert.equal(result.flips[0].to, 'b');
-  assert.equal(rankingFlips([row('a', 0, 2), row('b', 0, 2)]).rankings[0].winner, null);
+  assert.equal(rankingFlips([row('a', 0, 2), row('b', 0, 2)], 'horizontal_median_m').rankings[0].winner, null);
 });
 test('paired significance uses identical seeds, no unpaired leakage', () => {
   const runs = [fakeRun(5), fakeRun(2)];

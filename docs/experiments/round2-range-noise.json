@@ -1,0 +1,27 @@
+{
+  "name": "Round 2 free-field stable-bearing range versus ambient floor",
+  "mode": "grid",
+  "scenes": ["sparse_50"],
+  "seeds": [1, 101],
+  "held_out_seeds": [101],
+  "scene_splits": {},
+  "analysis_modes": ["measured_only"],
+  "realism": ["off", "on"],
+  "base_values": {"layout": "ring", "node_count": 3, "node_spacing_m": 40},
+  "base_settings": {"reflection_order": 0, "diffraction_order": 0, "ground_reflectivity": 0},
+  "sweeps": [
+    {"variable": "mic_array", "values": ["flat4_100", "ball12_d180", "ball12_d180_sub4", "ball12_d180_sub6", "ball12_d180_sub8", "planar12_d180", "dome12_d230", "puck12_d210", "ball12_d180_sub4_maxvol"]},
+    {"variable": "range_m", "values": [20, 50, 100, 200]},
+    {"variable": "noise_floor_db_spl", "values": [30, 60]}
+  ],
+  "max_runs": 400,
+  "expected_runs": 288,
+  "preregistration": {
+    "registered_before": "Any outcomes from this range/noise population",
+    "source": "Existing sparse_50 glass-breaking clip,105dBSPL at1m; range is horizontal distance from node centroid, not identical range to each mic. Known synthetic propagation; no housing/phase response.",
+    "metrics": "Any accepted mixture bearing track per node and its seed-cluster mean; any fix, conditional horizontal error, useful and unflagged-wrong scene rates. Track presence is a detection proxy, not verified event/classification accuracy; no noise-only false-alarm control is claimed.",
+    "uncertainty": "Two observed seed-cluster values and their range; no reliable population95%CI from two clusters. Preserve no-fix errors as null.",
+    "hardware_table": "Only derive a hardware requirement if a target-compliant regime is demonstrated and the relevant impairment was varied. Otherwise requirement fields remain null with reasons. Ambient floor is not microphone self-noise; no clock/sync requirement can follow from a model without inter-node TDOA.",
+    "scope": "Complete equal population for all9 designs, not all sites or sealed conditions. This is not the full improved-engine ranking and cannot name a hardware winner."
+  }
+}

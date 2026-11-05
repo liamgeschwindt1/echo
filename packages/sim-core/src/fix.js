@@ -8,6 +8,14 @@ import { mapBounds } from './backtrace.js';
 const toRad = (d) => (d * Math.PI) / 180;
 const toDeg = (r) => (r * 180) / Math.PI;
 
+// Squared-sigma costs below numerical precision must not choose different pairs in JS engines.
+export function consensusCandidateWins(set, cost, pair, best) {
+  const pair_key = [...pair].sort().join('\0');
+  const cost_bucket = Math.round(cost * 1e10);
+  return !best || set.length > best.set.length || set.length === best.set.length &&
+    (cost_bucket < Math.round(best.cost * 1e10) || cost_bucket === Math.round(best.cost * 1e10) && pair_key < best.pair_key);
+}
+
 /** Horizontal crossing angle of two azimuths as lines (0..90 deg). */
 export const crossingDeg = (a, b) => {
   const d = Math.abs(((a - b) % 180) + 180) % 180;
@@ -56,6 +64,7 @@ function weightedFit(rays) {
   }
   return p;
 }
+export { weightedFit as weightedRayFit2d };
 
 // Residual of r against the fit of the other rays, or null when they are too close to parallel to say.
 function looScore(r, set, settings) {
@@ -145,7 +154,7 @@ function looScore3(r, set, settings) {
   return p ? zScore3(r, p) : null;
 }
 
-function consensus3d(rays, settings) {
+function consensus3d(rays, settings, onConsensus) {
   let inliers = rays;
   const gate = settings.fix_inlier_gate_sigma;
   if (rays.length >= 3) {
@@ -158,10 +167,12 @@ function consensus3d(rays, settings) {
         const z = rays.map((r) => zScore3(r, p));
         const set = rays.filter((r, k) => z[k] <= gate || k === i || k === j);
         const cost = set.reduce((s, r) => s + Math.min(zScore3(r, p), gate) ** 2, 0);
-        if (!best || set.length > best.set.length || (set.length === best.set.length && cost < best.cost)) best = { set, cost };
+        const pair = [rays[i].node_id, rays[j].node_id];
+        if (consensusCandidateWins(set, cost, pair, best)) best = { set, cost, pair_key: [...pair].sort().join('\0') };
       }
     }
     if (best) {
+      onConsensus?.({ dimension: 3, pair: best.pair_key.split('\0'), cost: best.cost });
       inliers = best.set;
       const p = weightedFit3(inliers);
       if (p) inliers = rays.filter((r) => inliers.includes(r) || zScore3(r, p) <= gate);
@@ -184,7 +195,7 @@ function consensus3d(rays, settings) {
  * opts: settings (fix_* thresholds, source_height_prior_m), scenario (for the scene bounds).
  * Returns null for fewer than two rays.
  */
-export function robustFix(rays, { settings, scenario }) {
+export function robustFix(rays, { settings, scenario, onConsensus }) {
   if (rays.length < 2) return null;
   const gate = settings.fix_inlier_gate_sigma;
   const R = rays.map((r) => {
@@ -212,10 +223,12 @@ export function robustFix(rays, { settings, scenario }) {
         const z = R.map((r) => zScore(r, p));
         const set = R.filter((_, k) => z[k] <= gate || k === i || k === j);
         const cost = set.reduce((s, r) => s + Math.min(zScore(r, p), gate) ** 2, 0);
-        if (!best || set.length > best.set.length || (set.length === best.set.length && cost < best.cost)) best = { set, cost };
+        const pair = [R[i].node_id, R[j].node_id];
+        if (consensusCandidateWins(set, cost, pair, best)) best = { set, cost, pair_key: [...pair].sort().join('\0') };
       }
     }
     if (best) {
+      onConsensus?.({ dimension: 2, pair: best.pair_key.split('\0'), cost: best.cost });
       inliers = best.set;
       // Refit on the consensus set and re-admit any ray that agrees with the refined point.
       const p = weightedFit(inliers);
@@ -252,7 +265,7 @@ export function robustFix(rays, { settings, scenario }) {
   const attempted3d = poorlyConditioned2d && trusted.length >= 2 && cross3d >= settings.fix_min_crossing_deg;
   let negative3d = false;
   if (attempted3d) {
-    inliers3d = consensus3d(trusted, settings);
+    inliers3d = consensus3d(trusted, settings, onConsensus);
     cross3d = inliers3d.length >= 2 ? maxCrossing3d(inliers3d) : 0;
     p3d = inliers3d.length >= 2 && cross3d >= settings.fix_min_crossing_deg ? weightedFit3(inliers3d) : null;
     if (p3d && inliers3d.some((r) => !(rangeAlong3(r, p3d) > 0))) {

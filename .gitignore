@@ -4,3 +4,5 @@ dist/
 *.log
 packages/assets/public/test-audio/*.wav
 /.benchmark-cache/
+/.benchmark-round2-*/
+/.benchmark-nightly/
