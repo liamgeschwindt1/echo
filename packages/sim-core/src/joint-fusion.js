@@ -101,12 +101,12 @@ function robustJointFit(rays, minCrossDeg, gateSigma) {
   return refined ? { ...refined, inliers: finalInliers, seed_pair: best.pair } : null;
 }
 
-function trackBearing(track) {
+function trackBearing(track, calibration = { offset_deg: 0, sigma_deg: 0 }) {
   const windows = track.windows;
   const anchor = windows[0].az_deg;
   const angles = windows.map((window) => wrap(window.az_deg - anchor));
-  const az_deg = wrap(anchor + median(angles));
-  return { az_deg, spread_deg: rms(angles.map((angle) => wrap(angle - median(angles)))) };
+  const az_deg = wrap(anchor + median(angles) + calibration.offset_deg);
+  return { az_deg, spread_deg: Math.hypot(rms(angles.map((angle) => wrap(angle - median(angles)))), calibration.sigma_deg) };
 }
 
 function emissionSpan(candidate, c) {
@@ -146,9 +146,9 @@ function selectCompatibleTracks(candidate, nodes, c, options) {
   return { selected, common };
 }
 
-function raysFor(selected, options) {
+function raysFor(selected, options, calibration) {
   return selected.map(({ ni, nr, tr, measured }) => {
-    const bearing = measured ?? trackBearing(tr);
+    const bearing = measured ?? trackBearing(tr, calibration?.[ni]);
     return {
       node_id: `${nr.node_id}:${ni}`,
       origin: nr.node_position,
@@ -158,7 +158,7 @@ function raysFor(selected, options) {
   });
 }
 
-function solveCandidates(nodes, candidates, { c, options }) {
+function solveCandidates(nodes, candidates, { c, options, calibration }) {
   const proposals = [];
   for (const candidate of candidates) {
     if (!candidate.static || candidate.score > 25 ||
@@ -172,7 +172,7 @@ function solveCandidates(nodes, candidates, { c, options }) {
     };
     const selected = selectCompatibleTracks(initial, nodes, c, options);
     if (!selected || selected.selected.length < 3) continue;
-    const rays = raysFor(selected.selected, options);
+    const rays = raysFor(selected.selected, options, calibration);
     const fit = robustJointFit(rays, options.min_cross_deg, options.joint_gate_sigma);
     if (!fit || fit.inliers.length < 3) continue;
     const keptIds = new Set(fit.inliers.map((ray) => ray.node_id));
@@ -239,6 +239,6 @@ export function fuseJointTracks(nodes, context) {
     joint_gate_sigma: 3,
     joint_dedupe_m: 2
   };
-  const proposals = solveCandidates(nodes, pairs, { ...context, options });
+  const proposals = solveCandidates(nodes, pairs, { ...context, options, calibration: context.calibration });
   return assignDisjoint(proposals);
 }

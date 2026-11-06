@@ -46,3 +46,12 @@
 - Added fail-closed checks to all three sharded entrypoints. They reject sealed
   inputs before expansion/inference/merge while the required ledger controls
   remain missing. A subprocess regression test uses fake inputs only.
+- Multisource gates passed, including byte-identical complete inference on all
+  16 base smoke jobs. Fusion merge conflict 2: imports and pipeline return in
+  `measured.js`. Resolution: retain multisource extraction, fusion/calibration
+  passes and both sibling `extensions.multisource` / `extensions.fusion`
+  blocks. No new positioning connection or default promotion is implied.
+- Corrected T1's KPI comparison helper: unmatched populations now leave deltas
+  null, and paired bootstrap recomputes pooled endpoints on whole sampled site
+  clusters instead of averaging site quantiles. Missing self-comparison metrics
+  remain null. Targeted regression tests passed.
