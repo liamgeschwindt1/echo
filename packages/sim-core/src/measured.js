@@ -48,6 +48,14 @@ export const MEASURED_DEFAULTS = Object.freeze({
   likelihood_min_track_windows: 3
 });
 
+export function measuredOptionsFor(settings = {}) {
+  const extended = settings.measured_fusion_mode === 'likelihood' ||
+    (settings.measured_heading_self_calibration ?? 0) !== 0;
+  return Object.fromEntries(Object.entries(MEASURED_DEFAULTS)
+    .filter(([key]) => extended || (!key.startsWith('heading_self_calibration') && !key.startsWith('likelihood_')))
+    .map(([key, value]) => [key, settings[`measured_${key}`] ?? value]));
+}
+
 const FRAME_S = 0.01;
 const toRad = (d) => (d * Math.PI) / 180;
 const toDeg = (r) => (r * 180) / Math.PI;
@@ -318,9 +326,9 @@ export function trackCandidates(nodeResults, { c, options = {} }) {
       const calB = calFor(B.ni);
       const guess = intersect2(
         A.nr.node_position,
-        wrapDeg(best.wa.az_deg + calA.offset_deg),
+        calA.offset_deg === 0 ? best.wa.az_deg : wrapDeg(best.wa.az_deg + calA.offset_deg),
         B.nr.node_position,
-        wrapDeg(best.wb.az_deg + calB.offset_deg),
+        calB.offset_deg === 0 ? best.wb.az_deg : wrapDeg(best.wb.az_deg + calB.offset_deg),
         o.min_cross_deg
       );
       if (!guess) continue;
@@ -330,13 +338,13 @@ export function trackCandidates(nodeResults, { c, options = {} }) {
         const sigmaScale = 1 / (1 + (cal.sigma_deg / Math.max(o.bearing_sigma_deg, 0.1)) ** 2);
         for (const w of ws) obs.push({
           pos: F.nr.node_position,
-          az_deg: wrapDeg(w.az_deg + cal.offset_deg),
+          az_deg: cal.offset_deg === 0 ? w.az_deg : wrapDeg(w.az_deg + cal.offset_deg),
           w: sigmaScale,
           t_a: w.t_s
         });
         for (const w of F.tr.onsets || []) obs.push({
           pos: F.nr.node_position,
-          az_deg: wrapDeg(w.az_deg + cal.offset_deg),
+          az_deg: cal.offset_deg === 0 ? w.az_deg : wrapDeg(w.az_deg + cal.offset_deg),
           w: 2 * sigmaScale,
           t_a: w.t_s,
           onset: true

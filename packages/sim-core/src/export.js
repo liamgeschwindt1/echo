@@ -5,7 +5,7 @@ import { simConstants } from './geometry.js';
 import { ANALYSIS_THRESHOLDS } from './scenario.js';
 import { LABELLING_NOTE } from './labelling.js';
 import { nextPow2 } from './dsp.js';
-import { MEASURED_DEFAULTS } from './measured.js';
+import { measuredOptionsFor } from './measured.js';
 import { REALISM_DEFAULTS, REALISM_NOTE } from './realism.js';
 
 export const EXPORT_SCHEMA = '0.18';
@@ -145,7 +145,7 @@ export const EXPORT_NOTES = [
 export function thresholdsOf(settings) {
   return {
     ...Object.fromEntries(Object.entries(ANALYSIS_THRESHOLDS).map(([k, note]) => [k, { value: settings[k], placeholder: true, note }])),
-    ...Object.fromEntries(Object.entries(MEASURED_DEFAULTS).map(([k, value]) => [`measured_${k}`, { value: settings[`measured_${k}`] ?? value, placeholder: true, note: 'Existing measured.js heuristic; not calibrated on real recordings.' }]))
+    ...Object.fromEntries(Object.entries(measuredOptionsFor(settings)).map(([k, value]) => [`measured_${k}`, { value, placeholder: true, note: 'Existing measured.js heuristic; not calibrated on real recordings.' }]))
   };
 }
 

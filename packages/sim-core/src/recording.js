@@ -1,4 +1,4 @@
-import { analyseMeasured, MEASURED_DEFAULTS } from './measured.js';
+import { analyseMeasured, measuredOptionsFor } from './measured.js';
 import { speedOfSound } from './physics.js';
 import { EXPORT_SCHEMA } from './export.js';
 
@@ -80,7 +80,7 @@ export function recordingInputs(wav, geometry) {
   const band = settings.localisation_band_hz;
   if (!Array.isArray(band) || band.length !== 2 || !band.every(Number.isFinite) || !(0 < band[0] && band[0] < band[1] && band[1] < wav.sample_rate / 2) ||
       !Number.isFinite(settings.temperature_c) || settings.temperature_c < -50 || settings.temperature_c > 60) throw new Error('Invalid recording band or temperature');
-  const options = Object.fromEntries(Object.entries(MEASURED_DEFAULTS).map(([k, value]) => [k, settings[`measured_${k}`] ?? value]));
+  const options = measuredOptionsFor(settings);
   if (Object.entries(options).some(([key, value]) => key !== 'fusion_mode' && (!Number.isFinite(value) || value < 0)) ||
       !['legacy', 'joint', 'likelihood'].includes(options.fusion_mode) || options.joint_dedupe_m <= 0 ||
       Math.round(options.hop_ms * wav.sample_rate / 1000) < 1 || Math.round(options.window_ms * wav.sample_rate / 1000) < 1 ||

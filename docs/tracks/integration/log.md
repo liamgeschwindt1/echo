@@ -55,3 +55,10 @@
   null, and paired bootstrap recomputes pooled endpoints on whole sampled site
   clusters instead of averaging site quantiles. Missing self-comparison metrics
   remain null. Targeted regression tests passed.
+- Fusion gate failed exact inference parity on 8 measured runs despite zero
+  tracked metric regressions. Failure evidence:
+  `baselines/integration-gate-fusion*`. Causes: wrapping already valid bearings
+  when the calibration offset is zero (roughly 1e-14 coordinate changes) and
+  exporting 12 new default option fields. Preserve raw azimuth with zero offset
+  and share opt-in option resolution across benchmark, recordings and export.
+  Added exact default-option and combined-extension truth-boundary tests.

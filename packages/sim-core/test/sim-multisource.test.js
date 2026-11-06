@@ -32,6 +32,16 @@ test('multisource extension remains absent when ms modes are off', () => {
   assert.equal(result.extensions, undefined);
 });
 
+test('fusion and multisource diagnostics coexist without reading source truth', () => {
+  const sensor = scenario({ ms_candidate_mode: 'multi_peak' });
+  Object.defineProperty(sensor, 'sources', { get() { throw new Error('Source truth crossed sensor boundary'); } });
+  const result = analyseMeasured(sensor, rendered(noise(Math.round(fs * 0.7))), {
+    c: 343, options: { heading_self_calibration: 1 }
+  });
+  assert.ok(result.extensions.multisource);
+  assert.ok(result.extensions.fusion);
+});
+
 test('multisource extension emits candidates and associations when enabled', () => {
   const src = noise(Math.round(fs * 0.7));
   const result = analyseMeasured(
