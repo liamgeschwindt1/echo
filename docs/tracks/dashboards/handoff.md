@@ -2,8 +2,7 @@
 
 ## 1) What landed (with commits)
 
-- Landing includes dashboard UI, engine-history navigation, fallback LE-0 baseline reader, deferred-area placeholders, unit/e2e tests, and offline export script.
-- Commit list: pending local commit in this handoff cycle (worktree currently contains all described changes).
+- Commit `b5bb619`: dashboard UI, engine-history navigation, fallback LE-0 baseline reader, deferred-area placeholders, unit/e2e tests, offline export script, and T7 docs/artifacts.
 
 ## 2) Rejected or reverted (with evidence paths)
 
@@ -19,7 +18,7 @@
 
 - Branch: `dashboards/1`
 - Base commit used: `ff75074`
-- Current HEAD commit: `ff75074` (local tracked edits not committed yet at handoff-write time)
+- Current HEAD commit: `b5bb619`
 - CI result: local validation run only (GitHub Actions run not triggered in this session)
 - Preregistration hashes: none created (UI track; no new experiment study run)
 

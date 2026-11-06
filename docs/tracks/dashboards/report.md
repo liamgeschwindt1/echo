@@ -8,6 +8,8 @@
 
 ## Landed work
 
+Commit: `b5bb619`
+
 1. Added a new **Dashboards** workspace in the simulator app nav and panel routing.
 2. Implemented **Engines** dashboard page with:
    - Engine selector dropdown from registry order.
