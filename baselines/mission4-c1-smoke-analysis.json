@@ -1,0 +1,848 @@
+{
+  "schema": 1,
+  "source_report": "baselines/mission4-c1-smoke.json.gz",
+  "preregistration": "docs/experiments/mission4-c1.json",
+  "configs": {
+    "reference": "legacy",
+    "candidate": "joint"
+  },
+  "rule": "Existing round-2 rule-four implementation; paired whole-scene/seed bootstrap",
+  "acceptance": {
+    "rule": "round2",
+    "pass": false,
+    "rows": [
+      {
+        "key": "paired|train|off|measured_only",
+        "n_pairs": 6,
+        "changes": {
+          "scene_fix_rate": {
+            "before": 1,
+            "after": 1,
+            "delta": 0,
+            "ci": null
+          },
+          "unflagged_wrong_fix_rate": {
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null
+          },
+          "within_1sigma": {
+            "before": 0.7307692307692307,
+            "after": 0.7777777777777778,
+            "delta": 0.047008547008547064,
+            "ci": null
+          },
+          "within_2sigma": {
+            "before": 0.8846153846153846,
+            "after": 0.9444444444444444,
+            "delta": 0.05982905982905984,
+            "ci": null
+          },
+          "horizontal_median_m": {
+            "before": 0.610619858527911,
+            "after": 0.48409336397684777,
+            "delta": -0.12652649455106324,
+            "ci": [
+              -1.4695909406477832,
+              2.145044355158971
+            ]
+          },
+          "horizontal_p90_m": {
+            "before": 38.52869917627461,
+            "after": 3.520275816495775,
+            "delta": -35.00842335977883,
+            "ci": [
+              -38.24022810525134,
+              0.460550928796462
+            ]
+          },
+          "risk_coverage_area": {
+            "before": 1,
+            "after": 0,
+            "delta": -1,
+            "ci": [
+              -1,
+              -1
+            ]
+          }
+        },
+        "all_equal": false,
+        "improved": true,
+        "pass": false,
+        "reasons": [
+          "within_1sigma fails guard"
+        ]
+      },
+      {
+        "key": "paired|train|on|measured_only",
+        "n_pairs": 6,
+        "changes": {
+          "scene_fix_rate": {
+            "before": 1,
+            "after": 0.8333333333333334,
+            "delta": -0.16666666666666663,
+            "ci": null
+          },
+          "unflagged_wrong_fix_rate": {
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null
+          },
+          "within_1sigma": {
+            "before": 0.625,
+            "after": 0.6818181818181818,
+            "delta": 0.05681818181818177,
+            "ci": null
+          },
+          "within_2sigma": {
+            "before": 0.7916666666666666,
+            "after": 0.9772727272727273,
+            "delta": 0.18560606060606066,
+            "ci": null
+          },
+          "horizontal_median_m": {
+            "before": 3.893058104929934,
+            "after": 2.4282844617887696,
+            "delta": -1.4647736431411644,
+            "ci": [
+              -3.3814882054097004,
+              0.06903556375756148
+            ]
+          },
+          "horizontal_p90_m": {
+            "before": 8.278985712299734,
+            "after": 4.758400379337474,
+            "delta": -3.52058533296226,
+            "ci": [
+              -8.12527591678678,
+              -2.07330453104004
+            ]
+          },
+          "risk_coverage_area": {
+            "before": 1,
+            "after": 0.33333333333333337,
+            "delta": -0.6666666666666666,
+            "ci": [
+              -1,
+              -0.33333333333333326
+            ]
+          }
+        },
+        "all_equal": false,
+        "improved": true,
+        "pass": false,
+        "reasons": [
+          "scene_fix_rate fails guard"
+        ]
+      },
+      {
+        "key": "paired|train|surveyed|measured_only",
+        "n_pairs": 6,
+        "changes": {
+          "scene_fix_rate": {
+            "before": 1,
+            "after": 1,
+            "delta": 0,
+            "ci": null
+          },
+          "unflagged_wrong_fix_rate": {
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null
+          },
+          "within_1sigma": {
+            "before": 0.75,
+            "after": 0.8301886792452831,
+            "delta": 0.08018867924528306,
+            "ci": null
+          },
+          "within_2sigma": {
+            "before": 0.9166666666666666,
+            "after": 0.9433962264150944,
+            "delta": 0.026729559748427723,
+            "ci": null
+          },
+          "horizontal_median_m": {
+            "before": 1.7649192172518176,
+            "after": 1.0324731432625855,
+            "delta": -0.732446073989232,
+            "ci": [
+              -1.5796096665514208,
+              0.6043791715977476
+            ]
+          },
+          "horizontal_p90_m": {
+            "before": 4.973282030738032,
+            "after": 2.1822321793745,
+            "delta": -2.791049851363532,
+            "ci": [
+              -4.559960856236862,
+              0.21320213887887407
+            ]
+          },
+          "risk_coverage_area": {
+            "before": 1,
+            "after": 0,
+            "delta": -1,
+            "ci": [
+              -1,
+              -1
+            ]
+          }
+        },
+        "all_equal": false,
+        "improved": true,
+        "pass": false,
+        "reasons": [
+          "within_1sigma fails guard"
+        ]
+      },
+      {
+        "key": "paired|validation|off|measured_only",
+        "n_pairs": 6,
+        "changes": {
+          "scene_fix_rate": {
+            "before": 1,
+            "after": 1,
+            "delta": 0,
+            "ci": null
+          },
+          "unflagged_wrong_fix_rate": {
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null
+          },
+          "within_1sigma": {
+            "before": 0.625,
+            "after": 0.6296296296296297,
+            "delta": 0.00462962962962965,
+            "ci": null
+          },
+          "within_2sigma": {
+            "before": 0.875,
+            "after": 0.9259259259259259,
+            "delta": 0.05092592592592593,
+            "ci": null
+          },
+          "horizontal_median_m": {
+            "before": 2.4507330311893143,
+            "after": 1.918517414067782,
+            "delta": -0.5322156171215322,
+            "ci": [
+              -2.0418317054872404,
+              2.9040193460437824
+            ]
+          },
+          "horizontal_p90_m": {
+            "before": 8.199220375913464,
+            "after": 3.264857685447683,
+            "delta": -4.934362690465781,
+            "ci": [
+              -5.980873882385792,
+              0.7581434456558966
+            ]
+          },
+          "risk_coverage_area": {
+            "before": 1,
+            "after": 0.5,
+            "delta": -0.5,
+            "ci": [
+              -0.8333333333333333,
+              -0.16666666666666652
+            ]
+          }
+        },
+        "all_equal": false,
+        "improved": true,
+        "pass": true,
+        "reasons": []
+      },
+      {
+        "key": "paired|validation|on|measured_only",
+        "n_pairs": 6,
+        "changes": {
+          "scene_fix_rate": {
+            "before": 1,
+            "after": 0.8333333333333334,
+            "delta": -0.16666666666666663,
+            "ci": null
+          },
+          "unflagged_wrong_fix_rate": {
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null
+          },
+          "within_1sigma": {
+            "before": 0.5,
+            "after": 0.631578947368421,
+            "delta": 0.13157894736842102,
+            "ci": null
+          },
+          "within_2sigma": {
+            "before": 0.7142857142857143,
+            "after": 0.8947368421052632,
+            "delta": 0.18045112781954886,
+            "ci": null
+          },
+          "horizontal_median_m": {
+            "before": 2.7193986083089507,
+            "after": 1.6328294440093065,
+            "delta": -1.0865691642996442,
+            "ci": [
+              -17.735442667782305,
+              0.5715295392635018
+            ]
+          },
+          "horizontal_p90_m": {
+            "before": 26.390787163481797,
+            "after": 3.2545406616336603,
+            "delta": -23.136246501848134,
+            "ci": [
+              -24.75795771947249,
+              0.5351420533247095
+            ]
+          },
+          "risk_coverage_area": {
+            "before": 1,
+            "after": 0.6666666666666666,
+            "delta": -0.33333333333333337,
+            "ci": [
+              -0.6666666666666667,
+              0
+            ]
+          }
+        },
+        "all_equal": false,
+        "improved": false,
+        "pass": false,
+        "reasons": [
+          "scene_fix_rate fails guard",
+          "No paired median/p90/risk-area improvement with CI excluding zero"
+        ]
+      },
+      {
+        "key": "paired|validation|surveyed|measured_only",
+        "n_pairs": 6,
+        "changes": {
+          "scene_fix_rate": {
+            "before": 1,
+            "after": 1,
+            "delta": 0,
+            "ci": null
+          },
+          "unflagged_wrong_fix_rate": {
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "ci": null
+          },
+          "within_1sigma": {
+            "before": 0.23076923076923078,
+            "after": 0.6296296296296297,
+            "delta": 0.39886039886039887,
+            "ci": null
+          },
+          "within_2sigma": {
+            "before": 0.5,
+            "after": 0.8888888888888888,
+            "delta": 0.38888888888888884,
+            "ci": null
+          },
+          "horizontal_median_m": {
+            "before": 3.665347371900662,
+            "after": 2.0680070613100994,
+            "delta": -1.5973403105905626,
+            "ci": [
+              -11.353701463181496,
+              4.362902877041048
+            ]
+          },
+          "horizontal_p90_m": {
+            "before": 28.152020021546765,
+            "after": 6.544808132246969,
+            "delta": -21.607211889299798,
+            "ci": [
+              -40.61556709577624,
+              2.8794607603463067
+            ]
+          },
+          "risk_coverage_area": {
+            "before": 1,
+            "after": 0.33333333333333326,
+            "delta": -0.6666666666666667,
+            "ci": [
+              -1,
+              -0.3333333333333335
+            ]
+          }
+        },
+        "all_equal": false,
+        "improved": true,
+        "pass": true,
+        "reasons": []
+      }
+    ],
+    "regressions": [
+      {
+        "key": "paired|train|off|measured_only",
+        "reason": "within_1sigma fails guard"
+      },
+      {
+        "key": "paired|train|on|measured_only",
+        "reason": "scene_fix_rate fails guard"
+      },
+      {
+        "key": "paired|train|surveyed|measured_only",
+        "reason": "within_1sigma fails guard"
+      },
+      {
+        "key": "paired|validation|on|measured_only",
+        "reason": "scene_fix_rate fails guard"
+      },
+      {
+        "key": "paired|validation|on|measured_only",
+        "reason": "No paired median/p90/risk-area improvement with CI excluding zero"
+      }
+    ],
+    "differences": [
+      {
+        "key": "paired|train|off|measured_only",
+        "metric": "scene_fix_rate",
+        "before": 1,
+        "after": 1,
+        "delta": 0,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|train|off|measured_only",
+        "metric": "unflagged_wrong_fix_rate",
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|train|off|measured_only",
+        "metric": "within_1sigma",
+        "before": 0.7307692307692307,
+        "after": 0.7777777777777778,
+        "delta": 0.047008547008547064,
+        "ci": null,
+        "regression": true
+      },
+      {
+        "key": "paired|train|off|measured_only",
+        "metric": "within_2sigma",
+        "before": 0.8846153846153846,
+        "after": 0.9444444444444444,
+        "delta": 0.05982905982905984,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|train|off|measured_only",
+        "metric": "horizontal_median_m",
+        "before": 0.610619858527911,
+        "after": 0.48409336397684777,
+        "delta": -0.12652649455106324,
+        "ci": [
+          -1.4695909406477832,
+          2.145044355158971
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|train|off|measured_only",
+        "metric": "horizontal_p90_m",
+        "before": 38.52869917627461,
+        "after": 3.520275816495775,
+        "delta": -35.00842335977883,
+        "ci": [
+          -38.24022810525134,
+          0.460550928796462
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|train|off|measured_only",
+        "metric": "risk_coverage_area",
+        "before": 1,
+        "after": 0,
+        "delta": -1,
+        "ci": [
+          -1,
+          -1
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|train|on|measured_only",
+        "metric": "scene_fix_rate",
+        "before": 1,
+        "after": 0.8333333333333334,
+        "delta": -0.16666666666666663,
+        "ci": null,
+        "regression": true
+      },
+      {
+        "key": "paired|train|on|measured_only",
+        "metric": "unflagged_wrong_fix_rate",
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|train|on|measured_only",
+        "metric": "within_1sigma",
+        "before": 0.625,
+        "after": 0.6818181818181818,
+        "delta": 0.05681818181818177,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|train|on|measured_only",
+        "metric": "within_2sigma",
+        "before": 0.7916666666666666,
+        "after": 0.9772727272727273,
+        "delta": 0.18560606060606066,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|train|on|measured_only",
+        "metric": "horizontal_median_m",
+        "before": 3.893058104929934,
+        "after": 2.4282844617887696,
+        "delta": -1.4647736431411644,
+        "ci": [
+          -3.3814882054097004,
+          0.06903556375756148
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|train|on|measured_only",
+        "metric": "horizontal_p90_m",
+        "before": 8.278985712299734,
+        "after": 4.758400379337474,
+        "delta": -3.52058533296226,
+        "ci": [
+          -8.12527591678678,
+          -2.07330453104004
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|train|on|measured_only",
+        "metric": "risk_coverage_area",
+        "before": 1,
+        "after": 0.33333333333333337,
+        "delta": -0.6666666666666666,
+        "ci": [
+          -1,
+          -0.33333333333333326
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|train|surveyed|measured_only",
+        "metric": "scene_fix_rate",
+        "before": 1,
+        "after": 1,
+        "delta": 0,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|train|surveyed|measured_only",
+        "metric": "unflagged_wrong_fix_rate",
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|train|surveyed|measured_only",
+        "metric": "within_1sigma",
+        "before": 0.75,
+        "after": 0.8301886792452831,
+        "delta": 0.08018867924528306,
+        "ci": null,
+        "regression": true
+      },
+      {
+        "key": "paired|train|surveyed|measured_only",
+        "metric": "within_2sigma",
+        "before": 0.9166666666666666,
+        "after": 0.9433962264150944,
+        "delta": 0.026729559748427723,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|train|surveyed|measured_only",
+        "metric": "horizontal_median_m",
+        "before": 1.7649192172518176,
+        "after": 1.0324731432625855,
+        "delta": -0.732446073989232,
+        "ci": [
+          -1.5796096665514208,
+          0.6043791715977476
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|train|surveyed|measured_only",
+        "metric": "horizontal_p90_m",
+        "before": 4.973282030738032,
+        "after": 2.1822321793745,
+        "delta": -2.791049851363532,
+        "ci": [
+          -4.559960856236862,
+          0.21320213887887407
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|train|surveyed|measured_only",
+        "metric": "risk_coverage_area",
+        "before": 1,
+        "after": 0,
+        "delta": -1,
+        "ci": [
+          -1,
+          -1
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|validation|off|measured_only",
+        "metric": "scene_fix_rate",
+        "before": 1,
+        "after": 1,
+        "delta": 0,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|validation|off|measured_only",
+        "metric": "unflagged_wrong_fix_rate",
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|validation|off|measured_only",
+        "metric": "within_1sigma",
+        "before": 0.625,
+        "after": 0.6296296296296297,
+        "delta": 0.00462962962962965,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|validation|off|measured_only",
+        "metric": "within_2sigma",
+        "before": 0.875,
+        "after": 0.9259259259259259,
+        "delta": 0.05092592592592593,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|validation|off|measured_only",
+        "metric": "horizontal_median_m",
+        "before": 2.4507330311893143,
+        "after": 1.918517414067782,
+        "delta": -0.5322156171215322,
+        "ci": [
+          -2.0418317054872404,
+          2.9040193460437824
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|validation|off|measured_only",
+        "metric": "horizontal_p90_m",
+        "before": 8.199220375913464,
+        "after": 3.264857685447683,
+        "delta": -4.934362690465781,
+        "ci": [
+          -5.980873882385792,
+          0.7581434456558966
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|validation|off|measured_only",
+        "metric": "risk_coverage_area",
+        "before": 1,
+        "after": 0.5,
+        "delta": -0.5,
+        "ci": [
+          -0.8333333333333333,
+          -0.16666666666666652
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|validation|on|measured_only",
+        "metric": "scene_fix_rate",
+        "before": 1,
+        "after": 0.8333333333333334,
+        "delta": -0.16666666666666663,
+        "ci": null,
+        "regression": true
+      },
+      {
+        "key": "paired|validation|on|measured_only",
+        "metric": "unflagged_wrong_fix_rate",
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|validation|on|measured_only",
+        "metric": "within_1sigma",
+        "before": 0.5,
+        "after": 0.631578947368421,
+        "delta": 0.13157894736842102,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|validation|on|measured_only",
+        "metric": "within_2sigma",
+        "before": 0.7142857142857143,
+        "after": 0.8947368421052632,
+        "delta": 0.18045112781954886,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|validation|on|measured_only",
+        "metric": "horizontal_median_m",
+        "before": 2.7193986083089507,
+        "after": 1.6328294440093065,
+        "delta": -1.0865691642996442,
+        "ci": [
+          -17.735442667782305,
+          0.5715295392635018
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|validation|on|measured_only",
+        "metric": "horizontal_p90_m",
+        "before": 26.390787163481797,
+        "after": 3.2545406616336603,
+        "delta": -23.136246501848134,
+        "ci": [
+          -24.75795771947249,
+          0.5351420533247095
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|validation|on|measured_only",
+        "metric": "risk_coverage_area",
+        "before": 1,
+        "after": 0.6666666666666666,
+        "delta": -0.33333333333333337,
+        "ci": [
+          -0.6666666666666667,
+          0
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|validation|surveyed|measured_only",
+        "metric": "scene_fix_rate",
+        "before": 1,
+        "after": 1,
+        "delta": 0,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|validation|surveyed|measured_only",
+        "metric": "unflagged_wrong_fix_rate",
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|validation|surveyed|measured_only",
+        "metric": "within_1sigma",
+        "before": 0.23076923076923078,
+        "after": 0.6296296296296297,
+        "delta": 0.39886039886039887,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|validation|surveyed|measured_only",
+        "metric": "within_2sigma",
+        "before": 0.5,
+        "after": 0.8888888888888888,
+        "delta": 0.38888888888888884,
+        "ci": null,
+        "regression": false
+      },
+      {
+        "key": "paired|validation|surveyed|measured_only",
+        "metric": "horizontal_median_m",
+        "before": 3.665347371900662,
+        "after": 2.0680070613100994,
+        "delta": -1.5973403105905626,
+        "ci": [
+          -11.353701463181496,
+          4.362902877041048
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|validation|surveyed|measured_only",
+        "metric": "horizontal_p90_m",
+        "before": 28.152020021546765,
+        "after": 6.544808132246969,
+        "delta": -21.607211889299798,
+        "ci": [
+          -40.61556709577624,
+          2.8794607603463067
+        ],
+        "regression": false
+      },
+      {
+        "key": "paired|validation|surveyed|measured_only",
+        "metric": "risk_coverage_area",
+        "before": 1,
+        "after": 0.33333333333333326,
+        "delta": -0.6666666666666667,
+        "ci": [
+          -1,
+          -0.3333333333333335
+        ],
+        "regression": false
+      }
+    ],
+    "method": "Measured-only partitions. Paired bootstrap of whole matching scene/seed runs; aggregate endpoint delta after-before. Missing conditional errors are omitted from endpoint draws, never imputed as zero. Calibration guard is absolute distance to nominal. All-equal compares all non-runtime metric values."
+  }
+}
