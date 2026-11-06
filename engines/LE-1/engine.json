@@ -1,0 +1,10 @@
+{
+  "id": "LE-1",
+  "parent_id": "LE-0",
+  "date": "2026-11-06T23:38:12Z",
+  "branch": "overnight/loc5-integration",
+  "source_hash": "d1eb705837c420b40a65dec187e39194ea52f374ebc18cdf7026e7134e4f2461",
+  "option_set": {"measured_heading_self_calibration": 1},
+  "status": "candidate",
+  "notes": "Preregistered diagnostic candidate only. Official validation dispatch is blocked; smoke cannot establish selection eligibility. No selected-engine freeze or default promotion."
+}
