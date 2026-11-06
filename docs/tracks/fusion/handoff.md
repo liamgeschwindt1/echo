@@ -47,6 +47,7 @@
 
 - Branch: `overnight/loc5-fusion`
 - Base commit: `ff75074`
+- Head commit: `2f5c53e`
 - CI in-session validation:
   - `npm test -w @echo/sim-core` passed (298 pass / 0 fail)
   - smoke compare against `baselines/ci-smoke.json` reports scoring-convention mismatch (`baselines/fusion-smoke-default.json`)

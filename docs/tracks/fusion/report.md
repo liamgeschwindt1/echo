@@ -2,6 +2,8 @@
 
 ## Scope completed in this session
 
+- Branch head for this report: `2f5c53e` (`overnight/loc5-fusion`)
+
 - Implemented **A3.1 heading self-calibration** plumbing:
   - new module `packages/sim-core/src/ext/fusion/heading-calibration.js`
   - per-node offset and sigma estimation with observability checks
