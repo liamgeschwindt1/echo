@@ -8,6 +8,7 @@ import { diffractionGrid, diffractionOnGrid, gridMap, WEDGE_DESCRIPTION } from '
 import { computeActivity } from './activity.js';
 import { timed } from './profile.js';
 import { validateRealism, nodeClock, clockSignal, realismNoise, noiseEnvelope, REALISM_NOTE } from './realism.js';
+import { cuePathDelayS, cueWeatherState } from './ext/cues/weather-render.js';
 
 const LEVEL_WINDOW_S = 0.125;
 
@@ -62,11 +63,12 @@ const micGain = (settings, ni, mi) => (settings.mic_gain_sigma_db ? 10 ** ((sett
 export function prepareRender(scenario, clips, lengthS, profile = null) {
   const { settings } = scenario;
   validateRealism(settings);
+  const weather = cueWeatherState(settings);
   const fs = settings.render_sample_rate;
   const total = Math.ceil(lengthS * fs);
   const n = nextPow2(total);
   const bins = n / 2 + 1;
-  const c = speedOfSound(settings.temperature_c);
+  const c = weather.base_speed_mps;
   const scaledClips = scenario.sources.map((src) => {
     const samples = clips.get(src.clip);
     if (!samples) throw new Error(`clip ${src.clip} not loaded`);
@@ -83,7 +85,7 @@ export function prepareRender(scenario, clips, lengthS, profile = null) {
   const table = timed(profile, 'path_table', () => computePathTable(scenario, (node) => truePositions[scenario.nodes.indexOf(node)], c, (_, si) => sourcePositions[si]));
   return {
     scenario, settings, fs, total, n, bins, c, spectra, scaled: scaledClips, sourcePositions, table, truePositions,
-    toDigital: digitalPerPa(settings.spl_ref_db, settings.dbfs_ref_db),
+    toDigital: digitalPerPa(settings.spl_ref_db, settings.dbfs_ref_db), weather,
     absorb: absorptionTable(bins, fs, n, settings)
   };
 }
@@ -212,9 +214,11 @@ export function addSourceSpectrum(ctx, si, pathList, accRe, accIm, pathFilter = 
   }
   const X = ctx.spectra[si];
   const k1k = Math.round((1000 * ctx.n) / ctx.fs);
+  const receiver = at ? (at.mi == null ? ctx.scenario.nodes[at.ni].position : ctx.truePositions[at.ni][at.mi]) : null;
   for (const path of pathList) {
     if (pathFilter && !pathFilter(path)) continue;
-    addPath(ctx, X, path, src.start_s + path.delay_s, accRe, accIm, kMax, record, k1k);
+    const delayS = cuePathDelayS(path, ctx.sourcePositions[si], receiver, ctx.weather);
+    addPath(ctx, X, path, src.start_s + delayS, accRe, accIm, kMax, record, k1k);
   }
 }
 
@@ -287,7 +291,9 @@ function movingSignal(ctx, si, at, pathFilter) {
       X = rfft(seg, m);
       ctx.movingPieceSpectra.set(spectrumKey, X);
     }
-    const sorted = [...used].sort((p, q) => p.delay_s - q.delay_s);
+    const sorted = used
+      .map((path) => ({ path, delay_s: cuePathDelayS(path, pos, mic, ctx.weather) }))
+      .sort((p, q) => p.delay_s - q.delay_s);
     for (let g0 = 0; g0 < sorted.length; ) {
       const minTau = sorted[g0].delay_s;
       let g1 = g0 + 1;
@@ -295,7 +301,7 @@ function movingSignal(ctx, si, at, pathFilter) {
       const B = Math.floor((tA + minTau) * fs) - MOVING_PAD;
       const accRe = new Float64Array(piece.bins);
       const accIm = new Float64Array(piece.bins);
-      for (let pi = g0; pi < g1; pi++) addPath(piece, X, sorted[pi], tA + sorted[pi].delay_s - B / fs, accRe, accIm, piece.bins - 2, null, -1);
+      for (let pi = g0; pi < g1; pi++) addPath(piece, X, sorted[pi].path, tA + sorted[pi].delay_s - B / fs, accRe, accIm, piece.bins - 2, null, -1);
       const y = irfft(accRe, accIm, m);
       const q0 = Math.max(0, -B);
       const q1 = Math.min(m, n - B);

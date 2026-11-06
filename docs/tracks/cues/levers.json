@@ -1,0 +1,70 @@
+{
+  "track": "T5 CUES",
+  "generated_at": "2026-11-06T16:43:00Z",
+  "levers": [
+    {
+      "lever_id": "cue-1",
+      "name": "Ground-reflection notch height cue",
+      "option_name": "cue_notch_height_enabled",
+      "default": false,
+      "changes": "Adds per-node notch spacing to height estimate and ground-vs-aerial probability with per-node uncertainty/warnings.",
+      "matrix_smoke_vs_le0": {
+        "population": "docs/experiments/matrix-r3-smoke.json",
+        "result": "No tracked regressions (default OFF, no runtime path change).",
+        "evidence": "baselines/cues-matrix-smoke-2026-11-06.json; compareReports vs baselines/matrix-smoke-r3.json pass=true"
+      },
+      "preregistered_population": {
+        "prereg": "docs/tracks/cues/prereg/notch-height-study.json",
+        "result_path": "baselines/cues-track-eval-2026-11-06T16-26-14-032Z.json#notch_height"
+      }
+    },
+    {
+      "lever_id": "cue-2",
+      "name": "Doppler tonal range cue",
+      "option_name": "cue_doppler_range_enabled",
+      "default": false,
+      "changes": "Fits tonal Doppler curve for speed/closest-approach and exposes range-like tracker measurement with sigma.",
+      "matrix_smoke_vs_le0": {
+        "population": "docs/experiments/matrix-r3-smoke.json",
+        "result": "No tracked regressions (default OFF, no runtime path change).",
+        "evidence": "baselines/cues-matrix-smoke-2026-11-06.json; compareReports vs baselines/matrix-smoke-r3.json pass=true"
+      },
+      "preregistered_population": {
+        "prereg": "docs/tracks/cues/prereg/doppler-range-study.json",
+        "result_path": "baselines/cues-track-eval-2026-11-06T16-26-14-032Z.json#doppler_range"
+      }
+    },
+    {
+      "lever_id": "cue-3",
+      "name": "Renderer weather mismatch placeholder",
+      "option_name": "cue_weather_temp_offset_c,cue_weather_wind_mps,cue_weather_wind_from_deg,cue_weather_wind_coupling",
+      "default": "0,0,0,1",
+      "changes": "Opt-in true propagation temperature offset and direct-path wind advection in render delay model.",
+      "matrix_smoke_vs_le0": {
+        "population": "docs/experiments/matrix-r3-smoke.json",
+        "result": "No tracked regressions with defaults (zero values preserve render output).",
+        "evidence": "packages/sim-core/src/ext/cues/weather-render-off.test.js and baselines/cues-matrix-smoke-2026-11-06.json"
+      },
+      "preregistered_population": {
+        "prereg": "docs/tracks/cues/prereg/weather-sound-speed-study.json",
+        "result_path": "baselines/cues-track-eval-2026-11-06T16-26-14-032Z.json#weather_sound_speed"
+      }
+    },
+    {
+      "lever_id": "cue-4",
+      "name": "Engine-side sound-speed correction",
+      "option_name": "cue_sound_speed_correction_enabled",
+      "default": false,
+      "changes": "Estimates sound speed from inter-node timing + temperature sensor and provides correction scale for range/travel time.",
+      "matrix_smoke_vs_le0": {
+        "population": "docs/experiments/matrix-r3-smoke.json",
+        "result": "No tracked regressions (default OFF, standalone module only).",
+        "evidence": "baselines/cues-matrix-smoke-2026-11-06.json; compareReports vs baselines/matrix-smoke-r3.json pass=true"
+      },
+      "preregistered_population": {
+        "prereg": "docs/tracks/cues/prereg/weather-sound-speed-study.json",
+        "result_path": "baselines/cues-track-eval-2026-11-06T16-26-14-032Z.json#weather_sound_speed"
+      }
+    }
+  ]
+}
