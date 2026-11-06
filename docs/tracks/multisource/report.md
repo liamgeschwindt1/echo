@@ -15,7 +15,17 @@
 
 - `node --test packages/sim-core/test/sim-multisource.test.js packages/sim-core/test/sim-measured.test.js` (pass)
 - `node --test packages/sim-core/test/sim-golden.test.js` (pass)
+- `node scripts/benchmark.mjs --experiment docs/tracks/multisource/prereg/a1-smoke-paired-20261106.json ...` (pass on rerun after one guarded null-source fix)
 - Evidence: `baselines/multisource-unit-tests-20261106.json`
+  - `baselines/multisource-smoke-paired-20261106.{json,csv,html}`
+  - `baselines/multisource-smoke-summary-20261106.json`
+
+Smoke paired headline (LE0 vs T2-ms-multipeak-spectral-oracle, realism off, measured_only):
+
+- `events_within_10m_misses_counted`: 0.2 vs 0.2
+- `scene_fix_rate`: 0.3333 vs 0.3333
+- `wrong_fix_rate`: 0.3333 vs 0.3333
+- `unmatched_fix_rate`: 0.3333 vs 0.3333
 
 ## Not completed yet
 

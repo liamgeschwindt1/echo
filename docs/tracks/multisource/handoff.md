@@ -16,10 +16,13 @@
 - Track docs + prereg + baseline evidence:
   - `docs/tracks/multisource/*`
   - `baselines/multisource-unit-tests-20261106.json`
+  - `baselines/multisource-smoke-paired-20261106.{json,csv,html}`
+  - `baselines/multisource-smoke-summary-20261106.json`
 
 ## 2) Rejected or reverted items
 
-- None in this session.
+- Attempt 1 of prereg smoke paired benchmark failed due measured-only boundary omitting `sources`; fixed by guarding `scenario.sources` lookup in label-assist prior.
+- Failure evidence: console trace in session log, then successful rerun to same prereg output path.
 
 ## 3) Unfinished items (priority)
 
@@ -31,15 +34,15 @@
 ## 4) Repo state snapshot
 
 - Branch: `overnight/loc5-multisource`
-- Head: working tree changes not yet committed/pushed in this handoff snapshot.
-- CI: not run on GitHub for this uncommitted snapshot.
+- Head: working tree contains additional post-commit updates in this session (needs commit/push).
+- CI: no GitHub workflow run observed yet for latest branch tip in this session.
 - Prereg hash source:
   - `docs/tracks/multisource/prereg/a1-multisource-smoke-v1.json`
 
 ## 5) Headline metrics vs 3A baseline
 
 - Not available yet (benchmark populations not run in this session).
-- Unit/golden regression guard only: `baselines/multisource-unit-tests-20261106.json`.
+- Smoke paired sample (not acceptance-scale): LE0 and T2 headline metrics equal in this run. See `baselines/multisource-smoke-summary-20261106.json`.
 
 ## 6) Merge-readiness checklist
 

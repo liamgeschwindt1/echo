@@ -39,7 +39,7 @@ function ghostConsistency(group, scenarioNodes) {
 
 function labelPriorWeight(a, b, cfg, scenario) {
   if (cfg.label_assist_mode === 'off') return 1
-  const labels = scenario.sources.map((s) => (Array.isArray(s.labels) ? s.labels : []))
+  const labels = (scenario.sources || []).map((s) => (Array.isArray(s.labels) ? s.labels : []))
   if (!labels.length || labels.every((x) => !x.length)) return 1
   if (cfg.label_assist_mode === 'oracle') return 1.08
   if (cfg.label_assist_mode === 'injected') return 0.98

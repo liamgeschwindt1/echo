@@ -1,0 +1,23 @@
+{
+  "id": "multisource-smoke-summary-20261106",
+  "source": "baselines/multisource-smoke-paired-20261106.csv",
+  "experiment": "docs/tracks/multisource/prereg/a1-smoke-paired-20261106.json",
+  "headline": {
+    "LE0-legacy": {
+      "scene_fix_rate": 0.3333333333333333,
+      "events_within_10m_misses_counted": 0.2,
+      "wrong_fix_rate": 0.3333333333333333,
+      "unmatched_fix_rate": 0.3333333333333333
+    },
+    "T2-ms-multipeak-spectral-oracle": {
+      "scene_fix_rate": 0.3333333333333333,
+      "events_within_10m_misses_counted": 0.2,
+      "wrong_fix_rate": 0.3333333333333333,
+      "unmatched_fix_rate": 0.3333333333333333
+    }
+  },
+  "interpretation": [
+    "Smoke paired run showed no headline change versus LE0 in this sample.",
+    "Expected because T2 currently emits extension candidates/associations but does not alter fusion core outputs."
+  ]
+}
