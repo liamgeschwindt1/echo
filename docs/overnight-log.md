@@ -564,3 +564,21 @@ The trial will not start if even this recorded-p90 reserve fails the deadline.
 - Round 3 handoff report: `docs/overnight-report-3.md`. It summarizes the completed run, corrected invalid generator passes, evidence links, limits, and deferred tiers in the same round-report series as `overnight-report.md` and `overnight-report-2.md`.
 - Verification: core 294/294, simulation app 39/39, echo app 8/8, production build passed, and browser/CLI end-to-end checks 2/2 passed. Build emitted existing dependency/chunk-size warnings. The first e2e attempt lacked Playwright Chromium; after installing the browser, both checks passed.
 - Handoff: keep sealed inputs unrun; do not tune against these descriptive outcomes. `matrix-standard`, `matrix-full`, and realism-decomposition populations remain unrun. Continue with the registered next mission only after reviewing the report and its multi-source recall limits.
+
+## Mission 4 start (2026-11-06 07:29 UTC)
+
+- **Phase 0 start:** 07:29 UTC. Assumed available session budget `T = 10 h` (explicit mission fallback). Starting from `main`, fetched `origin/overnight/localisation-3a`, verified head `a90dc3a`, and verified required base files:
+  - `docs/experiments/matrix-r3-report.md`
+  - `baselines/matrix-baseline-r3.json`
+  - `baselines/matrix-baseline-r3.full.json.gz`
+  - `docs/experiments/matrix-r3-sealed.json`
+- Created and pushed mission branch `overnight/localisation-4` from `origin/overnight/localisation-3a`; no writes to `main`.
+- Read required context files: `docs/overnight-report-3.md`, `docs/experiments/matrix-r3-report.md`, mission 3A section in this log, `docs/experiments/matrix-r3.json`, `baselines/matrix-baseline-r3.json`, `docs/targets.json`, `docs/overnight-report-2.md`, `docs/round2-method.md`, `docs/experiments/consensus-trace.json`, `SIM.md` 7.9-7.13, `docs/labelling-benchmark.md`, and `docs/claims.md`.
+- Resource heartbeat 07:33 UTC: disk ~49% used (`statfs` check from earlier mission context still valid until next heartbeat), current step = preregister X0/X1 diagnostics from frozen 3A baseline.
+- Preregistered X0/X1 diagnostics before mission-4 analysis output inspection in `docs/experiments/mission4-x0-x1-prereg.json`.
+- Added `scripts/mission4-x0-x1-analysis.mjs` and generated:
+  - `docs/experiments/matrix-r3-detectability.md` (X0 detectability decomposition),
+  - `docs/experiments/matrix-r4-node-count-reconciliation.md` (X1 node-count reconciliation),
+  - `baselines/mission4-x0-x1-analysis.json` (machine-readable metrics).
+- **Phase 0 checkpoint result:** three-source detectability collapse is dominated by angular error under overlap (`bearing_available_3_nodes` far above original `detectable_3_nodes`), with negligible losses at assignment/association stage. C1 focus set to bearing quality under overlap before fusion tie-break work.
+- Added `docs/install-requirements.md` draft as required by mission note; `self-calibrated` remains explicitly pending C2 evidence.
