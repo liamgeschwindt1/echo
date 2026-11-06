@@ -1,0 +1,39 @@
+{
+  "id": "t8-round-1-v1",
+  "registered_at": "2026-11-06",
+  "selection_rule": "docs/tracks/integration/selection-rule.md",
+  "status": "diagnostics-only; remote validation blocked",
+  "official_selection_population": "docs/experiments/matrix-r3-standard.json",
+  "official_profiles": ["on", "surveyed"],
+  "candidate_limit_this_round": 1,
+  "candidates": [
+    {
+      "engine_id": "LE-1",
+      "parent_id": "LE-0",
+      "option_set": {"measured_heading_self_calibration": 1},
+      "lever": "fus-cal-1",
+      "rationale": "Delivered position-capable single lever not previously rejected for worse positions; no best-lever claim is made without full acceptance evidence."
+    }
+  ],
+  "diagnostic_experiments": [
+    "docs/tracks/integration/prereg/round-1-le0-smoke.json",
+    "docs/tracks/integration/prereg/round-1-le1-smoke.json"
+  ],
+  "diagnostic_population": {
+    "scenes": ["sparse_20", "random_5"],
+    "seeds": [1, 101],
+    "held_out_seeds": [101],
+    "realism": ["off", "on"],
+    "analysis_modes": ["measured_only"],
+    "runs_per_engine": 8
+  },
+  "diagnostic_limits": "Existing CI scenes, not fresh or acceptance-scale. No sealed or final-suite claim. Compare identical scene/seed/profile jobs; preserve unavailable intervals. No follow-on combinations or default promotion without official paired acceptance evidence.",
+  "excluded": {
+    "fus-1": "Delivered likelihood smoke rejected; do not relabel as a kept lever.",
+    "ms": "Candidates and association diagnostics do not yet change the fix.",
+    "cue": "Standalone estimators have no delivered measured-observation stream.",
+    "bld": "Not delivered",
+    "cau": "Not delivered",
+    "dash": "UI only; not a distinct localisation algorithm"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "T8 LE-1 self-calibration matched diagnostic smoke",
+  "scenes": ["sparse_20", "random_5"],
+  "seeds": [1, 101],
+  "held_out_seeds": [101],
+  "base_settings": {"measured_heading_self_calibration": 1},
+  "sweeps": [],
+  "mode": "grid",
+  "realism": ["off", "on"],
+  "analysis_modes": ["measured_only"],
+  "max_runs": 2000,
+  "metrics": []
+}
