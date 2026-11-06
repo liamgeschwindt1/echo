@@ -1,0 +1,15 @@
+{
+  "engine_id": "LE-0",
+  "reports": [
+    {
+      "path": "baselines/matrix-baseline-r3.full.json.gz",
+      "sha256": "29610449b2647c36d0ea7746b3f2ca53902542b053fcc4734e7451aecb8949d1",
+      "kind": "echo-sim-benchmark"
+    },
+    {
+      "path": "baselines/matrix-baseline-r3.json",
+      "sha256": "0c42cf276b9e69e8f816a277955e3a54717c90c667929629aff55ad10b95ea85",
+      "kind": "echo-matrix-baseline"
+    }
+  ]
+}

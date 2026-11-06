@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "study_id": "infra-building-effect-r1",
+  "status": "preregistered-before-generation-and-outcomes",
+  "purpose": "Check whether matrix-style dense layouts understate building harm and whether irregular footprints/courtyard placement alter one-source coverage.",
+  "design": {
+    "environments": ["open", "mixed", "dense_urban"],
+    "source_height": "ground",
+    "motion": "stationary",
+    "simultaneous_sources": 1,
+    "node_count": 5,
+    "mean_spacing_m": 40,
+    "replicates_per_environment": 5,
+    "sound_type": "impulsive",
+    "realism": ["off", "on"],
+    "analysis_modes": ["measured_only"]
+  },
+  "seed_formula": "site_seed=800000+environment_index*100+replicate; render_seed=8100000+environment_index*100+replicate",
+  "layout": {
+    "open": "No buildings; matched node/source positions and seeds.",
+    "mixed": "Irregular 8-20 metre footprints, target cover 0.25, courtyard gaps; nodes in central courtyard and source behind an outer building.",
+    "dense_urban": "Irregular 15-45 metre footprints, target cover 0.55, courtyard clusters; nodes in or behind courtyards and source in a courtyard or behind an opposite footprint. Layout constants are synthetic placeholders."
+  },
+  "primary_metric": "events_within_10m_misses_counted",
+  "comparison": "Site-paired dense_urban and mixed coverage against open under realism off/on; report intervals, counts, and old matrix dense-urban one-source cells without changing old sites.",
+  "outcomes": "Not inspected at registration time.",
+  "sealed_set": {
+    "input_sha256": "a2fe9499ec853c2e5a3d6e2ececef9ca30410adb7454ed39a211c2fdf072a78c",
+    "action": "Do not modify, run, or regenerate."
+  }
+}

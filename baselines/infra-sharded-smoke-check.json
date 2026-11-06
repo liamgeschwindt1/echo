@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "kind": "infra-sharded-smoke-check",
+  "experiment": "docs/experiments/matrix-r3-smoke.json",
+  "local_report_sha256": "f4963f33be0736a585a6fc4206befd9b0c73ae45accfe8f06b9ea8d18455632b",
+  "sharded_report_sha256": "336998197e7bf2c27ccd18376eec751cd9f1dad8a42ae5e1983cd7b9ca1ced47",
+  "summary_metrics_equal_excluding_runtime_ms": true,
+  "shard_plan": {
+    "shard_count": 2,
+    "jobs_per_shard": [
+      18,
+      18
+    ],
+    "total_jobs": 36
+  },
+  "wall_seconds": {
+    "shard_0": 62.75,
+    "shard_1": 90.36,
+    "merge": 1.12
+  },
+  "commands": {
+    "local": "npm run benchmark -- --experiment docs/experiments/matrix-r3-smoke.json --discard-renders --cache .benchmark-local-smoke --out artifacts/matrix-smoke-local.json",
+    "sharded": [
+      "node scripts/benchmark-shard.mjs --experiment docs/experiments/matrix-r3-smoke.json --shard-index 0 --shard-count 2 --workers 2 --discard-renders --cache .benchmark-shard-0-timed --out artifacts/shards-timed/shard-0.json",
+      "node scripts/benchmark-shard.mjs --experiment docs/experiments/matrix-r3-smoke.json --shard-index 1 --shard-count 2 --workers 2 --discard-renders --cache .benchmark-shard-1-timed --out artifacts/shards-timed/shard-1.json",
+      "node scripts/benchmark-shard-merge.mjs --experiment docs/experiments/matrix-r3-smoke.json --shard-dir artifacts/shards-timed --out artifacts/matrix-smoke-sharded-timed.json"
+    ]
+  }
+}
