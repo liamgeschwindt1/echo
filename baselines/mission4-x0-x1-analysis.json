@@ -1,10 +1,10 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-06T07:34:51.426Z",
+  "generated_at": "2026-11-06T08:02:24.142Z",
   "baseline_path": "/workspaces/echo/liamgeschwindt1/echo/baselines/matrix-baseline-r3.full.json.gz",
   "baseline_gzip_sha256": "1dae27871b53cfc678b744ac1cccc35206da6634e488672c26acec42fb61f066",
   "assumptions": {
-    "source_clip_duration_seconds": 2,
+    "source_clip_duration_seconds": "archived clip samples / scenario render_sample_rate per run",
     "truth_alignment_tolerance_deg": 10
   },
   "detectability": {
@@ -12,24 +12,24 @@
       "off": {
         "events": 321,
         "strict3": 2,
-        "bearing3": 267,
-        "within10InClip3": 1,
+        "bearing3": 282,
+        "within10InClip3": 10,
         "within10AnyTrack3": 7,
         "fix3": 0
       },
       "on": {
         "events": 321,
         "strict3": 1,
-        "bearing3": 207,
-        "within10InClip3": 0,
+        "bearing3": 252,
+        "within10InClip3": 5,
         "within10AnyTrack3": 2,
         "fix3": 0
       },
       "surveyed": {
         "events": 321,
         "strict3": 4,
-        "bearing3": 270,
-        "within10InClip3": 3,
+        "bearing3": 279,
+        "within10InClip3": 15,
         "within10AnyTrack3": 9,
         "fix3": 0
       }
@@ -37,35 +37,35 @@
     "node_stage": {
       "off": {
         "nodeEvents": 1545,
-        "candidateInClip": 1536,
-        "windowInClip": 1149,
-        "trackInClip": 1008,
-        "windowWithin10InClip": 318,
+        "candidateInClip": 1545,
+        "windowInClip": 1284,
+        "trackInClip": 1143,
+        "windowWithin10InClip": 384,
         "trackWithin10InClip": 336,
         "trackWithin10AnyTime": 339,
-        "candidateWithoutWindow": 387,
+        "candidateWithoutWindow": 261,
         "windowWithoutTrack": 141
       },
       "on": {
         "nodeEvents": 1545,
-        "candidateInClip": 1491,
-        "windowInClip": 987,
-        "trackInClip": 840,
-        "windowWithin10InClip": 260,
+        "candidateInClip": 1530,
+        "windowInClip": 1155,
+        "trackInClip": 999,
+        "windowWithin10InClip": 325,
         "trackWithin10InClip": 276,
         "trackWithin10AnyTime": 284,
-        "candidateWithoutWindow": 504,
-        "windowWithoutTrack": 147
+        "candidateWithoutWindow": 375,
+        "windowWithoutTrack": 156
       },
       "surveyed": {
         "nodeEvents": 1545,
-        "candidateInClip": 1533,
-        "windowInClip": 1146,
-        "trackInClip": 990,
-        "windowWithin10InClip": 322,
+        "candidateInClip": 1545,
+        "windowInClip": 1308,
+        "trackInClip": 1152,
+        "windowWithin10InClip": 397,
         "trackWithin10InClip": 336,
         "trackWithin10AnyTime": 346,
-        "candidateWithoutWindow": 387,
+        "candidateWithoutWindow": 237,
         "windowWithoutTrack": 156
       }
     },
@@ -73,38 +73,35 @@
       "off": {
         "events": 321,
         "strict3": 2,
-        "bearing3": 267,
-        "within10InClip3": 1,
+        "bearing3": 282,
+        "within10InClip3": 10,
         "within10AnyTrack3": 7,
         "fix3": 0,
-        "failNoBearing": 54,
-        "failBearingError": 264,
-        "failAssignment": 1,
-        "failAssociation": 0
+        "failNoBearing": 39,
+        "failBearingError": 272,
+        "failTrackConfirmation": 8
       },
       "on": {
         "events": 321,
         "strict3": 1,
-        "bearing3": 207,
-        "within10InClip3": 0,
+        "bearing3": 252,
+        "within10InClip3": 5,
         "within10AnyTrack3": 2,
         "fix3": 0,
-        "failNoBearing": 114,
-        "failBearingError": 206,
-        "failAssignment": 0,
-        "failAssociation": 0
+        "failNoBearing": 69,
+        "failBearingError": 246,
+        "failTrackConfirmation": 5
       },
       "surveyed": {
         "events": 321,
         "strict3": 4,
-        "bearing3": 270,
-        "within10InClip3": 3,
+        "bearing3": 279,
+        "within10InClip3": 15,
         "within10AnyTrack3": 9,
         "fix3": 0,
-        "failNoBearing": 51,
+        "failNoBearing": 42,
         "failBearingError": 264,
-        "failAssignment": 2,
-        "failAssociation": 0
+        "failTrackConfirmation": 11
       }
     },
     "label_definitions": {
@@ -116,22 +113,19 @@
       "dominant_failure": "bearing_error",
       "reason_counts": {
         "off": {
-          "no_bearing_in_clip": 54,
-          "bearing_not_within_10deg": 264,
-          "assignment_stage": 1,
-          "association_stage": 0
+          "no_bearing_in_clip": 39,
+          "bearing_not_within_10deg": 272,
+          "track_confirmation": 8
         },
         "on": {
-          "no_bearing_in_clip": 114,
-          "bearing_not_within_10deg": 206,
-          "assignment_stage": 0,
-          "association_stage": 0
+          "no_bearing_in_clip": 69,
+          "bearing_not_within_10deg": 246,
+          "track_confirmation": 5
         },
         "surveyed": {
-          "no_bearing_in_clip": 51,
+          "no_bearing_in_clip": 42,
           "bearing_not_within_10deg": 264,
-          "assignment_stage": 2,
-          "association_stage": 0
+          "track_confirmation": 11
         }
       }
     }

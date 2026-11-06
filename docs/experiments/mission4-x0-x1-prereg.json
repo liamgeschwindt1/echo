@@ -28,7 +28,7 @@
       "loss at association stage"
     ],
     "assumptions": {
-      "source_clip_duration_seconds": 2,
+      "source_clip_duration_seconds": "archived clip samples divided by scenario render_sample_rate, per run",
       "tolerance_degrees": 10
     }
   },

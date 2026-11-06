@@ -10,7 +10,6 @@ const nodeCountOut = resolve(process.argv[4] ?? 'docs/experiments/matrix-r4-node
 const jsonOut = resolve(process.argv[5] ?? 'baselines/mission4-x0-x1-analysis.json');
 
 const TOL_DEG = 10;
-const clipDurationS = 2;
 
 const wrapDeg = (d) => Math.abs((((d + 180) % 360) + 360) % 360 - 180);
 const deg = (r) => (r * 180) / Math.PI;
@@ -53,7 +52,6 @@ function analyse(report) {
   const perProfile = new Map();
   const nodeStage = new Map();
   const eventStage = new Map();
-  const failReasons = new Map();
   const allNodeCounts = new Set();
 
   const ensureProfile = (map, profile) => {
@@ -98,8 +96,7 @@ function analyse(report) {
         fix3: 0,
         failNoBearing: 0,
         failBearingError: 0,
-        failAssignment: 0,
-        failAssociation: 0
+        failTrackConfirmation: 0
       });
     }
     return eventStage.get(profile);
@@ -121,7 +118,11 @@ function analyse(report) {
       eventAgg.events++;
       const scoreSource = run.scores.sources.find((s) => s.source_id === source.id);
       const clipStart = sourceStartS(source);
-      const clipEnd = clipStart + clipDurationS;
+      const clip = run.manifest.audio?.find((entry) => entry.id === source.clip);
+      if (!clip || !Number.isFinite(clip.samples) || !Number.isFinite(run.scenario.settings.render_sample_rate)) {
+        throw new Error(`Missing exact clip duration metadata for ${source.clip} in ${run.job.scene}`);
+      }
+      const clipEnd = clipStart + clip.samples / run.scenario.settings.render_sample_rate;
       const stageCount = { bearing: 0, within10InClip: 0, strict: 0, within10AnyTrack: 0, fix: 0 };
 
       for (let nodeIndex = 0; nodeIndex < run.scenario.nodes.length; nodeIndex++) {
@@ -180,8 +181,7 @@ function analyse(report) {
       if (!strict3) {
         if (stageCount.bearing < 3) eventAgg.failNoBearing++;
         else if (stageCount.within10InClip < 3) eventAgg.failBearingError++;
-        else if (stageCount.strict < 3) eventAgg.failAssignment++;
-        else eventAgg.failAssociation++;
+        else eventAgg.failTrackConfirmation++;
       }
     }
   }
@@ -231,8 +231,7 @@ function analyse(report) {
         reason_counts: Object.fromEntries([...eventStage.entries()].map(([profile, stats]) => [profile, {
           no_bearing_in_clip: stats.failNoBearing,
           bearing_not_within_10deg: stats.failBearingError,
-          assignment_stage: stats.failAssignment,
-          association_stage: stats.failAssociation
+          track_confirmation: stats.failTrackConfirmation
         }]))
       }
     },
@@ -245,12 +244,12 @@ function detectabilityMarkdown(data) {
     .map(([profile, stats]) => `| ${profile} | ${stats.events} | ${fmtPct(stats.strict3, stats.events)} | ${fmtPct(stats.bearing3, stats.events)} | ${fmtPct(stats.within10InClip3, stats.events)} | ${fmtPct(stats.within10AnyTrack3, stats.events)} |`)
     .join('\n');
   const failRows = Object.entries(data.event_stage)
-    .map(([profile, stats]) => `| ${profile} | ${stats.events - stats.strict3} | ${fmtPct(stats.failNoBearing, stats.events - stats.strict3)} | ${fmtPct(stats.failBearingError, stats.events - stats.strict3)} | ${fmtPct(stats.failAssignment, stats.events - stats.strict3)} | ${fmtPct(stats.failAssociation, stats.events - stats.strict3)} |`)
+    .map(([profile, stats]) => `| ${profile} | ${stats.events - stats.strict3} | ${fmtPct(stats.failNoBearing, stats.events - stats.strict3)} | ${fmtPct(stats.failBearingError, stats.events - stats.strict3)} | ${fmtPct(stats.failTrackConfirmation, stats.events - stats.strict3)} |`)
     .join('\n');
   const nodeRows = Object.entries(data.node_stage)
     .map(([profile, stats]) => `| ${profile} | ${stats.nodeEvents} | ${fmtPct(stats.candidateInClip, stats.nodeEvents)} | ${fmtPct(stats.windowInClip, stats.nodeEvents)} | ${fmtPct(stats.trackInClip, stats.nodeEvents)} | ${fmtPct(stats.windowWithin10InClip, stats.nodeEvents)} | ${fmtPct(stats.trackWithin10InClip, stats.nodeEvents)} | ${fmtPct(stats.trackWithin10AnyTime, stats.nodeEvents)} | ${fmtPct(stats.candidateWithoutWindow, stats.nodeEvents)} | ${fmtPct(stats.windowWithoutTrack, stats.nodeEvents)} |`)
     .join('\n');
-  return `# Mission 4 X0 detectability diagnostic (matrix r3 baseline)\n\nThis diagnostic uses the frozen 3A complete baseline report only. No new simulation jobs were run and no inference code was changed.\n\n## Labels\n\n- **Original (unchanged):** \`detectable_3_nodes\` = ${data.label_definitions.original_detectable_3_nodes}.\n- **Added for physics-feasibility context:** \`bearing_available_3_nodes\` = ${data.label_definitions.new_bearing_available_3_nodes}.\n- **Added for in-clip sensitivity check:** \`track_within10_any_time_3_nodes\` = ${data.label_definitions.new_track_within10_any_time_3_nodes}.\n\n## Event-level rates for three-source events\n\n| Profile | Events | detectable_3_nodes | bearing_available_3_nodes | within10_in_clip_3_nodes | track_within10_any_time_3_nodes |\n|---|---:|---:|---:|---:|---:|\n${rows}\n\n## Why events fail original detectability label\n\n| Profile | Non-detectable events | No 3 nodes with any in-clip bearing | Bearings present but not within 10° on 3 nodes | Lost at assignment stage | Lost at association stage |\n|---|---:|---:|---:|---:|---:|\n${failRows}\n\n## Node-stage decomposition (three-source node-events)\n\n| Profile | Node-events | Candidate in clip | Bearing window in clip | Track window in clip | Bearing within 10° in clip | Assigned within clip (original) | Within 10° at any track time | Candidate lost before window (overlap/quality gate) | Window lost before track |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n${nodeRows}\n\n## Decision for C1 focus\n\nC1 should focus first on **bearing quality in multi-source overlap**, not source assignment or fusion tie-breaks. Most failures already have candidate windows and often in-clip windows, but fewer than three nodes stay within 10° in clip. The original label remains unchanged for sealed comparability, and the new \`bearing_available_3_nodes\` label is reported beside it to avoid conflating physics availability with angular-accuracy failure.\n`;
+  return `# Mission 4 X0 detectability diagnostic (matrix r3 baseline)\n\nThis diagnostic uses the frozen 3A complete baseline report only. No new simulation jobs were run and no inference code was changed. Clip bounds use exact archived audio sample counts and each scenario's render sample rate. Source alignment is scoring-only: truth is read after inference, not by the engine.\n\n## Labels\n\n- **Original (unchanged):** \`detectable_3_nodes\` = ${data.label_definitions.original_detectable_3_nodes}.\n- **Added for availability context:** \`bearing_available_3_nodes\` = ${data.label_definitions.new_bearing_available_3_nodes}.\n- **Added for in-clip sensitivity context:** \`track_within10_any_time_3_nodes\` = ${data.label_definitions.new_track_within10_any_time_3_nodes}.\n\n## Event-level rates for three-source events\n\n| Profile | Events | detectable_3_nodes | bearing_available_3_nodes | within10_in_clip_3_nodes | track_within10_any_time_3_nodes |\n|---|---:|---:|---:|---:|---:|\n${rows}\n\n## Why events fail original detectability label\n\n| Profile | Non-detectable events | Fewer than 3 nodes with any accepted in-clip bearing | At least 3 bearings, but fewer than 3 within 10° | Within-10° windows fail track/clip confirmation |\n|---|---:|---:|---:|---:|\n${failRows}\n\n## Node-stage decomposition (three-source node-events)\n\n| Profile | Node-events | Candidate bearing in clip | Kept bearing window in clip | Track window in clip | Window within 10° in clip | Source-aligned track within 10° in clip (original) | Within 10° at any track time | No accepted candidate before first kept window | Kept window absent from retained track |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n${nodeRows}\n\nThe archived inference does not retain pre-filter rejection reasons. Candidate loss cannot be separated into level, overlap, coherence or window-overlap causes. These are observable pipeline stages, not causal attributions. The source-aligned label is a post-hoc scoring result, not an engine association output.\n\n## Decision for C1 focus\n\nThe original label is not shown to be stricter than physics allows. Any-window availability is much higher (78.5–87.9%), but only 1.6–4.7% of source events have three pre-track bearing windows within 10° under exact clip bounds. That establishes poor bearing quality/alignment in this mixture population, not a physical upper bound or proof another estimator cannot do better. Keep the original label unchanged; report the new availability label beside it, never as equivalent detectability. C1 should prioritize multi-source bearing quality before assignment/fusion refinement.\n`;
 }
 
 function nodeCountMarkdown(rows) {
@@ -269,7 +268,7 @@ const payload = {
   baseline_path: baselinePath,
   baseline_gzip_sha256: baselineSha256,
   assumptions: {
-    source_clip_duration_seconds: clipDurationS,
+    source_clip_duration_seconds: 'archived clip samples / scenario render_sample_rate per run',
     truth_alignment_tolerance_deg: TOL_DEG
   },
   ...analysis

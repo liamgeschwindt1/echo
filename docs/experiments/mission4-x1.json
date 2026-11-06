@@ -1,0 +1,89 @@
+{
+  "name": "Mission 4 X1 node-count reconciliation",
+  "status": "preregistered-before-new-node-count-runs",
+  "schema": 1,
+  "source_baseline": "baselines/matrix-baseline-r3.full.json.gz",
+  "source_baseline_gzip_sha256": "1dae27871b53cfc678b744ac1cccc35206da6634e488672c26acec42fb61f066",
+  "source_cells": [
+    {
+      "id": "core-0-train-01",
+      "split": "train",
+      "source_count": 1
+    },
+    {
+      "id": "core-0-train-02",
+      "split": "train",
+      "source_count": 1
+    },
+    {
+      "id": "core-0-validation-01",
+      "split": "validation",
+      "source_count": 1
+    },
+    {
+      "id": "core-0-validation-02",
+      "split": "validation",
+      "source_count": 1
+    },
+    {
+      "id": "core-0-validation-03",
+      "split": "validation",
+      "source_count": 1
+    },
+    {
+      "id": "core-1-train-01",
+      "split": "train",
+      "source_count": 3
+    },
+    {
+      "id": "core-1-train-02",
+      "split": "train",
+      "source_count": 3
+    },
+    {
+      "id": "core-1-validation-01",
+      "split": "validation",
+      "source_count": 3
+    },
+    {
+      "id": "core-1-validation-02",
+      "split": "validation",
+      "source_count": 3
+    },
+    {
+      "id": "core-1-validation-03",
+      "split": "validation",
+      "source_count": 3
+    }
+  ],
+  "fixed_factors": {
+    "environment": "open",
+    "source_height": "ground",
+    "motion": "stationary",
+    "install_profiles": [
+      "off",
+      "on"
+    ]
+  },
+  "variable": {
+    "node_counts": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "solver": "legacy pairwise"
+  },
+  "experiment": "docs/experiments/mission4-x1-node-count.json",
+  "expected_runs": 140,
+  "acceptance": "Diagnostic only; no solver tuning or promotion. Report all node counts and intervals; small selected population is not a general population ranking.",
+  "limitations": [
+    "Only ten matrix sites from two open/ground/stationary source-count cells are used.",
+    "This does not estimate an all-environment node-count curve.",
+    "Some untransformed five-node baseline outcomes are already known; transformed node-count variants are new rendered runs.",
+    "No sealed inputs are used or read."
+  ]
+}
