@@ -10,7 +10,7 @@ Diagnostic studies and C1 smoke are complete. No solver change passed acceptance
 - X0 source-detectability correction and X1 baseline analysis: `docs/experiments/matrix-r3-detectability.md` and `docs/experiments/matrix-r4-node-count-reconciliation.md`.
 - C1 implementation is opt-in only. Its paired smoke failed four of six rule-four partitions; retain legacy default. See `docs/experiments/mission4-c1-smoke.md`.
 - X1 completed all 140 preregistered jobs. See `docs/experiments/mission4-x1-node-count-results.md` and the compressed full report at `baselines/mission4-x1-node-count.json.gz`.
-- Full sim-core suite passed 296/296. GitHub Actions status is recorded in the overnight log and round-4 report.
+- Full sim-core suite passed 296/296. GitHub Actions run `42188155457` on `db54ecf` passed all regression steps in 11m54s. Workflow now re-scores the archived CI baseline with current scoring before comparing.
 
 ## Deferred
 

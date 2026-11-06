@@ -28,4 +28,5 @@ Because neither the full matrix-standard validation nor the single sealed evalua
 - X0 source baseline: `baselines/matrix-baseline-r3.full.json.gz`, SHA-256 `1dae27871b53cfc678b744ac1cccc35206da6634e488672c26acec42fb61f066`.
 - C1 raw paired report: `baselines/mission4-c1-smoke.json.gz`, SHA-256 `e61049aaf7f575d966d4b02d73e4f3dd3d15b3cf8384d79268f91b2c374da749`.
 - X1 raw sweep report: `baselines/mission4-x1-node-count.json.gz`, SHA-256 `9892cf23bad79f4744c7e17c87fff234353e32f005f030f6a35c8af2cfff67ff`.
-- Full sim-core test suite: 296/296 passed. Reproducible report-generation scripts and detailed operational decisions are linked from the [Mission 4 overnight log](overnight-log.md).
+- Full sim-core test suite: 296/296 passed. GitHub Actions run `42188155457` on `db54ecf` passed in 11m54s, including sim-core, sim app, production build, sealed-evidence verifier, browser/CLI, and the finite CI benchmark. The first run exposed a stale CI baseline scoring version; workflow now re-scores stored baseline inference before comparison. No inference or rendering changes were made to fix it.
+- Reproducible report-generation scripts and detailed operational decisions are linked from the [Mission 4 overnight log](overnight-log.md).
