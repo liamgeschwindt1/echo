@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile, statfs } from 'node:fs/promises';
 import { gzipSync } from 'node:zlib';
+import { gunzipSync } from 'node:zlib';
 import { resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 
@@ -51,12 +52,14 @@ try {
   await run('app', 'npm', ['test', '-w', '@echo/sim']);
   await run('build', 'npm', ['run', 'build', '-w', '@echo/sim']);
   const baseline = resolve(directory, 'baseline.json');
+  const reference = resolve(directory, 'le0-reference.json');
+  await writeFile(reference, gunzipSync(await readFile('baselines/integration-le0-smoke.json.gz')));
   await run('rescore', 'node', [
-    'scripts/benchmark-rescore.mjs', '--from', 'baselines/ci-smoke.json', '--out', baseline
+    'scripts/benchmark-rescore.mjs', '--from', reference, '--out', baseline
   ]);
   const reportPath = resolve(directory, 'smoke.json');
   await run('smoke', 'node', [
-    'scripts/benchmark.mjs', '--experiment', 'docs/experiments/ci-smoke.json',
+    'scripts/benchmark.mjs', '--experiment', 'smoke',
     '--compare', baseline, '--fail-on-regress', '--workers', '2',
     '--discard-renders', '--cache', resolve(directory, 'cache'), '--out', reportPath
   ]);

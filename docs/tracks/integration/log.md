@@ -30,3 +30,9 @@
   Consequently remote matrix-standard, throughput calibration and the final
   sharded suite are blocked pending publication of T1's workflow by the owner.
   Local integration checks can continue; no substitute sealed run is allowed.
+- Infra full gates passed after install: 297 core tests, 39 app tests, build,
+  and existing CI smoke with zero tracked regressions. Inspection of expanded
+  jobs proved CI smoke is 8 runs; the requested 16-run population is preset
+  `smoke` (includes truth-assisted and measured-only). Corrected preregistration
+  before running that population. Generate a fresh reference from detached base
+  source rather than treating an older archived smoke as byte-identical LE-0.
