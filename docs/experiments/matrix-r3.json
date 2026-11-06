@@ -1,0 +1,120 @@
+{
+  "name": "Round 3 matrix characterisation and sealed input generation",
+  "status": "preregistered-before-outcomes",
+  "schema": 1,
+  "generator": {
+    "path": "scripts/generate-matrix-r3.mjs",
+    "algorithm": "mulberry32",
+    "site_seed_formula": "site_seed = 300000 + cell_index * 1000 + split_index * 100 + replicate_index; split_index train=0 validation=1 sealed=2 generalisation=3",
+    "render_seed_formula": "render_seed = 3100000 + cell_index * 10000 + split_index * 1000 + replicate_index",
+    "distinct_render_seed_per_site": true,
+    "constants_are_placeholders": true
+  },
+  "core_matrix": {
+    "factors": {
+      "environment": ["open", "mixed", "dense_urban"],
+      "source_height": ["ground", "aerial"],
+      "motion": ["stationary", "moving"],
+      "simultaneous_sources": [1, 3]
+    },
+    "cell_count": 24,
+    "nodes": 5,
+    "mean_spacing_m": 40,
+    "sound_types_per_cell": ["impulsive", "sustained"],
+    "sound_type_assignment": "alternating replicates, balanced within each split",
+    "profile": {
+      "open": { "building_cover_fraction": 0, "building_heights_m": null },
+      "mixed": { "building_cover_fraction": 0.15, "building_heights_m": [8, 20] },
+      "dense_urban": {
+        "building_cover_fraction": 0.4,
+        "building_heights_m": [15, 40],
+        "street_width_m": [10, 25],
+        "label": "synthetic street layout"
+      },
+      "ground_height_m": 1.5,
+      "aerial_height_m": [40, 120],
+      "ground_speed_mps": [1.5, 10],
+      "aerial_speed_mps": [10, 20],
+      "source_reference_range_m": 40,
+      "source_level_db_spl_at_1m": 100
+    },
+    "populations": {
+      "train_sites_per_cell": 4,
+      "validation_sites_per_cell": 8,
+      "sealed_sites_per_cell": 8
+    },
+    "realism": ["off", "on"],
+    "analysis_modes": ["measured_only"]
+  },
+  "node_density_sweep": {
+    "node_counts": [2, 3, 4, 5, 6, 8],
+    "mean_spacing_m": [20, 40, 80],
+    "sample": "space-filling over the 24 core cells",
+    "sites": 60,
+    "realism": ["off", "on"],
+    "analysis_modes": ["measured_only"]
+  },
+  "generalisation": {
+    "sites": 48,
+    "factor_sampling": "deterministic uniform draws from all core factor levels; one fresh site seed per site",
+    "realism": ["off", "on"],
+    "analysis_modes": ["measured_only"]
+  },
+  "realism_decomposition": {
+    "environments": ["open", "mixed"],
+    "source_height": "ground",
+    "node_counts": [2, 3, 4, 5, 6],
+    "components": {
+      "heading_error_sigma_deg": [0, 0.5, 1, 2.5, 5],
+      "mic_position_sigma_mm": [0, 2, 5, 10],
+      "noise_correlation": [0, 0.3, 0.6],
+      "mic_gain_sigma_db": [0, 0.5, 1, 2]
+    },
+    "design": "one-at-a-time plus all pairwise component combinations",
+    "minimum_total_sites": 60,
+    "seed_policy": "unique per site; common random numbers within a matched component contrast"
+  },
+  "benchmark_tiers": {
+    "matrix-smoke": {
+      "cells": "open/mixed/dense_urban x ground/aerial; stationary; one source",
+      "sites_per_cell": 2,
+      "realism": ["off", "on"],
+      "analysis_modes": ["measured_only"]
+    },
+    "matrix-standard": {
+      "cells": "all 24 core cells",
+      "sites_per_cell": 3,
+      "realism": ["off", "on"],
+      "analysis_modes": ["measured_only"]
+    },
+    "matrix-full": {
+      "cells": "all 24 core cells",
+      "sites_per_cell": 8,
+      "realism": ["off", "on"],
+      "analysis_modes": ["measured_only"]
+    }
+  },
+  "acceptance": {
+    "position_change": "rule 4 from docs/round2-method.md, by split and realism, with site-clustered intervals",
+    "report": [
+      "coverage",
+      "wrong-fix rate",
+      "events within 10 m with misses as failures",
+      "1-sigma calibration",
+      "2-sigma calibration",
+      "median error",
+      "p90 error",
+      "risk-coverage area"
+    ],
+    "subset": "also report detectable-by-at-least-3-nodes once the label is implemented",
+    "rank_equal_populations_only": true,
+    "null_is_not_zero": true
+  },
+  "cut_order": [
+    "drop 8-node and 80 m density sweep cases",
+    "reduce per-cell matrix sites toward five, never drop a core cell",
+    "drop sustained-sound repeats last"
+  ],
+  "seal_policy": "Generate and hash the full sealed input population in this mission; never run it. It is reserved for 3D only.",
+  "results": null
+}
