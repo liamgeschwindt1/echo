@@ -14,7 +14,7 @@
     "train_sites_per_cell": 2,
     "validation_sites_per_cell": 2,
     "seed_formula": "site_seed=600000+cell_index*100+split_index*10+replicate; render_seed=6100000+cell_index*100+split_index*10+replicate; split_index train=0 validation=1",
-    "layout_transform": "mulberry32(site_seed) draws rotation uniformly over [0,2pi), radial scale over [0.9,1.1], and XY translation over [-5,5] metres; rotate and scale node/source/building centres around the site origin; preserve source counts, Z coordinates, building sizes, and matrix settings."
+    "layout_transform": "mulberry32(site_seed) draws XY translation over [-5,5] metres; translate all node/source/building centres together; preserve relative geometry, source counts, Z coordinates, building sizes, and matrix settings."
   },
   "density_sweep": {
     "node_counts": [2, 3, 4, 5, 6, 8],
@@ -23,7 +23,7 @@
     "split": "validation",
     "seed_formula": "site_seed=700000+group_index*10+replicate; render_seed=7100000+group_index*10+replicate",
     "template_cell": "cell_index=(group_index*7+3) mod 24",
-    "layout_transform": "same seeded rotation, radial scale, and translation as core sites."
+    "layout_transform": "same seeded common translation as core sites."
   },
   "realism": ["off", "on", "surveyed"],
   "analysis_modes": ["measured_only"],
