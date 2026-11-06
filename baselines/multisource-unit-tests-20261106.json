@@ -1,0 +1,15 @@
+{
+  "id": "multisource-unit-tests-20261106",
+  "timestamp_utc": "2026-11-06T16:23:43Z",
+  "command": "node --test packages/sim-core/test/sim-multisource.test.js packages/sim-core/test/sim-measured.test.js && node --test packages/sim-core/test/sim-golden.test.js",
+  "results": {
+    "targeted_tests_passed": true,
+    "targeted_tests_count": 7,
+    "golden_tests_passed": true,
+    "golden_tests_count": 18
+  },
+  "notes": [
+    "No matrix or three-source benchmark run in this session.",
+    "Evidence file records default-off regression guard and new multisource unit coverage only."
+  ]
+}

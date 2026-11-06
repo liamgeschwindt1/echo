@@ -8,6 +8,7 @@ import { diffractionGrid, diffractionOnGrid, gridMap, WEDGE_DESCRIPTION } from '
 import { computeActivity } from './activity.js';
 import { timed } from './profile.js';
 import { validateRealism, nodeClock, clockSignal, realismNoise, noiseEnvelope, REALISM_NOTE } from './realism.js';
+import { sourceSignalForRender } from './ext/multisource/rotor-model.js';
 
 const LEVEL_WINDOW_S = 0.125;
 
@@ -68,7 +69,7 @@ export function prepareRender(scenario, clips, lengthS, profile = null) {
   const bins = n / 2 + 1;
   const c = speedOfSound(settings.temperature_c);
   const scaledClips = scenario.sources.map((src) => {
-    const samples = clips.get(src.clip);
+    const samples = sourceSignalForRender({ source: src, clips, settings, sampleRate: fs });
     if (!samples) throw new Error(`clip ${src.clip} not loaded`);
     const gain = clipGainPa(samples, fs, src.level_1m_db);
     const scaled = new Float32Array(samples.length);
