@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import { buildJobs, presetExperiment } from '../packages/sim-core/src/benchmark/experiment.js';
 import { finishExperiment } from '../packages/sim-core/src/benchmark/runner.js';
 import { reportCsv, reportHtml } from '../packages/sim-core/src/benchmark/report.js';
+import { assertShardedUnsealed } from './lib/integration-seal-guard.mjs';
 
 async function listShardReports(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -28,6 +29,7 @@ async function main() {
   const experiment = values.experiment.endsWith('.json')
     ? JSON.parse(await readFile(resolve(values.experiment), 'utf8'))
     : presetExperiment(values.experiment);
+  assertShardedUnsealed(experiment);
   const { experiment: normalised, configs, jobs } = buildJobs(experiment, { allowAboveCap: true });
   const expectedIds = jobs.map((job) => job.id);
   const shardPaths = await listShardReports(resolve(values['shard-dir']));

@@ -8,6 +8,7 @@ import { scenarioForJob } from '../packages/sim-core/src/benchmark/experiment.js
 import { nodeExecutor, loadBenchmarkClips, codeManifest } from '../packages/sim-core/src/benchmark/node.js';
 import { finishExperiment } from '../packages/sim-core/src/benchmark/runner.js';
 import { reportCsv, reportHtml } from '../packages/sim-core/src/benchmark/report.js';
+import { assertShardedUnsealed } from './lib/integration-seal-guard.mjs';
 
 function pickJobs(jobs, shardIndex, shardCount) {
   const start = Math.floor((shardIndex * jobs.length) / shardCount);
@@ -40,6 +41,7 @@ async function main() {
   const experiment = values.experiment.endsWith('.json')
     ? JSON.parse(await readFile(resolve(values.experiment), 'utf8'))
     : presetExperiment(values.experiment);
+  assertShardedUnsealed(experiment);
   const { experiment: normalised, configs, jobs } = buildJobs(experiment, { allowAboveCap: true });
   const shardJobs = pickJobs(jobs, shardIndex, shardCount);
   if (!shardJobs.length) throw new Error(`Shard ${shardIndex}/${shardCount} has zero jobs`);

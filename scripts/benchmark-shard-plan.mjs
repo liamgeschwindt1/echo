@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { parseArgs } from 'node:util';
 import { resolve } from 'node:path';
 import { buildJobs, presetExperiment } from '../packages/sim-core/src/benchmark/experiment.js';
+import { assertShardedUnsealed } from './lib/integration-seal-guard.mjs';
 
 export function shardSlices(total, shardCount) {
   return Array.from({ length: shardCount }, (_, shardIndex) => {
@@ -25,6 +26,7 @@ async function main() {
   const experiment = experimentInput.endsWith('.json')
     ? JSON.parse(await readFile(resolve(experimentInput), 'utf8'))
     : presetExperiment(experimentInput);
+  assertShardedUnsealed(experiment);
   const { jobs } = buildJobs(experiment, { allowAboveCap: true });
   if (!jobs.length) throw new Error('No jobs in experiment');
   const shardCount = Math.min(shardCountRaw, jobs.length, 20);

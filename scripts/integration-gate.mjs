@@ -1,8 +1,7 @@
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, writeFile, statfs } from 'node:fs/promises';
-import { gzipSync } from 'node:zlib';
-import { gunzipSync } from 'node:zlib';
+import { mkdir, readFile, readdir, writeFile, statfs } from 'node:fs/promises';
+import { gzipSync, gunzipSync } from 'node:zlib';
 import { resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 
@@ -49,6 +48,16 @@ async function run(name, command, args) {
 }
 try {
   await run('core', 'npm', ['test', '-w', '@echo/sim-core']);
+  let cueTests;
+  try {
+    cueTests = (await readdir('packages/sim-core/src/ext/cues'))
+      .filter((name) => name.endsWith('.test.js'))
+      .map((name) => `packages/sim-core/src/ext/cues/${name}`);
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+    cueTests = [];
+  }
+  if (cueTests.length) await run('cue-tests', 'node', ['--test', ...cueTests]);
   await run('app', 'npm', ['test', '-w', '@echo/sim']);
   await run('build', 'npm', ['run', 'build', '-w', '@echo/sim']);
   const baseline = resolve(directory, 'baseline.json');
@@ -71,11 +80,15 @@ try {
     report_sha256: createHash('sha256').update(bytes).digest('hex')
   };
   await writeFile(result.smoke.report, gzipSync(bytes));
+  const referenceReport = JSON.parse(await readFile(reference, 'utf8'));
+  const referenceInferences = new Map(referenceReport.runs.map((run) => [run.job.id, JSON.stringify(run.inference)]));
+  result.inference_changes = report.runs.filter((run) =>
+    referenceInferences.get(run.job.id) !== JSON.stringify(run.inference)).map((run) => run.job.id);
   result.golden_changes = execFileSync('git', [
     'diff', '--name-only', 'ff75074', '--', 'packages/sim-core/test/golden'
   ], { encoding: 'utf8' }).trim().split('\n').filter(Boolean);
-  if (result.smoke.runs !== 16 || !report.comparison.pass || result.golden_changes.length) {
-    throw new Error('Expected 16 smoke runs, no tracked regressions and unchanged goldens');
+  if (result.smoke.runs !== 16 || !report.comparison.pass || result.golden_changes.length || result.inference_changes.length) {
+    throw new Error('Expected 16 smoke runs, no tracked regressions, byte-identical inference and unchanged goldens');
   }
   result.pass = true;
 } catch (error) {
