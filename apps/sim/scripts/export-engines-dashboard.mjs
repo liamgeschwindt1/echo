@@ -1,42 +1,30 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve, join } from 'node:path';
 import { readFile } from 'node:fs/promises';
-import { buildStandaloneEnginesHtml, mapBaselineToKpi, normaliseEngineRecord } from '../src/ui/dashboards.js';
+import { buildStandaloneEnginesHtml, normaliseEngineRecord } from '../src/ui/dashboards.js';
 
 const repoRoot = resolve(new URL('../../../', import.meta.url).pathname);
 const outArg = process.argv.indexOf('--out');
 const output = outArg >= 0 ? process.argv[outArg + 1] : 'docs/tracks/dashboards/engines-dashboard.html';
 if (!output) throw new Error('Missing value for --out');
 const readJson = async (path) => JSON.parse(await readFile(join(repoRoot, path), 'utf8'));
-let registry = null;
-try {
-  registry = await readJson('engines/registry.json');
-} catch {}
-const ids = Array.isArray(registry?.engines) ? registry.engines.map((entry) => entry.id).filter(Boolean) : [];
+const registry = await readJson('engines/registry.json');
+if (!Array.isArray(registry)) throw new Error('Engine registry must be an array');
+const ids = registry.map((entry) => entry.id);
+if (!ids.length || ids.some((id) => !/^LE-\d+$/.test(id)) || new Set(ids).size !== ids.length) {
+  throw new Error('Engine registry is empty or invalid');
+}
 const engines = [];
 for (const id of ids) {
-  try {
-    const [engine, kpi, refs] = await Promise.all([
-      readJson(`engines/${id}/engine.json`),
-      readJson(`engines/${id}/kpi.json`),
-      readJson(`engines/${id}/refs.json`)
-    ]);
-    engines.push(normaliseEngineRecord(engine, kpi, refs));
-  } catch {}
-}
-if (!engines.length) {
-  const baseline = await readJson('baselines/matrix-baseline-r3.json');
-  engines.push({
-    id: 'LE-0',
-    parent: null,
-    date: null,
-    status: 'baseline',
-    source_hash: baseline?.producer?.code_version ?? null,
-    options: {},
-    refs: { baseline: 'baselines/matrix-baseline-r3.json' },
-    refs_path: 'engines/LE-0/refs.json',
-    kpi: mapBaselineToKpi(baseline)
-  });
+  const [engine, kpi, refs] = await Promise.all([
+    readJson(`engines/${id}/engine.json`),
+    readJson(`engines/${id}/kpi.json`),
+    readJson(`engines/${id}/refs.json`)
+  ]);
+  if (engine.id !== id || kpi.engine_id !== id || refs.engine_id !== id) {
+    throw new Error(`Engine identity mismatch: ${id}`);
+  }
+  engines.push(normaliseEngineRecord(engine, kpi, refs));
 }
 const data = {
   pageId: 'engines',

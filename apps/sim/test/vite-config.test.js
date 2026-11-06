@@ -20,6 +20,12 @@ test('Vite dev server serves the sim with same-origin CSP and forwards /api to t
     await server.listen();
     const address = server.httpServer.address();
     const base = `http://127.0.0.1:${address.port}`;
+    const registryResponse = await fetch(`${base}/engines/registry.json`);
+    const registry = await registryResponse.json();
+    assert.ok(Array.isArray(registry));
+    const kpi = await (await fetch(`${base}/engines/LE-0/kpi.json`)).json();
+    assert.equal(kpi.engine_id, 'LE-0');
+    assert.equal((await fetch(`${base}/engines/missing.json`)).status, 404);
     for (const path of ['/', '/index.html', '/?osm=1']) {
       const response = await fetch(`${base}${path}`);
       assert.equal(response.status, 200, path);

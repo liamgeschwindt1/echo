@@ -62,3 +62,15 @@
   exporting 12 new default option fields. Preserve raw azimuth with zero offset
   and share opt-in option resolution across benchmark, recordings and export.
   Added exact default-option and combined-extension truth-boundary tests.
+- Corrected fusion integration passed full gates and byte identity; dashboard
+  track then merged without conflicts and passed all merge gates.
+- T7/T1 integration defects reproduced and fixed: registry is an array, KPI
+  metrics use `interval95` and nested breakdowns, and JSON artifacts were not
+  served by the app. Registry assets now serve in development and production;
+  static export consumes the real registry. Adapter preserves pooled versus
+  per-profile populations and published intervals. UI no longer averages
+  quantiles or presents subtraction of marginal intervals as a paired interval.
+  Targeted app tests passed.
+- Export metadata receives the single integration bump 0.18 -> 0.19 for
+  delivered multisource/fusion extensions. This is intentionally a metadata
+  change; default inference and signal fixtures must still match base bytes.

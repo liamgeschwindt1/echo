@@ -1,4 +1,4 @@
-// The results export ("Export results" in the sim). Schema 0.18: see EXPORT_CHANGELOG.
+// The results export ("Export results" in the sim). Schema 0.19: see EXPORT_CHANGELOG.
 // Node output is limited to bearings, levels, times, uncertainties, labels, scores and confidences: no audio, spectra or
 // embeddings, and every unmeasured constant or threshold is marked placeholder.
 import { simConstants } from './geometry.js';
@@ -8,9 +8,20 @@ import { nextPow2 } from './dsp.js';
 import { measuredOptionsFor } from './measured.js';
 import { REALISM_DEFAULTS, REALISM_NOTE } from './realism.js';
 
-export const EXPORT_SCHEMA = '0.18';
+export const EXPORT_SCHEMA = '0.19';
 
 export const EXPORT_CHANGELOG = [
+  {
+    schema: '0.19',
+    added: [
+      'Opt-in results.extensions.multisource candidate methods, associations and diagnostics.',
+      'Opt-in results.extensions.fusion heading-calibration diagnostics, node heading offsets and likelihood-product fix diagnostics.'
+    ],
+    changed: [
+      'Multisource and fusion extension blocks coexist. Missing observations and unsupported 3D/tracking quantities remain unavailable.',
+      'Legacy default inference and signal goldens remain unchanged. No component demonstration or smoke result promotes a localisation lever to default.'
+    ]
+  },
   {
     schema: '0.18',
     added: ['Opt-in measured joint fusion mode with deterministic pair-subset RANSAC initialisation, Huber bearing fit, all-node compatibility, covariance and covariance-derived 90% radius.'],

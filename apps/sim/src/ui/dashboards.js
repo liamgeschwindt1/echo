@@ -1,7 +1,8 @@
 import targets from '../../../../docs/targets.json' with { type: 'json' };
+import { adaptEngineKpi } from './engine-kpi-adapter.js';
 
 const DASHBOARD_BANNER = 'Synthetic simulator outputs only. Targets are placeholders. Missing values show as not measured.';
-const INSTALL_PROFILES = ['off', 'on', 'surveyed', 'self-calibrated'];
+const INSTALL_PROFILES = ['pooled', 'off', 'on', 'surveyed', 'self-calibrated'];
 const PLACEHOLDER_PAGES = [
   { id: 'labelling', label: 'Labelling', note: 'Later: label quality and class-association dashboard.' },
   { id: 'detection', label: 'Event detection and false alarms', note: 'Later: event-detection and false-alarm dashboard.' },
@@ -19,13 +20,15 @@ const headlineMetrics = [
   { key: 'unflagged_wrong_fix_rate', label: 'Unflagged wrong-fix rate' },
   { key: 'within_1sigma', label: 'Within 1σ' },
   { key: 'within_2sigma', label: 'Within 2σ' },
-  { key: 'error_3d_median_m', label: 'Aerial 3D error median (m)' },
+  { key: 'error_3d_p90_m', label: 'Aerial 3D error p90 (m)' },
+  { key: 'aerial_3d_fix_rate', label: 'Aerial 3D fix rate' },
+  { key: 'aerial_height_error_m', label: 'Aerial height error (m)' },
   { key: 'track_median_error_m', label: 'Track median error (m)' },
   { key: 'track_continuity', label: 'Track continuity' },
   { key: 'time_to_fix_s', label: 'Time to fix (s)' }
 ];
 
-const valueMetrics = new Set(['horizontal_p90_m', 'horizontal_median_m', 'error_3d_median_m', 'track_median_error_m', 'time_to_fix_s']);
+const valueMetrics = new Set(['horizontal_p90_m', 'horizontal_median_m', 'error_3d_p90_m', 'aerial_height_error_m', 'track_median_error_m', 'time_to_fix_s']);
 
 const notMeasured = '<span class="dash-muted">not measured</span>';
 
@@ -38,31 +41,9 @@ function parseResultKey(key) {
   return { split, profile, mode };
 }
 
-function weightedMetric(rows, metricKey) {
-  let weighted = 0;
-  let weight = 0;
-  let nSites = 0;
-  let nRuns = 0;
-  let confidence = null;
-  for (const row of rows) {
-    const metric = row?.metrics?.[metricKey];
-    const value = metric?.value;
-    if (!Number.isFinite(value)) continue;
-    const w = Number.isFinite(metric?.n_runs) ? metric.n_runs : Number.isFinite(row?.n_scenes) ? row.n_scenes : 1;
-    weighted += value * w;
-    weight += w;
-    nSites += Number.isFinite(metric?.n_sites) ? metric.n_sites : 0;
-    nRuns += Number.isFinite(metric?.n_runs) ? metric.n_runs : 0;
-    confidence = metric?.confidence ?? confidence;
-  }
-  if (!weight) return { value: null, ci: null, n_sites: null, n_runs: null, confidence: null };
-  return {
-    value: weighted / weight,
-    ci: null,
-    n_sites: nSites || null,
-    n_runs: nRuns || null,
-    confidence
-  };
+function weightedMetric() {
+  // Cell quantiles and event rates cannot be pooled from per-cell scalar summaries.
+  return { value: null, ci: null, n_sites: null, n_runs: null, confidence: null };
 }
 
 function toFixed(value, digits = 3) {
@@ -96,16 +77,10 @@ function toTier(metricKey, value) {
   return best;
 }
 
-function deltaMetric(current, base) {
-  if (!current || !base || !Number.isFinite(current.value) || !Number.isFinite(base.value)) return null;
-  const delta = current.value - base.value;
-  let ci = null;
-  if (Array.isArray(current.ci) && Array.isArray(base.ci) &&
-      Number.isFinite(current.ci[0]) && Number.isFinite(current.ci[1]) &&
-      Number.isFinite(base.ci[0]) && Number.isFinite(base.ci[1])) {
-    ci = [current.ci[0] - base.ci[1], current.ci[1] - base.ci[0]];
-  }
-  return { value: delta, ci };
+export function deltaMetric(current, base) {
+  const paired = current?.paired_deltas?.[base?.engine_id];
+  if (!Number.isFinite(paired?.delta)) return null;
+  return { value: paired.delta, ci: paired.interval95 ?? null };
 }
 
 function fmtDelta(metricKey, delta) {
@@ -141,6 +116,7 @@ export function mapBaselineToKpi(data) {
   for (const cell of data.cells ?? []) {
     for (const [key, result] of Object.entries(cell.results ?? {})) {
       const parsed = parseResultKey(key);
+      if (parsed.split !== 'all' || parsed.mode !== 'measured_only') continue;
       const bucketKey = metricLabel(parsed.profile, parsed.split, parsed.mode);
       if (!profileBuckets.has(bucketKey)) profileBuckets.set(bucketKey, []);
       profileBuckets.get(bucketKey).push(result);
@@ -225,7 +201,7 @@ export function normaliseEngineRecord(engine, kpi, refs) {
     source_hash: engine?.source_hash ?? engine?.sourceHash ?? null,
     options: optionSetFromEngine(engine),
     refs,
-    kpi,
+    kpi: adaptEngineKpi(kpi, engine?.id),
     refs_path: `engines/${engine?.id ?? 'unknown'}/refs.json`
   };
 }
@@ -251,6 +227,7 @@ function metricCell(metricKey, metric, compareMode, compareMetric) {
     <div class="dash-metric-name">${headlineMetrics.find((item) => item.key === metricKey)?.label ?? metricKey}</div>
     <div class="dash-metric-value">${value}</div>
     <div class="dash-metric-ci">95% CI: ${ci}</div>
+    <div class="dash-metric-ci">sites ${metric?.n_sites ?? 'not measured'} · runs ${metric?.n_runs ?? 'not measured'}</div>
     ${deltaText}
   </div>`;
 }
@@ -462,35 +439,17 @@ function renderApp(state) {
 }
 
 async function loadEngineSet() {
-  let registry = null;
-  try {
-    registry = await fetchJson('/engines/registry.json');
-  } catch {}
+  const registry = await fetchJson('/engines/registry.json');
   const ids = sortedEngineIds(registry);
+  if (!ids.length) throw new Error('Engine registry contains no engines');
   const engines = [];
   for (const id of ids) {
-    try {
-      const [engine, kpi, refs] = await Promise.all([
-        fetchJson(`/engines/${id}/engine.json`),
-        fetchJson(`/engines/${id}/kpi.json`).catch(() => null),
-        fetchJson(`/engines/${id}/refs.json`).catch(() => null)
-      ]);
-      engines.push(normaliseEngineRecord(engine, kpi ?? {}, refs));
-    } catch {}
-  }
-  if (!engines.length) {
-    const baseline = await fetchJson('/baselines/matrix-baseline-r3.json');
-    engines.push({
-      id: 'LE-0',
-      parent: null,
-      date: null,
-      status: 'baseline',
-      source_hash: baseline?.producer?.code_version ?? null,
-      options: {},
-      refs: { baseline: 'baselines/matrix-baseline-r3.json' },
-      refs_path: 'engines/LE-0/refs.json',
-      kpi: mapBaselineToKpi(baseline)
-    });
+    const [engine, kpi, refs] = await Promise.all([
+      fetchJson(`/engines/${id}/engine.json`),
+      fetchJson(`/engines/${id}/kpi.json`),
+      fetchJson(`/engines/${id}/refs.json`)
+    ]);
+    engines.push(normaliseEngineRecord(engine, kpi, refs));
   }
   return engines;
 }
@@ -538,9 +497,9 @@ export function createDashboards({ $ }) {
   };
   const mount = async () => {
     if (mounted) return;
-    mounted = true;
     root.innerHTML = '<div class="testing"><p class="note">Loading engine dashboards...</p></div>';
     const engines = await loadEngineSet();
+    mounted = true;
     const le0Id = engines.find((item) => item.id === 'LE-0')?.id ?? engines[0]?.id ?? null;
     state = {
       pageId: 'engines',
