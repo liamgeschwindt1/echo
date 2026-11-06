@@ -1,0 +1,49 @@
+[
+  {
+    "lever_id": "fus-1",
+    "option": "measured_fusion_mode",
+    "value": "likelihood",
+    "default": "legacy",
+    "changes": "Switch measured fusion from pair-track matching to grid likelihood-product fusion (one fix per time cluster, no pair duplicate fixes).",
+    "matrix_smoke_vs_le0": {
+      "population": "docs/tracks/fusion/prereg/fus-1-likelihood-smoke-experiment.json",
+      "result": "rejected_smoke",
+      "held_out_on": {
+        "events_within_10m_misses_counted": { "legacy": 0.3333333333333333, "candidate": 0.3333333333333333 },
+        "scene_fix_rate": { "legacy": 0.3333333333333333, "candidate": 0.3333333333333333 },
+        "unflagged_wrong_fix_rate": { "legacy": 0, "candidate": 0 },
+        "horizontal_median_m": { "legacy": 1.2055791849780453, "candidate": 2.23606797749979 }
+      }
+    },
+    "track_preregistered_population": {
+      "report": "baselines/fusion-fus-1-likelihood-smoke.json",
+      "sha256": "9cf0e6c4cb079afe7849c4aba18592482e49496f7dc8c0696ed78c3fc360f3a8"
+    }
+  },
+  {
+    "lever_id": "fus-cal-1",
+    "option": "measured_heading_self_calibration",
+    "value": 1,
+    "default": 0,
+    "changes": "Enable event-derived per-node heading offset fit with observability checks and offset sigma propagation.",
+    "matrix_smoke_vs_le0": {
+      "population": "docs/tracks/fusion/prereg/fus-cal-1-selfcal-smoke-experiment.json",
+      "result": "no_effect_smoke",
+      "held_out_on": {
+        "events_within_10m_misses_counted": { "surveyed": 0.3333333333333333, "candidate": 0.3333333333333333 },
+        "scene_fix_rate": { "surveyed": 0.3333333333333333, "candidate": 0.3333333333333333 },
+        "unflagged_wrong_fix_rate": { "surveyed": 0, "candidate": 0 },
+        "horizontal_median_m": { "surveyed": 1.2055791849780453, "candidate": 1.2055791849780453 }
+      },
+      "diagnostics": {
+        "enabled_runs": 8,
+        "applied_runs": 0,
+        "reason": "insufficient_observability in this smoke population"
+      }
+    },
+    "track_preregistered_population": {
+      "report": "baselines/fusion-fus-cal-1-selfcal-smoke.json",
+      "sha256": "9aec443637ab6e7ee83d06449e188596d703a4e855a190a953e116814caa5322"
+    }
+  }
+]

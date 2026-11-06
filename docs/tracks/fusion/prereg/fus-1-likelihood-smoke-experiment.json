@@ -1,0 +1,27 @@
+{
+  "name": "T4 fus-1 likelihood smoke sweep",
+  "scenes": ["sparse_20", "random_5"],
+  "seeds": [1, 101],
+  "held_out_seeds": [101],
+  "base_settings": {},
+  "sweeps": [],
+  "mode": "paired",
+  "realism": ["off", "on"],
+  "analysis_modes": ["measured_only"],
+  "configs": [
+    {
+      "name": "legacy",
+      "settings": {
+        "measured_fusion_mode": "legacy"
+      }
+    },
+    {
+      "name": "likelihood",
+      "settings": {
+        "measured_fusion_mode": "likelihood"
+      }
+    }
+  ],
+  "max_runs": 2000,
+  "metrics": []
+}

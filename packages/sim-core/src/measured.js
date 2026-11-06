@@ -7,6 +7,9 @@ import { rfft, irfft } from './dsp.js';
 import { bandWeight } from './activity.js';
 import { distance } from './physics.js';
 import { fuseJointTracks } from './joint-fusion.js';
+import { headingCalibration } from './ext/fusion/heading-calibration.js';
+import { fuseLikelihoodTracks } from './ext/fusion/likelihood-fusion.js';
+import { wrapDeg as wrapAngle, median } from './ext/fusion/utils.js';
 
 export const MEASURED_DEFAULTS = Object.freeze({
   window_ms: 50, // sliding bearing window (20-100 ms allowed)
@@ -29,17 +32,25 @@ export const MEASURED_DEFAULTS = Object.freeze({
   fusion_mode: 'legacy',
   joint_gate_sigma: 3, // placeholder; not calibrated on recordings
   joint_track_gate_sigma: 3, // placeholder; not calibrated on recordings
-  joint_dedupe_m: 2 // placeholder; spatial duplicate radius, not a sensor accuracy claim
+  joint_dedupe_m: 2, // placeholder; spatial duplicate radius, not a sensor accuracy claim
+  heading_self_calibration: 0, // 0 off, 1 event-derived, 2 calibration-walk mode
+  heading_self_calibration_min_fixes: 4,
+  heading_self_calibration_min_nodes: 3,
+  heading_self_calibration_max_offset_deg: 25,
+  heading_self_calibration_sigma_floor_deg: 0.75,
+  heading_self_calibration_sigma_cap_deg: 12,
+  likelihood_grid_step_m: 2,
+  likelihood_margin_m: 30,
+  likelihood_outlier_floor: 0.03,
+  likelihood_min_nodes: 2,
+  likelihood_time_slack_s: 0.25,
+  likelihood_min_track_windows: 3
 });
 
 const FRAME_S = 0.01;
 const toRad = (d) => (d * Math.PI) / 180;
 const toDeg = (r) => (r * 180) / Math.PI;
-const wrapDeg = (d) => ((((d + 180) % 360) + 360) % 360) - 180;
-const median = (a) => {
-  const s = [...a].sort((x, y) => x - y);
-  return s.length ? s[Math.floor((s.length - 1) / 2)] : NaN;
-};
+const wrapDeg = wrapAngle;
 
 /** Band-limited mean-square frames of one mixture microphone. */
 export function mixtureFrames(mic, band, fs, frameS = FRAME_S) {
@@ -280,6 +291,8 @@ function trackFilter(obs, init, { c, sigmaRad, accel = 3 }) {
 export function trackCandidates(nodeResults, { c, options = {} }) {
   const o = { ...MEASURED_DEFAULTS, ...options };
   const sigmaRad = toRad(o.bearing_sigma_deg);
+  const calibration = Array.isArray(options.calibration) ? options.calibration : null;
+  const calFor = (ni) => calibration?.[ni] ?? { offset_deg: 0, sigma_deg: 0 };
   const flat = [];
   nodeResults.forEach((nr, ni) => nr.tracks.forEach((tr, ti) => flat.push({ ni, ti, tr, nr })));
   const pairs = [];
@@ -300,12 +313,33 @@ export function trackCandidates(nodeResults, { c, options = {} }) {
         if (dt <= pad && (!best || dt < best.dt)) best = { wa, wb, dt };
       }
       if (!best) continue;
-      const guess = intersect2(A.nr.node_position, best.wa.az_deg, B.nr.node_position, best.wb.az_deg, o.min_cross_deg);
+      const calA = calFor(A.ni);
+      const calB = calFor(B.ni);
+      const guess = intersect2(
+        A.nr.node_position,
+        wrapDeg(best.wa.az_deg + calA.offset_deg),
+        B.nr.node_position,
+        wrapDeg(best.wb.az_deg + calB.offset_deg),
+        o.min_cross_deg
+      );
       if (!guess) continue;
       const obs = [];
       for (const [F, ws] of [[A, aw], [B, bw]]) {
-        for (const w of ws) obs.push({ pos: F.nr.node_position, az_deg: w.az_deg, w: 1, t_a: w.t_s });
-        for (const w of F.tr.onsets || []) obs.push({ pos: F.nr.node_position, az_deg: w.az_deg, w: 2, t_a: w.t_s, onset: true });
+        const cal = calFor(F.ni);
+        const sigmaScale = 1 / (1 + (cal.sigma_deg / Math.max(o.bearing_sigma_deg, 0.1)) ** 2);
+        for (const w of ws) obs.push({
+          pos: F.nr.node_position,
+          az_deg: wrapDeg(w.az_deg + cal.offset_deg),
+          w: sigmaScale,
+          t_a: w.t_s
+        });
+        for (const w of F.tr.onsets || []) obs.push({
+          pos: F.nr.node_position,
+          az_deg: wrapDeg(w.az_deg + cal.offset_deg),
+          w: 2 * sigmaScale,
+          t_a: w.t_s,
+          onset: true
+        });
       }
       const st = solveStatic(obs, guess, sigmaRad);
       // Onset timing check: emission times of both nodes' onsets must agree after removing propagation.
@@ -381,11 +415,65 @@ export function analyseMeasured(scenario, rendered, { c, options = {} } = {}) {
   const band = scenario.settings.localisation_band_hz;
   const nodes = scenario.nodes.map((node, ni) => nodeTracks(rendered.nodes[ni], node, { fs, c, band, options }));
   const effective = { ...MEASURED_DEFAULTS, ...options };
-  if (!['legacy', 'joint'].includes(effective.fusion_mode)) throw new Error(`Unknown measured fusion mode: ${effective.fusion_mode}`);
+  if (!['legacy', 'joint', 'likelihood'].includes(effective.fusion_mode)) throw new Error(`Unknown measured fusion mode: ${effective.fusion_mode}`);
+  const applyFusion = (calibration = null) => {
+    const cal = calibration
+      ? calibration.node_offsets.map((entry) => ({ offset_deg: entry.offset_deg, sigma_deg: entry.sigma_deg }))
+      : null;
+    const withCalibration = { ...effective, calibration: cal };
+    if (effective.fusion_mode === 'joint') return fuseJointTracks(nodes, { c, options: withCalibration, calibration: cal });
+    if (effective.fusion_mode === 'likelihood') return fuseLikelihoodTracks(nodes, { c, options: withCalibration, calibration: cal }).fixes;
+    return fuseTracks(nodes, { c, options: withCalibration });
+  };
+  let fixes = applyFusion();
+  let calibration = null;
+  if (effective.heading_self_calibration > 0 && fixes.length) {
+    calibration = headingCalibration(nodes, fixes, effective);
+    if (calibration.applied) fixes = applyFusion(calibration);
+  }
+  const useFusionExtensions = effective.fusion_mode !== 'legacy' || effective.heading_self_calibration > 0;
+  const bearingIntervals = calibration?.node_offsets
+    ? {
+      sigma_deg: median(calibration.node_offsets.map((entry) => entry.sigma_deg)),
+      two_sigma_deg: 2 * median(calibration.node_offsets.map((entry) => entry.sigma_deg))
+    }
+    : null;
+  const nodesOut = nodes.map((node, ni) => {
+    const withIntervals = bearingIntervals ? { ...node, bearing_intervals: bearingIntervals } : node;
+    if (!useFusionExtensions) return withIntervals;
+    return {
+      ...withIntervals,
+      extensions: {
+        fusion: {
+          heading_offset_deg: calibration?.node_offsets?.find((entry) => entry.node_index === ni)?.offset_deg ?? 0,
+          heading_offset_sigma_deg: calibration?.node_offsets?.find((entry) => entry.node_index === ni)?.sigma_deg ?? null
+        }
+      }
+    };
+  });
+  const fixesOut = fixes.map((fix) => {
+    if (!useFusionExtensions && !fix.extensions) return fix;
+    return {
+      ...fix,
+      extensions: {
+        fusion: {
+          ...(fix.extensions?.fusion ?? {}),
+          mode: effective.fusion_mode,
+          heading_self_calibrated: !!calibration?.applied
+        }
+      }
+    };
+  });
   return {
-    nodes,
-    fixes: effective.fusion_mode === 'joint'
-      ? fuseJointTracks(nodes, { c, options: effective })
-      : fuseTracks(nodes, { c, options: effective })
+    nodes: nodesOut,
+    fixes: fixesOut,
+    ...(useFusionExtensions ? {
+      extensions: {
+        fusion: {
+          install_profile: calibration?.install_profile ?? 'surveyed',
+          heading_calibration: calibration
+        }
+      }
+    } : {})
   };
 }
