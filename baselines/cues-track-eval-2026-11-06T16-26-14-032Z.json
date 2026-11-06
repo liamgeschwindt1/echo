@@ -1,0 +1,149 @@
+{
+  "generated_at": "2026-11-06T16:26:14.034Z",
+  "prereg_hashes": {
+    "notch-height-study.json": "73ae7b1a2296c7b12f44ac3b0deaef826dd482df2065bb2472defcb47f8143ac",
+    "doppler-range-study.json": "271e570e0cc46bc68cf1d870b99f4cbdbdcfa820ea10828c2e95f9eb1a088c39",
+    "weather-sound-speed-study.json": "a23c41b960bf7065d35349867b9ce37a33be92c3f824d030a102096f188ca483",
+    "aerial-check-study.json": "e84e841eac57dd333bf08fa319e5d47e308f0ddd6efa868ab825566a2e824a80"
+  },
+  "notch_height": {
+    "n_cases": 48,
+    "height_mae_m": 0.5495368010362222,
+    "height_p90_m": 1.651991697869093,
+    "ground_vs_aerial_accuracy": 1,
+    "failure_modes": {
+      "low_reflectivity": 0,
+      "grazing_geometry": 0,
+      "low_snr": 0,
+      "unknown": 16
+    }
+  },
+  "doppler_range": {
+    "n_cases": 36,
+    "speed_mae_mps": 2.3055555555555554,
+    "closest_range_mae_m": 26.083333333333332,
+    "track_rmse_bearing_only_m": 49.822499548427636,
+    "track_rmse_with_doppler_m": 25.9224348444928,
+    "relative_gain": 0.4797042484932715
+  },
+  "weather_sound_speed": {
+    "n_cases": 15,
+    "speed_error_without_correction_mps": 3.8860000000000015,
+    "speed_error_with_correction_mps": 0.15536509855652791,
+    "range_error_without_correction_m": 1.133661495422004,
+    "range_error_with_correction_m": 0.04560498778844912
+  },
+  "aerial_checks": {
+    "n_cases": 5,
+    "base_3d_fix_rate": 0.4,
+    "cue_3d_fix_rate": 0.4,
+    "base_3d_error_m": 89.49732787068665,
+    "cue_3d_error_m": 13.02247948401875,
+    "base_height_error_m": 88.5,
+    "cue_height_error_m": 2.23148876421941,
+    "base_3d_error_ci95": [
+      58.71438268917586,
+      120.28027305219744
+    ],
+    "cue_3d_error_ci95": [
+      5.196119655338788,
+      20.84883931269871
+    ],
+    "base_height_error_ci95": [
+      58.5,
+      118.5
+    ],
+    "cue_height_error_ci95": [
+      1.367817568831832,
+      3.0951599596069883
+    ],
+    "cases": [
+      {
+        "base_fix": null,
+        "cue_fix": null,
+        "truth": [
+          -37.9,
+          37.3,
+          75
+        ],
+        "base_err2d_m": null,
+        "base_err3d_m": null,
+        "cue_err3d_m": null,
+        "base_height_error_m": null,
+        "cue_height_error_m": null
+      },
+      {
+        "base_fix": null,
+        "cue_fix": null,
+        "truth": [
+          -30.6,
+          34.8,
+          40
+        ],
+        "base_err2d_m": null,
+        "base_err3d_m": null,
+        "cue_err3d_m": null,
+        "base_height_error_m": null,
+        "cue_height_error_m": null
+      },
+      {
+        "base_fix": null,
+        "cue_fix": null,
+        "truth": [
+          -42.7,
+          32,
+          100
+        ],
+        "base_err2d_m": null,
+        "base_err3d_m": null,
+        "cue_err3d_m": null,
+        "base_height_error_m": null,
+        "cue_height_error_m": null
+      },
+      {
+        "base_fix": [
+          -4.051004379002299,
+          66.82728498146065,
+          1.5
+        ],
+        "cue_fix": [
+          -4.051004379002299,
+          66.82728498146065,
+          116.90484004039301
+        ],
+        "truth": [
+          -7.5,
+          46.5,
+          120
+        ],
+        "base_err2d_m": 20.61780991063738,
+        "base_err3d_m": 120.28027305219744,
+        "cue_err3d_m": 20.84883931269871,
+        "base_height_error_m": 118.5,
+        "cue_height_error_m": 3.0951599596069883
+      },
+      {
+        "base_fix": [
+          2.501034936075029,
+          12.872938145877667,
+          1.5
+        ],
+        "cue_fix": [
+          2.501034936075029,
+          12.872938145877667,
+          58.63218243116817
+        ],
+        "truth": [
+          7.5,
+          12.5,
+          60
+        ],
+        "base_err2d_m": 5.01285692704201,
+        "base_err3d_m": 58.71438268917586,
+        "cue_err3d_m": 5.196119655338788,
+        "base_height_error_m": 58.5,
+        "cue_height_error_m": 1.367817568831832
+      }
+    ]
+  }
+}

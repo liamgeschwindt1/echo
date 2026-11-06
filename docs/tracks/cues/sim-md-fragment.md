@@ -1,0 +1,6 @@
+- **New cue modules (T5)**: `src/ext/cues/notch-height.js`, `doppler-range.js`, `sound-speed.js`, `weather-render.js`.
+- **Renderer hook**: weather mismatch uses opt-in settings `cue_weather_temp_offset_c`, `cue_weather_wind_mps`, `cue_weather_wind_from_deg`, `cue_weather_wind_coupling`; default OFF/zero.
+- **Limitations (placeholder)**:
+  - wind advection applies to direct-path delay only;
+  - uncertainty terms are heuristic, not calibrated to field recordings;
+  - cue modules are standalone and not yet fused into core fix/tracker paths (integration deferred to T8).

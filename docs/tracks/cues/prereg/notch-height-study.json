@@ -1,0 +1,20 @@
+{
+  "track": "T5 CUES",
+  "study_id": "cues-a4.5-notch-height-v1",
+  "created_utc": "2026-11-06T16:20:06Z",
+  "purpose": "Evaluate notch-based source-height cue and ground-vs-aerial classification under reflectivity, height and range sweeps.",
+  "inputs": {
+    "reflectivity": [0, 0.2, 0.4, 0.8],
+    "source_heights_m": [1.5, 40, 80, 120],
+    "distance_m": [20, 60, 120, 200],
+    "node_height_m": 5,
+    "speed_of_sound_mps": 343,
+    "seed": 4501
+  },
+  "outputs": [
+    "height_mae_m",
+    "height_p90_m",
+    "ground_vs_aerial_accuracy",
+    "failure_modes"
+  ]
+}

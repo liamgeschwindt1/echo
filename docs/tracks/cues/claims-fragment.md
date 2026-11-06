@@ -1,0 +1,8 @@
+- Added standalone cue modules for notch-derived height, Doppler-derived range/speed and sound-speed correction (`packages/sim-core/src/ext/cues/*`), each with unit tests.
+- Added opt-in renderer weather mismatch placeholders (`cue_weather_*`) via new file `packages/sim-core/src/ext/cues/weather-render.js`; default zero values keep output unchanged.
+- Track-local preregistered synthetic studies recorded in `baselines/cues-track-eval-2026-11-06T16-26-14-032Z.json` show:
+  - notch height MAE 0.55 m on usable cases; unknown/fail cases concentrated at reflectivity 0;
+  - Doppler cue reduced proxy single-node track RMSE from 49.82 m to 25.92 m (relative gain 47.97%);
+  - sound-speed correction reduced mean range error from 1.13 m to 0.046 m under tested mismatches;
+  - drone/aerial check reduced mean 3D error from 89.50 m to 13.02 m on fixed cases (2/5 fixed by base pipeline).
+- Matrix smoke comparison against LE-0 baseline report produced zero tracked regressions with defaults off.
