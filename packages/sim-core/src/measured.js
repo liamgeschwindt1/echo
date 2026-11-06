@@ -7,6 +7,7 @@ import { rfft, irfft } from './dsp.js';
 import { bandWeight } from './activity.js';
 import { distance } from './physics.js';
 import { fuseJointTracks } from './joint-fusion.js';
+import { analyseMultisourceExtensions } from './ext/multisource/index.js';
 
 export const MEASURED_DEFAULTS = Object.freeze({
   window_ms: 50, // sliding bearing window (20-100 ms allowed)
@@ -382,10 +383,12 @@ export function analyseMeasured(scenario, rendered, { c, options = {} } = {}) {
   const nodes = scenario.nodes.map((node, ni) => nodeTracks(rendered.nodes[ni], node, { fs, c, band, options }));
   const effective = { ...MEASURED_DEFAULTS, ...options };
   if (!['legacy', 'joint'].includes(effective.fusion_mode)) throw new Error(`Unknown measured fusion mode: ${effective.fusion_mode}`);
+  const multisource = analyseMultisourceExtensions({ scenario, rendered, nodes, context: { fs, c, band, options: effective } });
   return {
     nodes,
     fixes: effective.fusion_mode === 'joint'
       ? fuseJointTracks(nodes, { c, options: effective })
-      : fuseTracks(nodes, { c, options: effective })
+      : fuseTracks(nodes, { c, options: effective }),
+    ...(multisource ? { extensions: { multisource } } : {})
   };
 }

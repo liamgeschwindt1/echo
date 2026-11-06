@@ -9,6 +9,7 @@ import { computeActivity } from './activity.js';
 import { timed } from './profile.js';
 import { validateRealism, nodeClock, clockSignal, realismNoise, noiseEnvelope, REALISM_NOTE } from './realism.js';
 import { cuePathDelayS, cueWeatherState } from './ext/cues/weather-render.js';
+import { sourceSignalForRender } from './ext/multisource/rotor-model.js';
 
 const LEVEL_WINDOW_S = 0.125;
 
@@ -70,7 +71,7 @@ export function prepareRender(scenario, clips, lengthS, profile = null) {
   const bins = n / 2 + 1;
   const c = weather.base_speed_mps;
   const scaledClips = scenario.sources.map((src) => {
-    const samples = clips.get(src.clip);
+    const samples = sourceSignalForRender({ source: src, clips, settings, sampleRate: fs });
     if (!samples) throw new Error(`clip ${src.clip} not loaded`);
     const gain = clipGainPa(samples, fs, src.level_1m_db);
     const scaled = new Float32Array(samples.length);

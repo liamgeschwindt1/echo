@@ -36,3 +36,13 @@
   `smoke` (includes truth-assisted and measured-only). Corrected preregistration
   before running that population. Generate a fresh reference from detached base
   source rather than treating an older archived smoke as byte-identical LE-0.
+- Infra and cues 16-run gates passed and were pushed. The standalone cue tests
+  also passed (11 tests); these live under `src/ext/cues` and are not included
+  by the core package's `test/*.test.js` glob, so subsequent gates include them
+  explicitly.
+- Multisource merge conflict 1: adjacent imports in `render.js`. Resolution:
+  retain both weather-delay and rotor-signal imports and both call paths.
+  No track code dropped.
+- Added fail-closed checks to all three sharded entrypoints. They reject sealed
+  inputs before expansion/inference/merge while the required ledger controls
+  remain missing. A subprocess regression test uses fake inputs only.

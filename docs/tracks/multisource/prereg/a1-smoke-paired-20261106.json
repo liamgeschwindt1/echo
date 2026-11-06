@@ -1,0 +1,38 @@
+{
+  "name": "T2 multisource paired smoke",
+  "mode": "paired",
+  "scenes": [
+    "simultaneous_0",
+    "drone_3",
+    "seven_source"
+  ],
+  "seeds": [
+    1
+  ],
+  "realism": [
+    "off"
+  ],
+  "analysis_modes": [
+    "measured_only"
+  ],
+  "max_runs": 24,
+  "configs": [
+    {
+      "name": "LE0-legacy",
+      "settings": {}
+    },
+    {
+      "name": "T2-ms-multipeak-spectral-oracle",
+      "settings": {
+        "ms_candidate_mode": "multi_peak",
+        "ms_association_mode": "spectral",
+        "ms_label_assist_mode": "oracle",
+        "ms_max_hypotheses": 3
+      }
+    }
+  ],
+  "notes": [
+    "Smoke-only paired check for implementation sanity.",
+    "Not sufficient for acceptance rule or matrix-wide conclusions."
+  ]
+}

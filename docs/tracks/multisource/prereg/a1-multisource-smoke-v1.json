@@ -1,0 +1,32 @@
+{
+  "track": "T2",
+  "study_id": "a1-multisource-smoke-v1",
+  "created_utc": "2026-11-06T16:23:43Z",
+  "status": "registered_not_run",
+  "goal": "Compare opt-in multisource candidate generation modes against legacy measured pipeline on smoke-sized synthetic populations.",
+  "analysis_mode": "measured_only",
+  "modes": [
+    "ms_candidate_mode=multi_peak",
+    "ms_candidate_mode=tf_histogram",
+    "ms_candidate_mode=harmonic_comb",
+    "ms_association_mode=spectral",
+    "ms_label_assist_mode=oracle",
+    "ms_label_assist_mode=injected"
+  ],
+  "populations": {
+    "three_source_cells": "all environments x ground/aerial x stationary/moving x 3 sources",
+    "one_source_cells_guardrail": "all environments x ground/aerial x stationary/moving x 1 source",
+    "tonal_subset": "drone, siren, engine-labelled synthetic clips"
+  },
+  "metrics": [
+    "events_within_10m_misses_counted",
+    "duplicate_fix_rate",
+    "ghost_rate",
+    "comb_assignment_error_rate"
+  ],
+  "ci": "95% site-clustered",
+  "notes": [
+    "No sealed-set use.",
+    "No classifier training; oracle and injected-label priors are association-only."
+  ]
+}

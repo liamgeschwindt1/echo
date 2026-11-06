@@ -1,0 +1,34 @@
+[
+  {
+    "lever_id": "ms-1",
+    "option_name": "ms_candidate_mode",
+    "default": "off",
+    "what_it_changes": "Per-node multi-hypothesis bearing candidate extraction in measured pipeline extension output.",
+    "matrix_smoke_vs_le0": "equal headline in smoke paired run (no fusion-core wiring yet)",
+    "preregistered_population_vs_le0": "baselines/multisource-smoke-paired-20261106.csv"
+  },
+  {
+    "lever_id": "ms-2",
+    "option_name": "ms_association_mode",
+    "default": "off",
+    "what_it_changes": "Cross-node candidate grouping using spectral + temporal similarity and 3+ node ghost-consistency gate.",
+    "matrix_smoke_vs_le0": "equal headline in smoke paired run",
+    "preregistered_population_vs_le0": "baselines/multisource-smoke-paired-20261106.csv"
+  },
+  {
+    "lever_id": "ms-3",
+    "option_name": "ms_label_assist_mode",
+    "default": "off",
+    "what_it_changes": "Association prior weighting mode (off/oracle/injected) without classifier training.",
+    "matrix_smoke_vs_le0": "equal headline in smoke paired run",
+    "preregistered_population_vs_le0": "baselines/multisource-smoke-paired-20261106.csv"
+  },
+  {
+    "lever_id": "ms-4",
+    "option_name": "ms_rotor_model_enabled",
+    "default": false,
+    "what_it_changes": "Renderer clip substitution by deterministic synthetic rotor model when source.rotor_model is present.",
+    "matrix_smoke_vs_le0": "not exercised in smoke run",
+    "preregistered_population_vs_le0": "docs/tracks/multisource/prereg/a1-multisource-smoke-v1.json"
+  }
+]
