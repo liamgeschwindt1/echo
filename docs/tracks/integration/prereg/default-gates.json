@@ -1,0 +1,21 @@
+{
+  "id": "t8-default-merge-gates-v1",
+  "registered_at": "2026-11-06",
+  "purpose": "Regression checks only, not selection or tuning",
+  "base_commit": "ff75074dca26a633b0aadae1a81a674db728030d",
+  "experiment": "docs/experiments/ci-smoke.json",
+  "scenes": ["sparse_20", "random_5"],
+  "seeds": [1, 101],
+  "held_out_seeds": [101],
+  "realism": ["off", "on"],
+  "analysis_modes": ["measured_only"],
+  "new_options": "all off",
+  "expected_runs": 16,
+  "workers": 2,
+  "discard_renders": true,
+  "comparison": "Current-scoring rescore of baselines/ci-smoke.json, as in sim-regression.yml; no tolerance changes",
+  "gates": ["full core tests", "app unit tests", "production build", "16-run smoke zero tracked regressions", "signal goldens unchanged"],
+  "merge_order": ["infra", "cues", "multisource", "fusion", "dashboards"],
+  "excluded_not_delivered": ["causal", "buildings"],
+  "outputs": "baselines/integration-gate-<unique-label>*"
+}
