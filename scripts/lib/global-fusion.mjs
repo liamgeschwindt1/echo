@@ -1,6 +1,9 @@
 import { trackCandidates, solveStatic, MEASURED_DEFAULTS } from '../../packages/sim-core/src/measured.js';
 import { micPositions } from '../../packages/sim-core/src/mics.js';
 import { weightedConsensus } from './weighted-consensus.mjs';
+import { exactTrackAssignment } from '../../packages/sim-core/src/track-assignment.js';
+
+export { exactTrackAssignment } from '../../packages/sim-core/src/track-assignment.js';
 
 const rad = (d) => d * Math.PI / 180;
 const wrap = (d) => ((d + 540) % 360) - 180;
@@ -14,35 +17,6 @@ export function hardwareSigma(node, settings, floor = MEASURED_DEFAULTS.bearing_
   const baseline = Math.max(...positions.flatMap((p, i) => positions.slice(i + 1).map((q) => Math.hypot(...p.map((x, k) => x - q[k])))));
   if (!(baseline > 0)) throw new Error('Consensus requires a nonzero nominal mic baseline');
   return Math.hypot(floor, settings.heading_error_sigma_deg ?? 0, Math.sqrt(2) * (settings.mic_position_sigma_mm ?? 0) / 1000 / baseline * 180 / Math.PI);
-}
-
-export function exactTrackAssignment(candidates) {
-  const keys = [...new Set(candidates.flatMap((c) => c.fix.node_tracks))].sort();
-  const bits = new Map(keys.map((k, i) => [k, 1n << BigInt(i)]));
-  const proposals = candidates.map((c, i) => ({ ...c, index: i, mask: c.fix.node_tracks.reduce((m, k) => m | bits.get(k), 0n) }));
-  const memo = new Map();
-  const solve = (remaining) => {
-    if (!remaining) return { utility: 0, selected: [] };
-    if (memo.has(remaining)) return memo.get(remaining);
-    if (memo.size > 250000) throw new Error('Exact global assignment exceeded preregistered 250000-state budget');
-    let active = [], pivot = 0n;
-    for (const bit of bits.values()) if (remaining & bit) {
-      const options = proposals.filter((p) => p.mask & bit && (p.mask & remaining) === p.mask);
-      if (options.length > active.length) { active = options; pivot = bit; }
-    }
-    if (!pivot) return { utility: 0, selected: [] };
-    let best = solve(remaining & ~pivot);
-    for (const proposal of active) {
-      const rest = solve(remaining & ~proposal.mask);
-      const choice = { utility: rest.utility + proposal.utility, selected: [...rest.selected, proposal.index].sort((a, b) => a - b) };
-      if (choice.utility > best.utility + 1e-12 ||
-          Math.abs(choice.utility - best.utility) <= 1e-12 && lexical(choice.selected.join(','), best.selected.join(',')) < 0) best = choice;
-    }
-    memo.set(remaining, best);
-    return best;
-  };
-  const solution = solve(keys.reduce((m, k) => m | bits.get(k), 0n));
-  return { fixes: solution.selected.map((i) => proposals[i].fix), states: memo.size, utility: solution.utility };
 }
 
 export function fuseGlobalTracks(nodes, { c, options, consensus, scenario }) {

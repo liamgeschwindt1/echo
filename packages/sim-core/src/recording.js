@@ -81,7 +81,8 @@ export function recordingInputs(wav, geometry) {
   if (!Array.isArray(band) || band.length !== 2 || !band.every(Number.isFinite) || !(0 < band[0] && band[0] < band[1] && band[1] < wav.sample_rate / 2) ||
       !Number.isFinite(settings.temperature_c) || settings.temperature_c < -50 || settings.temperature_c > 60) throw new Error('Invalid recording band or temperature');
   const options = Object.fromEntries(Object.entries(MEASURED_DEFAULTS).map(([k, value]) => [k, settings[`measured_${k}`] ?? value]));
-  if (Object.values(options).some((v) => !Number.isFinite(v) || v < 0) ||
+  if (Object.entries(options).some(([key, value]) => key !== 'fusion_mode' && (!Number.isFinite(value) || value < 0)) ||
+      !['legacy', 'joint'].includes(options.fusion_mode) || options.joint_dedupe_m <= 0 ||
       Math.round(options.hop_ms * wav.sample_rate / 1000) < 1 || Math.round(options.window_ms * wav.sample_rate / 1000) < 1 ||
       !Number.isInteger(options.min_track_windows) || options.min_track_windows < 1) throw new Error('Invalid recording measured options');
   return {

@@ -1,0 +1,56 @@
+{
+  "name": "Mission 4 C1 joint N-node fusion smoke comparison",
+  "status": "preregistered-before-run",
+  "schema": 1,
+  "source_experiment": "docs/experiments/matrix-r3-smoke.json",
+  "source_experiment_sha256": "1421787ce9c639ed4fa1d5a6bea397f4bec3868709cc81bc2d0173b16cd4c6e7",
+  "experiment": "docs/experiments/mission4-c1-smoke.json",
+  "population": {
+    "inherited_from": "docs/experiments/matrix-r3-smoke.json",
+    "analysis_modes": [
+      "measured_only"
+    ],
+    "profiles": [
+      "off",
+      "on",
+      "surveyed"
+    ],
+    "split": [
+      "train",
+      "validation"
+    ],
+    "paired_configs": [
+      "legacy",
+      "joint"
+    ],
+    "exact_jobs_are_frozen_in_experiment": true
+  },
+  "candidate": {
+    "mode": "measured_fusion_mode=joint",
+    "default": "legacy",
+    "deterministic": true,
+    "position_changing": true
+  },
+  "acceptance": {
+    "reference": "legacy config on same exact site/seed/profile jobs",
+    "required_metrics": [
+      "scene_fix_rate",
+      "unflagged_wrong_fix_rate",
+      "within_1sigma",
+      "within_2sigma",
+      "events_within_10m_misses_counted",
+      "horizontal_median_m",
+      "horizontal_p90_m",
+      "risk_coverage_area"
+    ],
+    "rule": "docs/round2-method.md rule four and Mission 4 acceptance rule; validation is accept/reject only",
+    "smoke_is_not_full_acceptance": true
+  },
+  "known_scope": [
+    "This smoke covers the preregistered stationary one-source smoke cells only.",
+    "C1 does not change rendering, legacy mode, or default solver.",
+    "Joint mode handles static tracks only; moving tracks retain legacy pairwise behavior until separately implemented and accepted.",
+    "All thresholds and covariance-derived radii are placeholders pending independent calibration.",
+    "Implementation reuses round-2 weighted consensus for RANSAC inlier selection and exact disjoint-track assignment; unlike the rejected pair-proposal trial, C1 fits all compatible node bearings jointly with a final Huber loss and returns the fit covariance."
+  ]
+}

@@ -15,10 +15,14 @@ alpha-beta tracking, backtrace and post-hoc scoring. This is intentionally label
 completed. `buildExport` includes a labelling block only when actual results exist.
 
 `measured.js` is the alternative pipeline: mixture windows, PHAT quality checks,
-neighbour agreement, per-node tracks, cross-node pair association, static fit /
+neighbour agreement, per-node tracks, cross-node association, static fit /
 bearing-only EKF. Its input has no sources, true positions, start times, per-source
-power or paths. It currently estimates horizontal position only and fuses two-node
-track pairs; it does not implement full multi-node association.
+power or paths. Legacy pairwise fusion remains the default. An opt-in C1 joint mode
+uses pair subsets only to initialise a deterministic RANSAC search, then performs
+Huber-weighted horizontal fitting, adds compatible node tracks, and reports
+model-based covariance and a covariance-derived radius. Joint mode currently
+handles static tracks only; moving tracks retain pairwise fusion. Its thresholds
+and covariance are placeholders, not calibrated field uncertainty.
 
 ## Benchmark path
 

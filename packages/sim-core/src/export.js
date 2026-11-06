@@ -1,4 +1,4 @@
-// The results export ("Export results" in the sim). Schema 0.17: see EXPORT_CHANGELOG.
+// The results export ("Export results" in the sim). Schema 0.18: see EXPORT_CHANGELOG.
 // Node output is limited to bearings, levels, times, uncertainties, labels, scores and confidences: no audio, spectra or
 // embeddings, and every unmeasured constant or threshold is marked placeholder.
 import { simConstants } from './geometry.js';
@@ -8,9 +8,14 @@ import { nextPow2 } from './dsp.js';
 import { MEASURED_DEFAULTS } from './measured.js';
 import { REALISM_DEFAULTS, REALISM_NOTE } from './realism.js';
 
-export const EXPORT_SCHEMA = '0.17';
+export const EXPORT_SCHEMA = '0.18';
 
 export const EXPORT_CHANGELOG = [
+  {
+    schema: '0.18',
+    added: ['Opt-in measured joint fusion mode with deterministic pair-subset RANSAC initialisation, Huber bearing fit, all-node compatibility, covariance and covariance-derived 90% radius.'],
+    changed: ['Measured fusion defaults remain legacy pairwise; joint fusion is explicit via measured_fusion_mode=joint. Joint covariance/radius are model-based placeholders, not calibrated field confidence.']
+  },
   {
     schema: '0.17',
     added: ['Benchmark reports include fix-probability Brier/log-loss/AUROC/reliability metrics, event coverage with misses counted, and conditional event coverage when at least three nodes have source-aligned tracks.'],
