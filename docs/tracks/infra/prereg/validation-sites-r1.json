@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "study_id": "infra-validation-sites-r1",
+  "status": "preregistered-before-generation-and-outcomes",
+  "purpose": "Add fresh measured-only train and validation sites without changing existing sites or the sealed population.",
+  "source_population": "Existing non-sealed site geometries in docs/experiments/matrix-r3-sites.json; no outcome data are used.",
+  "core_matrix": {
+    "factors": {
+      "environment": ["open", "mixed", "dense_urban"],
+      "source_height": ["ground", "aerial"],
+      "motion": ["stationary", "moving"],
+      "simultaneous_sources": [1, 3]
+    },
+    "train_sites_per_cell": 2,
+    "validation_sites_per_cell": 2,
+    "seed_formula": "site_seed=600000+cell_index*100+split_index*10+replicate; render_seed=6100000+cell_index*100+split_index*10+replicate; split_index train=0 validation=1",
+    "layout_transform": "mulberry32(site_seed) draws rotation uniformly over [0,2pi), radial scale over [0.9,1.1], and XY translation over [-5,5] metres; rotate and scale node/source/building centres around the site origin; preserve source counts, Z coordinates, building sizes, and matrix settings."
+  },
+  "density_sweep": {
+    "node_counts": [2, 3, 4, 5, 6, 8],
+    "mean_spacing_m": [20, 40, 80],
+    "sites_per_group": 8,
+    "split": "validation",
+    "seed_formula": "site_seed=700000+group_index*10+replicate; render_seed=7100000+group_index*10+replicate",
+    "template_cell": "cell_index=(group_index*7+3) mod 24",
+    "layout_transform": "same seeded rotation, radial scale, and translation as core sites."
+  },
+  "realism": ["off", "on", "surveyed"],
+  "analysis_modes": ["measured_only"],
+  "outcomes": "Not inspected at registration time.",
+  "sealed_set": {
+    "input_sha256": "a2fe9499ec853c2e5a3d6e2ececef9ca30410adb7454ed39a211c2fdf072a78c",
+    "action": "Do not modify, run, or regenerate."
+  }
+}
