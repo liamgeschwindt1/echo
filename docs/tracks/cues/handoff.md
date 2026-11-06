@@ -45,8 +45,8 @@
 ## 4) Repo state
 
 - Branch: `overnight/loc5-cues`
-- Head commit: **pending local commit in this session**
-- CI result: **not yet available in this session (no pushed commit yet)**
+- Head commit: `b8bf94b22e9ce444ab09d7518050448a00e64b13`
+- CI result: no GitHub Actions run triggered yet for this branch/commit (`gh run list --branch overnight/loc5-cues` returned empty at 2026-11-06T16:44Z).
 - Prereg hashes:
   - notch-height-study.json: `73ae7b1a2296c7b12f44ac3b0deaef826dd482df2065bb2472defcb47f8143ac`
   - doppler-range-study.json: `271e570e0cc46bc68cf1d870b99f4cbdbdcfa820ea10828c2e95f9eb1a088c39`
@@ -70,6 +70,7 @@
 - [x] Opt-in defaults documented.
 - [x] Schema/doc fragments written under track docs.
 - [ ] GitHub Actions run on last commit reviewed (pending push).
+- [x] GitHub Actions run check executed (no run triggered yet for this branch).
 
 ### Shared-file touches (allowed)
 
