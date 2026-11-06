@@ -1,0 +1,2222 @@
+{
+  "schema": 1,
+  "source_report": "baselines/mission4-x1-node-count.json.gz",
+  "source_report_sha256": "9892cf23bad79f4744c7e17c87fff234353e32f005f030f6a35c8af2cfff67ff",
+  "preregistration": "docs/experiments/mission4-x1.json",
+  "method": "2000 bootstrap draws resampling the five fixed site clusters with replacement; 95% percentile intervals",
+  "wrong_fix_m": 10,
+  "results": [
+    {
+      "realism": "off",
+      "source_count": 1,
+      "node_count": 2,
+      "runs": 5,
+      "sites": [
+        "core-0-train-01",
+        "core-0-train-02",
+        "core-0-validation-01",
+        "core-0-validation-02",
+        "core-0-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 0.6,
+          "ci": [
+            0.2,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.6,
+          "ci": [
+            0.2,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0.2,
+        "ci": [
+          0,
+          0.6
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 0.8,
+        "ci": [
+          0.2,
+          1.4
+        ]
+      }
+    },
+    {
+      "realism": "off",
+      "source_count": 1,
+      "node_count": 3,
+      "runs": 5,
+      "sites": [
+        "core-0-train-01",
+        "core-0-train-02",
+        "core-0-validation-01",
+        "core-0-validation-02",
+        "core-0-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0.6,
+        "ci": [
+          0.2,
+          1
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 1.6,
+        "ci": [
+          1.2,
+          2
+        ]
+      }
+    },
+    {
+      "realism": "off",
+      "source_count": 1,
+      "node_count": 4,
+      "runs": 5,
+      "sites": [
+        "core-0-train-01",
+        "core-0-train-02",
+        "core-0-validation-01",
+        "core-0-validation-02",
+        "core-0-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.5,
+          "ci": [
+            0.5,
+            0.5
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 1,
+        "ci": [
+          1,
+          1
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 3.2,
+        "ci": [
+          2.4,
+          4
+        ]
+      }
+    },
+    {
+      "realism": "off",
+      "source_count": 1,
+      "node_count": 5,
+      "runs": 5,
+      "sites": [
+        "core-0-train-01",
+        "core-0-train-02",
+        "core-0-validation-01",
+        "core-0-validation-02",
+        "core-0-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.5294117647058824,
+          "ci": [
+            0.5,
+            0.5882352941176471
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 1,
+        "ci": [
+          1,
+          1
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 3.4,
+        "ci": [
+          2.6,
+          4
+        ]
+      }
+    },
+    {
+      "realism": "off",
+      "source_count": 1,
+      "node_count": 6,
+      "runs": 5,
+      "sites": [
+        "core-0-train-01",
+        "core-0-train-02",
+        "core-0-validation-01",
+        "core-0-validation-02",
+        "core-0-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.6363636363636364,
+          "ci": [
+            0.6086956521739131,
+            0.6666666666666666
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 1,
+        "ci": [
+          1,
+          1
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 4.4,
+        "ci": [
+          3.4,
+          5.4
+        ]
+      }
+    },
+    {
+      "realism": "off",
+      "source_count": 1,
+      "node_count": 7,
+      "runs": 5,
+      "sites": [
+        "core-0-train-01",
+        "core-0-train-02",
+        "core-0-validation-01",
+        "core-0-validation-02",
+        "core-0-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.6666666666666666,
+          "ci": [
+            0.6666666666666666,
+            0.6666666666666666
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 1,
+        "ci": [
+          1,
+          1
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 4.8,
+        "ci": [
+          3.6,
+          6
+        ]
+      }
+    },
+    {
+      "realism": "off",
+      "source_count": 1,
+      "node_count": 8,
+      "runs": 5,
+      "sites": [
+        "core-0-train-01",
+        "core-0-train-02",
+        "core-0-validation-01",
+        "core-0-validation-02",
+        "core-0-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.7419354838709677,
+          "ci": [
+            0.7272727272727273,
+            0.75
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 1,
+        "ci": [
+          1,
+          1
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 6.2,
+        "ci": [
+          4.6,
+          7.8
+        ]
+      }
+    },
+    {
+      "realism": "off",
+      "source_count": 3,
+      "node_count": 2,
+      "runs": 5,
+      "sites": [
+        "core-1-train-01",
+        "core-1-train-02",
+        "core-1-validation-01",
+        "core-1-validation-02",
+        "core-1-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 0.2,
+          "ci": [
+            0,
+            0.6
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.06666666666666667,
+          "ci": [
+            0,
+            0.2
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 0.2,
+        "ci": [
+          0,
+          0.6
+        ]
+      }
+    },
+    {
+      "realism": "off",
+      "source_count": 3,
+      "node_count": 3,
+      "runs": 5,
+      "sites": [
+        "core-1-train-01",
+        "core-1-train-02",
+        "core-1-validation-01",
+        "core-1-validation-02",
+        "core-1-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 0.4,
+          "ci": [
+            0,
+            0.8
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.2,
+          "ci": [
+            0,
+            0.4666666666666667
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 0.6,
+        "ci": [
+          0,
+          1.4
+        ]
+      }
+    },
+    {
+      "realism": "off",
+      "source_count": 3,
+      "node_count": 4,
+      "runs": 5,
+      "sites": [
+        "core-1-train-01",
+        "core-1-train-02",
+        "core-1-validation-01",
+        "core-1-validation-02",
+        "core-1-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 0.6,
+          "ci": [
+            0.2,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0.06666666666666667,
+            0.6
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 1.2,
+        "ci": [
+          0.2,
+          2.2
+        ]
+      }
+    },
+    {
+      "realism": "off",
+      "source_count": 3,
+      "node_count": 5,
+      "runs": 5,
+      "sites": [
+        "core-1-train-01",
+        "core-1-train-02",
+        "core-1-validation-01",
+        "core-1-validation-02",
+        "core-1-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 0.6,
+          "ci": [
+            0.2,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.4,
+          "ci": [
+            0.06666666666666667,
+            0.7333333333333333
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0.2,
+        "ci": [
+          0,
+          0.6
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 1.4,
+        "ci": [
+          0.2,
+          2.8
+        ]
+      }
+    },
+    {
+      "realism": "off",
+      "source_count": 3,
+      "node_count": 6,
+      "runs": 5,
+      "sites": [
+        "core-1-train-01",
+        "core-1-train-02",
+        "core-1-validation-01",
+        "core-1-validation-02",
+        "core-1-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 0.8,
+          "ci": [
+            0.4,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.4666666666666667,
+          "ci": [
+            0.2,
+            0.7333333333333333
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0.06666666666666667,
+          "ci": [
+            0,
+            0.2
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0.2,
+        "ci": [
+          0,
+          0.6
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 1.8,
+        "ci": [
+          0.6,
+          3.4
+        ]
+      }
+    },
+    {
+      "realism": "off",
+      "source_count": 3,
+      "node_count": 7,
+      "runs": 5,
+      "sites": [
+        "core-1-train-01",
+        "core-1-train-02",
+        "core-1-validation-01",
+        "core-1-validation-02",
+        "core-1-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.6,
+          "ci": [
+            0.3333333333333333,
+            0.8666666666666667
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0.13333333333333333,
+          "ci": [
+            0,
+            0.26666666666666666
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.06666666666666667,
+          "ci": [
+            0,
+            0.25
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0.4,
+        "ci": [
+          0,
+          0.8
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 3,
+        "ci": [
+          2,
+          4.2
+        ]
+      }
+    },
+    {
+      "realism": "off",
+      "source_count": 3,
+      "node_count": 8,
+      "runs": 5,
+      "sites": [
+        "core-1-train-01",
+        "core-1-train-02",
+        "core-1-validation-01",
+        "core-1-validation-02",
+        "core-1-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.6666666666666666,
+          "ci": [
+            0.4,
+            0.9333333333333333
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0.2,
+          "ci": [
+            0.06666666666666667,
+            0.3333333333333333
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.14285714285714285,
+          "ci": [
+            0.05,
+            0.23809523809523808
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0.6,
+        "ci": [
+          0.2,
+          1
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 4.2,
+        "ci": [
+          2.8,
+          5.4
+        ]
+      }
+    },
+    {
+      "realism": "on",
+      "source_count": 1,
+      "node_count": 2,
+      "runs": 5,
+      "sites": [
+        "core-0-train-01",
+        "core-0-train-02",
+        "core-0-validation-01",
+        "core-0-validation-02",
+        "core-0-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 0.6,
+          "ci": [
+            0.2,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.6,
+          "ci": [
+            0.2,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0.2,
+        "ci": [
+          0,
+          0.6
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 0.8,
+        "ci": [
+          0.2,
+          1.4
+        ]
+      }
+    },
+    {
+      "realism": "on",
+      "source_count": 1,
+      "node_count": 3,
+      "runs": 5,
+      "sites": [
+        "core-0-train-01",
+        "core-0-train-02",
+        "core-0-validation-01",
+        "core-0-validation-02",
+        "core-0-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 0.8,
+          "ci": [
+            0.4,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.8,
+          "ci": [
+            0.4,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0.6,
+          "ci": [
+            0.2,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.25,
+          "ci": [
+            0,
+            0.4444444444444444
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0.6,
+        "ci": [
+          0.2,
+          1
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 1.6,
+        "ci": [
+          0.6,
+          2.4
+        ]
+      }
+    },
+    {
+      "realism": "on",
+      "source_count": 1,
+      "node_count": 4,
+      "runs": 5,
+      "sites": [
+        "core-0-train-01",
+        "core-0-train-02",
+        "core-0-validation-01",
+        "core-0-validation-02",
+        "core-0-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.38461538461538464,
+          "ci": [
+            0.1,
+            0.5714285714285714
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 1,
+        "ci": [
+          1,
+          1
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 2.6,
+        "ci": [
+          2,
+          3.4
+        ]
+      }
+    },
+    {
+      "realism": "on",
+      "source_count": 1,
+      "node_count": 5,
+      "runs": 5,
+      "sites": [
+        "core-0-train-01",
+        "core-0-train-02",
+        "core-0-validation-01",
+        "core-0-validation-02",
+        "core-0-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.5555555555555556,
+          "ci": [
+            0.42857142857142855,
+            0.6666666666666666
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 1,
+        "ci": [
+          1,
+          1
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 3.6,
+        "ci": [
+          2.8,
+          4.4
+        ]
+      }
+    },
+    {
+      "realism": "on",
+      "source_count": 1,
+      "node_count": 6,
+      "runs": 5,
+      "sites": [
+        "core-0-train-01",
+        "core-0-train-02",
+        "core-0-validation-01",
+        "core-0-validation-02",
+        "core-0-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.6190476190476191,
+          "ci": [
+            0.5263157894736842,
+            0.7
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 1,
+        "ci": [
+          1,
+          1
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 4.2,
+        "ci": [
+          3.4,
+          5.2
+        ]
+      }
+    },
+    {
+      "realism": "on",
+      "source_count": 1,
+      "node_count": 7,
+      "runs": 5,
+      "sites": [
+        "core-0-train-01",
+        "core-0-train-02",
+        "core-0-validation-01",
+        "core-0-validation-02",
+        "core-0-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.68,
+          "ci": [
+            0.6,
+            0.75
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 1,
+        "ci": [
+          1,
+          1
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 5,
+        "ci": [
+          3.8,
+          6.2
+        ]
+      }
+    },
+    {
+      "realism": "on",
+      "source_count": 1,
+      "node_count": 8,
+      "runs": 5,
+      "sites": [
+        "core-0-train-01",
+        "core-0-train-02",
+        "core-0-validation-01",
+        "core-0-validation-02",
+        "core-0-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.7142857142857143,
+          "ci": [
+            0.6774193548387096,
+            0.76
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 1,
+        "ci": [
+          1,
+          1
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 5.6,
+        "ci": [
+          4.8,
+          6.4
+        ]
+      }
+    },
+    {
+      "realism": "on",
+      "source_count": 3,
+      "node_count": 2,
+      "runs": 5,
+      "sites": [
+        "core-1-train-01",
+        "core-1-train-02",
+        "core-1-validation-01",
+        "core-1-validation-02",
+        "core-1-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 0.2,
+          "ci": [
+            0,
+            0.6
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.06666666666666667,
+          "ci": [
+            0,
+            0.2
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 0.2,
+        "ci": [
+          0,
+          0.6
+        ]
+      }
+    },
+    {
+      "realism": "on",
+      "source_count": 3,
+      "node_count": 3,
+      "runs": 5,
+      "sites": [
+        "core-1-train-01",
+        "core-1-train-02",
+        "core-1-validation-01",
+        "core-1-validation-02",
+        "core-1-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 0.4,
+          "ci": [
+            0,
+            0.8
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.13333333333333333,
+          "ci": [
+            0,
+            0.26666666666666666
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 0.4,
+        "ci": [
+          0,
+          0.8
+        ]
+      }
+    },
+    {
+      "realism": "on",
+      "source_count": 3,
+      "node_count": 4,
+      "runs": 5,
+      "sites": [
+        "core-1-train-01",
+        "core-1-train-02",
+        "core-1-validation-01",
+        "core-1-validation-02",
+        "core-1-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 0.4,
+          "ci": [
+            0,
+            0.8
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.13333333333333333,
+          "ci": [
+            0,
+            0.26666666666666666
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 0.4,
+        "ci": [
+          0,
+          0.8
+        ]
+      }
+    },
+    {
+      "realism": "on",
+      "source_count": 3,
+      "node_count": 5,
+      "runs": 5,
+      "sites": [
+        "core-1-train-01",
+        "core-1-train-02",
+        "core-1-validation-01",
+        "core-1-validation-02",
+        "core-1-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 0.4,
+          "ci": [
+            0,
+            0.8
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.2,
+          "ci": [
+            0,
+            0.4666666666666667
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.25,
+          "ci": [
+            0,
+            0.5
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 0.8,
+        "ci": [
+          0,
+          1.6
+        ]
+      }
+    },
+    {
+      "realism": "on",
+      "source_count": 3,
+      "node_count": 6,
+      "runs": 5,
+      "sites": [
+        "core-1-train-01",
+        "core-1-train-02",
+        "core-1-validation-01",
+        "core-1-validation-02",
+        "core-1-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 0.6,
+          "ci": [
+            0.2,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.2,
+          "ci": [
+            0,
+            0.4666666666666667
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.4,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 1,
+        "ci": [
+          0.2,
+          1.8
+        ]
+      }
+    },
+    {
+      "realism": "on",
+      "source_count": 3,
+      "node_count": 7,
+      "runs": 5,
+      "sites": [
+        "core-1-train-01",
+        "core-1-train-02",
+        "core-1-validation-01",
+        "core-1-validation-02",
+        "core-1-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 0.8,
+          "ci": [
+            0.4,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.4666666666666667,
+          "ci": [
+            0.2,
+            0.7333333333333333
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0.13333333333333333,
+          "ci": [
+            0,
+            0.26666666666666666
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.14285714285714285,
+          "ci": [
+            0,
+            0.21428571428571427
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0.4,
+        "ci": [
+          0,
+          0.8
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 2.8,
+        "ci": [
+          1.2,
+          4.4
+        ]
+      }
+    },
+    {
+      "realism": "on",
+      "source_count": 3,
+      "node_count": 8,
+      "runs": 5,
+      "sites": [
+        "core-1-train-01",
+        "core-1-train-02",
+        "core-1-validation-01",
+        "core-1-validation-02",
+        "core-1-validation-03"
+      ],
+      "metrics": {
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.5333333333333333,
+          "ci": [
+            0.3333333333333333,
+            0.8
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0.13333333333333333,
+          "ci": [
+            0,
+            0.26666666666666666
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.1875,
+          "ci": [
+            0,
+            0.3181818181818182
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "duplicate_fix_scene_rate": {
+        "value": 0.4,
+        "ci": [
+          0,
+          0.8
+        ]
+      },
+      "mean_fixes_per_scene": {
+        "value": 3.2,
+        "ci": [
+          2.2,
+          4.2
+        ]
+      }
+    }
+  ]
+}

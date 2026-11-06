@@ -29,6 +29,16 @@ source-window upper bound. Realism on uses heading 2.5 deg, gain 1 dB, mic posit
 5 mm, noise correlation 0.3; explicit swept variables override those values.
 The effective settings, not the realism label, are authoritative.
 
+Measured fusion defaults to legacy pairwise association. The preregistered
+`measured_fusion_mode` setting accepts `legacy` or opt-in `joint`. Joint fusion
+uses deterministic pair-subset initialisation followed by Huber-weighted
+multi-node bearing fitting, with a model covariance and derived 90% radius.
+This mode currently handles static tracks only; moving tracks retain pairwise
+fusion. `joint_gate_sigma`, `joint_track_gate_sigma` and `joint_dedupe_m` are
+placeholders, and covariance/radius are not calibrated field confidence.
+Compare it with legacy on the same scenes/seeds/profiles; do not promote it from
+smoke-only evidence.
+
 Use `--compare baselines/baseline-0-v2.json --fail-on-regress` to gate tracked metrics
 with explicit `tolerances` (metric to absolute tolerance, default zero). A metric
 becoming unavailable is a regression. Missing configs fail. Runtime is not gated.

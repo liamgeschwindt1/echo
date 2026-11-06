@@ -1,0 +1,6606 @@
+{
+  "name": "Matrix timing: one registered site per core cell",
+  "scenes": [
+    "core-0-train-01",
+    "core-1-train-01",
+    "core-2-train-01",
+    "core-3-train-01",
+    "core-4-train-01",
+    "core-5-train-01",
+    "core-6-train-01",
+    "core-7-train-01",
+    "core-8-train-01",
+    "core-9-train-01",
+    "core-10-train-01",
+    "core-11-train-01",
+    "core-12-train-01",
+    "core-13-train-01",
+    "core-14-train-01",
+    "core-15-train-01",
+    "core-16-train-01",
+    "core-17-train-01",
+    "core-18-train-01",
+    "core-19-train-01",
+    "core-20-train-01",
+    "core-21-train-01",
+    "core-22-train-01",
+    "core-23-train-01"
+  ],
+  "seeds": [
+    1
+  ],
+  "scene_seeds": {
+    "core-0-train-01": [
+      3100000
+    ],
+    "core-1-train-01": [
+      3110000
+    ],
+    "core-2-train-01": [
+      3120000
+    ],
+    "core-3-train-01": [
+      3130000
+    ],
+    "core-4-train-01": [
+      3140000
+    ],
+    "core-5-train-01": [
+      3150000
+    ],
+    "core-6-train-01": [
+      3160000
+    ],
+    "core-7-train-01": [
+      3170000
+    ],
+    "core-8-train-01": [
+      3180000
+    ],
+    "core-9-train-01": [
+      3190000
+    ],
+    "core-10-train-01": [
+      3200000
+    ],
+    "core-11-train-01": [
+      3210000
+    ],
+    "core-12-train-01": [
+      3220000
+    ],
+    "core-13-train-01": [
+      3230000
+    ],
+    "core-14-train-01": [
+      3240000
+    ],
+    "core-15-train-01": [
+      3250000
+    ],
+    "core-16-train-01": [
+      3260000
+    ],
+    "core-17-train-01": [
+      3270000
+    ],
+    "core-18-train-01": [
+      3280000
+    ],
+    "core-19-train-01": [
+      3290000
+    ],
+    "core-20-train-01": [
+      3300000
+    ],
+    "core-21-train-01": [
+      3310000
+    ],
+    "core-22-train-01": [
+      3320000
+    ],
+    "core-23-train-01": [
+      3330000
+    ]
+  },
+  "scene_splits": {
+    "core-0-train-01": "train",
+    "core-1-train-01": "train",
+    "core-2-train-01": "train",
+    "core-3-train-01": "train",
+    "core-4-train-01": "train",
+    "core-5-train-01": "train",
+    "core-6-train-01": "train",
+    "core-7-train-01": "train",
+    "core-8-train-01": "train",
+    "core-9-train-01": "train",
+    "core-10-train-01": "train",
+    "core-11-train-01": "train",
+    "core-12-train-01": "train",
+    "core-13-train-01": "train",
+    "core-14-train-01": "train",
+    "core-15-train-01": "train",
+    "core-16-train-01": "train",
+    "core-17-train-01": "train",
+    "core-18-train-01": "train",
+    "core-19-train-01": "train",
+    "core-20-train-01": "train",
+    "core-21-train-01": "train",
+    "core-22-train-01": "train",
+    "core-23-train-01": "train"
+  },
+  "custom_scenes": {
+    "core-0-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3100000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 300000,
+        "matrix_environment": "open",
+        "matrix_source_height": "ground",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 0,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -30.72900931658481,
+                25.60718622616011,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-1-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3110000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 301000,
+        "matrix_environment": "open",
+        "matrix_source_height": "ground",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 1,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -22.391823868653972,
+                33.14522927715508,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -17.50869863394903,
+                -35.96450294589863,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                39.90052250260301,
+                2.81927366874353,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-2-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3120000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 302000,
+        "matrix_environment": "open",
+        "matrix_source_height": "ground",
+        "matrix_motion": "moving",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 2,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                -13.94298949613281,
+                -37.49123956220613,
+                1.5
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                32.39506995898775,
+                -54.724360787283736,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-3-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3130000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 303000,
+        "matrix_environment": "open",
+        "matrix_source_height": "ground",
+        "matrix_motion": "moving",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 3,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                -31.02722618126269,
+                25.245023974969143,
+                1.5
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                -47.68851926207648,
+                4.767574264353499,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                -6.349218990839151,
+                -39.4928780694237,
+                1.5
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                19.71541920367919,
+                -43.68325628199853,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                37.376445172101846,
+                14.247854094454524,
+                1.5
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                27.97310005839732,
+                38.915682017645,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-4-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3140000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 304000,
+        "matrix_environment": "open",
+        "matrix_source_height": "aerial",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 4,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                21.312958600387503,
+                -33.849044236110544,
+                102.1851890347898
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-5-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3150000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 305000,
+        "matrix_environment": "open",
+        "matrix_source_height": "aerial",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 5,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                29.523102579738012,
+                26.988634905572138,
+                119.67040738090873
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -38.134394731557904,
+                12.073439379800949,
+                119.67040738090873
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                8.611292151819887,
+                -39.062074285373086,
+                119.67040738090873
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-6-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3160000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 306000,
+        "matrix_environment": "open",
+        "matrix_source_height": "aerial",
+        "matrix_motion": "moving",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 6,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                -20.586608586902333,
+                -34.29564909561677,
+                101.11673343926668
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                38.433009553958,
+                -69.72328524348077,
+                101.11673343926668
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-7-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3170000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 307000,
+        "matrix_environment": "open",
+        "matrix_source_height": "aerial",
+        "matrix_motion": "moving",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 7,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                39.35804882772891,
+                7.13750604021513,
+                109.81058141216636
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                24.106474228051226,
+                91.23862124932701,
+                109.81058141216636
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                -25.86028596435563,
+                30.51631710809401,
+                109.81058141216636
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                -91.0682009222095,
+                -24.742491547496282,
+                109.81058141216636
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                -13.497762863373286,
+                -37.65382314830914,
+                109.81058141216636
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                66.96172669415826,
+                -66.49612970183074,
+                109.81058141216636
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-8-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3180000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 308000,
+        "matrix_environment": "mixed",
+        "matrix_source_height": "ground",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 8,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                36.291735651980574,
+                16.81992637816119,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": [
+        {
+          "id": "b1",
+          "position": [
+            60.879419976845384,
+            81.17586723528802
+          ],
+          "size": [
+            28.93540334980935,
+            29.480722112115473,
+            16.75820007547736
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b2",
+          "position": [
+            -76.71082220040262,
+            39.87217745743692
+          ],
+          "size": [
+            27.629164982121438,
+            35.67286794120446,
+            12.3689802614972
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b3",
+          "position": [
+            83.25991635210812,
+            -89.48251507245004
+          ],
+          "size": [
+            35.80044458946213,
+            40.23901564953849,
+            10.204403603449464
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b4",
+          "position": [
+            -55.16084344126284,
+            -63.215188356116414
+          ],
+          "size": [
+            34.590987854171544,
+            30.76009045355022,
+            13.709602627903223
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b5",
+          "position": [
+            -18.890855414792895,
+            96.37967338785529
+          ],
+          "size": [
+            31.63600235246122,
+            27.604203045833856,
+            11.462666981853545
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b6",
+          "position": [
+            90.69244032725692,
+            -35.16362798400223
+          ],
+          "size": [
+            28.190667246468365,
+            37.8163379249163,
+            16.379287372343242
+          ],
+          "rotation_deg": 0
+        }
+      ]
+    },
+    "core-9-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3190000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 309000,
+        "matrix_environment": "mixed",
+        "matrix_source_height": "ground",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 9,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -2.173289624777309,
+                -39.94091651686069,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                35.676493166423484,
+                18.088334233592054,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -33.50320354164617,
+                21.85258228326866,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": [
+        {
+          "id": "b1",
+          "position": [
+            44.95317442342639,
+            45.17541499808431
+          ],
+          "size": [
+            30.50487493397668,
+            38.80603481736034,
+            14.802667076699436
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b2",
+          "position": [
+            40.83706452511251,
+            -66.65776334702969
+          ],
+          "size": [
+            32.76682696212083,
+            31.45369439944625,
+            10.759792326949537
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b3",
+          "position": [
+            -91.83192681521177,
+            -37.05322816967964
+          ],
+          "size": [
+            36.201911377720535,
+            34.56327518261969,
+            13.265900364145637
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b4",
+          "position": [
+            -12.989001348614693,
+            62.168342946097255
+          ],
+          "size": [
+            39.86766667384654,
+            32.26238125143573,
+            18.123554904013872
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b5",
+          "position": [
+            -28.70673597790301,
+            -38.78234685398638
+          ],
+          "size": [
+            39.065066277980804,
+            25.077571922913194,
+            16.076838184148073
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b6",
+          "position": [
+            96.75388247705996,
+            62.94473893940449
+          ],
+          "size": [
+            38.61015316424891,
+            35.57201338279992,
+            8.405820545740426
+          ],
+          "rotation_deg": 0
+        }
+      ]
+    },
+    "core-10-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3200000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 310000,
+        "matrix_environment": "mixed",
+        "matrix_source_height": "ground",
+        "matrix_motion": "moving",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 10,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                -12.497579381177804,
+                37.99750662360834,
+                1.5
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                -40.858529302282335,
+                28.66944132512394,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": [
+        {
+          "id": "b1",
+          "position": [
+            96.34733288548887,
+            61.78149557672441
+          ],
+          "size": [
+            33.55123783182353,
+            38.6945385360159,
+            12.837950233370066
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b2",
+          "position": [
+            4.6482381876558065,
+            81.84678028337657
+          ],
+          "size": [
+            26.847047355026007,
+            32.10610843682662,
+            16.79384603537619
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b3",
+          "position": [
+            -22.829009499400854,
+            -70.61334108002484
+          ],
+          "size": [
+            40.32421184051782,
+            34.54056526673958,
+            17.925850761123
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b4",
+          "position": [
+            -56.400936748832464,
+            65.0057434104383
+          ],
+          "size": [
+            39.404850888065994,
+            35.33449742523953,
+            17.334691936150193
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b5",
+          "position": [
+            79.90211425349116,
+            -3.3360644709318876
+          ],
+          "size": [
+            25.13447491172701,
+            29.812663259916008,
+            12.750910167582333
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b6",
+          "position": [
+            -96.32485271431506,
+            -78.49068832583725
+          ],
+          "size": [
+            31.41272372379899,
+            24.476215812843293,
+            16.94527216255665
+          ],
+          "rotation_deg": 0
+        }
+      ]
+    },
+    "core-11-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3210000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 311000,
+        "matrix_environment": "mixed",
+        "matrix_source_height": "ground",
+        "matrix_motion": "moving",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 11,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                -28.03100266060237,
+                -28.535292005537688,
+                1.5
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                -3.1672117796085395,
+                -52.95967806763038,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                38.727789111503824,
+                -10.007914394862008,
+                1.5
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                47.44803247261774,
+                23.736953173508866,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                -10.696786450901453,
+                38.54320640039968,
+                1.5
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                -44.280820693009204,
+                29.22272489412149,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": [
+        {
+          "id": "b1",
+          "position": [
+            -65.51527045667171,
+            -6.456454982981086
+          ],
+          "size": [
+            26.228788148146123,
+            39.78310905396938,
+            8.937387199141085
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b2",
+          "position": [
+            -53.297822177410126,
+            72.43814244866371
+          ],
+          "size": [
+            31.557204805780202,
+            31.69241510471329,
+            14.35141961928457
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b3",
+          "position": [
+            76.31239001639187,
+            -59.09290271811187
+          ],
+          "size": [
+            29.872036144137383,
+            29.810103527270257,
+            19.484144190326333
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b4",
+          "position": [
+            21.555397287011147,
+            -75.61787855811417
+          ],
+          "size": [
+            25.13561278861016,
+            35.85624456591904,
+            16.217458258382976
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b5",
+          "position": [
+            69.36862994916737,
+            73.03358474746346
+          ],
+          "size": [
+            40.22894340986386,
+            26.20778443152085,
+            11.32379766087979
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b6",
+          "position": [
+            -47.30001809075475,
+            -64.77714548818767
+          ],
+          "size": [
+            28.399415439460427,
+            24.392199471127242,
+            17.291628553532064
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b7",
+          "position": [
+            8.875088952481747,
+            52.71553220227361
+          ],
+          "size": [
+            36.99873996991664,
+            41.694946576841176,
+            16.747461480088532
+          ],
+          "rotation_deg": 0
+        }
+      ]
+    },
+    "core-12-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3220000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 312000,
+        "matrix_environment": "mixed",
+        "matrix_source_height": "aerial",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 12,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -28.563066086076255,
+                28.002700865495818,
+                74.22087104991078
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": [
+        {
+          "id": "b1",
+          "position": [
+            77.18121679499745,
+            80.96058033406734
+          ],
+          "size": [
+            27.3774209828116,
+            41.76298140361905,
+            18.909176872111857
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b2",
+          "position": [
+            -54.1334958281368,
+            41.052022483199835
+          ],
+          "size": [
+            31.230792017653584,
+            36.07875195890665,
+            12.483221595175564
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b3",
+          "position": [
+            -41.45159414038062,
+            -26.245337864384055
+          ],
+          "size": [
+            32.30590443871915,
+            37.70161201665178,
+            17.90228991303593
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b4",
+          "position": [
+            -93.14222857356071,
+            -40.73064234107733
+          ],
+          "size": [
+            25.581858612131327,
+            31.9799815393053,
+            12.655743181705475
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b5",
+          "position": [
+            27.807504264637828,
+            -91.10984676517546
+          ],
+          "size": [
+            37.055628835223615,
+            26.416120113339275,
+            13.498032257892191
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b6",
+          "position": [
+            87.31901161372662,
+            -36.47617315873504
+          ],
+          "size": [
+            37.76448322227225,
+            37.208643780089915,
+            18.568128963932395
+          ],
+          "rotation_deg": 0
+        }
+      ]
+    },
+    "core-13-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3230000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 313000,
+        "matrix_environment": "mixed",
+        "matrix_source_height": "aerial",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 13,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                1.806391625108179,
+                39.9591910490783,
+                51.82839438319206
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -35.508870375731654,
+                -18.415214488012,
+                51.82839438319206
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                33.702478750623456,
+                -21.5439765610663,
+                51.82839438319206
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": [
+        {
+          "id": "b1",
+          "position": [
+            -91.89880867488682,
+            92.00698905624449
+          ],
+          "size": [
+            26.34619202418253,
+            36.5921695958823,
+            9.26631895173341
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b2",
+          "position": [
+            29.719587601721287,
+            84.68360332772136
+          ],
+          "size": [
+            34.46395525429398,
+            29.814153574872762,
+            16.352817405946553
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b3",
+          "position": [
+            -90.25888298638165,
+            13.758415961638093
+          ],
+          "size": [
+            25.312466725241393,
+            34.1659536100924,
+            17.529465056024492
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b4",
+          "position": [
+            97.44063708931208,
+            35.85211751051247
+          ],
+          "size": [
+            26.989612644072622,
+            32.48110798280686,
+            18.812523073516786
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b5",
+          "position": [
+            89.1303869895637,
+            -49.4518487714231
+          ],
+          "size": [
+            32.20104432385415,
+            33.04112230427563,
+            14.859300657175481
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b6",
+          "position": [
+            -15.37832380272448,
+            49.520347360521555
+          ],
+          "size": [
+            24.125193228945136,
+            37.753798303194344,
+            8.647566962987185
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b7",
+          "position": [
+            -95.66075783222914,
+            -98.52734180167317
+          ],
+          "size": [
+            31.41813321132213,
+            41.96941070118919,
+            11.148746958002448
+          ],
+          "rotation_deg": 0
+        }
+      ]
+    },
+    "core-14-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3240000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 314000,
+        "matrix_environment": "mixed",
+        "matrix_source_height": "aerial",
+        "matrix_motion": "moving",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 14,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                35.837547875867756,
+                -17.767109000759994,
+                89.64352486655116
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                58.15244777795132,
+                27.24366306980638,
+                89.64352486655116
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": [
+        {
+          "id": "b1",
+          "position": [
+            -57.540851412341,
+            78.38123622350395
+          ],
+          "size": [
+            33.91154909413308,
+            25.02739626634866,
+            10.918693809770048
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b2",
+          "position": [
+            97.26816602051258,
+            -52.96831727027893
+          ],
+          "size": [
+            41.66450549522415,
+            25.691134933847934,
+            14.522599327377975
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b3",
+          "position": [
+            36.33701535873115,
+            59.619258530437946
+          ],
+          "size": [
+            37.56056654267013,
+            40.78792982501909,
+            9.649443807080388
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b4",
+          "position": [
+            -83.59749936498702,
+            -45.72765622287989
+          ],
+          "size": [
+            40.88480556104332,
+            28.28665808402002,
+            18.59958718251437
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b5",
+          "position": [
+            40.95694776624441,
+            -99.43950371816754
+          ],
+          "size": [
+            25.69371772930026,
+            36.784143878147006,
+            15.320463109761477
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b6",
+          "position": [
+            85.250852862373,
+            -6.595944846048951
+          ],
+          "size": [
+            27.9915621438995,
+            26.19922638265416,
+            16.672971453517675
+          ],
+          "rotation_deg": 0
+        }
+      ]
+    },
+    "core-15-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3250000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 315000,
+        "matrix_environment": "mixed",
+        "matrix_source_height": "aerial",
+        "matrix_motion": "moving",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 15,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                28.271832650314323,
+                -28.296704376881436,
+                53.077590595930815
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                95.56509105088703,
+                38.9374058098054,
+                53.077590595930815
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                10.3697485086005,
+                38.63247747515525,
+                53.077590595930815
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                -81.50332811419875,
+                63.29309366013844,
+                53.077590595930815
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                -38.64158115891479,
+                -10.335773098273837,
+                53.077590595930815
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                -14.061762936688204,
+                -102.2304994699438,
+                53.077590595930815
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": [
+        {
+          "id": "b1",
+          "position": [
+            -75.0091256108135,
+            82.38438470289111
+          ],
+          "size": [
+            28.779686272144318,
+            25.943421091418713,
+            19.934154615737498
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b2",
+          "position": [
+            -47.872991813346744,
+            27.92961564846337
+          ],
+          "size": [
+            28.66290562413633,
+            35.69010613812134,
+            18.936158193275332
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b3",
+          "position": [
+            12.196640158072114,
+            66.24605217948556
+          ],
+          "size": [
+            38.78191735362634,
+            31.831611199770123,
+            19.28674864396453
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b4",
+          "position": [
+            89.07604804262519,
+            78.30807040445507
+          ],
+          "size": [
+            32.91571705928072,
+            34.73862934950739,
+            15.93824291229248
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b5",
+          "position": [
+            -96.3962824549526,
+            -26.57719226554036
+          ],
+          "size": [
+            40.50344943534583,
+            40.89957303693518,
+            14.933231890201569
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b6",
+          "position": [
+            81.49782423861325,
+            -85.30524759553373
+          ],
+          "size": [
+            30.028266051784158,
+            34.536119723226875,
+            10.769824596121907
+          ],
+          "rotation_deg": 0
+        }
+      ]
+    },
+    "core-16-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3260000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 316000,
+        "matrix_environment": "dense_urban",
+        "matrix_source_height": "ground",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 16,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -1.355397650154547,
+                -39.977029619644775,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": [
+        {
+          "id": "b1",
+          "position": [
+            -82.0137835573405,
+            67.38730743527412
+          ],
+          "size": [
+            29.052544807316735,
+            37.98057479085401,
+            34.45329591399059
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b2",
+          "position": [
+            9.309546183794737,
+            45.326875103637576
+          ],
+          "size": [
+            37.79356400994584,
+            37.32395425881259,
+            33.291458539897576
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b3",
+          "position": [
+            -88.11009437777102,
+            -14.527457486838102
+          ],
+          "size": [
+            33.17113770940341,
+            34.04298880184069,
+            28.695907877990976
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b4",
+          "position": [
+            -26.832598308101296,
+            -47.69259952008724
+          ],
+          "size": [
+            42.74084404250607,
+            34.76146073662676,
+            18.737880516564474
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b5",
+          "position": [
+            83.58402498997748,
+            62.82234042882919
+          ],
+          "size": [
+            39.19944628397934,
+            31.037375526037067,
+            36.76636128569953
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b6",
+          "position": [
+            35.245915642008185,
+            -66.21157536283135
+          ],
+          "size": [
+            32.73870362760499,
+            44.39895669883117,
+            20.05911362124607
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b7",
+          "position": [
+            -95.27293946594,
+            -99.5542548596859
+          ],
+          "size": [
+            29.531377150444314,
+            38.30673634936102,
+            37.7309079898987
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b8",
+          "position": [
+            69.8519981931895,
+            -0.9880696423351765
+          ],
+          "size": [
+            41.854448846541345,
+            43.1254859236069,
+            19.122842743527144
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b9",
+          "position": [
+            92.6549119874835,
+            -69.85711408779025
+          ],
+          "size": [
+            37.006691680289805,
+            33.01548964204267,
+            33.226491136010736
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b10",
+          "position": [
+            -27.832261146977544,
+            94.68794157728553
+          ],
+          "size": [
+            36.3163493629545,
+            29.232814144343138,
+            24.151195583399385
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b11",
+          "position": [
+            -41.07249942608178,
+            -99.99135490506887
+          ],
+          "size": [
+            29.605283208424225,
+            29.686857983237132,
+            32.41500584757887
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b12",
+          "position": [
+            -39.566342486068606,
+            10.856190230697393
+          ],
+          "size": [
+            34.20839260821231,
+            33.50720145343803,
+            21.543834722833708
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b13",
+          "position": [
+            21.923650801181793,
+            89.5507741253823
+          ],
+          "size": [
+            30.037275263108313,
+            29.7755899510812,
+            23.86161780799739
+          ],
+          "rotation_deg": 0
+        }
+      ]
+    },
+    "core-17-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3270000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 317000,
+        "matrix_environment": "dense_urban",
+        "matrix_source_height": "ground",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 17,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -39.773058838505186,
+                -4.254854948033396,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                23.571341893667427,
+                -32.317051866342,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                16.201716944837756,
+                36.571906814375396,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": [
+        {
+          "id": "b1",
+          "position": [
+            -48.930145520716906,
+            -77.16322792693973
+          ],
+          "size": [
+            44.83777963509783,
+            37.662100409856066,
+            24.1809177713003
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b2",
+          "position": [
+            97.85581221804023,
+            -55.008573876693845
+          ],
+          "size": [
+            28.861177413724363,
+            30.630896169226617,
+            16.567683386383578
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b3",
+          "position": [
+            -40.8880652859807,
+            35.229980014264584
+          ],
+          "size": [
+            43.93475668178871,
+            33.745714833028615,
+            21.66079147486016
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b4",
+          "position": [
+            75.60548861511052,
+            20.05192805081606
+          ],
+          "size": [
+            33.08214492513798,
+            41.97367173200473,
+            19.435786238173023
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b5",
+          "position": [
+            -66.3907514885068,
+            97.51776130869985
+          ],
+          "size": [
+            38.06919900677167,
+            37.99219725490548,
+            24.5474261790514
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b6",
+          "position": [
+            17.6013492513448,
+            73.13481732271612
+          ],
+          "size": [
+            37.25755510176532,
+            41.38156923628412,
+            19.275240178685635
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b7",
+          "position": [
+            11.778235249221325,
+            -56.89921225421131
+          ],
+          "size": [
+            31.890789916738868,
+            43.23989621293731,
+            23.803501183865592
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b8",
+          "position": [
+            67.48656230047345,
+            87.73554670624435
+          ],
+          "size": [
+            37.854264897760004,
+            31.394216717453673,
+            18.303146379766986
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b9",
+          "position": [
+            -60.41548028588295,
+            -23.218527901917696
+          ],
+          "size": [
+            39.15456973412074,
+            36.906734271673486,
+            16.990555110387504
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b10",
+          "position": [
+            -96.795808756724,
+            27.75779478251934
+          ],
+          "size": [
+            28.770904486067593,
+            33.43708249786869,
+            27.325580383185297
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b11",
+          "position": [
+            57.670858316123486,
+            -72.33875012025237
+          ],
+          "size": [
+            29.81789264176041,
+            43.328916830709204,
+            19.317709867609665
+          ],
+          "rotation_deg": 0
+        }
+      ]
+    },
+    "core-18-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3280000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 318000,
+        "matrix_environment": "dense_urban",
+        "matrix_source_height": "ground",
+        "matrix_motion": "moving",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 18,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                11.603919275634828,
+                38.27987797060683,
+                1.5
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                -10.984004159102644,
+                45.127037732771534,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": [
+        {
+          "id": "b1",
+          "position": [
+            82.98669033683836,
+            35.76293280348182
+          ],
+          "size": [
+            41.875794153660536,
+            30.40841919183731,
+            38.90173597377725
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b2",
+          "position": [
+            -38.4647645521909,
+            58.27766000293195
+          ],
+          "size": [
+            28.51314953668043,
+            43.36667728074826,
+            19.574681940721348
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b3",
+          "position": [
+            67.85079264082015,
+            -59.828761825338006
+          ],
+          "size": [
+            32.291578041855246,
+            33.10471028345637,
+            19.461886326316744
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b4",
+          "position": [
+            14.66423375532031,
+            71.24774442054331
+          ],
+          "size": [
+            39.251054402207956,
+            38.80451497458853,
+            38.32413653493859
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b5",
+          "position": [
+            -91.89275000244379,
+            -85.32153754495084
+          ],
+          "size": [
+            30.116835706634447,
+            40.768744544591755,
+            35.32000722247176
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b6",
+          "position": [
+            -34.59315630607307,
+            -97.57510256022215
+          ],
+          "size": [
+            35.972443263279274,
+            29.383507843594998,
+            33.20273998309858
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b7",
+          "position": [
+            -95.64862214028835,
+            -20.453994069248438
+          ],
+          "size": [
+            39.15687802317552,
+            39.16566072939895,
+            37.18290503369644
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b8",
+          "position": [
+            -96.10947486944497,
+            68.77653198316693
+          ],
+          "size": [
+            41.52806307631545,
+            34.82993335532956,
+            20.29976775869727
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b9",
+          "position": [
+            14.941575936973095,
+            -88.56806424446404
+          ],
+          "size": [
+            29.226555013330653,
+            35.48587851715274,
+            36.361904783407226
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b10",
+          "position": [
+            95.98259716294706,
+            97.02296177856624
+          ],
+          "size": [
+            41.03715339791961,
+            39.547961983596906,
+            29.36241585179232
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b11",
+          "position": [
+            -37.02056021429598,
+            -49.255728209391236
+          ],
+          "size": [
+            42.157553606433794,
+            30.227731188526377,
+            39.65692446567118
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b12",
+          "position": [
+            75.49266251735389,
+            -5.653712153434753
+          ],
+          "size": [
+            28.006220681825653,
+            28.133783153956756,
+            24.20680492417887
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b13",
+          "position": [
+            0.8284216746687889,
+            0.8674872573465109
+          ],
+          "size": [
+            28.708590735215694,
+            28.01494838600047,
+            26.524039041250944
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b14",
+          "position": [
+            -48.700870759785175,
+            6.127825193107128
+          ],
+          "size": [
+            32.583401828538626,
+            36.52934710774571,
+            33.51887054508552
+          ],
+          "rotation_deg": 0
+        }
+      ]
+    },
+    "core-19-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3290000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 319000,
+        "matrix_environment": "dense_urban",
+        "matrix_source_height": "ground",
+        "matrix_motion": "moving",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 19,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                21.58795116942043,
+                33.67432797112244,
+                1.5
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                6.285299863850764,
+                43.48455757483127,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                -39.956799063071145,
+                1.8585501428148612,
+                1.5
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                -40.80138146405631,
+                -16.299049434917993,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                18.36884789365068,
+                -35.53287811393731,
+                1.5
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                34.51608160020552,
+                -27.185508139913303,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": [
+        {
+          "id": "b1",
+          "position": [
+            5.7410117238759995,
+            91.72411123290658
+          ],
+          "size": [
+            39.42829200462438,
+            30.800194869516417,
+            27.510902050416917
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b2",
+          "position": [
+            71.10555837862194,
+            -78.84238380938768
+          ],
+          "size": [
+            33.91542295739055,
+            42.83265859889798,
+            33.04862949065864
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b3",
+          "position": [
+            72.77446035295725,
+            77.11016847752035
+          ],
+          "size": [
+            31.33578290673904,
+            33.864557263907045,
+            24.534163092030212
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b4",
+          "position": [
+            -65.50412541255355,
+            -40.25726453401148
+          ],
+          "size": [
+            43.493525066645816,
+            30.057815682375804,
+            30.760165901156142
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b5",
+          "position": [
+            -95.83486444316804,
+            77.09771175868809
+          ],
+          "size": [
+            36.283696222817525,
+            43.66700417594984,
+            35.784691628068686
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b6",
+          "position": [
+            -91.3787828758359,
+            -91.16181726567447
+          ],
+          "size": [
+            33.850176603067666,
+            29.025810645194724,
+            35.68043238250539
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b7",
+          "position": [
+            -49.13581591099501,
+            60.44206894002855
+          ],
+          "size": [
+            28.05110789090395,
+            32.168321423465386,
+            38.95907460595481
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b8",
+          "position": [
+            -0.7129551377147436,
+            -93.96353331394494
+          ],
+          "size": [
+            43.25228758552112,
+            43.106124410871416,
+            36.46487380960025
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b9",
+          "position": [
+            84.20277573168278,
+            15.808088285848498
+          ],
+          "size": [
+            33.149468837771565,
+            31.081357683055103,
+            23.643349906196818
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b10",
+          "position": [
+            38.03834249265492,
+            19.069152511656284
+          ],
+          "size": [
+            29.92366887209937,
+            31.290836135856807,
+            20.502787395380437
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b11",
+          "position": [
+            -78.05057209916413,
+            9.310531010851264
+          ],
+          "size": [
+            44.62982152821496,
+            33.217598881106824,
+            37.201236366527155
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b12",
+          "position": [
+            -5.750093841925263,
+            -43.83894931524992
+          ],
+          "size": [
+            33.61245684255846,
+            28.424765839939937,
+            17.258513821288943
+          ],
+          "rotation_deg": 0
+        }
+      ]
+    },
+    "core-20-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3300000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 320000,
+        "matrix_environment": "dense_urban",
+        "matrix_source_height": "aerial",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 20,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -36.14925417262564,
+                -17.12400136542005,
+                89.34606054797769
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": [
+        {
+          "id": "b1",
+          "position": [
+            97.749278601259,
+            -30.994000332430005
+          ],
+          "size": [
+            28.19155017565936,
+            44.81091578118503,
+            17.39832080551423
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b2",
+          "position": [
+            -97.63556155376136,
+            -36.548028979450464
+          ],
+          "size": [
+            44.31370038865134,
+            40.246110974112526,
+            19.062603175407276
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b3",
+          "position": [
+            92.06196102313697,
+            65.34774326719344
+          ],
+          "size": [
+            39.48381791450083,
+            34.11632273718715,
+            37.79828644241206
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b4",
+          "position": [
+            -48.61985603347421,
+            78.99307552725077
+          ],
+          "size": [
+            40.27583626448177,
+            44.03618101356551,
+            18.08346727397293
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b5",
+          "position": [
+            30.240727821365,
+            22.32067952863872
+          ],
+          "size": [
+            31.632694620406255,
+            38.09108919673599,
+            32.63461978407577
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b6",
+          "position": [
+            -41.45368216559291,
+            -99.66486538760364
+          ],
+          "size": [
+            37.764294924680144,
+            28.301079005468637,
+            20.130548169836402
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b7",
+          "position": [
+            39.624677738174796,
+            -90.26900543831289
+          ],
+          "size": [
+            43.677239465061575,
+            28.012505425838754,
+            38.648923385189846
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b8",
+          "position": [
+            24.160219496116042,
+            -44.00324625894427
+          ],
+          "size": [
+            40.29720111680217,
+            31.867501461179927,
+            35.15780958463438
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b9",
+          "position": [
+            -91.29615076817572,
+            22.806953638792038
+          ],
+          "size": [
+            40.69730810075998,
+            32.103008687496185,
+            23.739498158684
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b10",
+          "position": [
+            19.518274534493685,
+            96.12457565963268
+          ],
+          "size": [
+            43.1039982191287,
+            41.41428814060055,
+            32.36541386926547
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b11",
+          "position": [
+            99.59626118652523,
+            -91.25953484326601
+          ],
+          "size": [
+            32.76284732227214,
+            31.56746122892946,
+            27.65494620311074
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b12",
+          "position": [
+            -33.671117667108774,
+            -47.162886103615165
+          ],
+          "size": [
+            30.03793400921859,
+            40.730755627853796,
+            37.9660642973613
+          ],
+          "rotation_deg": 0
+        }
+      ]
+    },
+    "core-21-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3310000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 321000,
+        "matrix_environment": "dense_urban",
+        "matrix_source_height": "aerial",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 21,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                1.342662940838325,
+                39.977459351830994,
+                115.76413737609982
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -35.29282684786458,
+                -18.825949460429577,
+                115.76413737609982
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                33.950163907026244,
+                -21.151509891401425,
+                115.76413737609982
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": [
+        {
+          "id": "b1",
+          "position": [
+            -18.088290840387344,
+            -48.39000734500587
+          ],
+          "size": [
+            44.785552110522985,
+            39.280611543683335,
+            33.72547228704207
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b2",
+          "position": [
+            90.87695376947522,
+            72.91554785333574
+          ],
+          "size": [
+            29.147341590141878,
+            35.63050848990679,
+            38.631454847054556
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b3",
+          "position": [
+            69.72671812400222,
+            -93.28316613100469
+          ],
+          "size": [
+            35.52029811916873,
+            32.88598794396967,
+            38.22916021803394
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b4",
+          "position": [
+            -56.291926093399525,
+            29.18860507197678
+          ],
+          "size": [
+            28.00599153828807,
+            29.148401523474604,
+            36.77770074340515
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b5",
+          "position": [
+            33.86776470579207,
+            60.26344429701567
+          ],
+          "size": [
+            28.337693840730935,
+            34.32970100385137,
+            24.678940620506182
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b6",
+          "position": [
+            -91.85475506819785,
+            -51.47466063499451
+          ],
+          "size": [
+            33.035169747890905,
+            28.379617909435183,
+            31.928099101642147
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b7",
+          "position": [
+            51.47796864621341,
+            -41.17429172620177
+          ],
+          "size": [
+            36.99146615457721,
+            34.23409859696403,
+            37.32283898629248
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b8",
+          "position": [
+            -70.78152550384402,
+            90.85875987075269
+          ],
+          "size": [
+            34.82440150924958,
+            29.605150484712794,
+            20.316476756706834
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b9",
+          "position": [
+            -16.5797368157655,
+            94.00912392884493
+          ],
+          "size": [
+            34.76036369195208,
+            30.71196274110116,
+            15.089597114128992
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b10",
+          "position": [
+            -30.87157066911459,
+            -98.23871878907084
+          ],
+          "size": [
+            32.94736947817728,
+            30.220989261753857,
+            39.71718717715703
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b11",
+          "position": [
+            13.720752764493227,
+            -99.80745669454336
+          ],
+          "size": [
+            30.905860011233017,
+            38.678261088905856,
+            27.10785698494874
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b12",
+          "position": [
+            68.63815425895154,
+            12.249974207952619
+          ],
+          "size": [
+            36.252135646762326,
+            36.64148163981736,
+            31.35092735523358
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b13",
+          "position": [
+            -98.05226805619895,
+            31.091157579794526
+          ],
+          "size": [
+            28.080400594277307,
+            33.723740509245545,
+            26.227710027014837
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b14",
+          "position": [
+            -0.7608392275869846,
+            2.469378709793091
+          ],
+          "size": [
+            36.637883161660284,
+            29.452957876725122,
+            29.620905846823007
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b15",
+          "position": [
+            99.39538994804025,
+            -34.07563152723014
+          ],
+          "size": [
+            28.292833875399083,
+            29.090415217913687,
+            33.9566129934974
+          ],
+          "rotation_deg": 0
+        }
+      ]
+    },
+    "core-22-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3320000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 322000,
+        "matrix_environment": "dense_urban",
+        "matrix_source_height": "aerial",
+        "matrix_motion": "moving",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 22,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                33.25887610542055,
+                -22.22267221115152,
+                100.98386373370886
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                88.37962750327078,
+                60.272098181890826,
+                100.98386373370886
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": [
+        {
+          "id": "b1",
+          "position": [
+            98.53531527332962,
+            -45.38673912175
+          ],
+          "size": [
+            36.261864866362885,
+            35.19464766886085,
+            19.043832124443725
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b2",
+          "position": [
+            -99.41078373230994,
+            -70.98121847957373
+          ],
+          "size": [
+            29.77754536177963,
+            39.82290953397751,
+            18.939760907087475
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b3",
+          "position": [
+            12.420447450131178,
+            45.60139775276184
+          ],
+          "size": [
+            41.01365256938152,
+            37.52804598212242,
+            36.82688399334438
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b4",
+          "position": [
+            -13.754111342132092,
+            -97.95049000531435
+          ],
+          "size": [
+            44.2955876828637,
+            32.85576407285407,
+            17.22424995736219
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b5",
+          "position": [
+            -98.8889042288065,
+            48.25180754996836
+          ],
+          "size": [
+            31.018535903422162,
+            39.31192048615776,
+            22.933987164869905
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b6",
+          "position": [
+            -50.45450162142515,
+            78.70144722983241
+          ],
+          "size": [
+            32.946062098955736,
+            28.39800950838253,
+            19.403350315988064
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b7",
+          "position": [
+            98.805444361642,
+            79.34979633428156
+          ],
+          "size": [
+            36.750185209326446,
+            28.52498496347107,
+            35.75576484785415
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b8",
+          "position": [
+            -38.43632056377828,
+            3.9318175986409187
+          ],
+          "size": [
+            31.20419953786768,
+            40.37154917023145,
+            34.7203244548291
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b9",
+          "position": [
+            59.39872590824962,
+            -91.6670375969261
+          ],
+          "size": [
+            37.72241892735474,
+            33.657387571176514,
+            34.09913168638013
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b10",
+          "position": [
+            -95.24269700050354,
+            -12.288037920370698
+          ],
+          "size": [
+            30.216694550123066,
+            38.761638574069366,
+            17.566692989785224
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b11",
+          "position": [
+            91.3452519569546,
+            11.865259381011128
+          ],
+          "size": [
+            36.7295205288101,
+            40.81695443787612,
+            23.220915851416066
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b12",
+          "position": [
+            22.493243543431163,
+            98.59159057959914
+          ],
+          "size": [
+            31.557272265665233,
+            35.893065134761855,
+            18.964039258426055
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b13",
+          "position": [
+            -29.122110223397613,
+            -44.87794996239245
+          ],
+          "size": [
+            36.860750164370984,
+            33.17565093701705,
+            38.62353596254252
+          ],
+          "rotation_deg": 0
+        }
+      ]
+    },
+    "core-23-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3330000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 1,
+        "block_direct_behind_buildings": true,
+        "diffraction_model": "wedge",
+        "diffraction_order": 2,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 0,
+        "mic_gain_sigma_db": 0,
+        "mic_position_sigma_mm": 0,
+        "noise_correlation": 0,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "truth_assisted",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 323000,
+        "matrix_environment": "dense_urban",
+        "matrix_source_height": "aerial",
+        "matrix_motion": "moving",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 23,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                -20.12849909410123,
+                -34.56650870740009,
+                109.8686489649117
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                42.81307996753868,
+                -71.21815692121854,
+                109.8686489649117
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                39.99972420779509,
+                -0.14853720184367233,
+                109.8686489649117
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                40.270193120712435,
+                72.68629332675243,
+                109.8686489649117
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 3,
+              "position": [
+                -19.871225113693846,
+                34.71504590924378,
+                109.8686489649117
+              ]
+            },
+            {
+              "t": 8,
+              "position": [
+                -83.08327308825113,
+                -1.4681364055338477,
+                109.8686489649117
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": [
+        {
+          "id": "b1",
+          "position": [
+            80.01891998574138,
+            61.75972716882825
+          ],
+          "size": [
+            36.18377172597684,
+            34.46649029524997,
+            26.779236351139843
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b2",
+          "position": [
+            82.57390139624476,
+            -11.013248795643449
+          ],
+          "size": [
+            37.318512752885,
+            29.577624413417652,
+            32.86862312001176
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b3",
+          "position": [
+            -67.3512942623347,
+            -80.95595934428275
+          ],
+          "size": [
+            32.476749198976904,
+            35.925211089197546,
+            25.45771818025969
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b4",
+          "position": [
+            -49.64933157898486,
+            -23.295611701905727
+          ],
+          "size": [
+            41.08619108470157,
+            29.113036187831312,
+            15.083879585145041
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b5",
+          "position": [
+            -98.57630166225135,
+            74.96170890517533
+          ],
+          "size": [
+            35.82944971625693,
+            42.521976376650855,
+            35.46540375449695
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b6",
+          "position": [
+            3.60187366604805,
+            80.97841273993254
+          ],
+          "size": [
+            32.71140328794718,
+            39.664337016874924,
+            28.295826636021957
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b7",
+          "position": [
+            80.74368075467646,
+            -62.505853082984686
+          ],
+          "size": [
+            42.894602075451985,
+            40.366864492651075,
+            17.800108457449824
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b8",
+          "position": [
+            -2.346078911796212,
+            -85.34334502182901
+          ],
+          "size": [
+            32.0052929171361,
+            41.896705456776544,
+            16.16355227655731
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b9",
+          "position": [
+            -54.351585172116756,
+            91.39552898705006
+          ],
+          "size": [
+            30.646864032605663,
+            28.749276747228578,
+            26.838342301780358
+          ],
+          "rotation_deg": 0
+        },
+        {
+          "id": "b10",
+          "position": [
+            31.996160838752985,
+            -34.665440302342176
+          ],
+          "size": [
+            28.946970840916038,
+            35.28818567818962,
+            22.369007845409214
+          ],
+          "rotation_deg": 0
+        }
+      ]
+    }
+  },
+  "realism": [
+    "off",
+    "on",
+    "surveyed"
+  ],
+  "analysis_modes": [
+    "measured_only"
+  ],
+  "mode": "grid",
+  "sweeps": [],
+  "max_runs": 2000,
+  "wrong_fix_m": 10,
+  "bootstrap_samples": 2000,
+  "preregistration": {
+    "input_sha256": "99e9e973c25b7809839ebea4f55360d2a33604618b97ecaca69054e4af46a8ed",
+    "generator_sha256": "f6c8702e6072527f07e06573e33d6e19a2719a5cf8ea0208adddc16e1a889a89",
+    "sealed_input_sha256": "a2fe9499ec853c2e5a3d6e2ececef9ca30410adb7454ed39a211c2fdf072a78c"
+  }
+}

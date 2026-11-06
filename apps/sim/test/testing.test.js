@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { testingExperiment, parseVariableValues, labellingReportTable, benchmarkHistoryTable } from '../src/ui/testing.js';
+import { testingExperiment, parseVariableValues, labellingReportTable, benchmarkHistoryTable, matrixBaselineTable } from '../src/ui/testing.js';
 import { testingEditorResults } from '../src/ui/testing-view.js';
 import { VARIABLES, estimateExperiment, buildJobs, presetExperiment, reduceExperiment } from '@echo/sim-core/benchmark/experiment.js';
 
@@ -32,6 +32,35 @@ test('history view preserves null metrics and identifies unlike populations', ()
   assert.match(html, /unavailable/); assert.match(html, /123/); assert.match(html, /&lt;note&gt;/);
   assert.throws(() => benchmarkHistoryTable({ schema: 1, entries: [] }, 'useful_fix_rate'), /schema2/);
   assert.throws(() => benchmarkHistoryTable({ schema: 2, entries: [{ n_runs: '<img>' }] }, 'useful_fix_rate'), /complete/);
+});
+test('matrix baseline view shows tiered cell results and marks undersized groups', () => {
+  const result = {
+    status: 'reported',
+    n_scenes: 5,
+    metrics: {
+      events_within_10m_misses_counted: { value: 0.99, ci: [0.9, 1] },
+      horizontal_median_m: { value: 1, ci: [0.5, 1.5] }
+    }
+  };
+  const data = {
+    schema: 1,
+    kind: 'echo-matrix-baseline',
+    complete: true,
+    population: { runs: 606, expected_runs: 606 },
+    input_sha256: 'a'.repeat(64),
+    sealed_input_sha256: 'b'.repeat(64),
+    cells: Array.from({ length: 24 }, (_, cell_index) => ({
+      cell_index,
+      factors: { environment: 'open', source_height: 'ground', motion: 'stationary', simultaneous_sources: 1 },
+      results: { 'all/on': result }
+    })),
+    generalisation: [{ ...result, realism: 'on' }],
+    node_density: [{ ...result, status: 'insufficient', n_scenes: 2, node_count: 3, mean_spacing_m: 40, realism: 'on' }]
+  };
+  const html = matrixBaselineTable(data);
+  assert.match(html, /data-tier="exceptional"/);
+  assert.match(html, /insufficient \(2 sites\)/);
+  assert.throws(() => matrixBaselineTable({ ...data, complete: false }), /complete 24-cell/);
 });
 test('Testing paired A/B uses chosen first/last variable values or explicit realism pair', () => {
   const e = testingExperiment({ scenes: ['sparse_20'], seeds: 1, mode: 'paired', sweeps: [{ variable: 'min_snr_db', values: [3, 6, 12] }] });

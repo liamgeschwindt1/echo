@@ -6,6 +6,7 @@ import { micPairs } from './mics.js';
 import { rfft, irfft } from './dsp.js';
 import { bandWeight } from './activity.js';
 import { distance } from './physics.js';
+import { fuseJointTracks } from './joint-fusion.js';
 
 export const MEASURED_DEFAULTS = Object.freeze({
   window_ms: 50, // sliding bearing window (20-100 ms allowed)
@@ -24,7 +25,11 @@ export const MEASURED_DEFAULTS = Object.freeze({
   bearing_sigma_deg: 2.5, // weight floor; stands in for the unknown per-node heading offset
   min_cross_deg: 12, // two bearings must cross at least this much to give a fix
   static_chi2: 4, // mean normalised squared bearing residual below which a source is called static
-  max_onset_skew_s: 0.03
+  max_onset_skew_s: 0.03,
+  fusion_mode: 'legacy',
+  joint_gate_sigma: 3, // placeholder; not calibrated on recordings
+  joint_track_gate_sigma: 3, // placeholder; not calibrated on recordings
+  joint_dedupe_m: 2 // placeholder; spatial duplicate radius, not a sensor accuracy claim
 });
 
 const FRAME_S = 0.01;
@@ -375,5 +380,12 @@ export function analyseMeasured(scenario, rendered, { c, options = {} } = {}) {
   const fs = rendered.sample_rate;
   const band = scenario.settings.localisation_band_hz;
   const nodes = scenario.nodes.map((node, ni) => nodeTracks(rendered.nodes[ni], node, { fs, c, band, options }));
-  return { nodes, fixes: fuseTracks(nodes, { c, options }) };
+  const effective = { ...MEASURED_DEFAULTS, ...options };
+  if (!['legacy', 'joint'].includes(effective.fusion_mode)) throw new Error(`Unknown measured fusion mode: ${effective.fusion_mode}`);
+  return {
+    nodes,
+    fixes: effective.fusion_mode === 'joint'
+      ? fuseJointTracks(nodes, { c, options: effective })
+      : fuseTracks(nodes, { c, options: effective })
+  };
 }

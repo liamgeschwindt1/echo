@@ -9,11 +9,14 @@ export function sealedInputHash(experiment) {
   const sites = registration.site_seeds.map(({ id, site_seed }) => {
     const scene = experiment.custom_scenes?.[id];
     if (!scene) throw new Error(`Missing sealed site ${id}`);
+    const render_seed = experiment.scene_seeds?.[id]?.[0] ?? experiment.seeds[0];
+    if (experiment.scene_seeds && render_seed !== site_seed) throw new Error(`Sealed render seed changed for ${id}`);
     return { id, site_seed, scene };
   });
   if (new Set(sites.map((s) => s.id)).size !== sites.length ||
-      canonical(sites.map((s) => s.id)) !== canonical(experiment.scenes) || experiment.seeds.length !== 1) throw new Error('Sealed population changed');
-  const hash = createHash('sha256').update(canonical({ sites, renderSeed: experiment.seeds[0] })).digest('hex');
+      canonical(sites.map((s) => s.id)) !== canonical(experiment.scenes) || experiment.seeds.length !== 1 ||
+      (experiment.scene_seeds && Object.keys(experiment.scene_seeds).length !== experiment.scenes.length)) throw new Error('Sealed population changed');
+  const hash = createHash('sha256').update(canonical({ sites, renderSeed: experiment.scene_seeds ? null : experiment.seeds[0] })).digest('hex');
   if (hash !== registration.input_sha256) throw new Error('Sealed input hash mismatch');
   return hash;
 }

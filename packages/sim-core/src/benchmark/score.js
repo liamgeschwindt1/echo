@@ -5,7 +5,8 @@ import { distance } from '../physics.js';
 const angleError = (a, b) => Math.abs(((a - b + 540) % 360) - 180);
 const deg = (r) => r * 180 / Math.PI;
 const median = (a) => a.length ? [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)] : null;
-export const SCORING_VERSION = 'episode-one-to-one-v2';
+export const SCORING_VERSION = 'episode-one-to-one-v3';
+export const DETECTION_BEARING_TOLERANCE_DEG = 10;
 
 export function scoreAssisted(results) {
   return {
@@ -26,7 +27,7 @@ export function scoreAssisted(results) {
 // This module is scoring ONLY. Truth never enters measured inference or track association.
 // One-to-one among overlapping episodes; separate bursts may belong to the same source.
 // Spatial assignment is ungated: poor estimates remain poor, not silently discarded.
-export function scoreMeasured(scenario, measured, { c }) {
+export function scoreMeasured(scenario, measured, { c, clip_durations = new Map() }) {
   const intervals = measured.fixes.map((fix) => {
     const times = fix.positions.map((p) => p.t_e).filter(Number.isFinite);
     if (!times.length) throw new Error('Cannot score measured fix without emission times');
@@ -45,6 +46,19 @@ export function scoreMeasured(scenario, measured, { c }) {
     assigned.set(p.si, [...previous, p]);
     used.add(p.fi);
   }
+  const detectsSource = (src, node, nodeResult) => {
+    const start = Number.isFinite(src.start_s) ? src.start_s : src.keyframes[0].t;
+    const duration = clip_durations.get(src.clip);
+    const end = start + (Number.isFinite(duration) ? duration : Math.max(2, src.keyframes.at(-1).t - start + 2));
+    return (nodeResult.tracks ?? []).some((track) => track.windows.some((window) => {
+      if (window.t_s < start || window.t_s > end) return false;
+      const truth = isMoving(src)
+        ? emittedPosition(src, node.position, window.t_s, c)
+        : sourcePosition(src);
+      const bearing = deg(Math.atan2(truth[1] - node.position[1], truth[0] - node.position[0]));
+      return angleError(window.az_deg, bearing) <= DETECTION_BEARING_TOLERANCE_DEG;
+    }));
+  };
   const scoreMatch = (src, matches) => {
     const match = matches[0], fix = match ? measured.fixes[match.fi] : null;
     const tracks = new Map();
@@ -62,7 +76,9 @@ export function scoreMeasured(scenario, measured, { c }) {
         az_error_deg: median(errors), el_error_deg: null,
         sigma_deg: fix ? measured.nodes[ni].bearing_intervals ? measured.nodes[ni].bearing_intervals.sigma_deg : measured.options.bearing_sigma_deg : null,
         ...(measured.nodes[ni].bearing_intervals ? { two_sigma_deg: measured.nodes[ni].bearing_intervals.two_sigma_deg } : {}),
-        detected: tracks.has(ni), calibration_unit: 'median accepted track bearing error'
+        detected: detectsSource(src, node, measured.nodes[ni]),
+        detection_method: `tracked bearing within ${DETECTION_BEARING_TOLERANCE_DEG} degrees of source direction during source clip`,
+        calibration_unit: 'median accepted track bearing error'
       };
     });
     return {

@@ -6,7 +6,8 @@ import { mulberry32 } from '../rng.js';
 
 export const REALISM = Object.freeze({
   off: { heading_error_sigma_deg: 0, mic_gain_sigma_db: 0, mic_position_sigma_mm: 0, noise_correlation: 0 },
-  on: { heading_error_sigma_deg: 2.5, mic_gain_sigma_db: 1, mic_position_sigma_mm: 5, noise_correlation: 0.3 }
+  on: { heading_error_sigma_deg: 2.5, mic_gain_sigma_db: 1, mic_position_sigma_mm: 5, noise_correlation: 0.3 },
+  surveyed: { heading_error_sigma_deg: 1, mic_gain_sigma_db: 1, mic_position_sigma_mm: 2, noise_correlation: 0.3 }
 });
 
 export const SCENES = Object.freeze([

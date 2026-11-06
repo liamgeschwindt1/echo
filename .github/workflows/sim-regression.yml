@@ -17,7 +17,7 @@ on:
       - 'package*.json'
       - '.github/workflows/sim-regression.yml'
   push:
-    branches: [main, overnight/localisation, overnight/localisation-2]
+    branches: [main, overnight/localisation, overnight/localisation-2, overnight/localisation-4]
     paths:
       - 'packages/sim-core/**'
       - 'packages/shared/**'
@@ -55,6 +55,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run fetch-test-audio -w @echo/assets
+      - name: Re-score stored CI baseline with current scoring
+        run: node scripts/benchmark-rescore.mjs --from baselines/ci-smoke.json --out artifacts/ci-smoke-baseline.json
       - run: npm test -w @echo/sim-core
       - run: npm test -w @echo/sim
       - run: npm run build -w @echo/sim
@@ -67,7 +69,7 @@ jobs:
         run: >-
           npm run benchmark --
           --experiment docs/experiments/ci-smoke.json
-          --compare baselines/ci-smoke.json
+          --compare artifacts/ci-smoke-baseline.json
           --fail-on-regress
           --discard-renders
           --out artifacts/ci-smoke.json
@@ -89,6 +91,7 @@ jobs:
           name: simulator-regression
           path: |
             artifacts/ci-smoke.*
+            artifacts/ci-smoke-baseline.*
             artifacts/nightly-standard.*
             docs/benchmark-history.json
           if-no-files-found: warn

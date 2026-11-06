@@ -1,15 +1,60 @@
 {
-  "schema": 1,
+  "schema": 2,
   "placeholder": true,
-  "scope": "Starting design targets, not validated acceptance limits. Error targets apply to scenes with source reference range up to 50 m; mixed-range tables are indicative only.",
+  "scope": "Owner-editable design targets, not validated acceptance limits. Horizontal error targets apply to source reference ranges up to 50 m; mixed-range matrix results are reported separately.",
   "max_reference_range_m": 50,
-  "metrics": {
-    "horizontal_median_m": { "max": 5, "unit": "m" },
-    "horizontal_p90_m": { "max": 10, "unit": "m" },
-    "useful_fix_rate": { "min": 0.8, "unit": "fraction" },
-    "unflagged_wrong_fix_rate": { "max": 0.01, "unit": "fraction" },
-    "risk_coverage_area": { "max": 0.2, "unit": "fraction" },
-    "within_1sigma": { "min": 0.63, "max": 0.73, "unit": "fraction" },
-    "within_2sigma": { "min": 0.90, "max": 0.99, "unit": "fraction" }
-  }
+  "metric_definitions": {
+    "coverage": "Fraction of expected source events with an assigned fix; misses remain in the denominator.",
+    "events_within_10m_misses_counted": "Fraction of all expected source events with a fix within 10 m; missed events count as failures.",
+    "detectable_3_node_fraction": "Fraction of expected source events with source-aligned measured tracks at three or more nodes; a track needs an in-clip window within 10 degrees of true bearing.",
+    "detectable_3_node_events_within_10m": "Fraction of events detected by at least three nodes that also receive a fix within 10 m."
+  },
+  "tiers": {
+    "minimum": {
+      "horizontal_median_m": { "max": 5, "unit": "m" },
+      "horizontal_p90_m": { "max": 15, "unit": "m" },
+      "events_within_10m_misses_counted": { "min": 0.7, "unit": "fraction" },
+      "coverage": { "min": 0.75, "unit": "fraction" },
+      "wrong_fix_rate": { "max": 0.15, "unit": "fraction" },
+      "bearing_median_deg_realism_on": { "max": 4, "unit": "deg" },
+      "within_1sigma": { "min": 0.55, "max": 1, "unit": "fraction" },
+      "within_2sigma": { "min": 0.8, "max": 1, "unit": "fraction" },
+      "aerial_3d_fix_rate": { "min": 0.5, "unit": "fraction" },
+      "aerial_height_error_at_75m_m": { "max": 20, "unit": "m" },
+      "track_median_error_m": { "max": 10, "unit": "m" },
+      "track_continuity": { "min": 0.6, "unit": "fraction" },
+      "time_to_fix_s": { "max": 5, "unit": "s" }
+    },
+    "standard": {
+      "horizontal_median_m": { "max": 3, "unit": "m" },
+      "horizontal_p90_m": { "max": 10, "unit": "m" },
+      "events_within_10m_misses_counted": { "min": 0.9, "unit": "fraction" },
+      "coverage": { "min": 0.9, "unit": "fraction" },
+      "wrong_fix_rate": { "max": 0.08, "unit": "fraction" },
+      "bearing_median_deg_realism_on": { "max": 3, "unit": "deg" },
+      "within_1sigma": { "min": 0.6, "max": 0.76, "unit": "fraction" },
+      "within_2sigma": { "min": 0.9, "max": 1, "unit": "fraction" },
+      "aerial_3d_fix_rate": { "min": 0.8, "unit": "fraction" },
+      "aerial_height_error_at_75m_m": { "max": 10, "unit": "m" },
+      "track_median_error_m": { "max": 5, "unit": "m" },
+      "track_continuity": { "min": 0.8, "unit": "fraction" },
+      "time_to_fix_s": { "max": 2, "unit": "s" }
+    },
+    "exceptional": {
+      "horizontal_median_m": { "max": 1.5, "unit": "m" },
+      "horizontal_p90_m": { "max": 5, "unit": "m" },
+      "events_within_10m_misses_counted": { "min": 0.97, "unit": "fraction" },
+      "coverage": { "min": 0.97, "unit": "fraction" },
+      "wrong_fix_rate": { "max": 0.03, "unit": "fraction" },
+      "bearing_median_deg_realism_on": { "max": 2, "unit": "deg" },
+      "within_1sigma": { "min": 0.65, "max": 0.71, "unit": "fraction" },
+      "within_2sigma": { "min": 0.93, "max": 0.97, "unit": "fraction" },
+      "aerial_3d_fix_rate": { "min": 0.95, "unit": "fraction" },
+      "aerial_height_error_at_75m_m": { "max": 5, "unit": "m" },
+      "track_median_error_m": { "max": 2, "unit": "m" },
+      "track_continuity": { "min": 0.95, "unit": "fraction" },
+      "time_to_fix_s": { "max": 1, "unit": "s" }
+    }
+  },
+  "interpretation": "All tiers are placeholders until independent real recordings and surveyed truth are evaluated. Missing metrics are unavailable, never zero. Simulation cannot validate a field tier."
 }

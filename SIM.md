@@ -6,7 +6,7 @@ The one reference document for the **sim** frontend ([apps/sim](apps/sim)) and i
 
 Coordinates: metres, x east, y north, z up. Time: seconds of scenario time. Inside the physics, pressure is in pascals; digital floats appear only at the microphone output. Angles in the code are in radians unless the name ends in `_deg`.
 
-## Reproducible Testing engine (schema 0.16)
+## Reproducible Testing engine (schema 0.18)
 
 `npm run benchmark -- --experiment smoke --out baselines/smoke.json` runs the shared
 `packages/sim-core/src/benchmark/` engine. CLI and Testing use identical experiment
@@ -19,9 +19,15 @@ without a comparison fail before rendering, rather than silently running default
 Experiments default to `measured_only`; the existing editor retains
 `truth_assisted` for compatibility. The latter uses true per-source windows,
 SNR, overlap, path selection and track dominance. It is an optimistic upper
-bound, not deployable inference. Measured-only uses the existing horizontal
-mixture-only `measured.js` pipeline, not the source-window solver. Its elevation,
-3D error and labelling accuracy are **unavailable**, not zero. Scoring uses
+bound, not deployable inference. Measured-only uses the horizontal
+mixture-only `measured.js` pipeline, not the source-window solver. Legacy
+pairwise fusion remains the default; an explicit `measured_fusion_mode=joint`
+selects the opt-in C1 static-track solver. Joint mode uses pair-subset RANSAC
+initialisation, Huber bearing fitting, compatible multi-node tracks, and reports
+model covariance plus a covariance-derived 90% radius. Moving tracks still use
+legacy pairwise fusion. These new thresholds and radii are placeholders, not
+calibrated field uncertainty. Measured-only elevation, 3D error and labelling
+accuracy are **unavailable**, not zero. Scoring uses
 truth only after inference. Unmatched fixes count as wrong. Model labelling is
 not run by the localisation benchmarks. The separate preregistered
 `scripts/benchmark-labelling.mjs` runs real YAMNet/CLAP models on rendered ESC-50

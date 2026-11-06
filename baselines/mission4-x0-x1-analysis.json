@@ -1,0 +1,395 @@
+{
+  "schema": 1,
+  "generated_at": "2026-11-06T08:23:13.712Z",
+  "baseline_path": "/workspaces/echo/liamgeschwindt1/echo/baselines/matrix-baseline-r3.full.json.gz",
+  "baseline_gzip_sha256": "1dae27871b53cfc678b744ac1cccc35206da6634e488672c26acec42fb61f066",
+  "assumptions": {
+    "source_clip_duration_seconds": "archived clip samples / scenario render_sample_rate per run",
+    "truth_alignment_tolerance_deg": 10
+  },
+  "detectability": {
+    "per_profile": {
+      "off": {
+        "events": 321,
+        "strict3": 2,
+        "bearing3": 282,
+        "within10InClip3": 10,
+        "within10AnyTrack3": 7,
+        "fix3": 0
+      },
+      "on": {
+        "events": 321,
+        "strict3": 1,
+        "bearing3": 252,
+        "within10InClip3": 5,
+        "within10AnyTrack3": 2,
+        "fix3": 0
+      },
+      "surveyed": {
+        "events": 321,
+        "strict3": 4,
+        "bearing3": 279,
+        "within10InClip3": 15,
+        "within10AnyTrack3": 9,
+        "fix3": 0
+      }
+    },
+    "node_stage": {
+      "off": {
+        "nodeEvents": 1545,
+        "candidateInClip": 1545,
+        "windowInClip": 1284,
+        "trackInClip": 1143,
+        "windowWithin10InClip": 384,
+        "trackWithin10InClip": 336,
+        "trackWithin10AnyTime": 339,
+        "candidateWithoutWindow": 261,
+        "windowWithoutTrack": 141
+      },
+      "on": {
+        "nodeEvents": 1545,
+        "candidateInClip": 1530,
+        "windowInClip": 1155,
+        "trackInClip": 999,
+        "windowWithin10InClip": 325,
+        "trackWithin10InClip": 276,
+        "trackWithin10AnyTime": 284,
+        "candidateWithoutWindow": 375,
+        "windowWithoutTrack": 156
+      },
+      "surveyed": {
+        "nodeEvents": 1545,
+        "candidateInClip": 1545,
+        "windowInClip": 1308,
+        "trackInClip": 1152,
+        "windowWithin10InClip": 397,
+        "trackWithin10InClip": 336,
+        "trackWithin10AnyTime": 346,
+        "candidateWithoutWindow": 237,
+        "windowWithoutTrack": 156
+      }
+    },
+    "event_stage": {
+      "off": {
+        "events": 321,
+        "strict3": 2,
+        "bearing3": 282,
+        "within10InClip3": 10,
+        "within10AnyTrack3": 7,
+        "fix3": 0,
+        "failNoBearing": 39,
+        "failBearingError": 272,
+        "failTrackConfirmation": 8
+      },
+      "on": {
+        "events": 321,
+        "strict3": 1,
+        "bearing3": 252,
+        "within10InClip3": 5,
+        "within10AnyTrack3": 2,
+        "fix3": 0,
+        "failNoBearing": 69,
+        "failBearingError": 246,
+        "failTrackConfirmation": 5
+      },
+      "surveyed": {
+        "events": 321,
+        "strict3": 4,
+        "bearing3": 279,
+        "within10InClip3": 15,
+        "within10AnyTrack3": 9,
+        "fix3": 0,
+        "failNoBearing": 42,
+        "failBearingError": 264,
+        "failTrackConfirmation": 11
+      }
+    },
+    "label_definitions": {
+      "original_detectable_3_nodes": "three or more nodes have source-aligned measured tracks during source clip within 10 degrees of truth",
+      "new_bearing_available_3_nodes": "three or more nodes have any measured bearing window during source clip",
+      "new_track_within10_any_time_3_nodes": "three or more nodes have track windows within 10 degrees of truth at any time (in or out of source clip)"
+    },
+    "findings": {
+      "dominant_failure": "bearing_error",
+      "reason_counts": {
+        "off": {
+          "no_bearing_in_clip": 39,
+          "bearing_not_within_10deg": 272,
+          "track_confirmation": 8
+        },
+        "on": {
+          "no_bearing_in_clip": 69,
+          "bearing_not_within_10deg": 246,
+          "track_confirmation": 5
+        },
+        "surveyed": {
+          "no_bearing_in_clip": 42,
+          "bearing_not_within_10deg": 264,
+          "track_confirmation": 11
+        }
+      }
+    }
+  },
+  "node_count": [
+    {
+      "realism": "off",
+      "source_count": 1,
+      "node_count": 2,
+      "runs": 4,
+      "scene_fix_rate": 0.75,
+      "events_within_10m_misses_counted": 0.5,
+      "detectable_3_node_fraction": 0,
+      "wrong_fix_rate": 0.4,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 0.5,
+      "mean_fixes_per_scene": 1.25
+    },
+    {
+      "realism": "off",
+      "source_count": 1,
+      "node_count": 3,
+      "runs": 4,
+      "scene_fix_rate": 0.75,
+      "events_within_10m_misses_counted": 0.75,
+      "detectable_3_node_fraction": 0.75,
+      "wrong_fix_rate": 0.42857142857142855,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 0.5,
+      "mean_fixes_per_scene": 1.75
+    },
+    {
+      "realism": "off",
+      "source_count": 1,
+      "node_count": 4,
+      "runs": 2,
+      "scene_fix_rate": 1,
+      "events_within_10m_misses_counted": 1,
+      "detectable_3_node_fraction": 1,
+      "wrong_fix_rate": 0.7333333333333333,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 1,
+      "mean_fixes_per_scene": 7.5
+    },
+    {
+      "realism": "off",
+      "source_count": 1,
+      "node_count": 5,
+      "runs": 83,
+      "scene_fix_rate": 1,
+      "events_within_10m_misses_counted": 0.9879518072289156,
+      "detectable_3_node_fraction": 0.9879518072289156,
+      "wrong_fix_rate": 0.676605504587156,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 1,
+      "mean_fixes_per_scene": 5.253012048192771
+    },
+    {
+      "realism": "off",
+      "source_count": 1,
+      "node_count": 6,
+      "runs": 2,
+      "scene_fix_rate": 1,
+      "events_within_10m_misses_counted": 1,
+      "detectable_3_node_fraction": 1,
+      "wrong_fix_rate": 0.75,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 1,
+      "mean_fixes_per_scene": 6
+    },
+    {
+      "realism": "off",
+      "source_count": 3,
+      "node_count": 2,
+      "runs": 4,
+      "scene_fix_rate": 0,
+      "events_within_10m_misses_counted": 0,
+      "detectable_3_node_fraction": 0,
+      "wrong_fix_rate": null,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 0,
+      "mean_fixes_per_scene": 0
+    },
+    {
+      "realism": "off",
+      "source_count": 3,
+      "node_count": 3,
+      "runs": 4,
+      "scene_fix_rate": 0.25,
+      "events_within_10m_misses_counted": 0.08333333333333333,
+      "detectable_3_node_fraction": 0,
+      "wrong_fix_rate": 0.5,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 0,
+      "mean_fixes_per_scene": 0.5
+    },
+    {
+      "realism": "off",
+      "source_count": 3,
+      "node_count": 4,
+      "runs": 4,
+      "scene_fix_rate": 0.25,
+      "events_within_10m_misses_counted": 0.08333333333333333,
+      "detectable_3_node_fraction": 0,
+      "wrong_fix_rate": 0,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 0,
+      "mean_fixes_per_scene": 0.25
+    },
+    {
+      "realism": "off",
+      "source_count": 3,
+      "node_count": 5,
+      "runs": 91,
+      "scene_fix_rate": 0.7142857142857143,
+      "events_within_10m_misses_counted": 0.17582417582417584,
+      "detectable_3_node_fraction": 0.007326007326007326,
+      "wrong_fix_rate": 0.6491228070175439,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 0.13186813186813187,
+      "mean_fixes_per_scene": 1.879120879120879
+    },
+    {
+      "realism": "off",
+      "source_count": 3,
+      "node_count": 6,
+      "runs": 4,
+      "scene_fix_rate": 0.25,
+      "events_within_10m_misses_counted": 0.25,
+      "detectable_3_node_fraction": 0,
+      "wrong_fix_rate": 0,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 0,
+      "mean_fixes_per_scene": 0.75
+    },
+    {
+      "realism": "on",
+      "source_count": 1,
+      "node_count": 2,
+      "runs": 4,
+      "scene_fix_rate": 0.75,
+      "events_within_10m_misses_counted": 0.75,
+      "detectable_3_node_fraction": 0,
+      "wrong_fix_rate": 0.4,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 0.25,
+      "mean_fixes_per_scene": 1.25
+    },
+    {
+      "realism": "on",
+      "source_count": 1,
+      "node_count": 3,
+      "runs": 4,
+      "scene_fix_rate": 1,
+      "events_within_10m_misses_counted": 0.75,
+      "detectable_3_node_fraction": 0.75,
+      "wrong_fix_rate": 0.625,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 0.75,
+      "mean_fixes_per_scene": 2
+    },
+    {
+      "realism": "on",
+      "source_count": 1,
+      "node_count": 4,
+      "runs": 2,
+      "scene_fix_rate": 1,
+      "events_within_10m_misses_counted": 0.5,
+      "detectable_3_node_fraction": 1,
+      "wrong_fix_rate": 0.9166666666666666,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 1,
+      "mean_fixes_per_scene": 6
+    },
+    {
+      "realism": "on",
+      "source_count": 1,
+      "node_count": 5,
+      "runs": 83,
+      "scene_fix_rate": 1,
+      "events_within_10m_misses_counted": 0.927710843373494,
+      "detectable_3_node_fraction": 0.963855421686747,
+      "wrong_fix_rate": 0.6829268292682927,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 0.9518072289156626,
+      "mean_fixes_per_scene": 4.9397590361445785
+    },
+    {
+      "realism": "on",
+      "source_count": 1,
+      "node_count": 6,
+      "runs": 2,
+      "scene_fix_rate": 1,
+      "events_within_10m_misses_counted": 0.5,
+      "detectable_3_node_fraction": 1,
+      "wrong_fix_rate": 0.8181818181818182,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 1,
+      "mean_fixes_per_scene": 5.5
+    },
+    {
+      "realism": "on",
+      "source_count": 3,
+      "node_count": 2,
+      "runs": 4,
+      "scene_fix_rate": 0,
+      "events_within_10m_misses_counted": 0,
+      "detectable_3_node_fraction": 0,
+      "wrong_fix_rate": null,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 0,
+      "mean_fixes_per_scene": 0
+    },
+    {
+      "realism": "on",
+      "source_count": 3,
+      "node_count": 3,
+      "runs": 4,
+      "scene_fix_rate": 0.5,
+      "events_within_10m_misses_counted": 0,
+      "detectable_3_node_fraction": 0,
+      "wrong_fix_rate": 1,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 0,
+      "mean_fixes_per_scene": 0.5
+    },
+    {
+      "realism": "on",
+      "source_count": 3,
+      "node_count": 4,
+      "runs": 4,
+      "scene_fix_rate": 0,
+      "events_within_10m_misses_counted": 0,
+      "detectable_3_node_fraction": 0,
+      "wrong_fix_rate": null,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 0,
+      "mean_fixes_per_scene": 0
+    },
+    {
+      "realism": "on",
+      "source_count": 3,
+      "node_count": 5,
+      "runs": 91,
+      "scene_fix_rate": 0.5714285714285714,
+      "events_within_10m_misses_counted": 0.08791208791208792,
+      "detectable_3_node_fraction": 0.003663003663003663,
+      "wrong_fix_rate": 0.7720588235294118,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 0.12087912087912088,
+      "mean_fixes_per_scene": 1.4945054945054945
+    },
+    {
+      "realism": "on",
+      "source_count": 3,
+      "node_count": 6,
+      "runs": 4,
+      "scene_fix_rate": 0.25,
+      "events_within_10m_misses_counted": 0.16666666666666666,
+      "detectable_3_node_fraction": 0,
+      "wrong_fix_rate": 0,
+      "unflagged_wrong_fix_rate": 0,
+      "duplicate_fix_scene_rate": 0,
+      "mean_fixes_per_scene": 0.5
+    }
+  ]
+}

@@ -9,6 +9,10 @@ export const METRICS = Object.freeze({
   horizontal_p90_m: { direction: 'lower', unit: 'm', tolerance: 0 },
   error_3d_median_m: { direction: 'lower', unit: 'm', tolerance: 0 },
   error_3d_p90_m: { direction: 'lower', unit: 'm', tolerance: 0 },
+  events_within_10m_misses_counted: { direction: 'higher', unit: 'fraction', tolerance: 0 },
+  detectable_3_node_fraction: { direction: 'higher', unit: 'fraction', tolerance: 0 },
+  detectable_3_node_events_within_10m: { direction: 'higher', unit: 'fraction', tolerance: 0 },
+  detectable_3_node_event_count: { direction: 'higher', unit: 'events', tolerance: 0, tracked: false },
   scene_fix_rate: { direction: 'higher', unit: 'fraction', tolerance: 0 },
   useful_fix_rate: { direction: 'higher', unit: 'fraction', tolerance: 0 },
   unflagged_wrong_fix_rate: { direction: 'lower', unit: 'fraction', tolerance: 0 },
@@ -25,12 +29,90 @@ export const METRICS = Object.freeze({
   elevation_median_deg: { direction: 'lower', unit: 'deg', tolerance: 0 },
   within_1sigma: { direction: 'target', target: 0.6827, unit: 'fraction', tolerance: 0 },
   within_2sigma: { direction: 'target', target: 0.9545, unit: 'fraction', tolerance: 0 },
+  fix_brier_score: { direction: 'lower', unit: 'score', tolerance: 0 },
+  fix_log_loss: { direction: 'lower', unit: 'nats', tolerance: 0 },
+  fix_error_10m_auc: { direction: 'higher', unit: 'fraction', tolerance: 0 },
+  fix_reliability_error: { direction: 'lower', unit: 'fraction', tolerance: 0 },
   detection_rate: { direction: 'higher', unit: 'fraction', tolerance: 0 },
   labelling_accuracy: { direction: 'higher', unit: 'fraction', tolerance: 0 },
   runtime_ms: { direction: 'lower', unit: 'ms', tracked: false }
 });
 const ratio = (a, b) => b ? a / b : null;
 const finite = (a) => a.filter(Number.isFinite);
+const siteId = (run) => run.job.site_id ?? run.job.scene ?? run.job.id;
+
+function siteClusterSample(runs, rng) {
+  const clusters = new Map();
+  for (const run of runs) {
+    const id = siteId(run);
+    const rows = clusters.get(id) ?? [];
+    rows.push(run);
+    clusters.set(id, rows);
+  }
+  const sites = [...clusters.keys()];
+  return Array.from({ length: sites.length }, () => clusters.get(sites[Math.floor(rng() * sites.length)])).flat();
+}
+
+function fixProbabilityRows(runs, wrongFixM) {
+  const rows = runs.flatMap((run) => (run.scores.fixes ?? [])
+    .filter((fix) => Number.isFinite(fix.horizontal_m))
+    .map((fix) => {
+      const p = fix.p_wrong;
+      if (p !== undefined && p !== null && (!Number.isFinite(p) || p < 0 || p > 1)) {
+        throw new Error('Fix wrong-probability must be a finite value between 0 and 1');
+      }
+      return { p, wrong: Number(fix.horizontal_m > wrongFixM) };
+    }));
+  return rows;
+}
+
+function auc(rows) {
+  const positives = rows.filter((r) => r.wrong).length;
+  const negatives = rows.length - positives;
+  if (!positives || !negatives) return null;
+  const sorted = [...rows].sort((a, b) => a.p - b.p);
+  let positiveRanks = 0;
+  for (let i = 0; i < sorted.length;) {
+    let j = i + 1;
+    while (j < sorted.length && sorted[j].p === sorted[i].p) j++;
+    const meanRank = ((i + 1) + j) / 2;
+    positiveRanks += sorted.slice(i, j).filter((r) => r.wrong).length * meanRank;
+    i = j;
+  }
+  return (positiveRanks - positives * (positives + 1) / 2) / (positives * negatives);
+}
+
+function fixReliability(runs, wrongFixM, bins = 10) {
+  const rows = fixProbabilityRows(runs, wrongFixM);
+  if (!rows.length || rows.some((r) => !Number.isFinite(r.p))) return { n_fixes: rows.length, bins: [], error: null };
+  const groups = Array.from({ length: bins }, () => []);
+  for (const row of rows) groups[Math.min(bins - 1, Math.floor(row.p * bins))].push(row);
+  const reliability = groups.map((group, i) => ({
+    bin: i,
+    count: group.length,
+    predicted: group.length ? group.reduce((s, r) => s + r.p, 0) / group.length : null,
+    observed: group.length ? group.reduce((s, r) => s + r.wrong, 0) / group.length : null
+  }));
+  const error = reliability.reduce((sum, b) => sum + b.count / rows.length *
+    Math.abs(b.predicted - b.observed), 0);
+  return { n_fixes: rows.length, bins: reliability, error };
+}
+
+function fixProbabilityMetrics(runs, wrongFixM) {
+  const rows = fixProbabilityRows(runs, wrongFixM);
+  if (!rows.length || rows.some((r) => !Number.isFinite(r.p))) {
+    return { fix_brier_score: null, fix_log_loss: null, fix_error_10m_auc: null, fix_reliability_error: null };
+  }
+  const epsilon = 1e-15;
+  return {
+    fix_brier_score: rows.reduce((sum, r) => sum + (r.p - r.wrong) ** 2, 0) / rows.length,
+    fix_log_loss: rows.reduce((sum, r) => sum - (r.wrong
+      ? Math.log(Math.max(epsilon, r.p))
+      : Math.log(Math.max(epsilon, 1 - r.p))), 0) / rows.length,
+    fix_error_10m_auc: auc(rows),
+    fix_reliability_error: fixReliability(runs, wrongFixM).error
+  };
+}
 
 export function riskCoverage(runs, { wrong_fix_m = 10 } = {}) {
   const answered = runs.filter((r) => r.scores.fix_count > 0).map((r) => {
@@ -71,9 +153,25 @@ export function riskCoverage(runs, { wrong_fix_m = 10 } = {}) {
 export function metricValues(runs, { wrong_fix_m = 10 } = {}) {
   const sources = runs.flatMap((r) => r.scores.sources);
   const scoredFixes = runs.flatMap((r) => r.scores.fixes ?? r.scores.sources);
+  const eventResults = runs.flatMap((run) => {
+    const expected = run.scores.sources;
+    const fixes = run.scores.fixes ?? expected;
+    return expected.map((source, sourceIndex) => {
+      const sourceFixes = fixes.filter((fix, fixIndex) =>
+        (source.source_id === undefined || source.source_id === null) && fixes === expected
+          ? fixIndex === sourceIndex
+          : fix.source_id === source.source_id);
+      const withinTarget = sourceFixes.some((fix) => Number.isFinite(fix.horizontal_m) && fix.horizontal_m <= wrong_fix_m);
+      return {
+        detectable: source.nodes.filter((node) => node.detected === true).length >= 3,
+        withinTarget
+      };
+    });
+  });
+  const detectableEvents = eventResults.filter((event) => event.detectable);
   const fixes = scoredFixes.filter((s) => Number.isFinite(s.horizontal_m));
   const nodes = sources.flatMap((s) => s.nodes);
-  const bearingNodes = scoredFixes.flatMap((s) => s.nodes);
+  const bearingNodes = scoredFixes.flatMap((s) => s.nodes ?? []);
   const eligibleBearings = bearingNodes.filter((n) => Number.isFinite(n.az_error_deg));
   const bearings = eligibleBearings.filter((n) => Number.isFinite(n.sigma_deg) && n.sigma_deg >= 0);
   const twoSigma = (n) => Object.hasOwn(n, 'two_sigma_deg') ? n.two_sigma_deg : Number.isFinite(n.sigma_deg) ? 2 * n.sigma_deg : null;
@@ -81,13 +179,18 @@ export function metricValues(runs, { wrong_fix_m = 10 } = {}) {
   const wrong = fixes.filter((s) => s.horizontal_m > wrong_fix_m);
   const flagged = fixes.filter((s) => s.suspect);
   const unmatched = runs.reduce((a, r) => a + r.scores.unmatched_fixes, 0);
-  const tracks = scoredFixes.flatMap((s) => s.track_errors_m);
+  const tracks = scoredFixes.flatMap((s) => s.track_errors_m ?? []);
   const detection = nodes.filter((n) => n.detected !== null);
+  const fixProbabilities = fixProbabilityMetrics(runs, wrong_fix_m);
   return {
     horizontal_median_m: percentile(finite(fixes.map((s) => s.horizontal_m)), 50),
     horizontal_p90_m: percentile(finite(fixes.map((s) => s.horizontal_m)), 90),
     error_3d_median_m: percentile(finite(fixes.map((s) => s.error_3d_m)), 50),
     error_3d_p90_m: percentile(finite(fixes.map((s) => s.error_3d_m)), 90),
+    events_within_10m_misses_counted: ratio(eventResults.filter((event) => event.withinTarget).length, eventResults.length),
+    detectable_3_node_fraction: ratio(detectableEvents.length, eventResults.length),
+    detectable_3_node_events_within_10m: ratio(detectableEvents.filter((event) => event.withinTarget).length, detectableEvents.length),
+    detectable_3_node_event_count: detectableEvents.length,
     scene_fix_rate: ratio(runs.filter((r) => r.scores.fix_count > 0).length, runs.length),
     useful_fix_rate: ratio(runs.filter((r) => (r.scores.fixes ?? r.scores.sources).some((s) => Number.isFinite(s.horizontal_m) && s.horizontal_m <= wrong_fix_m && !s.suspect)).length, runs.length),
     unflagged_wrong_fix_rate: ratio(runs.filter((r) => (r.scores.fixes ?? r.scores.sources).some((s) => Number.isFinite(s.horizontal_m) && s.horizontal_m > wrong_fix_m && !s.suspect) || r.scores.unmatched_fixes > r.scores.unmatched_suspect).length, runs.length),
@@ -104,6 +207,7 @@ export function metricValues(runs, { wrong_fix_m = 10 } = {}) {
     elevation_median_deg: percentile(finite(bearingNodes.map((n) => n.el_error_deg)), 50),
     within_1sigma: bearings.length === eligibleBearings.length ? ratio(bearings.filter((n) => n.az_error_deg <= n.sigma_deg).length, bearings.length) : null,
     within_2sigma: bearings2.length === eligibleBearings.length ? ratio(bearings2.filter((n) => n.az_error_deg <= twoSigma(n)).length, bearings2.length) : null,
+    ...fixProbabilities,
     detection_rate: ratio(detection.filter((n) => n.detected).length, detection.length),
     labelling_accuracy: null,
     runtime_ms: runs.reduce((a, r) => a + r.runtime_ms, 0)
@@ -116,15 +220,16 @@ export function aggregate(runs, options = {}) {
   const rng = mulberry32(7103);
   const draws = Object.fromEntries(Object.keys(METRICS).map((k) => [k, []]));
   // Resample complete scene/seed runs, not individual correlated sources or bearings.
-  if (runs.length >= 2) for (let b = 0; b < o.bootstrap_samples; b++) {
-    const sample = Array.from({ length: runs.length }, () => runs[Math.floor(rng() * runs.length)]);
+  const nSites = new Set(runs.map(siteId)).size;
+  if (nSites >= 2) for (let b = 0; b < o.bootstrap_samples; b++) {
+    const sample = siteClusterSample(runs, rng);
     const v = metricValues(sample, o);
     for (const k of Object.keys(draws)) if (Number.isFinite(v[k])) draws[k].push(v[k]);
   }
   const tail = (1 - o.confidence) * 50;
   return Object.fromEntries(Object.entries(values).map(([k, value]) => [k, {
     value, ci: draws[k].length ? [percentile(draws[k], tail), percentile(draws[k], 100 - tail)] : null,
-    n_runs: runs.length, confidence: o.confidence
+    n_runs: runs.length, n_sites: nSites, confidence: o.confidence
   }]));
 }
 
@@ -133,7 +238,15 @@ export function summariseRuns(runs, options = {}) {
   return keys.map((key) => {
     const subset = runs.filter((r) => [r.job.config.id, r.job.split, r.job.realism, r.job.analysis_mode].join('|') === key);
     const job = subset[0].job;
-    return { key, config_id: job.config.id, name: job.config.name, values: job.config.values, settings: job.config.settings, group: job.config.group, split: job.split, realism: job.realism, analysis_mode: job.analysis_mode, population: subset.map((r) => `${r.job.scene}|${r.job.seed}`).sort(), metrics: aggregate(subset, options), risk_coverage: riskCoverage(subset, options) };
+    return {
+      key, config_id: job.config.id, name: job.config.name, values: job.config.values,
+      settings: job.config.settings, group: job.config.group, split: job.split,
+      realism: job.realism, analysis_mode: job.analysis_mode,
+      population: subset.map((r) => `${r.job.scene}|${r.job.seed}`).sort(),
+      metrics: aggregate(subset, options),
+      fix_reliability: fixReliability(subset, options.wrong_fix_m ?? BENCHMARK_DEFAULTS.wrong_fix_m),
+      risk_coverage: riskCoverage(subset, options)
+    };
   });
 }
 
@@ -188,22 +301,34 @@ export function pairedComparison(runs, metric, options = {}) {
   if (ids.length !== 2) return null;
   const key = (r) => `${r.job.scene}|${r.job.seed}|${r.job.realism}|${r.job.analysis_mode}`;
   const b = new Map(runs.filter((r) => r.job.config.id === ids[1]).map((r) => [key(r), r]));
-  const delta = runs.filter((r) => r.job.config.id === ids[0]).flatMap((r) => {
+  const deltas = runs.filter((r) => r.job.config.id === ids[0]).flatMap((r) => {
     const other = b.get(key(r));
     if (!other) return [];
     const aV = metricValues([r], o)[metric], bV = metricValues([other], o)[metric];
-    return Number.isFinite(aV) && Number.isFinite(bV) ? [bV - aV] : [];
+    return Number.isFinite(aV) && Number.isFinite(bV) ? [{ site: siteId(r), delta: bV - aV }] : [];
   });
-  if (!delta.length) return { metric, n_pairs: 0, delta: null, ci: null, p_value: null };
+  if (!deltas.length) return { metric, n_pairs: 0, n_sites: 0, delta: null, ci: null, p_value: null };
+  const clusters = new Map();
+  for (const row of deltas) clusters.set(row.site, [...(clusters.get(row.site) ?? []), row.delta]);
+  const sites = [...clusters.keys()];
   const mean = (a) => a.reduce((s, v) => s + v, 0) / a.length;
-  const observed = mean(delta), rng = mulberry32(9137), draws = [];
+  const observed = mean(deltas.map((r) => r.delta)), rng = mulberry32(9137), draws = [];
   let extreme = 0;
   for (let i = 0; i < o.permutation_samples; i++) {
-    if (Math.abs(mean(delta.map((d) => rng() < 0.5 ? -d : d))) >= Math.abs(observed) - 1e-12) extreme++;
+    const signs = new Map(sites.map((site) => [site, rng() < 0.5 ? -1 : 1]));
+    if (Math.abs(mean(deltas.map((r) => signs.get(r.site) * r.delta))) >= Math.abs(observed) - 1e-12) extreme++;
   }
-  if (delta.length >= 2) for (let i = 0; i < o.bootstrap_samples; i++) draws.push(mean(Array.from({ length: delta.length }, () => delta[Math.floor(rng() * delta.length)])));
+  if (sites.length >= 2) for (let i = 0; i < o.bootstrap_samples; i++) {
+    const sample = Array.from({ length: sites.length }, () => clusters.get(sites[Math.floor(rng() * sites.length)])).flat();
+    draws.push(mean(sample));
+  }
   const tail = (1 - o.confidence) * 50;
-  return { metric, n_pairs: delta.length, delta: observed, ci: draws.length ? [percentile(draws, tail), percentile(draws, 100 - tail)] : null, p_value: (extreme + 1) / (o.permutation_samples + 1), method: 'paired sign-flip randomisation; complete scene/seed pairs; mean per-run metric delta B-A' };
+  return {
+    metric, n_pairs: deltas.length, n_sites: sites.length, delta: observed,
+    ci: draws.length ? [percentile(draws, tail), percentile(draws, 100 - tail)] : null,
+    p_value: (extreme + 1) / (o.permutation_samples + 1),
+    method: 'paired site-cluster sign-flip randomisation; paired scene/seed runs; mean per-run metric delta B-A'
+  };
 }
 
 export function rankingFlips(summary, metric = 'useful_fix_rate', rankVariable = 'mic_array') {

@@ -1,0 +1,1893 @@
+{
+  "name": "Mission 4 X1: legacy solver node-count sweep on fixed matrix sites",
+  "scenes": [
+    "core-0-train-01",
+    "core-0-train-02",
+    "core-0-validation-01",
+    "core-0-validation-02",
+    "core-0-validation-03",
+    "core-1-train-01",
+    "core-1-train-02",
+    "core-1-validation-01",
+    "core-1-validation-02",
+    "core-1-validation-03"
+  ],
+  "seeds": [
+    1
+  ],
+  "scene_seeds": {
+    "core-0-train-01": [
+      3100000
+    ],
+    "core-0-train-02": [
+      3100001
+    ],
+    "core-0-validation-01": [
+      3101000
+    ],
+    "core-0-validation-02": [
+      3101001
+    ],
+    "core-0-validation-03": [
+      3101002
+    ],
+    "core-1-train-01": [
+      3110000
+    ],
+    "core-1-train-02": [
+      3110001
+    ],
+    "core-1-validation-01": [
+      3111000
+    ],
+    "core-1-validation-02": [
+      3111001
+    ],
+    "core-1-validation-03": [
+      3111002
+    ]
+  },
+  "scene_splits": {
+    "core-0-train-01": "train",
+    "core-0-train-02": "train",
+    "core-0-validation-01": "validation",
+    "core-0-validation-02": "validation",
+    "core-0-validation-03": "validation",
+    "core-1-train-01": "train",
+    "core-1-train-02": "train",
+    "core-1-validation-01": "validation",
+    "core-1-validation-02": "validation",
+    "core-1-validation-03": "validation"
+  },
+  "custom_scenes": {
+    "core-0-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3100000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 1,
+        "mic_gain_sigma_db": 1,
+        "mic_position_sigma_mm": 2,
+        "noise_correlation": 0.3,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "measured_only",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 300000,
+        "matrix_environment": "open",
+        "matrix_source_height": "ground",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 0,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -30.72900931658481,
+                25.60718622616011,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-0-train-02": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3100001,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 1,
+        "mic_gain_sigma_db": 1,
+        "mic_position_sigma_mm": 2,
+        "noise_correlation": 0.3,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "measured_only",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 300001,
+        "matrix_environment": "open",
+        "matrix_source_height": "ground",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 0,
+        "matrix_sound_type": "sustained",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "engine",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                11.221150018550563,
+                -38.393824923562676,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-0-validation-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3101000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 1,
+        "mic_gain_sigma_db": 1,
+        "mic_position_sigma_mm": 2,
+        "noise_correlation": 0.3,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "measured_only",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 300100,
+        "matrix_environment": "open",
+        "matrix_source_height": "ground",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 0,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                32.38727428505429,
+                -23.47476228600965,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-0-validation-02": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3101001,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 1,
+        "mic_gain_sigma_db": 1,
+        "mic_position_sigma_mm": 2,
+        "noise_correlation": 0.3,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "measured_only",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 300101,
+        "matrix_environment": "open",
+        "matrix_source_height": "ground",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 0,
+        "matrix_sound_type": "sustained",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "engine",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                39.208418058418644,
+                7.918330212631384,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-0-validation-03": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3101002,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 1,
+        "mic_gain_sigma_db": 1,
+        "mic_position_sigma_mm": 2,
+        "noise_correlation": 0.3,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "measured_only",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 300102,
+        "matrix_environment": "open",
+        "matrix_source_height": "ground",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 1,
+        "matrix_cell_index": 0,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -2.6608582651386685,
+                39.91139979119804,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-1-train-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3110000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 1,
+        "mic_gain_sigma_db": 1,
+        "mic_position_sigma_mm": 2,
+        "noise_correlation": 0.3,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "measured_only",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 301000,
+        "matrix_environment": "open",
+        "matrix_source_height": "ground",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 1,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -22.391823868653972,
+                33.14522927715508,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -17.50869863394903,
+                -35.96450294589863,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                39.90052250260301,
+                2.81927366874353,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-1-train-02": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3110001,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 1,
+        "mic_gain_sigma_db": 1,
+        "mic_position_sigma_mm": 2,
+        "noise_correlation": 0.3,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "measured_only",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 301001,
+        "matrix_environment": "open",
+        "matrix_source_height": "ground",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 1,
+        "matrix_sound_type": "sustained",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "engine",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                10.782219066299326,
+                38.519394491688615,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "engine",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -38.749883701346384,
+                -9.922021625260154,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "engine",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                27.96766463504705,
+                -28.597372866428454,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-1-validation-01": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3111000,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 1,
+        "mic_gain_sigma_db": 1,
+        "mic_position_sigma_mm": 2,
+        "noise_correlation": 0.3,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "measured_only",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 301100,
+        "matrix_environment": "open",
+        "matrix_source_height": "ground",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 1,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -21.255072996673356,
+                33.885422705141025,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -18.718100382289474,
+                -35.35014452698227,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                39.97317337896283,
+                1.4647218218412483,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-1-validation-02": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3111001,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 1,
+        "mic_gain_sigma_db": 1,
+        "mic_position_sigma_mm": 2,
+        "noise_correlation": 0.3,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "measured_only",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 301101,
+        "matrix_environment": "open",
+        "matrix_source_height": "ground",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 1,
+        "matrix_sound_type": "sustained",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "engine",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                38.746534012913266,
+                -9.935094462870284,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "engine",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -10.76922281261286,
+                38.52302999521583,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "engine",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -27.97731120030042,
+                -28.587935532345536,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    },
+    "core-1-validation-03": {
+      "version": "0.2",
+      "settings": {
+        "temperature_c": 15,
+        "humidity_pct": 70,
+        "pressure_kpa": 101.325,
+        "noise_floor_db_spl": 45,
+        "mic_self_noise_db_spl": 30,
+        "ground_reflectivity": 0.8,
+        "slice_height_m": 1.5,
+        "seed": 3111002,
+        "render_sample_rate": 48000,
+        "localisation_band_hz": [
+          200,
+          1600
+        ],
+        "min_snr_db": 6,
+        "reflection_order": 0,
+        "block_direct_behind_buildings": false,
+        "diffraction_model": "wedge",
+        "diffraction_order": 0,
+        "heatmap_backdrop": 0.25,
+        "path_prune_db": 50,
+        "picked_path_tolerance_deg": 5,
+        "window_snr_db": 3,
+        "window_pad_ms": 10,
+        "min_window_ms": 30,
+        "heading_error_sigma_deg": 1,
+        "mic_gain_sigma_db": 1,
+        "mic_position_sigma_mm": 2,
+        "noise_correlation": 0.3,
+        "air_absorption": true,
+        "spl_ref_db": 94,
+        "dbfs_ref_db": -26,
+        "noise_enabled": true,
+        "analysis_mode": "measured_only",
+        "reach_cell_m": 2,
+        "reach_reflection_order": 2,
+        "window_policy": "auto",
+        "onset_window_ms": 25,
+        "onset_min_ms": 10,
+        "trigger_rise_db": 12,
+        "trigger_rise_ms": 50,
+        "adaptive_drift_deg": 3,
+        "adaptive_sigma_rise": 0.25,
+        "reflector_search_m": 30,
+        "overlap_sigma_deg": 10,
+        "reflector_sigma_deg": 3,
+        "reflector_scale_m": 5,
+        "multipath_floor_deg": 5,
+        "multipath_spread_ref_ms": 20,
+        "picked_path_level_window_db": 15,
+        "picked_path_elevation_tol_deg": 10,
+        "fix_min_crossing_deg": 10,
+        "fix_inlier_gate_sigma": 3,
+        "fix_loo_suspect_sigma": 2.5,
+        "fix_range_ratio_max": 6,
+        "fix_bounds_margin_m": 50,
+        "source_height_prior_m": 1.5,
+        "track_gate_sigma": 3,
+        "track_gate_min_deg": 5,
+        "track_pre_fix_elevation_gate_deg": 90,
+        "track_overlap_max_db": -6,
+        "track_iterations": 2,
+        "track_alpha": 0.5,
+        "track_beta": 0.2,
+        "detection_band_hz": [
+          50,
+          9000
+        ],
+        "labelling_enabled": false,
+        "labelling_mode": "model",
+        "label_pre_roll_s": 3,
+        "label_clap_mode": "clap5",
+        "label_cosine_min": 0.15,
+        "label_assoc_tol_s": 1,
+        "matrix_site_seed": 301102,
+        "matrix_environment": "open",
+        "matrix_source_height": "ground",
+        "matrix_motion": "stationary",
+        "matrix_simultaneous_sources": 3,
+        "matrix_cell_index": 1,
+        "matrix_sound_type": "impulsive",
+        "matrix_node_count": 5,
+        "matrix_mean_spacing_m": 40
+      },
+      "nodes": [
+        {
+          "id": "n1",
+          "position": [
+            25.993575698632505,
+            0,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n2",
+          "position": [
+            8.032456635449092,
+            24.721359549995793,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n3",
+          "position": [
+            -21.02924448476534,
+            15.278640450004207,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n4",
+          "position": [
+            -21.029244484765343,
+            -15.278640450004202,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        },
+        {
+          "id": "n5",
+          "position": [
+            8.032456635449085,
+            -24.721359549995796,
+            5
+          ],
+          "rotation_deg": 0,
+          "mic_layout": "flat_square",
+          "mic_spacing_m": 0.1
+        }
+      ],
+      "sources": [
+        {
+          "id": "s1",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                -39.97757533987893,
+                1.3392049672489181,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s2",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                18.829002147427587,
+                -35.29119830966593,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        },
+        {
+          "id": "s3",
+          "clip": "glass_breaking",
+          "keyframes": [
+            {
+              "t": 0,
+              "position": [
+                21.148573192451337,
+                33.95199334241701,
+                1.5
+              ]
+            }
+          ],
+          "level_1m_db": 100,
+          "start_s": 3
+        }
+      ],
+      "buildings": []
+    }
+  },
+  "realism": [
+    "off",
+    "on"
+  ],
+  "analysis_modes": [
+    "measured_only"
+  ],
+  "mode": "grid",
+  "base_settings": {
+    "measured_fusion_mode": "legacy"
+  },
+  "base_values": {},
+  "sweeps": [
+    {
+      "variable": "node_count",
+      "values": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    }
+  ],
+  "max_runs": 2000,
+  "wrong_fix_m": 10,
+  "bootstrap_samples": 2000,
+  "permutation_samples": 2000,
+  "confidence": 0.95,
+  "preregistration": {
+    "baseline_gzip_sha256": "1dae27871b53cfc678b744ac1cccc35206da6634e488672c26acec42fb61f066",
+    "source_cells": [
+      0,
+      1
+    ],
+    "note": "Training and validation source sites are selected before rendering new node-count variants; no sealed site is used."
+  }
+}

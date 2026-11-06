@@ -1,0 +1,58 @@
+{
+  "name": "Mission 4 phase 0-1 diagnostics from frozen round-3 baseline",
+  "status": "preregistered-before-mission4-analysis",
+  "schema": 1,
+  "data_source": {
+    "report": "baselines/matrix-baseline-r3.full.json.gz",
+    "scope": "frozen mission 3A complete report",
+    "no_new_simulation_runs": true
+  },
+  "x0_detectability": {
+    "population": "three-source source-events in matrix baseline report",
+    "labels": {
+      "detectable_3_nodes": "at least three nodes with source-aligned measured tracks during source clip within 10 degrees of truth (unchanged 3A definition)",
+      "bearing_available_3_nodes": "at least three nodes with any measured bearing window during source clip (new companion label)",
+      "track_within10_any_time_3_nodes": "at least three nodes with any track window within 10 degrees of truth at any time"
+    },
+    "node_stage_breakdown": [
+      "candidate window in clip",
+      "kept bearing window in clip",
+      "track window in clip",
+      "within 10 degrees in clip",
+      "within 10 degrees at any track time"
+    ],
+    "failure_buckets": [
+      "no bearing at 3+ nodes in clip",
+      "bearings present but outside 10 degrees",
+      "loss at assignment stage",
+      "loss at association stage"
+    ],
+    "assumptions": {
+      "source_clip_duration_seconds": "archived clip samples divided by scenario render_sample_rate, per run",
+      "tolerance_degrees": 10
+    }
+  },
+  "x1_node_count_reconciliation": {
+    "population": "matrix baseline runs grouped by realism, source count and matrix_node_count",
+    "node_counts": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      8
+    ],
+    "metrics": [
+      "scene_fix_rate",
+      "events_within_10m_misses_counted",
+      "detectable_3_node_fraction",
+      "wrong_fix_rate",
+      "unflagged_wrong_fix_rate",
+      "duplicate_fix_scene_rate",
+      "mean_fixes_per_scene"
+    ],
+    "note": "Node-8 may be absent because 3A baseline runtime cut excluded node_count=8 density cases."
+  },
+  "time_budget_assumption_hours": 10,
+  "placeholder_notice": "This preregistration constrains mission 4 phase 0-1 diagnostics only; later mission phases need separate preregistration entries."
+}

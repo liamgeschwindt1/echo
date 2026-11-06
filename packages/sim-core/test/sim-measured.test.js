@@ -62,4 +62,8 @@ test('nonempty measured inference forms tracks without accessing simulator truth
   const result = analyseMeasured(scenario, rendered, { c: 343 });
   assert.ok(result.nodes[0].tracks.length > 0);
   assert.ok(result.nodes[0].windows.length > 0);
+  const joint = analyseMeasured(scenario, rendered, { c: 343, options: { fusion_mode: 'joint' } });
+  assert.ok(joint.nodes[0].tracks.length > 0);
+  assert.deepEqual(joint.fixes, []);
+  assert.throws(() => analyseMeasured(scenario, rendered, { c: 343, options: { fusion_mode: 'unknown' } }), /Unknown measured fusion mode/);
 });

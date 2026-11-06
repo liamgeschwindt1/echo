@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { scoreMeasured, SCORING_VERSION } from '../src/benchmark/score.js';
+import { scoreMeasured, SCORING_VERSION, DETECTION_BEARING_TOLERANCE_DEG } from '../src/benchmark/score.js';
 import { metricValues, compareReports, failureAtlas } from '../src/benchmark/metrics.js';
 import { finishExperiment, rescoreReport } from '../src/benchmark/runner.js';
 import { buildJobs } from '../src/benchmark/experiment.js';
@@ -34,6 +34,26 @@ test('separate sound bursts may match one source without false unmatched fixes',
   assert.equal(metrics.wrong_fix_rate, 0);
   assert.equal(metrics.source_fix_rate, 1);
   assert.equal(metrics.track_fix_count, 4);
+});
+test('three-node detectability comes from source-aligned tracks even without a fused fix', () => {
+  const scenario = defaultScenario();
+  scenario.nodes = [newNode('n1', -10, 0), newNode('n2', 10, 0), newNode('n3', 0, 10), newNode('n4', -10, -10)];
+  scenario.sources = [newSource('s1', 'click', 20, 20, 100)];
+  const measured = {
+    options: { bearing_sigma_deg: 2.5 },
+    nodes: scenario.nodes.map((node, i) => {
+      const source = scenario.sources[0].keyframes[0].position;
+      const bearing = Math.atan2(source[1] - node.position[1], source[0] - node.position[0]) * 180 / Math.PI;
+      return { tracks: [{ windows: [{ t_s: i === 2 ? 2.9 : 3.1, az_deg: bearing }] }] };
+    }),
+    fixes: []
+  };
+  const scores = scoreMeasured(scenario, measured, { c: 343 });
+  assert.equal(scores.sources[0].nodes.filter((node) => node.detected).length, 3);
+  assert.match(scores.sources[0].nodes[0].detection_method, new RegExp(`${DETECTION_BEARING_TOLERANCE_DEG} degrees`));
+  assert.equal(metricValues([{ scores, runtime_ms: 0 }]).detectable_3_node_events_within_10m, 0);
+  const outsideClip = scoreMeasured(scenario, measured, { c: 343, clip_durations: new Map([['click', 0.05]]) });
+  assert.equal(outsideClip.sources[0].nodes.filter((node) => node.detected).length, 0);
 });
 test('every assigned episode enters error quantiles and suspect metrics, not just the closest', () => {
   const scores = score(fixture([[1, 2], [4, 5]], [0, 15]));

@@ -20,11 +20,33 @@ export function plainSummary(report, metric = 'useful_fix_rate') {
 }
 
 export function metricTable(report, targets = {}) {
-  const columns = ['horizontal_median_m', 'horizontal_p90_m', 'error_3d_median_m', 'scene_fix_rate', 'useful_fix_rate', 'unflagged_wrong_fix_rate', 'risk_coverage_area', 'within_target_rate', 'wrong_fix_rate', 'suspect_recall', 'suspect_precision', 'track_fix_count', 'track_median_error_m', 'bearing_median_deg', 'elevation_median_deg', 'within_1sigma', 'within_2sigma', 'detection_rate'];
+  const columns = ['horizontal_median_m', 'horizontal_p90_m', 'error_3d_median_m', 'source_fix_rate', 'events_within_10m_misses_counted', 'detectable_3_node_fraction', 'detectable_3_node_events_within_10m', 'detectable_3_node_event_count', 'scene_fix_rate', 'useful_fix_rate', 'unflagged_wrong_fix_rate', 'risk_coverage_area', 'within_target_rate', 'wrong_fix_rate', 'suspect_recall', 'suspect_precision', 'track_fix_count', 'track_median_error_m', 'bearing_median_deg', 'elevation_median_deg', 'within_1sigma', 'within_2sigma', 'detection_rate', 'fix_brier_score', 'fix_log_loss', 'fix_error_10m_auc', 'fix_reliability_error'];
   return `<table><thead><tr><th>Config / split / realism / mode</th>${columns.map((k) => `<th>${escapeHtml(k)}</th>`).join('')}</tr></thead><tbody>${report.summary.map((r) => `<tr><th>${escapeHtml(`${r.name} / ${r.split} / ${r.realism} / ${r.analysis_mode}`)}</th>${columns.map((k) => {
-    const m = r.metrics[k] ?? { value: null, ci: null }, target = targets.metrics?.[k], value = m.value;
-    const pass = target && Number.isFinite(value) ? (target.max === undefined || value <= target.max) && (target.min === undefined || value >= target.min) : null;
-    return `<td data-config="${escapeHtml(r.config_id)}" data-split="${escapeHtml(r.split)}" data-realism="${escapeHtml(r.realism)}" data-mode="${escapeHtml(r.analysis_mode)}" class="${pass === null ? '' : pass ? 'pass' : 'fail'}">${formatNumber(value)}${m.ci ? `<small>[${m.ci.map(formatNumber).join(', ')}]</small>` : '<small>CI unavailable</small>'}</td>`;
+    const m = r.metrics[k] ?? { value: null, ci: null }, value = m.value;
+    const targetKey = ({
+      source_fix_rate: 'coverage',
+      events_within_10m_misses_counted: 'events_within_10m_misses_counted',
+      bearing_median_deg: 'bearing_median_deg_realism_on'
+    })[k] ?? k;
+    const legacyTarget = targets.metrics?.[k];
+    const tiers = targets.tiers && !(k === 'bearing_median_deg' && r.realism !== 'on')
+      ? Object.entries(targets.tiers).filter(([, values]) => values[targetKey]).map(([name, values]) => [name, values[targetKey]])
+      : [];
+    const reached = tiers.filter(([, target]) => Number.isFinite(value) &&
+      (target.max === undefined || value <= target.max) &&
+      (target.min === undefined || value >= target.min)).at(-1)?.[0] ?? null;
+    const legacyPass = legacyTarget && Number.isFinite(value)
+      ? (legacyTarget.max === undefined || value <= legacyTarget.max) &&
+        (legacyTarget.min === undefined || value >= legacyTarget.min)
+      : null;
+    const hasTarget = tiers.length > 0 || !!legacyTarget;
+    const insufficient = r.status === 'insufficient';
+    const status = insufficient ? '' : reached ? `pass tier-${reached}` : legacyPass === true ? 'pass' : hasTarget && Number.isFinite(value) ? 'fail' : '';
+    const label = insufficient ? `insufficient (${r.n_scenes ?? 0} sites)` :
+      reached ? `${reached} tier` : legacyPass === true ? 'target met' :
+        hasTarget && Number.isFinite(value) ? 'below minimum' : 'CI unavailable';
+    const interval = m.ci ? `[${m.ci.map(formatNumber).join(', ')}]` : '';
+    return `<td data-config="${escapeHtml(r.config_id)}" data-split="${escapeHtml(r.split)}" data-realism="${escapeHtml(r.realism)}" data-mode="${escapeHtml(r.analysis_mode)}" data-tier="${escapeHtml(reached ?? '')}" class="${status}">${formatNumber(value)}${interval || label ? `<small>${interval}${interval && label ? ' · ' : ''}${label}</small>` : ''}</td>`;
   }).join('')}</tr>`).join('')}</tbody></table>`;
 }
 
@@ -111,5 +133,5 @@ export function tornado(summary, metric) {
 export function reportHtml(report, targets = {}) {
   const numeric = report.experiment.sweeps.find((s) => s.values.every((v) => typeof v === 'number'))?.variable;
   const risk = `<h2>Risk versus coverage</h2>${riskCoverageChart(report.summary)}${confidenceReport(report)}${acceptanceTable(report.comparison)}`;
-  return `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${escapeHtml(report.experiment.name)} benchmark</title><style>body{background:#171b22;color:#ddd;font:14px system-ui;margin:24px}table{border-collapse:collapse;display:block;overflow:auto}td,th{padding:8px;border:1px solid #46505c}small{display:block;color:#aeb8c8}.pass{background:#184431}.fail{background:#58252a}svg{max-width:1000px;width:100%;fill:#ddd}pre{white-space:pre-wrap}</style><h1>${escapeHtml(report.experiment.name)}</h1><p>${escapeHtml(plainSummary(report))}</p>${metricTable(report, targets)}${risk}${numeric ? lineChart(report.summary, numeric, 'horizontal_median_m') : ''}${tornado(report.summary, 'horizontal_median_m')}<h2>Ranking</h2><pre>${escapeHtml(JSON.stringify(report.ranking.flips, null, 2))}</pre><h2>Failure atlas</h2><pre>${escapeHtml(JSON.stringify(report.failure_atlas, null, 2))}</pre><h2>Reproducibility</h2><pre>${escapeHtml(JSON.stringify(report.manifest, null, 2))}</pre><h2>Limits</h2>${report.notes.map((n) => `<p>${escapeHtml(n)}</p>`).join('')}</html>`;
+  return `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${escapeHtml(report.experiment.name)} benchmark</title><style>body{background:#171b22;color:#ddd;font:14px system-ui;margin:24px}table{border-collapse:collapse;display:block;overflow:auto}td,th{padding:8px;border:1px solid #46505c}small{display:block;color:#aeb8c8}.pass,.tier-minimum{background:#184431}.tier-standard{background:#12513a}.tier-exceptional{background:#146458}.fail{background:#58252a}svg{max-width:1000px;width:100%;fill:#ddd}pre{white-space:pre-wrap}</style><h1>${escapeHtml(report.experiment.name)}</h1><p>${escapeHtml(plainSummary(report))}</p>${metricTable(report, targets)}${risk}${numeric ? lineChart(report.summary, numeric, 'horizontal_median_m') : ''}${tornado(report.summary, 'horizontal_median_m')}<h2>Ranking</h2><pre>${escapeHtml(JSON.stringify(report.ranking.flips, null, 2))}</pre><h2>Failure atlas</h2><pre>${escapeHtml(JSON.stringify(report.failure_atlas, null, 2))}</pre><h2>Reproducibility</h2><pre>${escapeHtml(JSON.stringify(report.manifest, null, 2))}</pre><h2>Limits</h2>${report.notes.map((n) => `<p>${escapeHtml(n)}</p>`).join('')}</html>`;
 }

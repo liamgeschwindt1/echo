@@ -66,7 +66,7 @@ export async function runJob(job, context) {
     const sensorScenario = { nodes: scenario.nodes, settings: scenario.settings, buildings: scenario.buildings };
     const sensorData = { sample_rate: rendered.sample_rate, nodes: rendered.nodes.map((n) => ({ id: n.id, mics: n.mics, mic_positions: n.mic_positions })) };
     inference = { ...analyseMeasured(sensorScenario, sensorData, { c, options }), options };
-    scores = scoreMeasured(scenario, inference, { c });
+    scores = scoreMeasured(scenario, inference, { c, clip_durations: durations });
   } else {
     inference = analyseScenario(scenario, rendered, durations);
     scores = scoreAssisted(inference);
@@ -142,7 +142,7 @@ export function finishExperiment(experiment, configs, runs, manifest) {
     schema: EXPORT_SCHEMA, kind: 'echo-sim-benchmark', experiment, configs, manifest: { ...manifest, scoring_version: SCORING_VERSION },
     thresholds: Object.fromEntries(Object.keys(BENCHMARK_DEFAULTS).map((k) => [k, { value: experiment[k], placeholder: true }])),
     runs, summary, paired, ranking: complete ? rankingFlips(summary) : { metric: 'useful_fix_rate', rank_variable: 'mic_array', rankings: [], flips: [], note: 'Incomplete population; rankings suppressed' },
-    failure_atlas: ['train', 'held-out', 'validation', 'test'].flatMap((split) => ['off', 'on', 'custom'].flatMap((realism) => ['truth_assisted', 'measured_only'].flatMap((analysis_mode) => {
+    failure_atlas: ['train', 'held-out', 'validation', 'test'].flatMap((split) => ['off', 'on', 'surveyed', 'custom'].flatMap((realism) => ['truth_assisted', 'measured_only'].flatMap((analysis_mode) => {
       const subset = runs.filter((r) => r.job.split === split && r.job.realism === realism && r.job.analysis_mode === analysis_mode);
       return subset.length ? [{ split, realism, analysis_mode, categories: failureAtlas(subset, experiment.wrong_fix_m), detection_by_range: detectionByRange(subset) }] : [];
     }))),
@@ -152,7 +152,7 @@ export function finishExperiment(experiment, configs, runs, manifest) {
       'Truth-assisted source windows, SNR, overlap, picked paths, multipath and track gates use simulator truth.',
       'Measured-only reuses measured.js: horizontal only, pairwise greedy association; 3D error and labelling are unavailable (null), not zero.',
       'Measured scoring assigns overlapping fix episodes one-to-one to source paths after inference, without an error gate. Disjoint episodes may share a source; every matched episode enters error/track/calibration metrics. Unassigned simultaneous hypotheses count wrong. Scoring does not check clip-active intervals. Calibration uses median accepted track bearing error, not individual windows.',
-      'Measured detection rate means source-associated fused node tracks, not an independent classifier detection rate. No model labelling was run.',
+      'Measured detectability is scoring-only: a node has a source-aligned track when a bearing during the known source clip is within 10 degrees of truth. This is not an independent classifier or field detection probability. No model labelling was run.',
       'Runtime on cache hits records original execution time; render_ms is zero when audio was cached. It is not a fair cold-render speed comparison.'
     ]
   };
@@ -165,8 +165,13 @@ export function rescoreReport(report, manifest) {
   const runs = report.runs.map((run) => {
     if (!run.inference || !run.scenario) throw new Error(`Missing stored inference/scenario: ${run.job.id}`);
     const start = performance.now();
+    const clipDurations = new Map((run.manifest.audio ?? []).map((clip) =>
+      [clip.id, clip.samples / run.scenario.settings.render_sample_rate]));
     const scores = run.job.analysis_mode === 'measured_only'
-      ? scoreMeasured(run.scenario, run.inference, { c: speedOfSound(run.scenario.settings.temperature_c) })
+      ? scoreMeasured(run.scenario, run.inference, {
+        c: speedOfSound(run.scenario.settings.temperature_c),
+        clip_durations: clipDurations
+      })
       : scoreAssisted(run.inference);
     return { ...run, scores, cache_keys: { ...run.cache_keys, run: null }, rescoring_ms: performance.now() - start,
       manifest: { ...run.manifest, scoring_version: SCORING_VERSION, scoring_provenance: provenance,
