@@ -22,6 +22,40 @@ export function benchmarkHistoryTable(data, metric) {
   return `<p>${esc(data.notes)}</p><table><tr><th>Producer / stored report</th><th>Population hash / runs</th><th>Config / split / realism / mode</th><th>${esc(metric)}</th></tr>${data.entries.flatMap((e) => e.summary.map((r) => `<tr><td><code>${esc(e.git_hash?.slice(0, 10))}${e.dirty ? ' (dirty producer)' : ''}</code><small>${esc(e.report)}</small></td><td><code>${esc(e.population_sha256.slice(0, 12))}</code> / ${esc(e.n_runs)}</td><td>${esc(r.key)}</td><td>${formatNumber(r.metrics[metric]?.value)}<small>${r.metrics[metric]?.ci?.map(formatNumber).join(' - ') ?? 'CI unavailable'}</small></td></tr>`)).join('')}</table>`;
 }
 
+export function matrixBaselineTable(data) {
+  if (data.kind !== 'echo-matrix-baseline' || data.schema !== 1 || data.complete !== true ||
+      !Number.isInteger(data.population?.runs) || data.population.runs !== data.population.expected_runs ||
+      !Array.isArray(data.cells) || data.cells.length !== 24 ||
+      !Array.isArray(data.generalisation) || !Array.isArray(data.node_density) ||
+      !/^[a-f0-9]{64}$/.test(data.input_sha256 ?? '') ||
+      !/^[a-f0-9]{64}$/.test(data.sealed_input_sha256 ?? '')) {
+    throw new Error('Load a complete 24-cell matrix baseline with matching input hashes');
+  }
+  const row = (name, split, realism, result) => ({
+    config_id: `${name}/${split}/${realism}`,
+    name,
+    split,
+    realism,
+    analysis_mode: 'measured_only',
+    metrics: result.metrics,
+    status: result.status,
+    n_scenes: result.n_scenes
+  });
+  const core = data.cells.flatMap((cell) => {
+    const factors = cell.factors;
+    const name = `Cell ${cell.cell_index}: ${factors.environment}, ${factors.source_height}, ${factors.motion}, ${factors.simultaneous_sources} sources`;
+    return Object.entries(cell.results).map(([key, result]) => {
+      const [split, realism] = key.split('/');
+      return row(name, split, realism, result);
+    });
+  });
+  const generalisation = data.generalisation.map((result) =>
+    row('Generalisation', 'validation', result.realism, result));
+  const density = data.node_density.map((result) =>
+    row(`${result.node_count} nodes / ${result.mean_spacing_m} m`, 'validation', result.realism, result));
+  return `<p>Complete simulated baseline: ${data.population.runs} runs. Input <code>${esc(data.input_sha256)}</code>; frozen sealed input <code>${esc(data.sealed_input_sha256)}</code>. Sealed scenes were not run.</p><h4>Core cells, profiles and splits</h4>${metricTable({ summary: core }, targets)}<h4>Generalisation sites</h4>${metricTable({ summary: generalisation }, targets)}<h4>Node-density sweep</h4>${metricTable({ summary: density }, targets)}`;
+}
+
 export function parseVariableValues(variable, text) {
   const strings = variable.values.every((v) => typeof v === 'string');
   const values = text.split(',').map((s) => s.trim()).filter(Boolean).map((s) => strings ? s : Number(s));
@@ -57,6 +91,7 @@ export function createTesting({ $, getScenario, getClips, getArrays, onDrilldown
       </section>
       <section class="set-card"><h3>Labelling benchmark</h3><p class="note">Load the complete report from <code>node scripts/benchmark-labelling.mjs --discard-renders</code>. Models actually run in Node; oracle labels are a separate upper bound. One ESC-50 clip per class is not a real-world validation dataset.</p><label>Labelling report JSON<input id="labellingReport" type="file" accept=".json"></label><p id="labellingStatus" role="status"></p><div id="labellingResults" class="testing-table"></div></section>
       <section class="set-card"><h3>Benchmark history</h3><p class="note">Stored complete reports over producer commits. Compare only equal population hashes and matching conditions; a different population is not an improvement. Generate from stored/nightly reports with scripts/benchmark-history.mjs, then load its JSON here without rebuilding. Summary hashes identify inputs, not an authenticated audit of an uploaded file.</p><label>History JSON<input id="historyReport" type="file" accept=".json"></label><p id="historyStatus" role="status"></p><label>History metric<select id="historyMetric">${Object.keys(METRICS).map((k) => `<option>${k}</option>`).join('')}</select></label><div id="historyResults" class="testing-table"></div></section>
+      <section class="set-card"><h3>Round 3 matrix baseline</h3><p class="note">Load <code>baselines/matrix-baseline-r3.json</code> after Mission 3A completes. Tier colors reflect placeholder targets only; groups with fewer than five sites are marked insufficient. Sealed scenes stay reserved for Mission 3D.</p><label>Matrix baseline JSON<input id="matrixBaseline" type="file" accept=".json"></label><p id="matrixStatus" role="status"></p><div id="matrixResults" class="testing-table"></div></section>
       <section class="set-card"><h3>Placement and geometry coverage</h3>
         <p class="note">Planning placeholder, not calibrated accuracy or detection probability. Uses current editor nodes/buildings, independent bearing errors, a 1.5 m source plane and an assumed usable-bearing range. Red: blind under these assumptions; green: major geometry scale at most10 m; amber: larger; grey: building. Reflections, noise, heading bias and the retained pair-only fusion are not predicted. Suggestions use eight unverified candidate mounts at5 m; survey access before use. They do not alter the editor or localiser.</p>
         <div class="row"><label>Suggested nodes<select id="placementCount">${[2, 3, 4, 5, 6].map((n) => `<option>${n}</option>`).join('')}</select></label>
@@ -136,6 +171,14 @@ export function createTesting({ $, getScenario, getClips, getArrays, onDrilldown
       historyData = data; $('historyResults').innerHTML = table;
       $('historyStatus').textContent = 'Stored-report history loaded; compare equal population hashes only.';
     } catch (error) { $('historyStatus').textContent = `Error: ${error.message}. Existing history unchanged.`; }
+  };
+  $('matrixBaseline').onchange = async () => {
+    try {
+      const data = JSON.parse(await $('matrixBaseline').files[0].text());
+      const table = matrixBaselineTable(data);
+      $('matrixResults').innerHTML = table;
+      $('matrixStatus').textContent = 'Complete matrix baseline loaded; sealed scenes remain unrun.';
+    } catch (error) { $('matrixStatus').textContent = `Error: ${error.message}. Existing matrix results unchanged.`; }
   };
   const showPlacement = (suggest) => {
     try {

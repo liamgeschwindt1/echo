@@ -97,13 +97,20 @@ export function normaliseExperiment(input) {
   }
   if (!Array.isArray(e.seeds) || !e.seeds.length || e.seeds.some((s) => !Number.isSafeInteger(s) || s < 0 || s > 0xffffffff) || new Set(e.seeds).size !== e.seeds.length) throw new Error('Seeds must be unique unsigned integers');
   if (!(e.confidence > 0 && e.confidence < 1) || !(e.wrong_fix_m > 0)) throw new Error('Invalid confidence or error target');
-  if (!Array.isArray(e.realism) || !e.realism.length || e.realism.some((m) => !['off', 'on', 'custom'].includes(m))) throw new Error('Invalid realism modes');
+  if (!Array.isArray(e.realism) || !e.realism.length || e.realism.some((m) => !['off', 'on', 'surveyed', 'custom'].includes(m))) throw new Error('Invalid realism modes');
   if (!Array.isArray(e.analysis_modes) || !e.analysis_modes.length || e.analysis_modes.some((m) => !['truth_assisted', 'measured_only'].includes(m))) throw new Error('Invalid analysis modes');
   if (e.mode === 'paired' && (!e.configs || e.configs.length !== 2)) throw new Error('Paired mode needs exactly two configs');
   e.sweeps = e.sweeps.map((v) => ({ ...v, values: sweepValues(v) }));
   if (new Set(e.sweeps.map((s) => s.variable)).size !== e.sweeps.length) throw new Error('Sweep variables must be unique');
+  if (e.scene_seeds !== undefined && (!e.scene_seeds || typeof e.scene_seeds !== 'object' ||
+      Object.entries(e.scene_seeds).some(([id, seeds]) => !e.scenes.includes(id) || !Array.isArray(seeds) ||
+        !seeds.length || seeds.some((s) => !Number.isSafeInteger(s) || s < 0 || s > 0xffffffff) ||
+        new Set(seeds).size !== seeds.length))) throw new Error('Per-scene seeds must be unique unsigned integers for selected scenes');
   // Keep requested values: a registry default is not necessarily this scene's or realism state's base.
-  e.estimated_runs = modeRunCount(e) * e.scenes.length * e.seeds.length * e.realism.length;
+  const seedRuns = e.scene_seeds
+    ? e.scenes.reduce((sum, id) => sum + (e.scene_seeds[id] ?? e.seeds).length, 0)
+    : e.scenes.length * e.seeds.length;
+  e.estimated_runs = modeRunCount(e) * seedRuns * e.realism.length;
   if (!Number.isSafeInteger(e.estimated_runs)) throw new Error('Run count exceeds safe integer range');
   return e;
 }
@@ -123,7 +130,7 @@ export function estimateExperiment(input, runMs) {
     const modes = config.values.analysis_mode || config.settings.analysis_mode ? [config.values.analysis_mode ?? config.settings.analysis_mode] : e.analysis_modes;
     for (const mode of modes) {
       const exact = rows.find((r) => r.scene === id && r.total_mics === total && r.analysis_mode === mode && r.render_n > 0);
-      const repetitions = e.seeds.length * e.realism.length;
+      const repetitions = (e.scene_seeds?.[id] ?? e.seeds).length * e.realism.length;
       if (exact) milliseconds += repetitions * (exact.render_p90_ms + exact.analysis_p90_ms);
       else {
         const descriptor = timingDescriptor(scene);
@@ -183,7 +190,7 @@ export function buildJobs(input, { allowAboveCap = false } = {}) {
   if (e.estimated_runs > e.max_runs && !allowAboveCap) throw new Error(`${e.estimated_runs} runs exceeds cap ${e.max_runs}; reduce samples or values`);
   const configs = buildConfigs(e);
   const jobs = [];
-  for (const config of configs) for (const scene of e.scenes) for (const seed of e.seeds) for (const realism of e.realism) for (const analysis_mode of config.values.analysis_mode || config.settings.analysis_mode ? [config.values.analysis_mode ?? config.settings.analysis_mode] : e.analysis_modes) {
+  for (const config of configs) for (const scene of e.scenes) for (const seed of e.scene_seeds?.[scene] ?? e.seeds) for (const realism of e.realism) for (const analysis_mode of config.values.analysis_mode || config.settings.analysis_mode ? [config.values.analysis_mode ?? config.settings.analysis_mode] : e.analysis_modes) {
     jobs.push({
       id: `${config.id}:${scene}:${seed}:${realism}:${analysis_mode}`, config, scene, seed, realism,
       analysis_mode: config.values.analysis_mode ?? config.settings.analysis_mode ?? analysis_mode,

@@ -24,10 +24,11 @@
     "sound_type_assignment": "alternating replicates, balanced within each split",
     "profile": {
       "open": { "building_cover_fraction": 0, "building_heights_m": null },
-      "mixed": { "building_cover_fraction": 0.15, "building_heights_m": [8, 20] },
+      "mixed": { "building_cover_fraction": 0.15, "building_heights_m": [8, 20], "block_width_depth_m": [24, 42] },
       "dense_urban": {
         "building_cover_fraction": 0.4,
         "building_heights_m": [15, 40],
+        "block_width_depth_m": [28, 45],
         "street_width_m": [10, 25],
         "label": "synthetic street layout"
       },
@@ -75,6 +76,20 @@
     "seed_policy": "unique per site; common random numbers within a matched component contrast"
   },
   "benchmark_tiers": {
+    "timing_probe": {
+      "sites": "first train replicate, impulsive sound, for each open/mixed/dense_urban x ground/aerial stationary one-source cell",
+      "site_count": 6,
+      "realism": ["off", "on", "surveyed"],
+      "analysis_modes": ["measured_only"],
+      "purpose": "measure render and analysis stage times for each distinct scene type before matrix grading"
+    },
+    "expanded_timing_probe": {
+      "sites": "first train replicate, impulsive sound, for each of the 24 core cells",
+      "site_count": 24,
+      "realism": ["off", "on", "surveyed"],
+      "analysis_modes": ["measured_only"],
+      "purpose": "measure effects of source count and motion before sizing the matrix baseline"
+    },
     "matrix-smoke": {
       "cells": "open/mixed/dense_urban x ground/aerial; stationary; one source",
       "sites_per_cell": 2,
@@ -94,6 +109,18 @@
       "analysis_modes": ["measured_only"]
     }
   },
+  "baseline_population": {
+    "core_sites_per_cell": 5,
+    "split_counts_per_cell": { "train": 2, "validation": 3 },
+    "include_all_24_core_cells": true,
+    "include_all_48_generalisation_sites": true,
+    "density_sweep_exclusion": "exclude any site with 8 nodes or 80 m spacing first",
+    "realism": ["off", "on", "surveyed"],
+    "analysis_modes": ["measured_only"],
+    "per_cell_results": true,
+    "resume": "exact benchmark run cache; save final per-cell summaries and raw complete report",
+    "selection_basis": "fixed preregistered cut order and recorded timing probe only; never accuracy outcomes"
+  },
   "acceptance": {
     "position_change": "rule 4 from docs/round2-method.md, by split and realism, with site-clustered intervals",
     "report": [
@@ -107,6 +134,15 @@
       "risk-coverage area"
     ],
     "subset": "also report detectable-by-at-least-3-nodes once the label is implemented",
+    "metric_definitions": {
+      "coverage": "Expected source events with an assigned fix divided by all expected source events.",
+      "events_within_10m_misses_counted": "Expected source events with an assigned fix at most 10 m divided by all expected source events; missed events fail.",
+      "detectable_3_node_fraction": "Expected source events with source-aligned measured tracks at three or more nodes divided by all expected source events; a track must have a window during the source clip within 10 degrees of the true source bearing.",
+      "detectable_3_node_events_within_10m": "Among events detectable at three or more nodes, fraction with an assigned fix at most 10 m.",
+      "fix_probability_metrics": "Brier, log loss, error-over-10-m AUROC and reliability error use per-fix p_wrong; unavailable if any included fix lacks p_wrong."
+    },
+    "minimum_sites_for_tier": 5,
+    "undersized_groups": "Groups with fewer than five distinct sites are descriptive only; no tier color or population ranking.",
     "rank_equal_populations_only": true,
     "null_is_not_zero": true
   },
@@ -115,6 +151,40 @@
     "reduce per-cell matrix sites toward five, never drop a core cell",
     "drop sustained-sound repeats last"
   ],
+  "sealed_input_sha256": "a2fe9499ec853c2e5a3d6e2ececef9ca30410adb7454ed39a211c2fdf072a78c",
   "seal_policy": "Generate and hash the full sealed input population in this mission; never run it. It is reserved for 3D only.",
-  "results": null
+  "results": {
+    "status": "complete",
+    "frozen_design_sha256": "6b5f325fe8fb292ffdc87cc8ad245857d9193de8546b4f87c5c5b01643ac29a5",
+    "generated_input_sha256": "99e9e973c25b7809839ebea4f55360d2a33604618b97ecaca69054e4af46a8ed",
+    "sealed_input_sha256": "a2fe9499ec853c2e5a3d6e2ececef9ca30410adb7454ed39a211c2fdf072a78c",
+    "timing_probe": {
+      "runs": 18,
+      "report": "baselines/matrix-timing-r3.json",
+      "cache_hits": 0
+    },
+    "expanded_timing_probe": {
+      "runs": 72,
+      "report": "baselines/matrix-timing-expanded-r3.json",
+      "cache_hits": 0
+    },
+    "smoke": {
+      "runs": 36,
+      "report": "baselines/matrix-smoke-r3.json",
+      "cache_hits": 0
+    },
+    "baseline": {
+      "runs": 606,
+      "summary": "baselines/matrix-baseline-r3.json",
+      "compressed_complete_report": "baselines/matrix-baseline-r3.full.json.gz",
+      "raw_report_sha256": "29610449b2647c36d0ea7746b3f2ca53902542b053fcc4734e7451aecb8949d1",
+      "core_sites_per_cell": 5,
+      "generalisation_sites": 48,
+      "density_sites": 34,
+      "profiles": ["off", "on", "surveyed"],
+      "analysis_modes": ["measured_only"]
+    },
+    "interpretation": "Descriptive synthetic results only. Core, generalisation, and density populations are not field validation. No solver changes were selected from these outcomes.",
+    "not_run": ["matrix-standard", "matrix-full", "realism-decomposition", "sealed"]
+  }
 }

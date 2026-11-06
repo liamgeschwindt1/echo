@@ -133,9 +133,9 @@ test('export schema 0.16: changelog, placeholder thresholds, notes, labels only'
   const { s, rendered, durations, results } = glassScene();
   const labelling = await labelEvents(s, rendered, results, { cat, runners: glassRunners, manifest, settings: s.settings, clipDurations: durations });
   const ex = JSON.parse(JSON.stringify(buildExport({ scenario: s, nodes: [], results, labelling, rendered })));
-  assert.equal(ex.schema, '0.16');
-  assert.equal(EXPORT_SCHEMA, '0.16');
-  assert.equal(ex.changelog[0].schema, '0.16');
+  assert.equal(ex.schema, '0.17');
+  assert.equal(EXPORT_SCHEMA, '0.17');
+  assert.equal(ex.changelog[0].schema, '0.17');
   assert.equal(ex.rendering.sample_rate_hz, rendered.sample_rate);
   assert.equal(ex.rendering.samples_per_mic, rendered.length);
   assert.equal(ex.rendering.duration_s, rendered.length / rendered.sample_rate);

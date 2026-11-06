@@ -2,13 +2,13 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
-import { buildJobs, estimateExperiment, presetExperiment, reduceExperiment, normaliseExperiment } from '../src/benchmark/experiment.js';
+import { buildJobs, estimateExperiment, presetExperiment, reduceExperiment, normaliseExperiment, scenarioForJob } from '../src/benchmark/experiment.js';
 import { SCENES, buildScene } from '../src/benchmark/scenes.js';
 import { applyValues, VARIABLES } from '../src/benchmark/variables.js';
 import { cacheKeys, MemoryCache, audioHash } from '../src/benchmark/cache.js';
 import { aggregate, metricValues, compareSummaries, compareReports, rankingFlips, pairedComparison } from '../src/benchmark/metrics.js';
 import { runJob, runExperiment } from '../src/benchmark/runner.js';
-import { reportCsv, reportHtml, tornado } from '../src/benchmark/report.js';
+import { reportCsv, reportHtml, metricTable, tornado } from '../src/benchmark/report.js';
 import { click } from './golden-scenes.js';
 import { analyseMeasured } from '../src/measured.js';
 import { speedOfSound } from '../src/physics.js';
@@ -46,6 +46,35 @@ test('grid count, seeds and held-out are explicit and repeatable', () => {
   assert.equal(estimateExperiment(e).runs, 12);
   assert.equal(built.jobs.filter((j) => j.split === 'held-out').length, 6);
   assert.deepEqual(buildJobs(e), built);
+});
+test('per-scene render seeds preserve site identity and count jobs exactly', () => {
+  const scenes = ['sparse_20', 'random_1'];
+  const e = experiment({
+    scenes,
+    scene_splits: { sparse_20: 'train', random_1: 'validation' },
+    scene_seeds: { sparse_20: [31001], random_1: [31002] },
+    realism: ['off', 'surveyed']
+  });
+  const { jobs } = buildJobs(e);
+  assert.equal(estimateExperiment(e).runs, 4);
+  assert.equal(jobs.length, 4);
+  assert.deepEqual(jobs.filter((j) => j.scene === 'sparse_20').map((j) => j.seed), [31001, 31001]);
+  assert.deepEqual(jobs.filter((j) => j.scene === 'random_1').map((j) => j.seed), [31002, 31002]);
+  assert.ok(jobs.filter((j) => j.scene === 'sparse_20').every((j) => j.split === 'train'));
+  assert.ok(jobs.filter((j) => j.scene === 'random_1').every((j) => j.split === 'validation'));
+  const surveyed = jobs.find((j) => j.realism === 'surveyed');
+  const scenario = scenarioForJob(buildScene(surveyed.scene), surveyed);
+  assert.equal(scenario.settings.heading_error_sigma_deg, 1);
+  assert.equal(scenario.settings.mic_position_sigma_mm, 2);
+  assert.equal(scenario.settings.mic_gain_sigma_db, 1);
+});
+test('per-scene seed maps reject invalid and duplicate seed populations', () => {
+  for (const scene_seeds of [
+    { sparse_20: [] },
+    { sparse_20: [1, 1] },
+    { missing: [2] },
+    { sparse_20: [-1] }
+  ]) assert.throws(() => buildJobs(experiment({ scene_seeds })), /Per-scene seeds/);
 });
 test('OAT includes base and does not cross variables', () => {
   const { configs } = buildJobs(experiment({ mode: 'one-at-a-time', sweeps: [{ variable: 'heading_error_sigma_deg', values: [0, 1, 2.5] }, { variable: 'min_snr_db', values: [3, 6, 12] }] }));
@@ -150,11 +179,54 @@ test('missing errors never become zero and no wrong fixes does not mean perfect 
   const values = metricValues([fakeRun(null), fakeRun(4)]);
   assert.equal(values.horizontal_median_m, 4);
   assert.equal(values.scene_fix_rate, 0.5);
+  assert.equal(values.events_within_10m_misses_counted, 0.5);
   assert.equal(values.suspect_recall, null);
   assert.equal(aggregate([fakeRun(4)]).horizontal_median_m.ci, null);
-  const agg = aggregate([fakeRun(4), fakeRun(8)], { bootstrap_samples: 40 });
-  assert.deepEqual(agg, aggregate([fakeRun(4), fakeRun(8)], { bootstrap_samples: 40 }));
+  const secondSite = fakeRun(8);
+  secondSite.job.scene = 'random_2';
+  const agg = aggregate([fakeRun(4), secondSite], { bootstrap_samples: 40 });
+  assert.deepEqual(agg, aggregate([fakeRun(4), secondSite], { bootstrap_samples: 40 }));
   assert.ok(agg.horizontal_median_m.ci[0] >= 4);
+});
+test('event coverage counts misses and exposes the detectable-by-three-node subset', () => {
+  const detectable = source(4);
+  detectable.source_id = 's1';
+  detectable.nodes = [{ detected: true }, { detected: true }, { detected: true }];
+  const missed = source(null);
+  missed.source_id = 's2';
+  missed.nodes = [{ detected: true }, { detected: true }, { detected: true }];
+  const notDetectable = source(2);
+  notDetectable.source_id = 's3';
+  notDetectable.nodes = [{ detected: true }, { detected: true }, { detected: false }];
+  const values = metricValues([fakeRun(null, {
+    scores: {
+      sources: [detectable, missed, notDetectable],
+      fixes: [detectable, notDetectable],
+      fix_count: 2,
+      unmatched_fixes: 0,
+      unmatched_suspect: 0
+    }
+  })]);
+  assert.equal(values.events_within_10m_misses_counted, 2 / 3);
+  assert.equal(values.detectable_3_node_fraction, 2 / 3);
+  assert.equal(values.detectable_3_node_events_within_10m, 1 / 2);
+  assert.equal(values.detectable_3_node_event_count, 2);
+});
+test('fix-error probability metrics preserve nulls and score ranking and calibration', () => {
+  const run = fakeRun(null);
+  run.scores.fixes = [
+    { horizontal_m: 1, p_wrong: 0.1 },
+    { horizontal_m: 20, p_wrong: 0.8 },
+    { horizontal_m: 5, p_wrong: 0.2 },
+    { horizontal_m: 11, p_wrong: 0.7 }
+  ];
+  const values = metricValues([run]);
+  assert.ok(Math.abs(values.fix_brier_score - 0.045) < 1e-12);
+  assert.ok(Math.abs(values.fix_log_loss - (-Math.log(0.9) - Math.log(0.8) - Math.log(0.8) - Math.log(0.7)) / 4) < 1e-12);
+  assert.equal(values.fix_error_10m_auc, 1);
+  assert.equal(values.fix_reliability_error, 0.2);
+  run.scores.fixes[0].p_wrong = null;
+  assert.equal(metricValues([run]).fix_brier_score, null);
 });
 test('unmatched measured fixes count as wrong and cannot improve success', () => {
   const r = fakeRun(2);
@@ -195,6 +267,22 @@ test('tornado never reports unavailable sensitivity as a zero effect', () => {
   const html = tornado([row('base'), row('heading_error_sigma_deg')], 'horizontal_median_m');
   assert.match(html, /unavailable/);
   assert.ok(!html.includes('<meter'));
+});
+test('benchmark report renders placeholder tier achieved for each targeted metric', () => {
+  const html = metricTable({
+    summary: [{
+      config_id: 'c0', name: 'Base', split: 'validation', realism: 'on', analysis_mode: 'measured_only',
+      metrics: { events_within_10m_misses_counted: { value: 0.99, ci: [0.9, 1] } }
+    }]
+  }, {
+    tiers: {
+      minimum: { events_within_10m_misses_counted: { min: 0.7 } },
+      standard: { events_within_10m_misses_counted: { min: 0.9 } },
+      exceptional: { events_within_10m_misses_counted: { min: 0.97 } }
+    }
+  });
+  assert.match(html, /data-tier="exceptional"/);
+  assert.match(html, /exceptional tier/);
 });
 test('array ranking flips identify only single changing variables, ties have no winner', () => {
   const row = (array, heading, value) => ({ population: ['site|1'], values: { mic_array: array, heading_error_sigma_deg: heading }, split: 'train', realism: 'on', analysis_mode: 'measured_only', metrics: { horizontal_median_m: { value } } });

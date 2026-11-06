@@ -56,6 +56,8 @@ body.nav-collapsed #sidenav button, body.nav-collapsed #sidenav .nav-check { jus
 .testing td[data-config]:hover { outline: 1px solid var(--accent); }
 .testing td small { display: block; color: #aaa; white-space: nowrap; }
 .testing .pass { background: #103420; }
+.testing .pass.tier-standard { background: #12513a; }
+.testing .pass.tier-exceptional { background: #146458; }
 .testing .fail { background: #451820; }
 .testing svg { display: block; width: 100%; max-width: 1000px; height: auto; max-height: 600px; fill: #ddd; }
 .testing pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 500px; overflow: auto; }

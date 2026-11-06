@@ -1,4 +1,4 @@
-// The results export ("Export results" in the sim). Schema 0.16: see EXPORT_CHANGELOG.
+// The results export ("Export results" in the sim). Schema 0.17: see EXPORT_CHANGELOG.
 // Node output is limited to bearings, levels, times, uncertainties, labels, scores and confidences: no audio, spectra or
 // embeddings, and every unmeasured constant or threshold is marked placeholder.
 import { simConstants } from './geometry.js';
@@ -8,9 +8,14 @@ import { nextPow2 } from './dsp.js';
 import { MEASURED_DEFAULTS } from './measured.js';
 import { REALISM_DEFAULTS, REALISM_NOTE } from './realism.js';
 
-export const EXPORT_SCHEMA = '0.16';
+export const EXPORT_SCHEMA = '0.17';
 
 export const EXPORT_CHANGELOG = [
+  {
+    schema: '0.17',
+    added: ['Benchmark reports include fix-probability Brier/log-loss/AUROC/reliability metrics, event coverage with misses counted, and conditional event coverage when at least three nodes have source-aligned tracks.'],
+    changed: ['Benchmark scoring v3 labels measured node detectability from in-clip source-aligned tracks (10-degree bearing gate); comparisons reject older scoring conventions. Rendering, inference and default localisation are unchanged.']
+  },
   {
     schema: '0.16',
     added: ['Opt-in inter-node offset/drift and placeholder wind, urban, rain and nonstationary ambient noise. Explicit zero/absent settings are OFF; old DEFAULT_SETTINGS/frozen sites and older signal goldens remain unchanged. Exported realism parameters are marked placeholder; rendered clock draws are simulator-only diagnostics.'],
