@@ -1,0 +1,6 @@
+{
+  "track": "integration",
+  "levers": [],
+  "default_changes": [],
+  "notes": "No engine selected or new behaviour accepted. Selection requires paired acceptance evidence, not standalone component tests."
+}
