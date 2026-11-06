@@ -4,6 +4,7 @@ import { dirname, resolve, relative } from 'node:path';
 import { parseArgs } from 'node:util';
 import { gunzipSync } from 'node:zlib';
 import { aggregate, metricValues } from '../packages/sim-core/src/benchmark/metrics.js';
+import { canonical, renderSettingsFor } from '../packages/sim-core/src/benchmark/cache.js';
 
 const DEFAULT_BOOTSTRAP_SAMPLES = 2000;
 const KPI_VERSION = 1;
@@ -94,31 +95,25 @@ function siteId(run) {
   return run.job.site_id ?? run.job.scene ?? run.job.id;
 }
 
-function runsMetricMapBySite(runs, wrongFixM) {
-  const groups = groupedBy(runs, siteId);
-  return new Map([...groups.entries()].map(([id, groupRuns]) => [id, metricValues(groupRuns, { wrong_fix_m: wrongFixM })]));
-}
-
 function pairedMetricDelta(currentRuns, baselineRuns, metric, wrongFixM, bootstrapSamples = DEFAULT_BOOTSTRAP_SAMPLES) {
-  const currentBySite = runsMetricMapBySite(currentRuns, wrongFixM);
-  const baselineBySite = runsMetricMapBySite(baselineRuns, wrongFixM);
-  const sites = [...currentBySite.keys()].filter((id) => baselineBySite.has(id));
-  if (!sites.length) return { delta: null, interval95: null, n_sites: 0, n_runs: currentRuns.length };
-  const deltas = sites.map((id) => {
-    const a = currentBySite.get(id)?.[metric];
-    const b = baselineBySite.get(id)?.[metric];
+  const currentBySite = groupedBy(currentRuns, siteId);
+  const baselineBySite = groupedBy(baselineRuns, siteId);
+  const sites = [...currentBySite.keys()];
+  const difference = (after, before) => {
+    const a = metricValues(after, { wrong_fix_m: wrongFixM })[metric];
+    const b = metricValues(before, { wrong_fix_m: wrongFixM })[metric];
     return Number.isFinite(a) && Number.isFinite(b) ? a - b : null;
-  }).filter(Number.isFinite);
-  if (!deltas.length) return { delta: null, interval95: null, n_sites: sites.length, n_runs: currentRuns.length };
-  const mean = deltas.reduce((sum, value) => sum + value, 0) / deltas.length;
+  };
+  const delta = difference(currentRuns, baselineRuns);
+  if (!Number.isFinite(delta)) return { delta: null, interval95: null, n_sites: sites.length, n_runs: currentRuns.length };
   const rng = mulberry32(0x7f4a7c15);
   const draws = [];
-  for (let i = 0; i < bootstrapSamples; i++) {
-    let sum = 0;
-    for (let j = 0; j < deltas.length; j++) sum += deltas[Math.floor(rng() * deltas.length)];
-    draws.push(sum / deltas.length);
+  if (sites.length >= 2) for (let i = 0; i < bootstrapSamples; i++) {
+    const sample = Array.from({ length: sites.length }, () => sites[Math.floor(rng() * sites.length)]);
+    const value = difference(sample.flatMap((id) => currentBySite.get(id)), sample.flatMap((id) => baselineBySite.get(id)));
+    if (Number.isFinite(value)) draws.push(value);
   }
-  return { delta: mean, interval95: [percentile(draws, 2.5), percentile(draws, 97.5)], n_sites: sites.length, n_runs: currentRuns.length };
+  return { delta, interval95: draws.length ? [percentile(draws, 2.5), percentile(draws, 97.5)] : null, n_sites: sites.length, n_runs: currentRuns.length };
 }
 
 function convertHeadline(metrics) {
@@ -274,13 +269,11 @@ async function readOptionalJson(path) {
   return JSON.parse(await readFile(path, 'utf8'));
 }
 
-function metricDeltaMap(currentHeadline, baselineHeadline) {
+function metricDeltaMap(currentHeadline) {
   return Object.fromEntries(HEADLINE_METRICS.map(([metric, unit]) => {
     const current = currentHeadline[metric];
-    const baseline = baselineHeadline?.[metric];
-    const delta = Number.isFinite(current?.value) && Number.isFinite(baseline?.value) ? current.value - baseline.value : null;
     return [metric, {
-      delta,
+      delta: null,
       interval95: null,
       n_sites: current?.n_sites ?? null,
       n_runs: current?.n_runs ?? null,
@@ -302,8 +295,26 @@ function applyPairedIntervals(deltaMetrics, pairedDeltas) {
   }
 }
 
-function pairedDeltasForReports(currentBenchmark, baselineBenchmark) {
+export function pairedDeltasForReports(currentBenchmark, baselineBenchmark) {
   if (!currentBenchmark?.runs || !baselineBenchmark?.runs) return {};
+  const complete = (report) => !report.manifest?.cancelled &&
+    report.runs.length === report.manifest?.expected_runs;
+  if (!complete(currentBenchmark) || !complete(baselineBenchmark) ||
+      currentBenchmark.manifest.scoring_version !== baselineBenchmark.manifest.scoring_version ||
+      (currentBenchmark.experiment?.wrong_fix_m ?? 10) !== (baselineBenchmark.experiment?.wrong_fix_m ?? 10)) return {};
+  const identity = (run) => canonical([
+    siteId(run), run.job.scene, run.job.seed, run.job.split, run.job.realism,
+    run.job.analysis_mode, run.job.config?.values ?? {}
+  ]);
+  const current = new Map(currentBenchmark.runs.map((run) => [identity(run), run]));
+  const baseline = new Map(baselineBenchmark.runs.map((run) => [identity(run), run]));
+  if (current.size !== currentBenchmark.runs.length || baseline.size !== baselineBenchmark.runs.length ||
+      current.size !== baseline.size || [...current.keys()].some((key) => !baseline.has(key))) return {};
+  const physical = (run) => canonical({
+    nodes: run.scenario?.nodes, sources: run.scenario?.sources, buildings: run.scenario?.buildings,
+    settings: renderSettingsFor(run.scenario?.settings ?? {})
+  });
+  if ([...current].some(([key, run]) => physical(run) !== physical(baseline.get(key)))) return {};
   const wrongFixM = currentBenchmark.experiment?.wrong_fix_m ?? 10;
   return Object.fromEntries(HEADLINE_METRICS.map(([metric]) => [
     metric,
@@ -402,7 +413,11 @@ export async function buildArtifacts({ engineId, parentId, status, branch, sourc
     kpi.comparisons.vs_parent = { engine_id: parentId, metrics: vsParent };
   }
   if (engineId === 'LE-0') {
-    const self = Object.fromEntries(HEADLINE_METRICS.map(([metric, unit]) => [metric, { delta: 0, interval95: [0, 0], n_sites: headline[metric].n_sites, n_runs: headline[metric].n_runs, unit }]));
+    const self = Object.fromEntries(HEADLINE_METRICS.map(([metric, unit]) => [metric, {
+      delta: Number.isFinite(headline[metric].value) ? 0 : null,
+      interval95: Number.isFinite(headline[metric].value) ? [0, 0] : null,
+      n_sites: headline[metric].n_sites, n_runs: headline[metric].n_runs, unit
+    }]));
     kpi.comparisons.vs_le0 = { engine_id: 'LE-0', metrics: self };
   } else if (le0Kpi) {
     const vsLe0 = metricDeltaMap(kpi.headline, le0Kpi.headline);

@@ -3,7 +3,10 @@ import assert from 'node:assert/strict';
 import { mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { buildArtifacts } from '../../../scripts/engine-kpi.mjs';
+import { buildArtifacts, pairedDeltasForReports } from '../../../scripts/engine-kpi.mjs';
+import { gunzipSync } from 'node:zlib';
+import { readFile } from 'node:fs/promises';
+import { metricValues } from '../src/benchmark/metrics.js';
 
 async function writeFixtureReport() {
   const root = await mkdtemp(join(tmpdir(), 'engine-kpi-'));
@@ -58,4 +61,35 @@ test('engine KPI artifacts are deterministic and preserve null metrics', async (
   assert.equal(first.kpi.headline.error_3d_p90_m.interval95, null);
   assert.equal(first.kpi.comparisons.vs_le0.metrics.horizontal_median_m.delta, 0);
   assert.deepEqual(first.kpi.comparisons.vs_le0.metrics.horizontal_median_m.interval95, [0, 0]);
+  assert.equal(first.kpi.comparisons.vs_le0.metrics.error_3d_p90_m.delta, null);
+});
+
+test('engine comparisons refuse unequal, partial or physically different populations', async () => {
+  const report = JSON.parse(gunzipSync(await readFile(new URL('../../../baselines/integration-le0-smoke.json.gz', import.meta.url))));
+  for (const change of [
+    (r) => { r.runs.pop(); },
+    (r) => { r.manifest.cancelled = true; },
+    (r) => { r.runs[0].job.seed++; },
+    (r) => { r.runs[0].scenario.nodes[0].position[0]++; },
+    (r) => { r.manifest.scoring_version = 'different'; },
+    (r) => { r.runs[0] = r.runs[1]; }
+  ]) {
+    const different = structuredClone(report);
+    change(different);
+    assert.deepEqual(pairedDeltasForReports(different, report), {});
+  }
+});
+
+test('paired KPI deltas use pooled endpoints, not averages of per-site quantiles', async () => {
+  const report = JSON.parse(gunzipSync(await readFile(new URL('../../../baselines/integration-le0-smoke.json.gz', import.meta.url))));
+  const after = structuredClone(report);
+  for (const run of after.runs) for (const fix of run.scores.fixes ?? run.scores.sources) {
+    if (Number.isFinite(fix.horizontal_m)) fix.horizontal_m *= 2;
+  }
+  const metric = 'horizontal_p90_m';
+  const paired = pairedDeltasForReports(after, report)[metric];
+  assert.equal(paired.delta, metricValues(after.runs)[metric] - metricValues(report.runs)[metric]);
+  assert.ok(paired.delta > 0);
+  assert.equal(paired.n_sites, 2);
+  assert.ok(paired.interval95);
 });
