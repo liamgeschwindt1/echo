@@ -1,0 +1,11 @@
+[
+  {
+    "lever_id": "dash-1",
+    "option_name": "ui_dashboards_engines_page",
+    "default": "on",
+    "what_it_changes": "Adds Engines dashboard page, engine history navigation, KPI blocks, and offline static export in app UI only.",
+    "paired_result_matrix_smoke_vs_le0": null,
+    "paired_result_preregistered_population_vs_le0": null,
+    "notes": "UI-only lever. No solver/renderer/scoring behavior change."
+  }
+]
