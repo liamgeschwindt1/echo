@@ -1,0 +1,10 @@
+[
+  {
+    "id": "LE-0",
+    "parent": null,
+    "date": "2026-11-06T16:25:19.358Z",
+    "status": "baseline",
+    "branch": "overnight/loc5-infra",
+    "source_hash": "6874435a4af5a3258c5ecc20f60d756b5f7a81297cad3957eaf9df525a7a5b53"
+  }
+]
