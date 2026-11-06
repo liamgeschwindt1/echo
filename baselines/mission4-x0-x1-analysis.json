@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-06T08:02:24.142Z",
+  "generated_at": "2026-11-06T08:23:13.712Z",
   "baseline_path": "/workspaces/echo/liamgeschwindt1/echo/baselines/matrix-baseline-r3.full.json.gz",
   "baseline_gzip_sha256": "1dae27871b53cfc678b744ac1cccc35206da6634e488672c26acec42fb61f066",
   "assumptions": {
