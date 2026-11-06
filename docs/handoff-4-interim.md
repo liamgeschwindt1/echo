@@ -1,5 +1,7 @@
 # Mission 4 interim handoff (phase 0/1 checkpoint)
 
+Superseded by [`handoff-4.md`](handoff-4.md) and [`overnight-report-4.md`](overnight-report-4.md). The interim checklist below predates the X1 completion and budget review.
+
 ## Completed
 
 - Mission branch `overnight/localisation-4` was created from `origin/overnight/localisation-3a`; 3A prerequisites passed. No changes were pushed to `main`.
@@ -11,7 +13,7 @@
 - Full sim-core suite passes 296/296 after helper extraction. The full candidate/fix changes are isolated behind opt-in joint mode; no default solver behavior changed.
 - Required install-profile draft is in `docs/install-requirements.md`.
 
-## Next
+## Next (at this interim checkpoint only)
 
 1. Run matrix-standard validation and remaining mission priorities as scheduled; keep joint mode unpromoted.
 2. Preserve final three hours for code freeze, one sealed run, final reports and docs, final handoff, and actual GitHub CI inspection.
