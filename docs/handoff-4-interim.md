@@ -10,10 +10,9 @@
 - C1 paired smoke is preregistered in `docs/experiments/mission4-c1.json` / `docs/experiments/mission4-c1-smoke.json` (72 jobs, paired legacy/joint, train and validation, three profiles). Full sim-core suite passes 296/296 after helper extraction.
 - Required install-profile draft is in `docs/install-requirements.md`.
 
-## Pending
+## Next
 
-1. Commit and push current implementation and registration changes to `overnight/localisation-4`.
-2. Run the preregistered C1 paired smoke; retain legacy default unless acceptance guards pass.
-3. Run the preregistered X1 node-count sweep and update its report with measured 2-8 node results.
-4. Run matrix-standard validation after any retained phase-1 changes; continue remaining mission priorities as time permits.
-5. Preserve final three hours for code freeze, one sealed run, final reports and docs, final handoff, and actual GitHub CI inspection.
+1. Run the preregistered C1 paired smoke; retain legacy default unless acceptance guards pass.
+2. Run the preregistered X1 node-count sweep and update its report with measured 2-8 node results.
+3. Run matrix-standard validation after any retained phase-1 changes; continue remaining mission priorities as time permits.
+4. Preserve final three hours for code freeze, one sealed run, final reports and docs, final handoff, and actual GitHub CI inspection.
