@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { createServer } from 'vite';
 import { fileURLToPath } from 'node:url';
-import { mkdir, rm } from 'node:fs/promises';
+import { mkdir, rm, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { mkdtemp, access } from 'node:fs/promises';
@@ -37,7 +37,7 @@ test('dashboard engines page navigates fixture history and static export opens o
   });
   let browser;
   const temp = await mkdtemp(join(tmpdir(), 'echo-dashboards-e2e-'));
-  const screenshotDir = join(root, 'docs', 'tracks', 'dashboards');
+  const screenshotDir = join(temp, 'screenshots');
   try {
     await server.listen();
     browser = await chromium.launch({ headless: true });
@@ -67,6 +67,20 @@ test('dashboard engines page navigates fixture history and static export opens o
     await page.screenshot({ path: join(screenshotDir, 'engines-page.png'), fullPage: true });
     assert.deepEqual(errors, []);
 
+    await page.unroute('**/*');
+    await page.reload();
+    await page.locator('[data-view="dashboards"]').click();
+    await page.locator('#dashEngineSelect').waitFor();
+    const registry = JSON.parse(await readFile(join(root, 'engines/registry.json'), 'utf8'));
+    assert.deepEqual(await page.locator('#dashEngineSelect option').evaluateAll((options) => options.map((option) => option.value)),
+      registry.map((entry) => entry.id));
+    const published = JSON.parse(await readFile(join(root, 'engines/LE-0/kpi.json'), 'utf8'));
+    await page.locator('#dashEngineSelect').selectOption('LE-0');
+    const on = published.breakdowns.install_profile_comparison.find((row) => row.profile === 'on');
+    const expectedValue = `${(on.metrics.events_within_10m_misses_counted.value * 100).toFixed(1)}%`;
+    assert.equal(await page.locator('.dash-metric-value').first().textContent(), expectedValue);
+    assert.deepEqual(errors, []);
+
     const exportPath = join(temp, 'engines-dashboard.html');
     await promisify(execFile)(process.execPath, ['apps/sim/scripts/export-engines-dashboard.mjs', '--out', exportPath], { cwd: root });
     await access(exportPath);
@@ -76,6 +90,9 @@ test('dashboard engines page navigates fixture history and static export opens o
     await offline.goto(`file://${exportPath}`);
     await offline.locator('text=Synthetic simulator outputs only').waitFor();
     await offline.locator('text=Headline KPIs').waitFor();
+    assert.deepEqual(await offline.locator('#dashEngineSelect option').evaluateAll((options) => options.map((option) => option.value)),
+      registry.map((entry) => entry.id));
+    assert.equal(await offline.locator('.dash-metric-value').first().textContent(), expectedValue);
     assert.deepEqual(offlineErrors, []);
     await offline.close();
   } finally {

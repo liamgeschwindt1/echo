@@ -15,6 +15,11 @@ const HEADLINE_METRICS = [
   ['scene_fix_rate', 'fraction'],
   ['source_fix_rate', 'fraction'],
   ['unflagged_wrong_fix_rate', 'fraction'],
+  ['risk_coverage_area', 'score'],
+  ['fix_brier_score', 'score'],
+  ['fix_log_loss', 'nats'],
+  ['fix_error_10m_auc', 'score'],
+  ['fix_reliability_error', 'score'],
   ['within_1sigma', 'fraction'],
   ['within_2sigma', 'fraction'],
   ['error_3d_p90_m', 'm'],
@@ -328,7 +333,11 @@ function extractPrimaryReports(reports) {
   return { benchmark, matrix };
 }
 
-export async function buildArtifacts({ engineId, parentId, status, branch, sourceHash, optionSet = {}, notes = '', reportInputs, date = new Date().toISOString() }) {
+export async function buildArtifacts({ engineId, parentId, status, branch, sourceHash, optionSet = {}, notes = '', reportInputs, preregistrationPath = null, date = new Date().toISOString() }) {
+  const preregistration = preregistrationPath ? {
+    path: relative(process.cwd(), resolve(preregistrationPath)),
+    sha256: hashBytes(await readFile(preregistrationPath))
+  } : null;
   const parsed = await Promise.all(reportInputs.map(async (path) => {
     const absolute = resolve(path);
     const { data, sha256 } = await readJson(absolute);
@@ -379,6 +388,8 @@ export async function buildArtifacts({ engineId, parentId, status, branch, sourc
       vs_parent: null,
       vs_le0: null
     },
+    sealed: null,
+    final_suite: null,
     provenance: {
       date,
       branch,
@@ -390,7 +401,7 @@ export async function buildArtifacts({ engineId, parentId, status, branch, sourc
         benchmark_runs: selectedBenchmark?.runs?.length ?? null,
         matrix_runs: matrix?.population?.runs ?? null
       },
-      preregistration_sha256: matrix?.preregistration_sha256 ?? selectedBenchmark?.experiment?.preregistration?.input_sha256 ?? null
+      preregistration_sha256: preregistration?.sha256 ?? matrix?.preregistration_sha256 ?? selectedBenchmark?.experiment?.preregistration?.input_sha256 ?? null
     }
   };
 
@@ -437,6 +448,7 @@ export async function buildArtifacts({ engineId, parentId, status, branch, sourc
   };
   const refs = {
     engine_id: engineId,
+    ...(preregistration ? { preregistration } : {}),
     reports: parsed.map((entry) => ({ path: entry.relative, sha256: entry.sha256, kind: entry.data.kind ?? null }))
   };
   return { engine, kpi, refs };
@@ -478,7 +490,8 @@ async function main() {
       'source-hash': { type: 'string' },
       notes: { type: 'string' },
       report: { type: 'string', multiple: true },
-      'option-set': { type: 'string' }
+      'option-set': { type: 'string' },
+      preregistration: { type: 'string' }
     }
   });
   if (!values['engine-id']) throw new Error('--engine-id is required');
@@ -495,7 +508,8 @@ async function main() {
     sourceHash,
     optionSet,
     notes: values.notes ?? '',
-    reportInputs: values.report
+    reportInputs: values.report,
+    preregistrationPath: values.preregistration ?? null
   });
   const engineDir = resolve('engines', engine.id);
   await ensureDir(engineDir);

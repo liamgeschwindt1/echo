@@ -63,6 +63,44 @@
       "n_runs": 606,
       "unit": "fraction"
     },
+    "risk_coverage_area": {
+      "value": 0.8250825082508251,
+      "interval95": [
+        0.7739273927392739,
+        0.8729372937293729
+      ],
+      "n_sites": 202,
+      "n_runs": 606,
+      "unit": "score"
+    },
+    "fix_brier_score": {
+      "value": null,
+      "interval95": null,
+      "n_sites": null,
+      "n_runs": null,
+      "unit": "score"
+    },
+    "fix_log_loss": {
+      "value": null,
+      "interval95": null,
+      "n_sites": null,
+      "n_runs": null,
+      "unit": "nats"
+    },
+    "fix_error_10m_auc": {
+      "value": null,
+      "interval95": null,
+      "n_sites": null,
+      "n_runs": null,
+      "unit": "score"
+    },
+    "fix_reliability_error": {
+      "value": null,
+      "interval95": null,
+      "n_sites": null,
+      "n_runs": null,
+      "unit": "score"
+    },
     "within_1sigma": {
       "value": 0.4137426900584795,
       "interval95": [
@@ -21131,6 +21169,44 @@
             "n_runs": 285,
             "unit": "fraction"
           },
+          "risk_coverage_area": {
+            "value": 0.9368421052631579,
+            "interval95": [
+              0.8982456140350877,
+              0.975438596491228
+            ],
+            "n_sites": 95,
+            "n_runs": 285,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
           "within_1sigma": {
             "value": 0.5720887245841035,
             "interval95": [
@@ -21232,6 +21308,44 @@
             "n_sites": 107,
             "n_runs": 321,
             "unit": "fraction"
+          },
+          "risk_coverage_area": {
+            "value": 0.7258566978193146,
+            "interval95": [
+              0.6573208722741434,
+              0.7912772585669783
+            ],
+            "n_sites": 107,
+            "n_runs": 321,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
           },
           "within_1sigma": {
             "value": 0.23711340206185566,
@@ -21338,6 +21452,44 @@
             "n_runs": 8,
             "unit": "fraction"
           },
+          "risk_coverage_area": {
+            "value": 0.75,
+            "interval95": [
+              0.375,
+              1
+            ],
+            "n_sites": 8,
+            "n_runs": 8,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
           "within_1sigma": {
             "value": 0.5,
             "interval95": [
@@ -21440,6 +21592,44 @@
             "n_sites": 8,
             "n_runs": 8,
             "unit": "fraction"
+          },
+          "risk_coverage_area": {
+            "value": 0.75,
+            "interval95": [
+              0.375,
+              1
+            ],
+            "n_sites": 8,
+            "n_runs": 8,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
           },
           "within_1sigma": {
             "value": 0.3333333333333333,
@@ -21544,6 +21734,44 @@
             "n_runs": 8,
             "unit": "fraction"
           },
+          "risk_coverage_area": {
+            "value": 0.75,
+            "interval95": [
+              0.375,
+              1
+            ],
+            "n_sites": 8,
+            "n_runs": 8,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
           "within_1sigma": {
             "value": 0.2,
             "interval95": [
@@ -21646,6 +21874,44 @@
             "n_sites": 8,
             "n_runs": 8,
             "unit": "fraction"
+          },
+          "risk_coverage_area": {
+            "value": 0.875,
+            "interval95": [
+              0.625,
+              1
+            ],
+            "n_sites": 8,
+            "n_runs": 8,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
           },
           "within_1sigma": {
             "value": 0.5,
@@ -21750,6 +22016,44 @@
             "n_runs": 8,
             "unit": "fraction"
           },
+          "risk_coverage_area": {
+            "value": 0.875,
+            "interval95": [
+              0.625,
+              1
+            ],
+            "n_sites": 8,
+            "n_runs": 8,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
           "within_1sigma": {
             "value": 0.2222222222222222,
             "interval95": [
@@ -21852,6 +22156,44 @@
             "n_sites": 8,
             "n_runs": 8,
             "unit": "fraction"
+          },
+          "risk_coverage_area": {
+            "value": 0.875,
+            "interval95": [
+              0.625,
+              1
+            ],
+            "n_sites": 8,
+            "n_runs": 8,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
           },
           "within_1sigma": {
             "value": 0.35,
@@ -21956,6 +22298,44 @@
             "n_runs": 6,
             "unit": "fraction"
           },
+          "risk_coverage_area": {
+            "value": 0.8333333333333333,
+            "interval95": [
+              0.5000000000000001,
+              1
+            ],
+            "n_sites": 6,
+            "n_runs": 6,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
           "within_1sigma": {
             "value": 0.5833333333333334,
             "interval95": [
@@ -22058,6 +22438,44 @@
             "n_sites": 6,
             "n_runs": 6,
             "unit": "fraction"
+          },
+          "risk_coverage_area": {
+            "value": 1,
+            "interval95": [
+              0.9999999999999999,
+              1
+            ],
+            "n_sites": 6,
+            "n_runs": 6,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
           },
           "within_1sigma": {
             "value": 0.16666666666666666,
@@ -22162,6 +22580,44 @@
             "n_runs": 6,
             "unit": "fraction"
           },
+          "risk_coverage_area": {
+            "value": 0.8333333333333333,
+            "interval95": [
+              0.5000000000000001,
+              1
+            ],
+            "n_sites": 6,
+            "n_runs": 6,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
           "within_1sigma": {
             "value": 0.3,
             "interval95": [
@@ -22264,6 +22720,44 @@
             "n_sites": 174,
             "n_runs": 174,
             "unit": "fraction"
+          },
+          "risk_coverage_area": {
+            "value": 0.7816091954022989,
+            "interval95": [
+              0.7183908045977013,
+              0.8448275862068964
+            ],
+            "n_sites": 174,
+            "n_runs": 174,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
           },
           "within_1sigma": {
             "value": 0.4969418960244648,
@@ -22368,6 +22862,44 @@
             "n_runs": 174,
             "unit": "fraction"
           },
+          "risk_coverage_area": {
+            "value": 0.8793103448275862,
+            "interval95": [
+              0.8218390804597703,
+              0.9252873563218391
+            ],
+            "n_sites": 174,
+            "n_runs": 174,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
           "within_1sigma": {
             "value": 0.3010204081632653,
             "interval95": [
@@ -22470,6 +23002,44 @@
             "n_sites": 174,
             "n_runs": 174,
             "unit": "fraction"
+          },
+          "risk_coverage_area": {
+            "value": 0.8103448275862067,
+            "interval95": [
+              0.7528735632183906,
+              0.8620689655172415
+            ],
+            "n_sites": 174,
+            "n_runs": 174,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
           },
           "within_1sigma": {
             "value": 0.4244712990936556,
@@ -22574,6 +23144,44 @@
             "n_runs": 6,
             "unit": "fraction"
           },
+          "risk_coverage_area": {
+            "value": 0.8333333333333333,
+            "interval95": [
+              0.5000000000000001,
+              1
+            ],
+            "n_sites": 6,
+            "n_runs": 6,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
           "within_1sigma": {
             "value": 1,
             "interval95": [
@@ -22677,6 +23285,44 @@
             "n_runs": 6,
             "unit": "fraction"
           },
+          "risk_coverage_area": {
+            "value": 0.8333333333333333,
+            "interval95": [
+              0.5000000000000001,
+              1
+            ],
+            "n_sites": 6,
+            "n_runs": 6,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
           "within_1sigma": {
             "value": 0.5833333333333334,
             "interval95": [
@@ -22779,6 +23425,44 @@
             "n_sites": 6,
             "n_runs": 6,
             "unit": "fraction"
+          },
+          "risk_coverage_area": {
+            "value": 0.8333333333333333,
+            "interval95": [
+              0.5000000000000001,
+              1
+            ],
+            "n_sites": 6,
+            "n_runs": 6,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
           },
           "within_1sigma": {
             "value": 0.6666666666666666,
@@ -22884,6 +23568,44 @@
             "n_runs": 202,
             "unit": "fraction"
           },
+          "risk_coverage_area": {
+            "value": 0.7871287128712872,
+            "interval95": [
+              0.7277227722772277,
+              0.8415841584158417
+            ],
+            "n_sites": 202,
+            "n_runs": 202,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
           "within_1sigma": {
             "value": 0.5071225071225072,
             "interval95": [
@@ -22986,6 +23708,44 @@
             "n_runs": 202,
             "unit": "fraction"
           },
+          "risk_coverage_area": {
+            "value": 0.8762376237623763,
+            "interval95": [
+              0.8267326732673268,
+              0.9207920792079209
+            ],
+            "n_sites": 202,
+            "n_runs": 202,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
           "within_1sigma": {
             "value": 0.3018867924528302,
             "interval95": [
@@ -23087,6 +23847,44 @@
             "n_sites": 202,
             "n_runs": 202,
             "unit": "fraction"
+          },
+          "risk_coverage_area": {
+            "value": 0.8118811881188119,
+            "interval95": [
+              0.7574257425742575,
+              0.8712871287128713
+            ],
+            "n_sites": 202,
+            "n_runs": 202,
+            "unit": "score"
+          },
+          "fix_brier_score": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_log_loss": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "nats"
+          },
+          "fix_error_10m_auc": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
+          },
+          "fix_reliability_error": {
+            "value": null,
+            "interval95": null,
+            "n_sites": null,
+            "n_runs": null,
+            "unit": "score"
           },
           "within_1sigma": {
             "value": 0.4215686274509804,
@@ -23339,6 +24137,44 @@
           "n_runs": 606,
           "unit": "fraction"
         },
+        "risk_coverage_area": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 202,
+          "n_runs": 606,
+          "unit": "score"
+        },
+        "fix_brier_score": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": null,
+          "n_runs": null,
+          "unit": "score"
+        },
+        "fix_log_loss": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": null,
+          "n_runs": null,
+          "unit": "nats"
+        },
+        "fix_error_10m_auc": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": null,
+          "n_runs": null,
+          "unit": "score"
+        },
+        "fix_reliability_error": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": null,
+          "n_runs": null,
+          "unit": "score"
+        },
         "within_1sigma": {
           "delta": 0,
           "interval95": [
@@ -23360,11 +24196,8 @@
           "unit": "fraction"
         },
         "error_3d_p90_m": {
-          "delta": 0,
-          "interval95": [
-            0,
-            0
-          ],
+          "delta": null,
+          "interval95": null,
           "n_sites": null,
           "n_runs": null,
           "unit": "m"
@@ -23382,6 +24215,8 @@
       }
     }
   },
+  "sealed": null,
+  "final_suite": null,
   "provenance": {
     "date": "2026-11-06T16:25:19.358Z",
     "branch": "overnight/loc5-infra",

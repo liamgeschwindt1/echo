@@ -1,7 +1,7 @@
 import targets from '../../../../docs/targets.json' with { type: 'json' };
 import { adaptEngineKpi } from './engine-kpi-adapter.js';
 
-const DASHBOARD_BANNER = 'Synthetic simulator outputs only. Targets are placeholders. Missing values show as not measured.';
+const DASHBOARD_BANNER = 'Synthetic simulator outputs only. Targets are placeholders. Missing values show as not measured. Different populations are not ranked; paired differences require matched runs.';
 const INSTALL_PROFILES = ['pooled', 'off', 'on', 'surveyed', 'self-calibrated'];
 const PLACEHOLDER_PAGES = [
   { id: 'labelling', label: 'Labelling', note: 'Later: label quality and class-association dashboard.' },
@@ -200,6 +200,7 @@ export function normaliseEngineRecord(engine, kpi, refs) {
     status: engine?.status ?? 'candidate',
     source_hash: engine?.source_hash ?? engine?.sourceHash ?? null,
     options: optionSetFromEngine(engine),
+    notes: String(engine?.notes ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
     refs,
     kpi: adaptEngineKpi(kpi, engine?.id),
     refs_path: `engines/${engine?.id ?? 'unknown'}/refs.json`
@@ -409,6 +410,7 @@ function renderApp(state) {
     <div class="dash-content">
       <p class="dash-banner">${DASHBOARD_BANNER}</p>
       ${state.pageId === 'engines' ? `<section class="dash-block">
+        ${engine.notes ? `<p class="dash-banner">${engine.notes}</p>` : ''}
         <div class="dash-engine-head">
           <div class="dash-head-left">
             <button data-engine-nav="prev" ${prevDisabled ? 'disabled' : ''}>&larr;</button>

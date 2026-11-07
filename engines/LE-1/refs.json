@@ -1,8 +1,19 @@
 {
   "engine_id": "LE-1",
-  "reports": [],
   "preregistration": {
     "path": "docs/tracks/integration/prereg/round-1.json",
     "sha256": "3815b05e369dbc86d23138c6357ebff7eed617cbc542b945f67101cc88054206"
-  }
+  },
+  "reports": [
+    {
+      "path": "baselines/integration-round1-le1.json.gz",
+      "sha256": "943a11b0aa98d6dc05da01e03cfe1d8d3555c8e1b5c37efdf9809287081e0017",
+      "kind": "echo-sim-benchmark"
+    },
+    {
+      "path": "baselines/integration-round1-diagnostics.json",
+      "sha256": "7236a1023464b07c826675626fb44603bbae3505d1dde601ae6ca8556c133a3f",
+      "kind": "echo-integration-diagnostics"
+    }
+  ]
 }

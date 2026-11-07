@@ -74,3 +74,21 @@
 - Export metadata receives the single integration bump 0.18 -> 0.19 for
   delivered multisource/fusion extensions. This is intentionally a metadata
   change; default inference and signal fixtures must still match base bytes.
+- Registered LE-1 before diagnostics at commit `297c339`: self-calibration
+  enabled, source content hash
+  `d1eb705837c420b40a65dec187e39194ea52f374ebc18cdf7026e7134e4f2461`.
+  Two matched diagnostic reports completed (8 runs each). Calibration applied
+  in 0/8 runs. Pooled within-10-m delta 0 with site-paired interval [0, 0],
+  two sites; train partitions each have one site and null intervals. This is
+  not official matrix-standard evidence. LE-1 is rejected for promotion,
+  not declared a universally ineffective method.
+- No greedy/all-kept/ablation round is justified without accepted single-lever
+  evidence. LE-0 remains default. No selected-engine freeze, sealed claim,
+  sealed dispatch or final stress population was created.
+- Browser test initially lacked Chromium; installed it with
+  `npx playwright install chromium --with-deps`. Real-registry browser assertion
+  then caught a test setup error: fixture navigation retained `#engine=LE-1`.
+  Explicitly select LE-0 before asserting its published KPI. No engine outcome
+  or option was changed.
+- Existing regression workflow dispatched successfully for commit `297c339`
+  (run 42313367287). This does not make the absent sharded workflow available.

@@ -1,0 +1,3299 @@
+{
+  "kind": "echo-integration-diagnostics",
+  "scope": "Existing CI population only; not matrix-standard, sealed or final stress-suite evidence",
+  "source_hash": "d1eb705837c420b40a65dec187e39194ea52f374ebc18cdf7026e7134e4f2461",
+  "preregistration": "docs/tracks/integration/prereg/round-1.json",
+  "reports": [
+    {
+      "path": "baselines/integration-round1-le0.json.gz",
+      "sha256": "b33d4447ddda48b99d37a9ffe3b2a324486f480e58ea3d23aba849c115c271b3",
+      "input": "docs/tracks/integration/prereg/round-1-le0-smoke.json",
+      "input_sha256": "68866fb6ad146587f9173fffc41d3c31233dbf932d22bcfc06ab75cb922238aa"
+    },
+    {
+      "path": "baselines/integration-round1-le1.json.gz",
+      "sha256": "943a11b0aa98d6dc05da01e03cfe1d8d3555c8e1b5c37efdf9809287081e0017",
+      "input": "docs/tracks/integration/prereg/round-1-le1-smoke.json",
+      "input_sha256": "2200c9e55c7be1adeb597b9d6d3c7503b183306154b4064632e33be3b1bf8ed1"
+    }
+  ],
+  "eligible_for_selection": false,
+  "reason": "Official matrix-standard workflow is unavailable; diagnostic sample cannot establish full acceptance.",
+  "calibration_applied_runs": 0,
+  "pooled": {
+    "baseline": {
+      "horizontal_median_m": {
+        "value": 1.1969904943476604,
+        "ci": [
+          1.1969904943476604,
+          1.1969904943476604
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "horizontal_p90_m": {
+        "value": 3.8165201929960837,
+        "ci": [
+          3.8165201929960837,
+          3.8165201929960837
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "error_3d_median_m": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "error_3d_p90_m": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "events_within_10m_misses_counted": {
+        "value": 0.5,
+        "ci": [
+          0,
+          1
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "detectable_3_node_fraction": {
+        "value": 0.5,
+        "ci": [
+          0,
+          1
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "detectable_3_node_events_within_10m": {
+        "value": 1,
+        "ci": [
+          1,
+          1
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "detectable_3_node_event_count": {
+        "value": 4,
+        "ci": [
+          0,
+          8
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "scene_fix_rate": {
+        "value": 0.5,
+        "ci": [
+          0,
+          1
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "useful_fix_rate": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "unflagged_wrong_fix_rate": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "risk_coverage_area": {
+        "value": 0.5,
+        "ci": [
+          0,
+          1
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "source_fix_rate": {
+        "value": 0.5,
+        "ci": [
+          0,
+          1
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "within_target_rate": {
+        "value": 1,
+        "ci": [
+          1,
+          1
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "wrong_fix_rate": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "suspect_recall": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "suspect_precision": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "unmatched_fix_rate": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "track_fix_count": {
+        "value": 497,
+        "ci": [
+          0,
+          994
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "track_median_error_m": {
+        "value": 0.12294456938195211,
+        "ci": [
+          0.12294456938195211,
+          0.12294456938195211
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "bearing_median_deg": {
+        "value": 0.32097572484985903,
+        "ci": [
+          0.32097572484985903,
+          0.32097572484985903
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "elevation_median_deg": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "within_1sigma": {
+        "value": 0.625,
+        "ci": [
+          0.625,
+          0.625
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "within_2sigma": {
+        "value": 0.75,
+        "ci": [
+          0.75,
+          0.75
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "fix_brier_score": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "fix_log_loss": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "fix_error_10m_auc": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "fix_reliability_error": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "detection_rate": {
+        "value": 0.6666666666666666,
+        "ci": [
+          0.3333333333333333,
+          1
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "labelling_accuracy": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "runtime_ms": {
+        "value": 38506.975064,
+        "ci": [
+          26590.217874,
+          50423.732254
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      }
+    },
+    "candidate": {
+      "horizontal_median_m": {
+        "value": 1.1969904943476604,
+        "ci": [
+          1.1969904943476604,
+          1.1969904943476604
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "horizontal_p90_m": {
+        "value": 3.8165201929960837,
+        "ci": [
+          3.8165201929960837,
+          3.8165201929960837
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "error_3d_median_m": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "error_3d_p90_m": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "events_within_10m_misses_counted": {
+        "value": 0.5,
+        "ci": [
+          0,
+          1
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "detectable_3_node_fraction": {
+        "value": 0.5,
+        "ci": [
+          0,
+          1
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "detectable_3_node_events_within_10m": {
+        "value": 1,
+        "ci": [
+          1,
+          1
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "detectable_3_node_event_count": {
+        "value": 4,
+        "ci": [
+          0,
+          8
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "scene_fix_rate": {
+        "value": 0.5,
+        "ci": [
+          0,
+          1
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "useful_fix_rate": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "unflagged_wrong_fix_rate": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "risk_coverage_area": {
+        "value": 0.5,
+        "ci": [
+          0,
+          1
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "source_fix_rate": {
+        "value": 0.5,
+        "ci": [
+          0,
+          1
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "within_target_rate": {
+        "value": 1,
+        "ci": [
+          1,
+          1
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "wrong_fix_rate": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "suspect_recall": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "suspect_precision": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "unmatched_fix_rate": {
+        "value": 0,
+        "ci": [
+          0,
+          0
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "track_fix_count": {
+        "value": 497,
+        "ci": [
+          0,
+          994
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "track_median_error_m": {
+        "value": 0.12294456938195211,
+        "ci": [
+          0.12294456938195211,
+          0.12294456938195211
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "bearing_median_deg": {
+        "value": 0.32097572484985903,
+        "ci": [
+          0.32097572484985903,
+          0.32097572484985903
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "elevation_median_deg": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "within_1sigma": {
+        "value": 0.625,
+        "ci": [
+          0.625,
+          0.625
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "within_2sigma": {
+        "value": 0.75,
+        "ci": [
+          0.75,
+          0.75
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "fix_brier_score": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "fix_log_loss": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "fix_error_10m_auc": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "fix_reliability_error": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "detection_rate": {
+        "value": 0.6666666666666666,
+        "ci": [
+          0.3333333333333333,
+          1
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "labelling_accuracy": {
+        "value": null,
+        "ci": null,
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      },
+      "runtime_ms": {
+        "value": 37032.139037,
+        "ci": [
+          24968.552096000007,
+          49095.725978
+        ],
+        "n_runs": 8,
+        "n_sites": 2,
+        "confidence": 0.95
+      }
+    },
+    "paired": {
+      "events_within_10m_misses_counted": {
+        "delta": 0,
+        "interval95": [
+          0,
+          0
+        ],
+        "n_sites": 2,
+        "n_runs": 8
+      },
+      "horizontal_p90_m": {
+        "delta": 0,
+        "interval95": [
+          0,
+          0
+        ],
+        "n_sites": 2,
+        "n_runs": 8
+      },
+      "horizontal_median_m": {
+        "delta": 0,
+        "interval95": [
+          0,
+          0
+        ],
+        "n_sites": 2,
+        "n_runs": 8
+      },
+      "scene_fix_rate": {
+        "delta": 0,
+        "interval95": [
+          0,
+          0
+        ],
+        "n_sites": 2,
+        "n_runs": 8
+      },
+      "source_fix_rate": {
+        "delta": 0,
+        "interval95": [
+          0,
+          0
+        ],
+        "n_sites": 2,
+        "n_runs": 8
+      },
+      "unflagged_wrong_fix_rate": {
+        "delta": 0,
+        "interval95": [
+          0,
+          0
+        ],
+        "n_sites": 2,
+        "n_runs": 8
+      },
+      "risk_coverage_area": {
+        "delta": 0,
+        "interval95": [
+          0,
+          0
+        ],
+        "n_sites": 2,
+        "n_runs": 8
+      },
+      "fix_brier_score": {
+        "delta": null,
+        "interval95": null,
+        "n_sites": 2,
+        "n_runs": 8
+      },
+      "fix_log_loss": {
+        "delta": null,
+        "interval95": null,
+        "n_sites": 2,
+        "n_runs": 8
+      },
+      "fix_error_10m_auc": {
+        "delta": null,
+        "interval95": null,
+        "n_sites": 2,
+        "n_runs": 8
+      },
+      "fix_reliability_error": {
+        "delta": null,
+        "interval95": null,
+        "n_sites": 2,
+        "n_runs": 8
+      },
+      "within_1sigma": {
+        "delta": 0,
+        "interval95": [
+          0,
+          0
+        ],
+        "n_sites": 2,
+        "n_runs": 8
+      },
+      "within_2sigma": {
+        "delta": 0,
+        "interval95": [
+          0,
+          0
+        ],
+        "n_sites": 2,
+        "n_runs": 8
+      },
+      "error_3d_p90_m": {
+        "delta": null,
+        "interval95": null,
+        "n_sites": 2,
+        "n_runs": 8
+      },
+      "track_median_error_m": {
+        "delta": 0,
+        "interval95": [
+          0,
+          0
+        ],
+        "n_sites": 2,
+        "n_runs": 8
+      }
+    }
+  },
+  "partitions": [
+    {
+      "key": "train/off",
+      "baseline": {
+        "horizontal_median_m": {
+          "value": 0.12294456938195211,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "horizontal_p90_m": {
+          "value": 0.12294456938195211,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "error_3d_median_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "error_3d_p90_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "detectable_3_node_events_within_10m": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "detectable_3_node_event_count": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "useful_fix_rate": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "risk_coverage_area": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "source_fix_rate": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "within_target_rate": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "suspect_recall": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "suspect_precision": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "unmatched_fix_rate": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "track_fix_count": {
+          "value": 128,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "track_median_error_m": {
+          "value": 0.04437541951373984,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "bearing_median_deg": {
+          "value": 0.2521354625159802,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "elevation_median_deg": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "within_1sigma": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "within_2sigma": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "fix_brier_score": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "fix_log_loss": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "fix_error_10m_auc": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "fix_reliability_error": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "detection_rate": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "labelling_accuracy": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "runtime_ms": {
+          "value": 3604.083966,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        }
+      },
+      "candidate": {
+        "horizontal_median_m": {
+          "value": 0.12294456938195211,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "horizontal_p90_m": {
+          "value": 0.12294456938195211,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "error_3d_median_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "error_3d_p90_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "detectable_3_node_events_within_10m": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "detectable_3_node_event_count": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "useful_fix_rate": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "risk_coverage_area": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "source_fix_rate": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "within_target_rate": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "suspect_recall": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "suspect_precision": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "unmatched_fix_rate": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "track_fix_count": {
+          "value": 128,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "track_median_error_m": {
+          "value": 0.04437541951373984,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "bearing_median_deg": {
+          "value": 0.2521354625159802,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "elevation_median_deg": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "within_1sigma": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "within_2sigma": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "fix_brier_score": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "fix_log_loss": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "fix_error_10m_auc": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "fix_reliability_error": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "detection_rate": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "labelling_accuracy": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "runtime_ms": {
+          "value": 3396.0217060000004,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        }
+      },
+      "paired": {
+        "events_within_10m_misses_counted": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "horizontal_p90_m": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "horizontal_median_m": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "scene_fix_rate": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "source_fix_rate": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "unflagged_wrong_fix_rate": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "risk_coverage_area": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "fix_brier_score": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "fix_log_loss": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "fix_error_10m_auc": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "fix_reliability_error": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "within_1sigma": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "within_2sigma": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "error_3d_p90_m": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "track_median_error_m": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        }
+      }
+    },
+    {
+      "key": "train/on",
+      "baseline": {
+        "horizontal_median_m": {
+          "value": 3.8165201929960837,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "horizontal_p90_m": {
+          "value": 3.8165201929960837,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "error_3d_median_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "error_3d_p90_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "detectable_3_node_events_within_10m": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "detectable_3_node_event_count": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "useful_fix_rate": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "risk_coverage_area": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "source_fix_rate": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "within_target_rate": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "suspect_recall": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "suspect_precision": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "unmatched_fix_rate": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "track_fix_count": {
+          "value": 114,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "track_median_error_m": {
+          "value": 3.7670994255147607,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "bearing_median_deg": {
+          "value": 7.03083203862036,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "elevation_median_deg": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "within_1sigma": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "within_2sigma": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "fix_brier_score": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "fix_log_loss": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "fix_error_10m_auc": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "fix_reliability_error": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "detection_rate": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "labelling_accuracy": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "runtime_ms": {
+          "value": 4000.288092,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        }
+      },
+      "candidate": {
+        "horizontal_median_m": {
+          "value": 3.8165201929960837,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "horizontal_p90_m": {
+          "value": 3.8165201929960837,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "error_3d_median_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "error_3d_p90_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "detectable_3_node_events_within_10m": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "detectable_3_node_event_count": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "useful_fix_rate": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "risk_coverage_area": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "source_fix_rate": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "within_target_rate": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "suspect_recall": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "suspect_precision": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "unmatched_fix_rate": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "track_fix_count": {
+          "value": 114,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "track_median_error_m": {
+          "value": 3.7670994255147607,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "bearing_median_deg": {
+          "value": 7.03083203862036,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "elevation_median_deg": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "within_1sigma": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "within_2sigma": {
+          "value": 0,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "fix_brier_score": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "fix_log_loss": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "fix_error_10m_auc": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "fix_reliability_error": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "detection_rate": {
+          "value": 1,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "labelling_accuracy": {
+          "value": null,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        },
+        "runtime_ms": {
+          "value": 3502.122608,
+          "ci": null,
+          "n_runs": 1,
+          "n_sites": 1,
+          "confidence": 0.95
+        }
+      },
+      "paired": {
+        "events_within_10m_misses_counted": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "horizontal_p90_m": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "horizontal_median_m": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "scene_fix_rate": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "source_fix_rate": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "unflagged_wrong_fix_rate": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "risk_coverage_area": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "fix_brier_score": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "fix_log_loss": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "fix_error_10m_auc": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "fix_reliability_error": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "within_1sigma": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "within_2sigma": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "error_3d_p90_m": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        },
+        "track_median_error_m": {
+          "delta": 0,
+          "interval95": null,
+          "n_sites": 1,
+          "n_runs": 1
+        }
+      }
+    },
+    {
+      "key": "held-out/off",
+      "baseline": {
+        "horizontal_median_m": {
+          "value": 0.09405291671279457,
+          "ci": [
+            0.09405291671279457,
+            0.09405291671279457
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "horizontal_p90_m": {
+          "value": 0.09405291671279457,
+          "ci": [
+            0.09405291671279457,
+            0.09405291671279457
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "error_3d_median_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "error_3d_p90_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "detectable_3_node_events_within_10m": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "detectable_3_node_event_count": {
+          "value": 1,
+          "ci": [
+            0,
+            2
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "scene_fix_rate": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "useful_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "risk_coverage_area": {
+          "value": 0.6666666666666667,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "source_fix_rate": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "within_target_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "suspect_recall": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "suspect_precision": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "unmatched_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "track_fix_count": {
+          "value": 127,
+          "ci": [
+            0,
+            254
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "track_median_error_m": {
+          "value": 0.05377096320434447,
+          "ci": [
+            0.05377096320434447,
+            0.05377096320434447
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "bearing_median_deg": {
+          "value": 0.2976613288645922,
+          "ci": [
+            0.2976613288645922,
+            0.2976613288645922
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "elevation_median_deg": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "within_1sigma": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "within_2sigma": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "fix_brier_score": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "fix_log_loss": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "fix_error_10m_auc": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "fix_reliability_error": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "detection_rate": {
+          "value": 0.5555555555555556,
+          "ci": [
+            0.3333333333333333,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "labelling_accuracy": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "runtime_ms": {
+          "value": 15208.986702,
+          "ci": [
+            5576.017882,
+            24841.955521999997
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        }
+      },
+      "candidate": {
+        "horizontal_median_m": {
+          "value": 0.09405291671279457,
+          "ci": [
+            0.09405291671279457,
+            0.09405291671279457
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "horizontal_p90_m": {
+          "value": 0.09405291671279457,
+          "ci": [
+            0.09405291671279457,
+            0.09405291671279457
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "error_3d_median_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "error_3d_p90_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "detectable_3_node_events_within_10m": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "detectable_3_node_event_count": {
+          "value": 1,
+          "ci": [
+            0,
+            2
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "scene_fix_rate": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "useful_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "risk_coverage_area": {
+          "value": 0.6666666666666667,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "source_fix_rate": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "within_target_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "suspect_recall": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "suspect_precision": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "unmatched_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "track_fix_count": {
+          "value": 127,
+          "ci": [
+            0,
+            254
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "track_median_error_m": {
+          "value": 0.05377096320434447,
+          "ci": [
+            0.05377096320434447,
+            0.05377096320434447
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "bearing_median_deg": {
+          "value": 0.2976613288645922,
+          "ci": [
+            0.2976613288645922,
+            0.2976613288645922
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "elevation_median_deg": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "within_1sigma": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "within_2sigma": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "fix_brier_score": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "fix_log_loss": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "fix_error_10m_auc": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "fix_reliability_error": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "detection_rate": {
+          "value": 0.5555555555555556,
+          "ci": [
+            0.3333333333333333,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "labelling_accuracy": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "runtime_ms": {
+          "value": 14785.151195,
+          "ci": [
+            5284.883833999999,
+            24285.418556
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        }
+      },
+      "paired": {
+        "events_within_10m_misses_counted": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "horizontal_p90_m": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "horizontal_median_m": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "scene_fix_rate": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "source_fix_rate": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "unflagged_wrong_fix_rate": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "risk_coverage_area": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "fix_brier_score": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "fix_log_loss": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "fix_error_10m_auc": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "fix_reliability_error": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "within_1sigma": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "within_2sigma": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "error_3d_p90_m": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "track_median_error_m": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        }
+      }
+    },
+    {
+      "key": "held-out/on",
+      "baseline": {
+        "horizontal_median_m": {
+          "value": 1.205579184978051,
+          "ci": [
+            1.205579184978051,
+            1.205579184978051
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "horizontal_p90_m": {
+          "value": 1.205579184978051,
+          "ci": [
+            1.205579184978051,
+            1.205579184978051
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "error_3d_median_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "error_3d_p90_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "detectable_3_node_events_within_10m": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "detectable_3_node_event_count": {
+          "value": 1,
+          "ci": [
+            0,
+            2
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "scene_fix_rate": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "useful_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "risk_coverage_area": {
+          "value": 0.6666666666666667,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "source_fix_rate": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "within_target_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "suspect_recall": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "suspect_precision": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "unmatched_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "track_fix_count": {
+          "value": 128,
+          "ci": [
+            0,
+            256
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "track_median_error_m": {
+          "value": 1.205579184978051,
+          "ci": [
+            1.205579184978051,
+            1.205579184978051
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "bearing_median_deg": {
+          "value": 2.7204158902698055,
+          "ci": [
+            2.7204158902698055,
+            2.7204158902698055
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "elevation_median_deg": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "within_1sigma": {
+          "value": 0.5,
+          "ci": [
+            0.5,
+            0.5
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "within_2sigma": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "fix_brier_score": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "fix_log_loss": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "fix_error_10m_auc": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "fix_reliability_error": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "detection_rate": {
+          "value": 0.5555555555555556,
+          "ci": [
+            0.3333333333333333,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "labelling_accuracy": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "runtime_ms": {
+          "value": 15693.616304,
+          "ci": [
+            5805.455876,
+            25581.776732
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        }
+      },
+      "candidate": {
+        "horizontal_median_m": {
+          "value": 1.205579184978051,
+          "ci": [
+            1.205579184978051,
+            1.205579184978051
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "horizontal_p90_m": {
+          "value": 1.205579184978051,
+          "ci": [
+            1.205579184978051,
+            1.205579184978051
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "error_3d_median_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "error_3d_p90_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "detectable_3_node_events_within_10m": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "detectable_3_node_event_count": {
+          "value": 1,
+          "ci": [
+            0,
+            2
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "scene_fix_rate": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "useful_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "risk_coverage_area": {
+          "value": 0.6666666666666667,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "source_fix_rate": {
+          "value": 0.3333333333333333,
+          "ci": [
+            0,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "within_target_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "suspect_recall": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "suspect_precision": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "unmatched_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "track_fix_count": {
+          "value": 128,
+          "ci": [
+            0,
+            256
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "track_median_error_m": {
+          "value": 1.205579184978051,
+          "ci": [
+            1.205579184978051,
+            1.205579184978051
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "bearing_median_deg": {
+          "value": 2.7204158902698055,
+          "ci": [
+            2.7204158902698055,
+            2.7204158902698055
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "elevation_median_deg": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "within_1sigma": {
+          "value": 0.5,
+          "ci": [
+            0.5,
+            0.5
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "within_2sigma": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "fix_brier_score": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "fix_log_loss": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "fix_error_10m_auc": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "fix_reliability_error": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "detection_rate": {
+          "value": 0.5555555555555556,
+          "ci": [
+            0.3333333333333333,
+            1
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "labelling_accuracy": {
+          "value": null,
+          "ci": null,
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        },
+        "runtime_ms": {
+          "value": 15348.843528,
+          "ci": [
+            5887.379634000001,
+            24810.307421999998
+          ],
+          "n_runs": 3,
+          "n_sites": 2,
+          "confidence": 0.95
+        }
+      },
+      "paired": {
+        "events_within_10m_misses_counted": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "horizontal_p90_m": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "horizontal_median_m": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "scene_fix_rate": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "source_fix_rate": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "unflagged_wrong_fix_rate": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "risk_coverage_area": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "fix_brier_score": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "fix_log_loss": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "fix_error_10m_auc": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "fix_reliability_error": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "within_1sigma": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "within_2sigma": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "error_3d_p90_m": {
+          "delta": null,
+          "interval95": null,
+          "n_sites": 2,
+          "n_runs": 3
+        },
+        "track_median_error_m": {
+          "delta": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "n_sites": 2,
+          "n_runs": 3
+        }
+      }
+    }
+  ],
+  "timings": [
+    {
+      "engine_id": "LE-0",
+      "runs": [
+        {
+          "job_id": "c0:sparse_20:1:off:measured_only",
+          "render_ms": 2788.4188369999997,
+          "analysis_ms": 780.3454470000001,
+          "runtime_ms": 3604.083966,
+          "render_cache_hit": false
+        },
+        {
+          "job_id": "c0:sparse_20:1:on:measured_only",
+          "render_ms": 3189.981597,
+          "analysis_ms": 782.7410950000003,
+          "runtime_ms": 4000.288092,
+          "render_cache_hit": false
+        },
+        {
+          "job_id": "c0:sparse_20:101:off:measured_only",
+          "render_ms": 2040.0914050000001,
+          "analysis_ms": 729.939985,
+          "runtime_ms": 2788.008941,
+          "render_cache_hit": false
+        },
+        {
+          "job_id": "c0:sparse_20:101:on:measured_only",
+          "render_ms": 2146.6501179999996,
+          "analysis_ms": 729.2053610000003,
+          "runtime_ms": 2902.727938,
+          "render_cache_hit": false
+        },
+        {
+          "job_id": "c0:random_5:1:off:measured_only",
+          "render_ms": 4362.861651,
+          "analysis_ms": 1709.2719529999995,
+          "runtime_ms": 6126.093459,
+          "render_cache_hit": false
+        },
+        {
+          "job_id": "c0:random_5:1:on:measured_only",
+          "render_ms": 4597.015386000001,
+          "analysis_ms": 1657.0443620000005,
+          "runtime_ms": 6316.833447999999,
+          "render_cache_hit": false
+        },
+        {
+          "job_id": "c0:random_5:101:off:measured_only",
+          "render_ms": 4546.500113999999,
+          "analysis_ms": 1682.1129379999984,
+          "runtime_ms": 6294.884302,
+          "render_cache_hit": false
+        },
+        {
+          "job_id": "c0:random_5:101:on:measured_only",
+          "render_ms": 4787.261779999999,
+          "analysis_ms": 1636.8632940000025,
+          "runtime_ms": 6474.054918,
+          "render_cache_hit": false
+        }
+      ]
+    },
+    {
+      "engine_id": "LE-1",
+      "runs": [
+        {
+          "job_id": "c0:sparse_20:1:off:measured_only",
+          "render_ms": 2605.7403320000003,
+          "analysis_ms": 772.653613,
+          "runtime_ms": 3396.0217060000004,
+          "render_cache_hit": false
+        },
+        {
+          "job_id": "c0:sparse_20:1:on:measured_only",
+          "render_ms": 2749.05366,
+          "analysis_ms": 734.2697929999999,
+          "runtime_ms": 3502.122608,
+          "render_cache_hit": false
+        },
+        {
+          "job_id": "c0:sparse_20:101:off:measured_only",
+          "render_ms": 1917.2355310000003,
+          "analysis_ms": 709.2796280000002,
+          "runtime_ms": 2642.4419169999996,
+          "render_cache_hit": false
+        },
+        {
+          "job_id": "c0:sparse_20:101:on:measured_only",
+          "render_ms": 2149.102169999999,
+          "analysis_ms": 778.0039509999997,
+          "runtime_ms": 2943.6898170000004,
+          "render_cache_hit": false
+        },
+        {
+          "job_id": "c0:random_5:1:off:measured_only",
+          "render_ms": 4148.814689,
+          "analysis_ms": 1776.5461059999998,
+          "runtime_ms": 5964.233721999999,
+          "render_cache_hit": false
+        },
+        {
+          "job_id": "c0:random_5:1:on:measured_only",
+          "render_ms": 4285.955448999999,
+          "analysis_ms": 1717.2364529999995,
+          "runtime_ms": 6036.035561999999,
+          "render_cache_hit": false
+        },
+        {
+          "job_id": "c0:random_5:101:off:measured_only",
+          "render_ms": 3937.7834420000017,
+          "analysis_ms": 2190.751723000001,
+          "runtime_ms": 6178.475556000001,
+          "render_cache_hit": false
+        },
+        {
+          "job_id": "c0:random_5:101:on:measured_only",
+          "render_ms": 4601.497886000001,
+          "analysis_ms": 1676.2625919999991,
+          "runtime_ms": 6369.118149,
+          "render_cache_hit": false
+        }
+      ]
+    }
+  ]
+}
