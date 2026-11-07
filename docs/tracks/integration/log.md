@@ -92,3 +92,9 @@
   or option was changed.
 - Existing regression workflow dispatched successfully for commit `297c339`
   (run 42313367287). This does not make the absent sharded workflow available.
+- 2026-11-07T00:08:03Z heartbeat: disk 58%; final local gates running; regression
+  run 42313367287 completed successfully. No new heavy study started.
+- Found a KPI grouping defect: T1's building breakdown included `mixed` and
+  `dense`, but the actual matrix label is `dense_urban`. Include that label.
+  Register a separate offline baseline audit before deriving filtered results;
+  no render, sealed input or generator modification is involved.

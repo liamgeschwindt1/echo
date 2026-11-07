@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, writeFile } from 'node:fs/promises';
+import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { buildArtifacts, pairedDeltasForReports } from '../../../scripts/engine-kpi.mjs';
@@ -92,4 +92,25 @@ test('paired KPI deltas use pooled endpoints, not averages of per-site quantiles
   assert.ok(paired.delta > 0);
   assert.equal(paired.n_sites, 2);
   assert.ok(paired.interval95);
+});
+
+test('building KPI breakdown includes the dense_urban matrix label', async () => {
+  const report = JSON.parse(gunzipSync(await readFile(new URL('../../../baselines/integration-le0-smoke.json.gz', import.meta.url))));
+  report.runs = report.runs.filter((run) => run.job.analysis_mode === 'measured_only').slice(0, 2);
+  report.runs[0].scenario.settings.matrix_environment = 'open';
+  report.runs[1].scenario.settings.matrix_environment = 'dense_urban';
+  report.manifest.expected_runs = 2;
+  const directory = await mkdtemp(join(tmpdir(), 'echo-kpi-building-test-'));
+  try {
+    const path = join(directory, 'fixture.json');
+    await writeFile(path, JSON.stringify(report));
+    const { kpi } = await buildArtifacts({
+      engineId: 'LE-0', parentId: null, status: 'baseline',
+      branch: 'fixture', sourceHash: 'fixture', reportInputs: [path]
+    });
+    assert.equal(kpi.breakdowns.building_vs_open.building_cells.n_runs, 1);
+    assert.equal(kpi.breakdowns.building_vs_open.open_cells.n_runs, 1);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });

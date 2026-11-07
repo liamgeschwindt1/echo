@@ -205,7 +205,7 @@ function buildingBreakdown(benchmarkReport) {
   const byEnv = groupedBy(benchmarkReport.runs.filter((run) => run.scenario?.settings?.matrix_environment),
     (run) => run.scenario.settings.matrix_environment);
   const openRuns = byEnv.get('open') ?? [];
-  const buildingRuns = [...(byEnv.get('mixed') ?? []), ...(byEnv.get('dense') ?? [])];
+  const buildingRuns = [...(byEnv.get('mixed') ?? []), ...(byEnv.get('dense_urban') ?? []), ...(byEnv.get('dense') ?? [])];
   const metric = 'events_within_10m_misses_counted';
   const openMetrics = aggregate(openRuns, { wrong_fix_m: benchmarkReport.experiment?.wrong_fix_m });
   const buildingMetrics = aggregate(buildingRuns, { wrong_fix_m: benchmarkReport.experiment?.wrong_fix_m });
