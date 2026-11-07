@@ -13,7 +13,7 @@ requested positioning connections have been completed.
 | Sound speed | Standalone estimator accepts sensor temperature or known-distance timing pairs | No delivered sensor-observation contract at the measured boundary. Source range/time truth must not be substituted. |
 | Buildings and assumed copy | Not delivered | Branch absent on origin; no weighting/twin-profile conclusions. |
 | Causal front end | Not delivered | Branch absent on origin; no causal latency/rolling-buffer claims. |
-| Dashboard | T1 registry and KPI schema differ from T7's initial adapter | Integration must normalize actual KPI objects and serve registered JSON in dev and production, without averaging quantiles or inventing paired intervals. |
+| Dashboard | Integrated actual T1 registry/KPI objects, dev/production JSON assets and offline export | Live-browser and published-value checks pass. No averaging quantiles or invented paired intervals; unavailable performance evidence remains unavailable. |
 
 Unavailable measurements and unimplemented connections remain unavailable.
 Default-off component demonstrations are not acceptance evidence for a complete

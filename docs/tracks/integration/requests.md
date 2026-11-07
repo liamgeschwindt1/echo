@@ -13,3 +13,7 @@
    the restricted sensor path.
 5. **OPTIONAL** Deliver causal and buildings branches for a later explicitly
    preregistered integration round. They are excluded from this delivery.
+6. **MUST before promotion** Resolve the delivered T4 `measured_*` naming
+   deviation from the requested `fus_*` prefix, retaining explicit backwards
+   compatibility and updating preregistrations rather than renaming silently.
+   The existing legacy fusion selector remains the default.

@@ -6,7 +6,46 @@ The one reference document for the **sim** frontend ([apps/sim](apps/sim)) and i
 
 Coordinates: metres, x east, y north, z up. Time: seconds of scenario time. Inside the physics, pressure is in pascals; digital floats appear only at the microphone output. Angles in the code are in radians unless the name ends in `_deg`.
 
-## Reproducible Testing engine (schema 0.18)
+## Reproducible Testing engine (schema 0.19)
+
+### T8 integration status
+
+The delivered infrastructure, cues, multisource, fusion and dashboard tracks are
+integrated. Causal and buildings branches were not delivered. LE-0 remains the
+default; LE-1 enables heading self-calibration but is rejected for promotion
+after a small diagnostic population applied no calibrations. Official matrix
+selection, a selected-engine freeze, the matrix sealed test and the final stress
+suite are **not completed**. See [integration conclusion](docs/localisation-conclusion.md)
+and [interface gaps](docs/tracks/integration/interfaces.md).
+
+Schema 0.19 documents sibling optional `results.extensions.multisource` and
+`results.extensions.fusion` blocks, including node/fix fusion diagnostics.
+Multisource modes are `multi_peak`, `tf_histogram` and `harmonic_comb`; spectral
+association and label-prior modes are experimental metadata, not an accepted
+replacement for fix association. The rotor source model and renderer
+`cue_weather_*` mismatch controls remain opt-in. Analytic notch, Doppler and
+sound-speed modules do not have a delivered mixture-observation-to-fusion path:
+their component demonstrations must not be reported as measured 3D or tracking
+engine results.
+
+Likelihood fusion remains opt-in (`measured_fusion_mode=likelihood`) after the
+T4 smoke rejection. Heading calibration (`measured_heading_self_calibration=1`)
+is default-off and observability-gated. All uncertainty and propagation
+parameters remain simulation placeholders. The default complete inference
+matches a fresh `ff75074` reference byte-for-byte on the 16-run smoke; signal
+goldens are unchanged. Export schema/changelog metadata intentionally differ.
+
+Engine history reads `engines/registry.json` and the actual KPI sheets. Published
+site intervals and sample counts are retained; pooled and per-profile summaries
+are separate. The UI does not average cell quantiles or fabricate paired
+intervals from marginal intervals. Non-localisation dashboard areas remain
+empty placeholders. The static export is
+`docs/tracks/integration/engines-dashboard.html`.
+
+The delivered sharded workflow is not on the default branch and dispatch
+returns HTTP 404. Its single-attempt sealed controls are unfinished. All three
+sharded CLI entrypoints therefore fail closed for sealed inputs. No matrix
+sealed input was opened or executed by T8.
 
 `npm run benchmark -- --experiment smoke --out baselines/smoke.json` runs the shared
 `packages/sim-core/src/benchmark/` engine. CLI and Testing use identical experiment

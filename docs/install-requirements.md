@@ -2,6 +2,24 @@
 
 This document records what the current simulator-based evidence supports for install profiles. It is not field validation.
 
+## T8 status
+
+No new minimum node count, mounting tolerance or installation tier was
+established. LE-0 remains default. The opt-in event-derived heading calibration
+requires observable fixes across nodes; neither the delivered T4 smoke nor the
+T8 eight-run diagnostic applied a calibration. It therefore does not establish
+a usable self-calibrated installation profile.
+
+Notch height, Doppler and sound-speed estimators require observations not yet
+delivered to the measured runtime interface. Do not supply simulator truth to
+fulfil installation inputs. Assumed-building-copy requirements remain
+unmeasured because that track was not delivered.
+
+Node-count/install frontiers, heading and position tolerances, aerial 3D
+requirements and sealed install-profile comparisons remain unavailable.
+The missing observations and acceptance gates are documented in
+`docs/tracks/integration/interfaces.md` and `docs/localisation-conclusion.md`.
+
 ## Profile definitions in current matrix studies
 
 - **raw (`on`)**: nominal install with default realism errors (heading, mic position, gain, correlated noise).
