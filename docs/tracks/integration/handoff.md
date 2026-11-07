@@ -4,7 +4,8 @@
 
 Branch: `overnight/loc5-integration`. Base:
 `ff75074dca26a633b0aadae1a81a674db728030d`.
-Last pushed checkpoint before these reporting changes: `861a97a`.
+Verified code-and-report checkpoint:
+`116aafbc0f31bb8d5a44fbe1c2d3502c0c75f179`.
 Resolve the final tip from this branch's log; no selected/frozen commit exists.
 Engine source-content hash:
 `d1eb705837c420b40a65dec187e39194ea52f374ebc18cdf7026e7134e4f2461`.
@@ -43,9 +44,11 @@ No signal golden was changed. Full details: `report.md`.
   Joint/likelihood remain alternatives, not promoted defaults.
 - Claims/SIM fragments are consolidated with explicit limits in shared docs.
   Missing observations are never replaced with simulator truth.
-- Last previously verified GitHub run: 42313367287, success, source
-  `297c339a8b6fe33d2054f7fb7c4dc737dc40521d`. Final code receipt pending at
-  this report checkpoint; do not infer a final pass from the older run.
+- GitHub run 42317475067 succeeded for checkpoint
+  `116aafbc0f31bb8d5a44fbe1c2d3502c0c75f179`: 308 core, 44 app and three
+  browser tests, build, integrity verification and CI smoke. Metadata/logs:
+  `baselines/integration-ci-116aafb.{json,log.gz}`. Subsequent receipt changes
+  only docs/evidence; its actual branch-tip run is checked after push.
 - **Not acceptance-ready:** measured wire-up and official validation
   incomplete; sealed controls/workflow publication incomplete.
 

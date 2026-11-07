@@ -1,5 +1,13 @@
 # T8 integration log
 
+- 2026-11-07T00:23:01Z: Read successful GitHub regression 42317475067 for
+  `116aafbc0f31bb8d5a44fbe1c2d3502c0c75f179`: 308 core, 44 app and three
+  browser tests, build, archived round-two integrity and CI comparison.
+  Archived metadata/logs. Latest measured disk 59%; removed only the named
+  temporary base worktree and its dependency symlink. No sealed attempt or
+  new performance default. Saving docs-only receipt, then verifying its
+  branch-tip CI without another self-referential evidence commit.
+
 - 2026-11-07T00:13:03Z: Disk 59% used. Final local gate passed (307 core,
   11 cue, 44 app tests, build, 16-run smoke with zero tracked/byte changes);
   browser suite passed all three tests. Archived building audit completed

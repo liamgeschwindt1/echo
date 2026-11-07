@@ -129,11 +129,15 @@ Recorded final local wall times: core 202.94 s, cue tests 2.63 s, app 1.66 s,
 build 5.91 s and smoke 63.03 s. Recorded eight-run inference sums were
 38.507 s for LE-0 and 37.032 s for LE-1; these are not remote shard estimates.
 
-The last verified GitHub regression before this report was successful run
-42313367287 for `297c339a8b6fe33d2054f7fb7c4dc737dc40521d`.
-It does not prove the final commit passed. Final code and documentation
-revisions must have their actual run read; the handoff will record the code
-receipt after that verification.
+GitHub regression run 42317475067 succeeded for code-and-report checkpoint
+`116aafbc0f31bb8d5a44fbe1c2d3502c0c75f179`. Its actual result and logs were
+read and archived in `baselines/integration-ci-116aafb.{json,log.gz}`.
+It passed 308 core tests (including the dense-urban addition), 44 app tests,
+three browser tests, build, archived round-two integrity and the eight-run CI
+comparison. This is the existing regression workflow, not the unavailable
+sharded matrix/final suite. The later receipt changes only documentation and
+evidence; its branch-tip regression is dispatched and read separately rather
+than creating an endless sequence of self-referential receipt commits.
 
 ## Unfinished, in priority order
 
