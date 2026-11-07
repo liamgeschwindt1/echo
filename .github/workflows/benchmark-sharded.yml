@@ -1,0 +1,118 @@
+name: Benchmark sharded evaluation
+
+on:
+  workflow_dispatch:
+    inputs:
+      experiment:
+        description: Experiment JSON path or preset name
+        required: true
+        default: docs/experiments/matrix-r3-smoke.json
+      shards:
+        description: Shard count (1-20)
+        required: true
+        default: "4"
+      workers:
+        description: Worker count per shard
+        required: true
+        default: "2"
+      merged_output:
+        description: Merged report path
+        required: true
+        default: artifacts/sharded-report.json
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      shard_count: ${{ steps.plan.outputs.shard_count }}
+      expected_jobs: ${{ steps.plan.outputs.expected_jobs }}
+      input_sha256: ${{ steps.plan.outputs.input_sha256 }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.2'
+          cache: npm
+      - run: npm ci
+      - id: plan
+        name: Plan shard matrix
+        run: |
+          PLAN=$(node scripts/benchmark-shard-plan.mjs --experiment "${{ inputs.experiment }}" --shards "${{ inputs.shards }}")
+          echo "matrix=$(echo "$PLAN" | jq -c '.')" >> "$GITHUB_OUTPUT"
+          echo "shard_count=$(echo "$PLAN" | jq -r '.shard_count')" >> "$GITHUB_OUTPUT"
+          echo "expected_jobs=$(echo "$PLAN" | jq -r '.expected_jobs')" >> "$GITHUB_OUTPUT"
+          echo "input_sha256=$(echo "$PLAN" | jq -r '.input_sha256')" >> "$GITHUB_OUTPUT"
+
+  shard:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.2'
+          cache: npm
+      - run: npm ci
+      - run: npm run fetch-test-audio -w @echo/assets
+      - name: Run shard
+        run: >-
+          node scripts/benchmark-shard.mjs
+          --experiment "${{ inputs.experiment }}"
+          --shard-index "${{ matrix.shard_index }}"
+          --shard-count "${{ needs.prepare.outputs.shard_count }}"
+          --workers "${{ inputs.workers }}"
+          --discard-renders
+          --cache ".benchmark-shard-${{ matrix.shard_index }}"
+          --out "artifacts/shards/shard-${{ matrix.shard_index }}.json"
+      - name: Upload shard artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-shard-${{ matrix.shard_index }}
+          path: |
+            artifacts/shards/shard-${{ matrix.shard_index }}.json
+            artifacts/shards/shard-${{ matrix.shard_index }}.csv
+            artifacts/shards/shard-${{ matrix.shard_index }}.html
+          if-no-files-found: error
+
+  merge:
+    needs: [prepare, shard]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.2'
+          cache: npm
+      - run: npm ci
+      - name: Download shard artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/downloaded-shards
+      - name: Flatten shard reports
+        run: |
+          mkdir -p artifacts/shards
+          find artifacts/downloaded-shards -name 'shard-*.json' -exec cp {} artifacts/shards/ \;
+      - name: Merge and verify shards
+        run: >-
+          node scripts/benchmark-shard-merge.mjs
+          --experiment "${{ inputs.experiment }}"
+          --shard-dir artifacts/shards
+          --out "${{ inputs.merged_output }}"
+      - name: Upload merged report
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-sharded-merged
+          path: |
+            ${{ inputs.merged_output }}
+            ${{ inputs.merged_output }}.csv
+            ${{ inputs.merged_output }}.html
+          if-no-files-found: error

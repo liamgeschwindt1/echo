@@ -1,0 +1,12 @@
+{
+  "id": "LE-1",
+  "parent_id": "LE-0",
+  "date": "2026-11-06T23:40:26.604Z",
+  "branch": "overnight/loc5-integration",
+  "source_hash": "d1eb705837c420b40a65dec187e39194ea52f374ebc18cdf7026e7134e4f2461",
+  "option_set": {
+    "measured_heading_self_calibration": 1
+  },
+  "status": "rejected",
+  "notes": "Not eligible for promotion: 0/8 diagnostic runs applied calibration; official paired matrix validation unavailable. Retain LE-0. Diagnostic smoke is not comparable to the 606-run LE-0 headline; cross-population deltas remain null. No sealed or final-suite results."
+}

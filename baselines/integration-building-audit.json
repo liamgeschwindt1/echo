@@ -1,0 +1,1441 @@
+{
+  "kind": "echo-archived-building-audit",
+  "preregistration": {
+    "path": "docs/tracks/integration/prereg/building-audit.json",
+    "sha256": "16342e3464466228861c5ee622277e960e4cc34b623140350b6b5477501d14d1"
+  },
+  "input": {
+    "path": "baselines/matrix-baseline-r3.full.json.gz",
+    "uncompressed_sha256": "29610449b2647c36d0ea7746b3f2ca53902542b053fcc4734e7451aecb8949d1"
+  },
+  "source_hash": "6874435a4af5a3258c5ecc20f60d756b5f7a81297cad3957eaf9df525a7a5b53",
+  "groups": [
+    {
+      "environment": "open",
+      "metrics": {
+        "horizontal_median_m": {
+          "value": 1.7987270970992202,
+          "ci": [
+            0.7959097046858011,
+            2.315431507143123
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "horizontal_p90_m": {
+          "value": 6.035398199727536,
+          "ci": [
+            1.7987270970992202,
+            6.035398199727536
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "error_3d_median_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "error_3d_p90_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_events_within_10m": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_event_count": {
+          "value": 5,
+          "ci": [
+            5,
+            5
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "useful_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "risk_coverage_area": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "source_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "within_target_rate": {
+          "value": 0.4444444444444444,
+          "ci": [
+            0.3333333333333333,
+            0.5833333333333334
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.5555555555555556,
+          "ci": [
+            0.4166666666666667,
+            0.6666666666666666
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "suspect_recall": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "suspect_precision": {
+          "value": 0.5555555555555556,
+          "ci": [
+            0.4166666666666667,
+            0.6666666666666666
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unmatched_fix_rate": {
+          "value": 0.5555555555555556,
+          "ci": [
+            0.4166666666666667,
+            0.6666666666666666
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "track_fix_count": {
+          "value": 716,
+          "ci": [
+            265,
+            1311
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "track_median_error_m": {
+          "value": 1.7987270970992202,
+          "ci": [
+            0.7959097046858011,
+            2.315431507143123
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "bearing_median_deg": {
+          "value": 1.694444361798105,
+          "ci": [
+            1.1218075638955725,
+            2.0974248187359876
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "elevation_median_deg": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "within_1sigma": {
+          "value": 0.8125,
+          "ci": [
+            0.5625,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "within_2sigma": {
+          "value": 0.875,
+          "ci": [
+            0.7,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "fix_brier_score": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "fix_log_loss": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "fix_error_10m_auc": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "fix_reliability_error": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detection_rate": {
+          "value": 0.92,
+          "ci": [
+            0.84,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "labelling_accuracy": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "runtime_ms": {
+          "value": 23476.960469000005,
+          "ci": [
+            21589.101080000008,
+            25192.684993000003
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "geometry": [
+        {
+          "scene": "core-0-train-01",
+          "seed": 3100000,
+          "split": "train",
+          "building_count": 0,
+          "reflection_order": 0,
+          "diffraction_order": 0,
+          "block_direct_behind_buildings": false,
+          "nominal_node_rays": [
+            {
+              "node_id": "n1",
+              "blocked": false,
+              "range_m": 62.333214558771154
+            },
+            {
+              "node_id": "n2",
+              "blocked": false,
+              "range_m": 38.929242628785985
+            },
+            {
+              "node_id": "n3",
+              "blocked": false,
+              "range_m": 14.595009271759636
+            },
+            {
+              "node_id": "n4",
+              "blocked": false,
+              "range_m": 42.16617436744708
+            },
+            {
+              "node_id": "n5",
+              "blocked": false,
+              "range_m": 63.62125244517985
+            }
+          ]
+        },
+        {
+          "scene": "core-0-train-02",
+          "seed": 3100001,
+          "split": "train",
+          "building_count": 0,
+          "reflection_order": 0,
+          "diffraction_order": 0,
+          "block_direct_behind_buildings": false,
+          "nominal_node_rays": [
+            {
+              "node_id": "n1",
+              "blocked": false,
+              "range_m": 41.28632161787639
+            },
+            {
+              "node_id": "n2",
+              "blocked": false,
+              "range_m": 63.29252939030602
+            },
+            {
+              "node_id": "n3",
+              "blocked": false,
+              "range_m": 62.714204809566425
+            },
+            {
+              "node_id": "n4",
+              "blocked": false,
+              "range_m": 39.83277166939488
+            },
+            {
+              "node_id": "n5",
+              "blocked": false,
+              "range_m": 14.469073048499704
+            }
+          ]
+        },
+        {
+          "scene": "core-0-validation-01",
+          "seed": 3101000,
+          "split": "validation",
+          "building_count": 0,
+          "reflection_order": 0,
+          "diffraction_order": 0,
+          "block_direct_behind_buildings": false,
+          "nominal_node_rays": [
+            {
+              "node_id": "n1",
+              "blocked": false,
+              "range_m": 24.580354879429084
+            },
+            {
+              "node_id": "n2",
+              "blocked": false,
+              "range_m": 54.11352236527023
+            },
+            {
+              "node_id": "n3",
+              "blocked": false,
+              "range_m": 66.08631250952182
+            },
+            {
+              "node_id": "n4",
+              "blocked": false,
+              "range_m": 54.15487873347275
+            },
+            {
+              "node_id": "n5",
+              "blocked": false,
+              "range_m": 24.636581489405117
+            }
+          ]
+        },
+        {
+          "scene": "core-0-validation-02",
+          "seed": 3101001,
+          "split": "validation",
+          "building_count": 0,
+          "reflection_order": 0,
+          "diffraction_order": 0,
+          "block_direct_behind_buildings": false,
+          "nominal_node_rays": [
+            {
+              "node_id": "n1",
+              "blocked": false,
+              "range_m": 15.798164828557432
+            },
+            {
+              "node_id": "n2",
+              "blocked": false,
+              "range_m": 35.58837402240814
+            },
+            {
+              "node_id": "n3",
+              "blocked": false,
+              "range_m": 60.78651294042854
+            },
+            {
+              "node_id": "n4",
+              "blocked": false,
+              "range_m": 64.64460872021492
+            },
+            {
+              "node_id": "n5",
+              "blocked": false,
+              "range_m": 45.27184465478555
+            }
+          ]
+        },
+        {
+          "scene": "core-0-validation-03",
+          "seed": 3101002,
+          "split": "validation",
+          "building_count": 0,
+          "reflection_order": 0,
+          "diffraction_order": 0,
+          "block_direct_behind_buildings": false,
+          "nominal_node_rays": [
+            {
+              "node_id": "n1",
+              "blocked": false,
+              "range_m": 49.25694285151045
+            },
+            {
+              "node_id": "n2",
+              "blocked": false,
+              "range_m": 18.903288234920293
+            },
+            {
+              "node_id": "n3",
+              "blocked": false,
+              "range_m": 30.926048002849363
+            },
+            {
+              "node_id": "n4",
+              "blocked": false,
+              "range_m": 58.27167540185279
+            },
+            {
+              "node_id": "n5",
+              "blocked": false,
+              "range_m": 65.60480594910567
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "environment": "mixed",
+      "metrics": {
+        "horizontal_median_m": {
+          "value": 2.200048824153478,
+          "ci": [
+            0.39635752990721024,
+            8.782552638768664
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "horizontal_p90_m": {
+          "value": 11.376639356889088,
+          "ci": [
+            2.200048824153478,
+            11.376639356889088
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "error_3d_median_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "error_3d_p90_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_events_within_10m": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_event_count": {
+          "value": 5,
+          "ci": [
+            5,
+            5
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "useful_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "risk_coverage_area": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "source_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "within_target_rate": {
+          "value": 0.35,
+          "ci": [
+            0.2608695652173913,
+            0.4444444444444444
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.65,
+          "ci": [
+            0.5555555555555556,
+            0.7391304347826086
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "suspect_recall": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "suspect_precision": {
+          "value": 0.65,
+          "ci": [
+            0.5555555555555556,
+            0.7391304347826086
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unmatched_fix_rate": {
+          "value": 0.6,
+          "ci": [
+            0.4444444444444444,
+            0.72
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "track_fix_count": {
+          "value": 693,
+          "ci": [
+            454,
+            932
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "track_median_error_m": {
+          "value": 1.8574907626055488,
+          "ci": [
+            0.39635752990721024,
+            8.782552638768664
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "bearing_median_deg": {
+          "value": 0.8631685954753721,
+          "ci": [
+            0.7301107229299078,
+            4.675743619216064
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "elevation_median_deg": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "within_1sigma": {
+          "value": 0.5625,
+          "ci": [
+            0.125,
+            0.9375
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "within_2sigma": {
+          "value": 0.875,
+          "ci": [
+            0.6666666666666666,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "fix_brier_score": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "fix_log_loss": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "fix_error_10m_auc": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "fix_reliability_error": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detection_rate": {
+          "value": 0.96,
+          "ci": [
+            0.88,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "labelling_accuracy": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "runtime_ms": {
+          "value": 53142.984741999884,
+          "ci": [
+            50675.29058199993,
+            57022.648663999746
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "geometry": [
+        {
+          "scene": "core-8-train-01",
+          "seed": 3180000,
+          "split": "train",
+          "building_count": 6,
+          "reflection_order": 1,
+          "diffraction_order": 2,
+          "block_direct_behind_buildings": true,
+          "nominal_node_rays": [
+            {
+              "node_id": "n1",
+              "blocked": false,
+              "range_m": 20.030277626421068
+            },
+            {
+              "node_id": "n2",
+              "blocked": false,
+              "range_m": 29.55113359421504
+            },
+            {
+              "node_id": "n3",
+              "blocked": false,
+              "range_m": 57.44841447898762
+            },
+            {
+              "node_id": "n4",
+              "blocked": false,
+              "range_m": 65.78953378964938
+            },
+            {
+              "node_id": "n5",
+              "blocked": false,
+              "range_m": 50.36382915445439
+            }
+          ]
+        },
+        {
+          "scene": "core-8-train-02",
+          "seed": 3180001,
+          "split": "train",
+          "building_count": 6,
+          "reflection_order": 1,
+          "diffraction_order": 2,
+          "block_direct_behind_buildings": true,
+          "nominal_node_rays": [
+            {
+              "node_id": "n1",
+              "blocked": false,
+              "range_m": 63.74454815555622
+            },
+            {
+              "node_id": "n2",
+              "blocked": false,
+              "range_m": 42.50813726339376
+            },
+            {
+              "node_id": "n3",
+              "blocked": false,
+              "range_m": 14.669904742076925
+            },
+            {
+              "node_id": "n4",
+              "blocked": false,
+              "range_m": 38.57311332522273
+            },
+            {
+              "node_id": "n5",
+              "blocked": false,
+              "range_m": 62.17861013323676
+            }
+          ]
+        },
+        {
+          "scene": "core-8-validation-01",
+          "seed": 3181000,
+          "split": "validation",
+          "building_count": 6,
+          "reflection_order": 1,
+          "diffraction_order": 2,
+          "block_direct_behind_buildings": true,
+          "nominal_node_rays": [
+            {
+              "node_id": "n1",
+              "blocked": false,
+              "range_m": 49.0416381976144
+            },
+            {
+              "node_id": "n2",
+              "blocked": false,
+              "range_m": 65.56439105952217
+            },
+            {
+              "node_id": "n3",
+              "blocked": false,
+              "range_m": 58.424960259858196
+            },
+            {
+              "node_id": "n4",
+              "blocked": false,
+              "range_m": 31.189371890111
+            },
+            {
+              "node_id": "n5",
+              "blocked": false,
+              "range_m": 18.69639900155569
+            }
+          ]
+        },
+        {
+          "scene": "core-8-validation-02",
+          "seed": 3181001,
+          "split": "validation",
+          "building_count": 6,
+          "reflection_order": 1,
+          "diffraction_order": 2,
+          "block_direct_behind_buildings": true,
+          "nominal_node_rays": [
+            {
+              "node_id": "n1",
+              "blocked": false,
+              "range_m": 24.44623195574655
+            },
+            {
+              "node_id": "n2",
+              "blocked": false,
+              "range_m": 24.771082826426664
+            },
+            {
+              "node_id": "n3",
+              "blocked": false,
+              "range_m": 54.25341980889784
+            },
+            {
+              "node_id": "n4",
+              "blocked": false,
+              "range_m": 66.08598609044917
+            },
+            {
+              "node_id": "n5",
+              "blocked": false,
+              "range_m": 54.01447924646954
+            }
+          ]
+        },
+        {
+          "scene": "core-8-validation-03",
+          "seed": 3181002,
+          "split": "validation",
+          "building_count": 5,
+          "reflection_order": 1,
+          "diffraction_order": 2,
+          "block_direct_behind_buildings": true,
+          "nominal_node_rays": [
+            {
+              "node_id": "n1",
+              "blocked": false,
+              "range_m": 29.639232602820982
+            },
+            {
+              "node_id": "n2",
+              "blocked": false,
+              "range_m": 19.955853573372465
+            },
+            {
+              "node_id": "n3",
+              "blocked": false,
+              "range_m": 50.29375158666415
+            },
+            {
+              "node_id": "n4",
+              "blocked": false,
+              "range_m": 65.77901773592559
+            },
+            {
+              "node_id": "n5",
+              "blocked": false,
+              "range_m": 57.50233963859545
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "environment": "dense_urban",
+      "metrics": {
+        "horizontal_median_m": {
+          "value": 5.099703423532883,
+          "ci": [
+            4.089607307103719,
+            19.224486018395393
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "horizontal_p90_m": {
+          "value": 26.390787163481797,
+          "ci": [
+            7.606934527509514,
+            26.390787163481797
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "error_3d_median_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "error_3d_p90_m": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "events_within_10m_misses_counted": {
+          "value": 0.8,
+          "ci": [
+            0.4,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_fraction": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_events_within_10m": {
+          "value": 0.8,
+          "ci": [
+            0.4,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detectable_3_node_event_count": {
+          "value": 5,
+          "ci": [
+            5,
+            5
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "scene_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "useful_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unflagged_wrong_fix_rate": {
+          "value": 0,
+          "ci": [
+            0,
+            0
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "risk_coverage_area": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "source_fix_rate": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "within_target_rate": {
+          "value": 0.35294117647058826,
+          "ci": [
+            0.16666666666666666,
+            0.5625
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "wrong_fix_rate": {
+          "value": 0.6470588235294118,
+          "ci": [
+            0.4375,
+            0.8333333333333334
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "suspect_recall": {
+          "value": 1,
+          "ci": [
+            1,
+            1
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "suspect_precision": {
+          "value": 0.6470588235294118,
+          "ci": [
+            0.4375,
+            0.8333333333333334
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "unmatched_fix_rate": {
+          "value": 0.47058823529411764,
+          "ci": [
+            0.23076923076923078,
+            0.6818181818181818
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "track_fix_count": {
+          "value": 333,
+          "ci": [
+            235,
+            420
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "track_median_error_m": {
+          "value": 4.656370592311185,
+          "ci": [
+            4.089607307103719,
+            19.224486018395393
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "bearing_median_deg": {
+          "value": 3.838299684650451,
+          "ci": [
+            2.677066631840148,
+            4.650748898493362
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "elevation_median_deg": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "within_1sigma": {
+          "value": 0.2777777777777778,
+          "ci": [
+            0.1111111111111111,
+            0.4444444444444444
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "within_2sigma": {
+          "value": 0.7222222222222222,
+          "ci": [
+            0.55,
+            0.9375
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "fix_brier_score": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "fix_log_loss": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "fix_error_10m_auc": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "fix_reliability_error": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "detection_rate": {
+          "value": 0.72,
+          "ci": [
+            0.64,
+            0.8
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "labelling_accuracy": {
+          "value": null,
+          "ci": null,
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        },
+        "runtime_ms": {
+          "value": 83832.14660899993,
+          "ci": [
+            77599.39966399968,
+            89962.14417500049
+          ],
+          "n_runs": 5,
+          "n_sites": 5,
+          "confidence": 0.95
+        }
+      },
+      "geometry": [
+        {
+          "scene": "core-16-train-01",
+          "seed": 3260000,
+          "split": "train",
+          "building_count": 13,
+          "reflection_order": 1,
+          "diffraction_order": 2,
+          "block_direct_behind_buildings": true,
+          "nominal_node_rays": [
+            {
+              "node_id": "n1",
+              "blocked": false,
+              "range_m": 48.56314693718499
+            },
+            {
+              "node_id": "n2",
+              "blocked": false,
+              "range_m": 65.46956063113598
+            },
+            {
+              "node_id": "n3",
+              "blocked": false,
+              "range_m": 58.75797243028071
+            },
+            {
+              "node_id": "n4",
+              "blocked": true,
+              "range_m": 31.769807629992723
+            },
+            {
+              "node_id": "n5",
+              "blocked": false,
+              "range_m": 18.251500687935504
+            }
+          ]
+        },
+        {
+          "scene": "core-16-train-02",
+          "seed": 3260001,
+          "split": "train",
+          "building_count": 14,
+          "reflection_order": 1,
+          "diffraction_order": 2,
+          "block_direct_behind_buildings": true,
+          "nominal_node_rays": [
+            {
+              "node_id": "n1",
+              "blocked": false,
+              "range_m": 55.843308017705354
+            },
+            {
+              "node_id": "n2",
+              "blocked": false,
+              "range_m": 27.045526682113216
+            },
+            {
+              "node_id": "n3",
+              "blocked": false,
+              "range_m": 22.257909292184383
+            },
+            {
+              "node_id": "n4",
+              "blocked": false,
+              "range_m": 52.31199307761129
+            },
+            {
+              "node_id": "n5",
+              "blocked": false,
+              "range_m": 66.01276526792616
+            }
+          ]
+        },
+        {
+          "scene": "core-16-validation-01",
+          "seed": 3261000,
+          "split": "validation",
+          "building_count": 11,
+          "reflection_order": 1,
+          "diffraction_order": 2,
+          "block_direct_behind_buildings": true,
+          "nominal_node_rays": [
+            {
+              "node_id": "n1",
+              "blocked": false,
+              "range_m": 44.50280187508563
+            },
+            {
+              "node_id": "n2",
+              "blocked": false,
+              "range_m": 15.392876488157816
+            },
+            {
+              "node_id": "n3",
+              "blocked": true,
+              "range_m": 36.438442829098705
+            },
+            {
+              "node_id": "n4",
+              "blocked": false,
+              "range_m": 61.200346008311776
+            },
+            {
+              "node_id": "n5",
+              "blocked": false,
+              "range_m": 64.41193522433016
+            }
+          ]
+        },
+        {
+          "scene": "core-16-validation-02",
+          "seed": 3261001,
+          "split": "validation",
+          "building_count": 13,
+          "reflection_order": 1,
+          "diffraction_order": 2,
+          "block_direct_behind_buildings": true,
+          "nominal_node_rays": [
+            {
+              "node_id": "n1",
+              "blocked": true,
+              "range_m": 49.20299351264782
+            },
+            {
+              "node_id": "n2",
+              "blocked": false,
+              "range_m": 65.59481245946085
+            },
+            {
+              "node_id": "n3",
+              "blocked": false,
+              "range_m": 58.31028787677894
+            },
+            {
+              "node_id": "n4",
+              "blocked": false,
+              "range_m": 30.99215510916047
+            },
+            {
+              "node_id": "n5",
+              "blocked": false,
+              "range_m": 18.851062177556233
+            }
+          ]
+        },
+        {
+          "scene": "core-16-validation-03",
+          "seed": 3261002,
+          "split": "validation",
+          "building_count": 12,
+          "reflection_order": 1,
+          "diffraction_order": 2,
+          "block_direct_behind_buildings": true,
+          "nominal_node_rays": [
+            {
+              "node_id": "n1",
+              "blocked": true,
+              "range_m": 55.235988478222865
+            },
+            {
+              "node_id": "n2",
+              "blocked": false,
+              "range_m": 26.153257756883747
+            },
+            {
+              "node_id": "n3",
+              "blocked": false,
+              "range_m": 23.09845339755689
+            },
+            {
+              "node_id": "n4",
+              "blocked": false,
+              "range_m": 52.98654719977744
+            },
+            {
+              "node_id": "n5",
+              "blocked": false,
+              "range_m": 66.0564897646323
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "comparison": {
+    "round2": "Sealed errors-on physical subgroups: 31 buildings-present sites and 9 no-buildings sites. Overlapping descriptive categories, not a paired causal contrast.",
+    "matrix": "Fixed node-count/spacing core cells with generated geometry; filtered one-source ground stationary on-profile subset only.",
+    "conclusion": "Populations differ in sites, geometry, ranges and sampling design. Neither contrast estimates a causal effect of adding buildings; their rates must not be subtracted or used to select a lever.",
+    "generator_changed": false,
+    "new_inference_runs": 0,
+    "sealed_input_opened": false
+  }
+}

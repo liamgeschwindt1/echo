@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "track": "integration",
+  "status": "blocked_before_selected_freeze_and_sealed",
+  "branch": "overnight/loc5-integration",
+  "frozen_commit": null,
+  "selected_engine_id": null,
+  "frozen_source_hash": null,
+  "sealed_attempt": null,
+  "final_suite_preregistration": null,
+  "disjointness_proof": null,
+  "target_jobs": 5000,
+  "stretch_jobs": 20000,
+  "registered_jobs": 0,
+  "completed_jobs": 0,
+  "failed_jobs": 0,
+  "jobs": [],
+  "resume_from": "integration interfaces and official validation, not step 5",
+  "blockers": [
+    "Sharded workflow absent from default branch; dispatch HTTP 404",
+    "Measured interfaces and official candidate acceptance incomplete",
+    "Distributed sealed attempt controls incomplete",
+    "No frozen selected engine, sealed completion or remote throughput calibration"
+  ]
+}

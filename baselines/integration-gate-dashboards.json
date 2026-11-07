@@ -1,0 +1,1461 @@
+{
+  "label": "dashboards",
+  "source_commit": "7e14c47ac0dae5af92972b0ae81f9ca072105cc4",
+  "started_at": "2026-11-06T23:32:22.328Z",
+  "steps": [
+    {
+      "name": "core",
+      "command": [
+        "npm",
+        "test",
+        "-w",
+        "@echo/sim-core"
+      ],
+      "exit_code": 0,
+      "wall_ms": 202678.425885,
+      "log": "baselines/integration-gate-dashboards-core.log.gz",
+      "log_sha256": "9868b6065375d5e2f12a97b844504f48867db2c96bf255dd2f469f16f4cad2b3"
+    },
+    {
+      "name": "cue-tests",
+      "command": [
+        "node",
+        "--test",
+        "packages/sim-core/src/ext/cues/doppler-range.test.js",
+        "packages/sim-core/src/ext/cues/notch-height.test.js",
+        "packages/sim-core/src/ext/cues/sound-speed.test.js",
+        "packages/sim-core/src/ext/cues/weather-render-golden.test.js",
+        "packages/sim-core/src/ext/cues/weather-render-off.test.js",
+        "packages/sim-core/src/ext/cues/weather-render.test.js"
+      ],
+      "exit_code": 0,
+      "wall_ms": 2634.3007390000275,
+      "log": "baselines/integration-gate-dashboards-cue-tests.log.gz",
+      "log_sha256": "82ff41035dc79c01c2315914e7b409addb76602fa0ac4b33e407576929ffa98d"
+    },
+    {
+      "name": "app",
+      "command": [
+        "npm",
+        "test",
+        "-w",
+        "@echo/sim"
+      ],
+      "exit_code": 0,
+      "wall_ms": 2613.619956999988,
+      "log": "baselines/integration-gate-dashboards-app.log.gz",
+      "log_sha256": "50c66eb05292e4d395dcdfa267c142c3853fd6978a37026246d078ac4e53c180"
+    },
+    {
+      "name": "build",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "-w",
+        "@echo/sim"
+      ],
+      "exit_code": 0,
+      "wall_ms": 5598.920752999984,
+      "log": "baselines/integration-gate-dashboards-build.log.gz",
+      "log_sha256": "c62fc2d13d296e2e78582e47ba001c472e998eab6a41747f661f90e2388eb54e"
+    },
+    {
+      "name": "rescore",
+      "command": [
+        "node",
+        "scripts/benchmark-rescore.mjs",
+        "--from",
+        "/workspaces/echo/liamgeschwindt1/echo/.benchmark-r3-integration/dashboards/le0-reference.json",
+        "--out",
+        "/workspaces/echo/liamgeschwindt1/echo/.benchmark-r3-integration/dashboards/baseline.json"
+      ],
+      "exit_code": 0,
+      "wall_ms": 247.02620399999432,
+      "log": "baselines/integration-gate-dashboards-rescore.log.gz",
+      "log_sha256": "1e82d466216b975df6fde7e160a4c056aee749684a630bc5b6d46027dcfd06c1"
+    },
+    {
+      "name": "smoke",
+      "command": [
+        "node",
+        "scripts/benchmark.mjs",
+        "--experiment",
+        "smoke",
+        "--compare",
+        "/workspaces/echo/liamgeschwindt1/echo/.benchmark-r3-integration/dashboards/baseline.json",
+        "--fail-on-regress",
+        "--workers",
+        "2",
+        "--discard-renders",
+        "--cache",
+        "/workspaces/echo/liamgeschwindt1/echo/.benchmark-r3-integration/dashboards/cache",
+        "--out",
+        "/workspaces/echo/liamgeschwindt1/echo/.benchmark-r3-integration/dashboards/smoke.json"
+      ],
+      "exit_code": 0,
+      "wall_ms": 49620.703182999976,
+      "log": "baselines/integration-gate-dashboards-smoke.log.gz",
+      "log_sha256": "bd322af8d570d3df2dbfc37bf28e31cfd696226f4ec22dc4922bfa8255a51d0c"
+    }
+  ],
+  "pass": true,
+  "smoke": {
+    "runs": 16,
+    "comparison": {
+      "differences": [
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "horizontal_median_m",
+          "before": 0.09405291671279457,
+          "after": 0.09405291671279457,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "horizontal_p90_m",
+          "before": 0.09405291671279457,
+          "after": 0.09405291671279457,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "events_within_10m_misses_counted",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "detectable_3_node_fraction",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "detectable_3_node_events_within_10m",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "scene_fix_rate",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "useful_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "unflagged_wrong_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "risk_coverage_area",
+          "before": 0.6666666666666667,
+          "after": 0.6666666666666667,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "source_fix_rate",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "within_target_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "wrong_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "suspect_precision",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "unmatched_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "track_fix_count",
+          "before": 127,
+          "after": 127,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "track_median_error_m",
+          "before": 0.05377096320434447,
+          "after": 0.05377096320434447,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "bearing_median_deg",
+          "before": 0.2976613288645922,
+          "after": 0.2976613288645922,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "within_1sigma",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "within_2sigma",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|measured_only",
+          "metric": "detection_rate",
+          "before": 0.38461538461538464,
+          "after": 0.38461538461538464,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "horizontal_median_m",
+          "before": 3.501418677692156,
+          "after": 3.501418677692156,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "horizontal_p90_m",
+          "before": 3.501418677692156,
+          "after": 3.501418677692156,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "error_3d_median_m",
+          "before": 3.501418677692156,
+          "after": 3.501418677692156,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "error_3d_p90_m",
+          "before": 3.501418677692156,
+          "after": 3.501418677692156,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "events_within_10m_misses_counted",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "detectable_3_node_fraction",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "detectable_3_node_events_within_10m",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "scene_fix_rate",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "useful_fix_rate",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "unflagged_wrong_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "risk_coverage_area",
+          "before": 0.6666666666666667,
+          "after": 0.6666666666666667,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "source_fix_rate",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "within_target_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "wrong_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "unmatched_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "track_fix_count",
+          "before": 2,
+          "after": 2,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "track_median_error_m",
+          "before": 1.4684958697200299,
+          "after": 1.4684958697200299,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "bearing_median_deg",
+          "before": 3.084026446116127,
+          "after": 3.084026446116127,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "elevation_median_deg",
+          "before": 6.751409058143167,
+          "after": 6.751409058143167,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "within_1sigma",
+          "before": 0.4,
+          "after": 0.4,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "within_2sigma",
+          "before": 0.4,
+          "after": 0.4,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|off|truth_assisted",
+          "metric": "detection_rate",
+          "before": 0.6923076923076923,
+          "after": 0.6923076923076923,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "horizontal_median_m",
+          "before": 1.205579184978051,
+          "after": 1.205579184978051,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "horizontal_p90_m",
+          "before": 1.205579184978051,
+          "after": 1.205579184978051,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "events_within_10m_misses_counted",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "detectable_3_node_fraction",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "detectable_3_node_events_within_10m",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "scene_fix_rate",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "useful_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "unflagged_wrong_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "risk_coverage_area",
+          "before": 0.6666666666666667,
+          "after": 0.6666666666666667,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "source_fix_rate",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "within_target_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "wrong_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "suspect_precision",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "unmatched_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "track_fix_count",
+          "before": 128,
+          "after": 128,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "track_median_error_m",
+          "before": 1.205579184978051,
+          "after": 1.205579184978051,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "bearing_median_deg",
+          "before": 2.7204158902698055,
+          "after": 2.7204158902698055,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "within_1sigma",
+          "before": 0.5,
+          "after": 0.5,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "within_2sigma",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|measured_only",
+          "metric": "detection_rate",
+          "before": 0.23076923076923078,
+          "after": 0.23076923076923078,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "horizontal_median_m",
+          "before": 0.552256619006718,
+          "after": 0.552256619006718,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "horizontal_p90_m",
+          "before": 0.552256619006718,
+          "after": 0.552256619006718,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "error_3d_median_m",
+          "before": 0.552256619006718,
+          "after": 0.552256619006718,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "error_3d_p90_m",
+          "before": 0.552256619006718,
+          "after": 0.552256619006718,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "events_within_10m_misses_counted",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "detectable_3_node_fraction",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "detectable_3_node_events_within_10m",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "scene_fix_rate",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "useful_fix_rate",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "unflagged_wrong_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "risk_coverage_area",
+          "before": 0.6666666666666667,
+          "after": 0.6666666666666667,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "source_fix_rate",
+          "before": 0.3333333333333333,
+          "after": 0.3333333333333333,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "within_target_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "wrong_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "unmatched_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "track_fix_count",
+          "before": 16,
+          "after": 16,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "track_median_error_m",
+          "before": 1.350255657306578,
+          "after": 1.350255657306578,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "bearing_median_deg",
+          "before": 1.2165204395723777,
+          "after": 1.2165204395723777,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "elevation_median_deg",
+          "before": 1.1472245072939131,
+          "after": 1.1472245072939131,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "within_1sigma",
+          "before": 0.2,
+          "after": 0.2,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "within_2sigma",
+          "before": 0.4,
+          "after": 0.4,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|held-out|on|truth_assisted",
+          "metric": "detection_rate",
+          "before": 0.6923076923076923,
+          "after": 0.6923076923076923,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "horizontal_median_m",
+          "before": 0.12294456938195211,
+          "after": 0.12294456938195211,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "horizontal_p90_m",
+          "before": 0.12294456938195211,
+          "after": 0.12294456938195211,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "events_within_10m_misses_counted",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "detectable_3_node_fraction",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "detectable_3_node_events_within_10m",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "scene_fix_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "useful_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "unflagged_wrong_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "risk_coverage_area",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "source_fix_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "within_target_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "wrong_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "suspect_precision",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "unmatched_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "track_fix_count",
+          "before": 128,
+          "after": 128,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "track_median_error_m",
+          "before": 0.04437541951373984,
+          "after": 0.04437541951373984,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "bearing_median_deg",
+          "before": 0.2521354625159802,
+          "after": 0.2521354625159802,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "within_1sigma",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "within_2sigma",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|measured_only",
+          "metric": "detection_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "horizontal_median_m",
+          "before": 0.029590915009248833,
+          "after": 0.029590915009248833,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "horizontal_p90_m",
+          "before": 0.029590915009248833,
+          "after": 0.029590915009248833,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "error_3d_median_m",
+          "before": 0.029590915009248833,
+          "after": 0.029590915009248833,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "error_3d_p90_m",
+          "before": 0.029590915009248833,
+          "after": 0.029590915009248833,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "events_within_10m_misses_counted",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "detectable_3_node_fraction",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "detectable_3_node_events_within_10m",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "scene_fix_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "useful_fix_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "unflagged_wrong_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "risk_coverage_area",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "source_fix_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "within_target_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "wrong_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "unmatched_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "track_fix_count",
+          "before": 16,
+          "after": 16,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "track_median_error_m",
+          "before": 0.07219854402217586,
+          "after": 0.07219854402217586,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "bearing_median_deg",
+          "before": 0.02496137645505314,
+          "after": 0.02496137645505314,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "elevation_median_deg",
+          "before": 1.4482420865915628,
+          "after": 1.4482420865915628,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "within_1sigma",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "within_2sigma",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|off|truth_assisted",
+          "metric": "detection_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "horizontal_median_m",
+          "before": 3.8165201929960837,
+          "after": 3.8165201929960837,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "horizontal_p90_m",
+          "before": 3.8165201929960837,
+          "after": 3.8165201929960837,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "events_within_10m_misses_counted",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "detectable_3_node_fraction",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "detectable_3_node_events_within_10m",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "scene_fix_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "useful_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "unflagged_wrong_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "risk_coverage_area",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "source_fix_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "within_target_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "wrong_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "suspect_precision",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "unmatched_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "track_fix_count",
+          "before": 114,
+          "after": 114,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "track_median_error_m",
+          "before": 3.7670994255147607,
+          "after": 3.7670994255147607,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "bearing_median_deg",
+          "before": 7.03083203862036,
+          "after": 7.03083203862036,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "within_1sigma",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "within_2sigma",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|measured_only",
+          "metric": "detection_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "horizontal_median_m",
+          "before": 3.0782669806028733,
+          "after": 3.0782669806028733,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "horizontal_p90_m",
+          "before": 3.0782669806028733,
+          "after": 3.0782669806028733,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "error_3d_median_m",
+          "before": 3.0782669806028733,
+          "after": 3.0782669806028733,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "error_3d_p90_m",
+          "before": 3.0782669806028733,
+          "after": 3.0782669806028733,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "events_within_10m_misses_counted",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "detectable_3_node_fraction",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "detectable_3_node_events_within_10m",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "scene_fix_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "useful_fix_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "unflagged_wrong_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "risk_coverage_area",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "source_fix_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "within_target_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "wrong_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "unmatched_fix_rate",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "track_fix_count",
+          "before": 16,
+          "after": 16,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "track_median_error_m",
+          "before": 3.876970826211288,
+          "after": 3.876970826211288,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "bearing_median_deg",
+          "before": 3.3877982995938964,
+          "after": 3.3877982995938964,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "elevation_median_deg",
+          "before": 3.645133121710387,
+          "after": 3.645133121710387,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "within_1sigma",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "within_2sigma",
+          "before": 0,
+          "after": 0,
+          "delta": 0,
+          "regression": false
+        },
+        {
+          "key": "c0|train|on|truth_assisted",
+          "metric": "detection_rate",
+          "before": 1,
+          "after": 1,
+          "delta": 0,
+          "regression": false
+        }
+      ],
+      "regressions": [],
+      "pass": true
+    },
+    "report": "baselines/integration-gate-dashboards-smoke.json.gz",
+    "report_sha256": "7cbb3f5c81ab855bcd80ccbee3a897053f40f53d660ef41832304e67d912a1c7"
+  },
+  "inference_changes": [],
+  "golden_changes": [],
+  "finished_at": "2026-11-06T23:36:45.809Z"
+}

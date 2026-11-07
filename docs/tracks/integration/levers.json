@@ -1,0 +1,36 @@
+{
+  "track": "integration",
+  "levers": [
+    {
+      "lever_id": "fus-cal-1",
+      "origin": "docs/tracks/fusion/levers.json",
+      "option": "measured_heading_self_calibration",
+      "value": 1,
+      "default": 0,
+      "engine_id": "LE-1",
+      "changes": "Observability-gated event-derived heading calibration and second fusion pass.",
+      "decision": "reject_for_promotion; retain implementation opt-in",
+      "matrix_smoke_vs_le0": null,
+      "official_validation_vs_le0": null,
+      "diagnostic_vs_le0": {
+        "report": "baselines/integration-round1-diagnostics.json",
+        "n_sites": 2,
+        "runs_per_engine": 8,
+        "applied_calibration_runs": 0,
+        "events_within_10m_delta": 0,
+        "paired_interval95": [0, 0],
+        "selection_eligible": false
+      }
+    }
+  ],
+  "delivered_lever_files": [
+    "docs/tracks/infra/levers.json",
+    "docs/tracks/cues/levers.json",
+    "docs/tracks/multisource/levers.json",
+    "docs/tracks/fusion/levers.json",
+    "docs/tracks/dashboards/levers.json"
+  ],
+  "not_delivered": ["buildings", "causal"],
+  "default_changes": [],
+  "notes": "No engine selected or new behaviour accepted. Official matrix-smoke/standard acceptance unavailable; the matched eight-run CI-scene diagnostic is not relabelled as that population. Selection requires paired acceptance evidence, not standalone component tests."
+}

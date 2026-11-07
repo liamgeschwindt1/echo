@@ -1,5 +1,33 @@
 # Simulator architecture and trust boundaries
 
+## T8 extension and reporting integration
+
+The retained measured pipeline can emit both `extensions.multisource` and
+`extensions.fusion`; neither sibling block overwrites the other. Default-off
+candidate extraction does not replace legacy association. Likelihood fusion and
+heading calibration are opt-in alternatives/passes, not accepted defaults.
+Zero-offset calibration must not wrap an otherwise unchanged bearing: that
+extra arithmetic changed default coordinates at approximately 1e-14 precision.
+`measuredOptionsFor` shares option resolution across benchmarks, recordings and
+exported thresholds, withholding new option fields when those layers are off.
+
+Cue estimators currently accept already formed observations. No source truth,
+render path or simulator position is substituted for missing sensor data.
+Buildings and causal front-end tracks are absent. The unconnected interfaces
+and their prerequisites are explicit in `docs/tracks/integration/interfaces.md`.
+
+The engine dashboard normalizes T1's KPI schema rather than synthesizing pooled
+quantiles from cell summaries. A Vite plugin serves the exact registered JSON
+files in development and emits them as production assets. Offline export reads
+the same registry array; malformed or missing registered files fail explicitly.
+Paired deltas require equal complete physical populations and recompute pooled
+endpoints on matched site-cluster bootstrap draws.
+
+The sharded planner, executor and merger reject sealed inputs until committed
+claim/freeze/retry/second-attempt controls are implemented. The generic
+round-two ledger described below is not a substitute for these missing
+distributed controls. No matrix sealed attempt was started.
+
 ## Acoustic path
 
 `scenario.js` validates nominal node geometry, source trajectories, buildings and

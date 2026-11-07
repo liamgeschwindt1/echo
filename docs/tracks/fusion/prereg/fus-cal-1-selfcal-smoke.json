@@ -1,0 +1,26 @@
+{
+  "id": "fus-cal-1",
+  "title": "Heading self-calibration (event mode) against surveyed install profile",
+  "created_utc": "2026-11-06T16:19:44.499Z",
+  "population": {
+    "experiment": "docs/tracks/fusion/prereg/fus-cal-1-selfcal-smoke-experiment.json",
+    "scenes": ["sparse_20", "random_5"],
+    "seeds": [1, 101],
+    "held_out_seeds": [101],
+    "realism": ["off", "on"],
+    "analysis_modes": ["measured_only"]
+  },
+  "variants": [
+    { "measured_heading_self_calibration": 0, "measured_fusion_mode": "legacy" },
+    { "measured_heading_self_calibration": 1, "measured_fusion_mode": "legacy" }
+  ],
+  "acceptance": {
+    "primary": [
+      "events_within_10m_misses_counted not worse",
+      "unflagged_wrong_fix_rate not worse",
+      "within_1sigma and within_2sigma move toward 0.6827 and 0.9545"
+    ],
+    "notes": "Observability may be insufficient on smoke; report null/unchanged honestly."
+  },
+  "outputs": ["baselines/fusion-fus-cal-1-selfcal-smoke.json"]
+}

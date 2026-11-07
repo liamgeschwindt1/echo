@@ -64,6 +64,33 @@ body.nav-collapsed #sidenav button, body.nav-collapsed #sidenav .nav-check { jus
 .testing-saved { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 10px 0; }
 .testing-saved input { max-width: 230px; }
 #testDrilldown button { margin: 4px; }
+.dash-layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 16px; }
+.dash-menu { border-right: 1px solid var(--edge); padding-right: 12px; display: flex; flex-direction: column; gap: 8px; }
+.dash-menu-item { text-align: left; }
+.dash-menu-item.active { background: var(--line); color: #000; border-color: var(--line); }
+.dash-content { min-width: 0; }
+.dash-banner { border: 1px solid var(--edge); border-radius: 8px; padding: 10px; background: #111; margin: 0; }
+.dash-block { border: 1px solid var(--edge); border-radius: 10px; padding: 12px; margin-top: 12px; }
+.dash-engine-head, .dash-head-left, .dash-head-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.dash-engine-head { justify-content: space-between; }
+.dash-engine-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-top: 10px; }
+.dash-full { grid-column: 1 / -1; }
+.dash-integrity { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px; margin-top: 10px; }
+.dash-metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+.dash-metric { border: 1px solid var(--edge); border-radius: 8px; padding: 8px; }
+.dash-metric-name { color: var(--dim); font-size: 12px; }
+.dash-metric-value { font-size: 18px; font-weight: 600; }
+.dash-metric-ci, .dash-delta, .dash-cell-meta { color: var(--dim); font-size: 12px; }
+.dash-heatmap { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+.dash-cell { border: 1px solid var(--edge); border-radius: 8px; padding: 8px; }
+.dash-cell.insufficient { background: #222; border-color: #666; }
+.dash-cell-name { color: var(--dim); font-size: 12px; }
+.dash-cell-value { font-size: 18px; font-weight: 600; }
+.dash-cell-flag { font-size: 12px; }
+.dash-muted { color: var(--dim); }
+.tier-minimum { background: #103420; }
+.tier-standard { background: #12513a; }
+.tier-exceptional { background: #146458; }
 #inspector { grid-area: inspector; padding: 16px; border-left: 1px solid var(--edge); overflow: auto; }
 #app:not(.has-inspector) #inspector { display: none; }
 #mapWrap { grid-area: map; position: relative; min-height: 0; }

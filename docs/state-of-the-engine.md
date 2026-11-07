@@ -1,4 +1,27 @@
-# State of the engine: round 2
+# State of the localisation engine
+
+## T8 integration: incomplete evaluation, unchanged default
+
+Five delivered tracks are merged and regression-tested. LE-0 remains the legacy
+default. LE-1, the heading-self-calibration configuration, is rejected for
+promotion: calibration applied in none of the eight diagnostic runs, and the
+official selection population could not be dispatched. Equal small-smoke
+outcomes are not an improvement.
+
+The engine registry and actual KPI dashboard are connected, and export metadata
+is schema 0.19. Default inference is byte-identical to a fresh base reference on
+the 16-run smoke; original signal goldens are unchanged. Multisource and cue
+components remain experimental. Missing observation extraction, calibrated
+uncertainty and association adapters are listed in
+[integration interfaces](tracks/integration/interfaces.md).
+
+The matrix sealed test has not run. No selected-engine freeze or final stress
+suite exists: the sharded workflow is absent from the default branch and sealed
+attempt controls are unfinished. Sharded sealed entrypoints now refuse these
+inputs. [The integration conclusion](localisation-conclusion.md) describes the
+actual evidence and unresolved gates, not a completed final exam.
+
+## Historical round-two evidence
 
 **This is a research simulator, not a validated field localiser. No accuracy or
 confidence upgrade passed this round's acceptance rule.** Six complete candidate

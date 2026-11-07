@@ -1,0 +1,20 @@
+{
+  "id": "t8-default-merge-gates-v1",
+  "registered_at": "2026-11-06",
+  "purpose": "Regression checks only, not selection or tuning",
+  "base_commit": "ff75074dca26a633b0aadae1a81a674db728030d",
+  "experiment": "smoke",
+  "scenes": ["sparse_20", "random_1"],
+  "seeds": [1, 101],
+  "realism": ["off", "on"],
+  "analysis_modes": ["truth_assisted", "measured_only"],
+  "new_options": "all off",
+  "expected_runs": 16,
+  "workers": 2,
+  "discard_renders": true,
+  "comparison": "Fresh 16-run smoke from detached ff75074 source, archived as baselines/integration-le0-smoke.json.gz; rescore with current scoring, no tolerance changes. Existing 8-run CI smoke is an additional separate check, not the 16-run population.",
+  "gates": ["full core tests", "app unit tests", "production build", "16-run smoke zero tracked regressions", "signal goldens unchanged"],
+  "merge_order": ["infra", "cues", "multisource", "fusion", "dashboards"],
+  "excluded_not_delivered": ["causal", "buildings"],
+  "outputs": "baselines/integration-gate-<unique-label>*"
+}

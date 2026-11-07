@@ -1,0 +1,21 @@
+{
+  "track": "T5 CUES",
+  "study_id": "cues-a4.6-doppler-range-v1",
+  "created_utc": "2026-11-06T16:20:06Z",
+  "purpose": "Evaluate Doppler cue range/speed recovery and track-local range-assisted error versus bearing-only proxy.",
+  "inputs": {
+    "tone_hz": 480,
+    "speed_mps": [5, 10, 15, 25],
+    "snr_db": [5, 15, 25],
+    "closest_range_m": [20, 40, 70],
+    "duration_s": 6,
+    "dt_s": 0.02,
+    "seed": 4502
+  },
+  "outputs": [
+    "speed_mae_mps",
+    "closest_range_mae_m",
+    "track_rmse_bearing_only_m",
+    "track_rmse_with_doppler_m"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "t8-archived-building-audit-v1",
+  "scope": "Offline audit of existing non-sealed baseline only; no new renders, inference, tuning or causal building-effect estimate",
+  "registered_at": "2026-11-07",
+  "input": "baselines/matrix-baseline-r3.full.json.gz",
+  "uncompressed_sha256": "29610449b2647c36d0ea7746b3f2ca53902542b053fcc4734e7451aecb8949d1",
+  "population": "All core-* runs in the archived baseline with measured_only, profile on, ground, stationary and one simultaneous source",
+  "groups": ["open", "mixed", "dense_urban"],
+  "outcomes": "Shared aggregate metrics with existing site-cluster bootstrap; explicit sites and runs",
+  "forensics": [
+    "Archived building counts and propagation settings, not regenerated scenes",
+    "Nominal direct source-to-node centre visibility at source start time using buildingBox and segmentBlocked",
+    "Source-to-node range distribution",
+    "Compare population definitions with docs/overnight-report-2.md sealed descriptive subgroups; do not subtract or rank unequal populations"
+  ],
+  "decision": "No engine or generator change from this audit. Preserve original baseline. Explain comparability limits and any observed scene-design limitations.",
+  "output": "baselines/integration-building-audit.json"
+}

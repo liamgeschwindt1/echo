@@ -1,5 +1,5 @@
 import { analyseScenario } from '../analyse.js';
-import { analyseMeasured, MEASURED_DEFAULTS } from '../measured.js';
+import { analyseMeasured, measuredOptionsFor } from '../measured.js';
 import { renderScenario } from '../render.js';
 import { renderLengthS, validateScenario } from '../scenario.js';
 import { speedOfSound } from '../physics.js';
@@ -11,7 +11,7 @@ import { scoreAssisted, scoreMeasured, SCORING_VERSION } from './score.js';
 import { summariseRuns, failureAtlas, rankingFlips, pairedComparison, detectionByRange } from './metrics.js';
 
 export function measuredOptions(settings) {
-  return Object.fromEntries(Object.entries(MEASURED_DEFAULTS).map(([k, value]) => [k, settings[`measured_${k}`] ?? value]));
+  return measuredOptionsFor(settings);
 }
 
 async function prepareJob(job, { clips, arrays, custom_scenes = {}, manifest, wrong_fix_m = 10 }) {

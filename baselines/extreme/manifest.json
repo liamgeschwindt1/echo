@@ -1,0 +1,36 @@
+{
+  "kind": "echo-final-suite-status",
+  "status": "not_started_blocked",
+  "registry": "docs/tracks/integration/registry.json",
+  "plan": "docs/tracks/integration/suite-plan.md",
+  "selected_engine_id": null,
+  "source_hash": null,
+  "preregistration_hashes": null,
+  "input_hashes": null,
+  "seeds": null,
+  "disjointness_proof": null,
+  "registered_job_count": 0,
+  "completed_job_count": 0,
+  "failed_job_count": 0,
+  "remote_calibration": {
+    "status": "not_dispatched_workflow_missing",
+    "workflow_dispatch_error": "HTTP 404: workflow not found on default branch",
+    "jobs_per_shard": null,
+    "wall_seconds_by_class": {
+      "sparse": null,
+      "mixed": null,
+      "seven_source": null,
+      "twelve_mic": null,
+      "four_mic": null
+    },
+    "concurrent_jobs_granted": null,
+    "actions_minutes": null,
+    "artifact_sizes_bytes": null,
+    "failure_rate": null,
+    "shard_logs": null
+  },
+  "results": null,
+  "raw_reports": null,
+  "figures": null,
+  "notes": "No final exam population was registered or executed. Existing local regression, diagnostic and archived baseline analyses are not final-suite jobs. No missing or failed result is represented as successful."
+}

@@ -1,0 +1,336 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://echo.local/engines/kpi-schema.json",
+  "title": "Echo Localisation Engine KPI Sheet",
+  "description": "KPI sheet for localisation and tracking engines. Null means unavailable; never encode unavailable as zero.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "engine_id",
+    "parent_id",
+    "headline",
+    "breakdowns",
+    "tracking",
+    "realism_penalty",
+    "comparisons",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "minimum": 1 },
+    "engine_id": { "type": "string", "pattern": "^LE-[0-9]+$" },
+    "parent_id": { "type": ["string", "null"], "pattern": "^LE-[0-9]+$" },
+    "headline": {
+      "type": "object",
+      "required": [
+        "events_within_10m_misses_counted",
+        "horizontal_p90_m",
+        "horizontal_median_m",
+        "scene_fix_rate",
+        "source_fix_rate",
+        "unflagged_wrong_fix_rate",
+        "within_1sigma",
+        "within_2sigma",
+        "error_3d_p90_m",
+        "aerial_3d_fix_rate",
+        "aerial_height_error_m",
+        "track_median_error_m",
+        "track_continuity",
+        "time_to_fix_s",
+        "id_switches",
+        "detectable_3_node_fraction",
+        "detectable_3_node_events_within_10m",
+        "detectable_3_node_event_count"
+      ],
+      "additionalProperties": { "$ref": "#/$defs/metricValue" }
+    },
+    "breakdowns": {
+      "type": "object",
+      "required": [
+        "matrix_24_cells",
+        "by_source_count",
+        "node_count_curve_2_to_8",
+        "install_profile_comparison",
+        "detectable_subsets",
+        "building_vs_open",
+        "failure_attribution"
+      ],
+      "properties": {
+        "matrix_24_cells": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/matrixCell" }
+        },
+        "by_source_count": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/sourceCountBreakdown" }
+        },
+        "node_count_curve_2_to_8": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/nodeCountBreakdown" }
+        },
+        "install_profile_comparison": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/installProfileBreakdown" }
+        },
+        "detectable_subsets": { "$ref": "#/$defs/detectableBreakdown" },
+        "building_vs_open": { "$ref": "#/$defs/buildingBreakdown" },
+        "failure_attribution": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/failureAttributionRow" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "tracking": {
+      "type": "object",
+      "required": ["track_error_median_m", "continuity", "time_to_fix_s", "id_switches"],
+      "properties": {
+        "track_error_median_m": { "$ref": "#/$defs/metricValue" },
+        "continuity": { "$ref": "#/$defs/metricValue" },
+        "time_to_fix_s": { "$ref": "#/$defs/metricValue" },
+        "id_switches": { "$ref": "#/$defs/metricValue" }
+      },
+      "additionalProperties": false
+    },
+    "realism_penalty": {
+      "type": "object",
+      "required": ["coverage_delta", "horizontal_p90_delta_m"],
+      "properties": {
+        "coverage_delta": { "$ref": "#/$defs/metricValue" },
+        "horizontal_p90_delta_m": { "$ref": "#/$defs/metricValue" }
+      },
+      "additionalProperties": false
+    },
+    "comparisons": {
+      "type": "object",
+      "required": ["vs_parent", "vs_le0"],
+      "properties": {
+        "vs_parent": {
+          "anyOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/comparisonBlock" }
+          ]
+        },
+        "vs_le0": {
+          "anyOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/comparisonBlock" }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "sealed": { "type": ["object", "null"] },
+    "final_suite": { "type": ["object", "null"] },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "date",
+        "branch",
+        "source_hash",
+        "option_set",
+        "reports",
+        "populations",
+        "preregistration_sha256"
+      ],
+      "properties": {
+        "date": { "type": "string", "format": "date-time" },
+        "branch": { "type": "string" },
+        "source_hash": { "type": "string" },
+        "option_set": { "type": "object" },
+        "reports": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/reportRef" }
+        },
+        "populations": {
+          "type": "object",
+          "required": ["benchmark_expected_runs", "benchmark_runs", "matrix_runs"],
+          "properties": {
+            "benchmark_expected_runs": { "type": ["integer", "null"], "minimum": 0 },
+            "benchmark_runs": { "type": ["integer", "null"], "minimum": 0 },
+            "matrix_runs": { "type": ["integer", "null"], "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "preregistration_sha256": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "metricValue": {
+      "type": "object",
+      "required": ["value", "interval95", "n_sites", "n_runs", "unit"],
+      "properties": {
+        "value": { "type": ["number", "null"] },
+        "interval95": {
+          "anyOf": [
+            { "type": "null" },
+            {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          ]
+        },
+        "n_sites": { "type": ["integer", "null"], "minimum": 0 },
+        "n_runs": { "type": ["integer", "null"], "minimum": 0 },
+        "unit": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "deltaMetric": {
+      "type": "object",
+      "required": ["delta", "interval95", "n_sites", "n_runs", "unit"],
+      "properties": {
+        "delta": { "type": ["number", "null"] },
+        "interval95": {
+          "anyOf": [
+            { "type": "null" },
+            {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          ]
+        },
+        "n_sites": { "type": ["integer", "null"], "minimum": 0 },
+        "n_runs": { "type": ["integer", "null"], "minimum": 0 },
+        "unit": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "comparisonBlock": {
+      "type": "object",
+      "required": ["engine_id", "metrics"],
+      "properties": {
+        "engine_id": { "type": "string", "pattern": "^LE-[0-9]+$" },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/deltaMetric" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "reportRef": {
+      "type": "object",
+      "required": ["path", "sha256", "kind"],
+      "properties": {
+        "path": { "type": "string" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "kind": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "matrixCell": {
+      "type": "object",
+      "required": ["cell_index", "factors", "install_profiles"],
+      "properties": {
+        "cell_index": { "type": "integer", "minimum": 0 },
+        "factors": {
+          "type": "object",
+          "required": ["environment", "source_height", "motion", "simultaneous_sources"],
+          "properties": {
+            "environment": { "type": "string" },
+            "source_height": { "type": "string" },
+            "motion": { "type": "string" },
+            "simultaneous_sources": { "type": "integer", "minimum": 1 }
+          },
+          "additionalProperties": true
+        },
+        "install_profiles": {
+          "type": "object",
+          "required": ["off", "on", "surveyed", "self_calibrated"],
+          "properties": {
+            "off": { "type": "object", "additionalProperties": { "$ref": "#/$defs/metricValue" } },
+            "on": { "type": "object", "additionalProperties": { "$ref": "#/$defs/metricValue" } },
+            "surveyed": { "type": "object", "additionalProperties": { "$ref": "#/$defs/metricValue" } },
+            "self_calibrated": { "type": "object", "additionalProperties": { "$ref": "#/$defs/metricValue" } }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "sourceCountBreakdown": {
+      "type": "object",
+      "required": ["simultaneous_sources", "metrics"],
+      "properties": {
+        "simultaneous_sources": { "type": "integer", "minimum": 1 },
+        "metrics": { "type": "object", "additionalProperties": { "$ref": "#/$defs/metricValue" } }
+      },
+      "additionalProperties": false
+    },
+    "nodeCountBreakdown": {
+      "type": "object",
+      "required": ["node_count", "realism", "metrics"],
+      "properties": {
+        "node_count": { "type": "integer", "minimum": 0 },
+        "realism": { "type": "string" },
+        "metrics": { "type": "object", "additionalProperties": { "$ref": "#/$defs/metricValue" } }
+      },
+      "additionalProperties": false
+    },
+    "installProfileBreakdown": {
+      "type": "object",
+      "required": ["profile", "metrics"],
+      "properties": {
+        "profile": { "type": "string" },
+        "metrics": { "type": "object", "additionalProperties": { "$ref": "#/$defs/metricValue" } }
+      },
+      "additionalProperties": false
+    },
+    "detectableBreakdown": {
+      "type": "object",
+      "required": ["original_detectable_3_nodes", "second_detectability_label"],
+      "properties": {
+        "original_detectable_3_nodes": {
+          "type": "object",
+          "required": ["detectable_fraction", "events_within_10m", "event_count"],
+          "properties": {
+            "detectable_fraction": { "$ref": "#/$defs/metricValue" },
+            "events_within_10m": { "$ref": "#/$defs/metricValue" },
+            "event_count": { "$ref": "#/$defs/metricValue" }
+          },
+          "additionalProperties": false
+        },
+        "second_detectability_label": {
+          "type": "object",
+          "required": ["definition", "detectable_fraction", "events_within_10m", "event_count"],
+          "properties": {
+            "definition": { "type": ["string", "null"] },
+            "detectable_fraction": { "$ref": "#/$defs/metricValue" },
+            "events_within_10m": { "$ref": "#/$defs/metricValue" },
+            "event_count": { "$ref": "#/$defs/metricValue" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "buildingBreakdown": {
+      "type": "object",
+      "required": ["open_cells", "building_cells", "harm_vs_open"],
+      "properties": {
+        "open_cells": { "anyOf": [{ "$ref": "#/$defs/metricValue" }, { "type": "null" }] },
+        "building_cells": { "anyOf": [{ "$ref": "#/$defs/metricValue" }, { "type": "null" }] },
+        "harm_vs_open": { "anyOf": [{ "$ref": "#/$defs/metricValue" }, { "type": "null" }] }
+      },
+      "additionalProperties": false
+    },
+    "failureAttributionRow": {
+      "type": "object",
+      "required": ["cause_code", "failures", "no_fix", "unmatched_fixes", "median_error_m"],
+      "properties": {
+        "cause_code": { "type": "string" },
+        "failures": { "type": "integer", "minimum": 0 },
+        "no_fix": { "type": "integer", "minimum": 0 },
+        "unmatched_fixes": { "type": "integer", "minimum": 0 },
+        "median_error_m": { "type": ["number", "null"] }
+      },
+      "additionalProperties": false
+    }
+  }
+}

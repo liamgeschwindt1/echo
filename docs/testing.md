@@ -2,6 +2,39 @@
 
 All numbers are simulated. No array choice or hardware requirement is validated by these reports alone.
 
+## T8 integration gates and limits
+
+`node scripts/integration-gate.mjs <unique-label>` runs full core tests, the cue
+tests under `src/ext/cues` (outside the core package's test glob), app tests,
+production build and the **16-run `smoke` preset** against the committed fresh
+`ff75074` reference. It checks zero tracked regressions, exact inference JSON
+bytes and unchanged original signal goldens. Evidence and compressed logs go
+to new `baselines/integration-gate-<unique-label>*` files; existing labels cannot
+be overwritten. This is a regression gate, not engine acceptance.
+
+The existing CI experiment `docs/experiments/ci-smoke.json` expands to **8** runs,
+not 16. Its archived report must be re-scored as the workflow already does.
+The 16-run preset includes truth-assisted and measured-only modes; engine
+selection uses measured-only evidence exclusively.
+
+Export metadata is schema 0.19, documenting opt-in multisource/fusion
+extensions. Default inference remains unchanged. `likelihood` is a supported
+opt-in fusion setting but was not accepted as an improvement. The actual engine
+history dashboard and its standalone HTML are checked against published KPI
+values, intervals, sample counts and registry IDs.
+
+LE-1 diagnostics were preregistered in
+`docs/tracks/integration/prereg/round-1.json`, with lossless raw reports and full
+partition tables in `baselines/integration-round1-*`. They do not replace the
+24-cell official selection population. Cross-population KPI differences remain
+null, and missing 3D, sealed and final-suite results are not zeros.
+
+The sharded workflow cannot dispatch until published on the default branch.
+Sealed entrypoints fail closed while distributed attempt controls are missing.
+No sealed test or final stress-suite result is available. See
+`docs/tracks/integration/suite-plan.md` before attempting a resume; this is **not**
+a frozen step-5 checkpoint.
+
 ## Shared experiments and CLI
 
 Run `npm run benchmark -- --experiment smoke --out baselines/smoke.json`.

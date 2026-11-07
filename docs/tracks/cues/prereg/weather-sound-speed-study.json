@@ -1,0 +1,20 @@
+{
+  "track": "T5 CUES",
+  "study_id": "cues-a6-weather-sound-speed-v1",
+  "created_utc": "2026-11-06T16:20:06Z",
+  "purpose": "Evaluate simulator-side weather mismatch and engine-side sound-speed correction on synthetic inter-node timing observations.",
+  "inputs": {
+    "nominal_temperature_c": 15,
+    "temperature_offsets_c": [-10, -5, 0, 5, 10],
+    "wind_mps": [0, 5, 10],
+    "node_baselines_m": [40, 80, 120],
+    "timing_sigma_s": 0.0002,
+    "seed": 4503
+  },
+  "outputs": [
+    "speed_error_without_correction_mps",
+    "speed_error_with_correction_mps",
+    "range_error_without_correction_m",
+    "range_error_with_correction_m"
+  ]
+}

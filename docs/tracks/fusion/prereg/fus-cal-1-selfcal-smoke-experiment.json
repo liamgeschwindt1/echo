@@ -1,0 +1,29 @@
+{
+  "name": "T4 fus-cal-1 heading self calibration smoke sweep",
+  "scenes": ["sparse_20", "random_5"],
+  "seeds": [1, 101],
+  "held_out_seeds": [101],
+  "base_settings": {},
+  "sweeps": [],
+  "mode": "paired",
+  "realism": ["off", "on"],
+  "analysis_modes": ["measured_only"],
+  "configs": [
+    {
+      "name": "surveyed",
+      "settings": {
+        "measured_fusion_mode": "legacy",
+        "measured_heading_self_calibration": 0
+      }
+    },
+    {
+      "name": "self_calibrated",
+      "settings": {
+        "measured_fusion_mode": "legacy",
+        "measured_heading_self_calibration": 1
+      }
+    }
+  ],
+  "max_runs": 2000,
+  "metrics": []
+}

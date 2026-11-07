@@ -30,6 +30,7 @@ import { analyseScenario } from '@echo/sim-core/analyse.js';
 import { loadCatalogue, loadRunners } from './models.js';
 import { drawParticles, sourceColor, waveParticles } from './ui/particles.js';
 import { createTesting } from './ui/testing.js';
+import { createDashboards } from './ui/dashboards.js';
 import { testingEditorResults } from './ui/testing-view.js';
 
 const $ = (id) => document.getElementById(id);
@@ -2609,7 +2610,7 @@ function frame(now) {
 
 // ---------- side menu and workspaces ----------
 
-const VIEWS = ['scenes', 'scene', 'sounds', 'arrays', 'settings', 'testing'];
+const VIEWS = ['scenes', 'scene', 'sounds', 'arrays', 'settings', 'testing', 'dashboards'];
 let currentView = 'scene';
 function setView(name) {
   if (!VIEWS.includes(name)) return;
@@ -2622,6 +2623,7 @@ function setView(name) {
   $('panelArrays').hidden = name !== 'arrays';
   $('panelSettings').hidden = name !== 'settings';
   $('panelTesting').hidden = name !== 'testing';
+  $('panelDashboards').hidden = name !== 'dashboards';
   if (name !== 'scene') {
     $('sectionView').hidden = true;
     $('micView').hidden = true;
@@ -2631,11 +2633,13 @@ function setView(name) {
   if (name === 'sounds') soundLib.show();
   if (name === 'arrays') arrayLib.show();
   if (name === 'testing') testingPanel.show();
+  if (name === 'dashboards') dashboardsPanel.show();
   if (name === 'scene') heatmap?.schedule(0);
 }
 for (const b of document.querySelectorAll('.nav-item')) b.addEventListener('click', () => setView(b.dataset.view));
 
 const scenesPanel = createScenesPanel({ $, scenes: simLibrary, onOpen: () => setView('scene') });
+const dashboardsPanel = createDashboards({ $ });
 
 function refreshSettingsTitle() {
   const cur = simLibrary.current();

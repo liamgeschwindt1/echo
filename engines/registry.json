@@ -1,0 +1,18 @@
+[
+  {
+    "id": "LE-0",
+    "parent": null,
+    "date": "2026-11-06T16:25:19.358Z",
+    "status": "baseline",
+    "branch": "overnight/loc5-infra",
+    "source_hash": "6874435a4af5a3258c5ecc20f60d756b5f7a81297cad3957eaf9df525a7a5b53"
+  },
+  {
+    "id": "LE-1",
+    "parent": "LE-0",
+    "date": "2026-11-06T23:40:26.604Z",
+    "status": "rejected",
+    "branch": "overnight/loc5-integration",
+    "source_hash": "d1eb705837c420b40a65dec187e39194ea52f374ebc18cdf7026e7134e4f2461"
+  }
+]

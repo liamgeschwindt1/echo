@@ -4,6 +4,32 @@
 evidence, not a deployed-device result. Anything outside this ledger is unproven.
 The final round-two report links the frozen sealed-test figures.
 
+## T8 integration additions
+
+No new localisation or tracking performance claim is accepted. Infrastructure,
+cues, multisource, fusion and dashboards were merged; causal and buildings were
+not delivered. LE-0 stays default. LE-1 is a diagnostic self-calibration
+configuration, rejected for promotion, with no applied calibrations in eight
+runs. Official matrix selection, the matrix sealed run and the final stress
+suite remain blocked, not successful.
+
+| Potential claim | Status | Evidence / conditions | Caveat |
+|---|---|---|---|
+| Default inference survived integration unchanged | Simulated regression evidence | `baselines/integration-gate-final.json`, fresh base 16-run reference and unchanged signal goldens | Export metadata advances to schema 0.19; not field validation |
+| Multisource candidates improve source localisation | Not established | T2 mixture-derived candidate/association diagnostics retained under `extensions.multisource` | No accepted association-to-fusion adapter or full multisource acceptance population |
+| Likelihood fusion is an accepted improvement | Simulated, rejected for promotion | T4 smoke evidence and `docs/tracks/fusion/report.md` | Legacy remains default |
+| Heading self-calibration improves the retained engine | Not established | `baselines/integration-round1-diagnostics.json`: 0/8 runs applied calibration | Two sites only; no official matrix validation, no universal ineffectiveness claim |
+| Notch/Doppler/sound-speed cues improve the runtime engine | Component demonstrations only | T5 preregistrations, tests and standalone synthetic evaluation | No delivered measured-observation stream into fusion/tracking; no new runtime aerial accuracy claim |
+| Weather mismatch is a calibrated environmental model | Not validated | Default-off renderer temperature/wind placeholders and T5 tests | Direct-path approximation, not measured propagation |
+| Engine-history dashboard reports published KPIs | Simulated reporting checks | Actual registry/KPI adapter, dev/production JSON assets, live and offline browser checks | Unlike populations are not ranked; unavailable intervals remain unavailable |
+| Dense buildings causally improve or halve coverage | Not established | `baselines/integration-building-audit.json` and historical round-two descriptive subgroups | Different geometry/range/node populations; matrix one-source scenes are mostly line-of-sight |
+
+These additions consolidate the delivered tracks' claims fragments with their
+limits. Standalone cue error reductions are not a complete-engine KPI. No
+building-aware or causal-runtime claim is made for undelivered tracks.
+
+## Historical claims and limits
+
 | Potential claim | Status | Evidence / conditions | Caveat |
 |---|---|---|---|
 | The measured pipeline runs without source truth | Simulated | Restricted runner input; measured-pipeline and recording tests | It still assumes nominal surveyed geometry and declared settings |
