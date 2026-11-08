@@ -1399,6 +1399,8 @@ The 3D path is used only when at least two trusted rays cross at 10° or more an
 
 **Residuals.** Both solvers normalize the perpendicular miss by `max(t, 1) · tan σ`, with `z = ∞` for `t ≤ 0`. The 3D path measures perpendicular distance and range in 3D; its consensus and leave-one-out checks use that residual, not the horizontal projection. `z_3d_raw_m` reports the trusted-elevation 3D solution when available.
 
+Horizontal leave-one-out rejection also includes prediction variance: `z = miss / sqrt(own_sigma_m² + nᵀ C n)`, where `n` is the held-out ray's unit normal and `C` is the inverse information matrix of the other rays, using their range-dependent metre uncertainties at the predicted point. Predictions with insufficient crossing, singular information or nonpositive ranges for the other rays cannot reject a ray. A prediction behind the held-out node still scores `∞`. Horizontal `fix.loo_residuals` entries report this score as `predictive_residual_sigma`; it is `null` for 3D fixes. Existing `residual_sigma` and the conservative `loo_residual` suspect flag retain the own-sigma normalization, so retaining a ray need not clear that flag. RANSAC scoring and ranking are unchanged.
+
 **Height.** If any inlier has a trusted elevation, the height comes from those elevations: the 2D path uses `z = Σ w_i (o_i,z + h_i tan el_i) / Σ w_i`, with `h_i` the horizontal range and `w_i = 1/(h_i σ_i)²`; the 3D path uses its fitted z. `source_height_prior_m` (1.5 m, ground-event prior) is used and `z_clamped: true` only when no inlier resolves elevation. `z_from_nodes` lists the nodes used.
 
 **Suspect checks** (`fix_suspect`, `suspect_reasons`). These use measured quantities only:

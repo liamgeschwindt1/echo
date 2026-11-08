@@ -109,6 +109,62 @@ test('P3: two bad nodes out of five are rejected with a reason, the fix stays wi
   assert.equal(fix.fix_suspect, false);
 });
 
+test('P3: LOO includes prediction variance before dropping a third ray', () => {
+  // Reconstructed intersections from the simulated flat_square / glass_breaking failure, not an export replay.
+  const p12 = [-4.79, 3.08], p13 = [-15.44, 7.09], p23 = [-22.20, 1.09];
+  const rays = [[p13, p12, 108, 5.74], [p12, p23, 37, 3.82], [p13, p23, 50, 2.63]].map(([a, b, range, sigma], i) => {
+    const az = azimuthDeg(a, b);
+    const u = [Math.cos(az * Math.PI / 180), Math.sin(az * Math.PI / 180)];
+    const along = (p12[0] - a[0]) * u[0] + (p12[1] - a[1]) * u[1];
+    return ray(`n${i + 1}`, [a[0] + (along - range) * u[0], a[1] + (along - range) * u[1], 5], b, {
+      sigma: Math.atan(sigma / range) * 180 / Math.PI
+    });
+  });
+  let consensus;
+  const fix = robustFix(rays, { settings: S, onConsensus: (c) => { consensus = c; } });
+  assert.deepEqual(consensus.pair, ['n1', 'n3']);
+  assert.deepEqual(fix.inlier_nodes, ['n1', 'n2', 'n3']);
+  assert.deepEqual(fix.rejected_nodes, []);
+  assert.ok(herr(fix, [-23.7, 1.9]) < 10);
+  assert.equal(fix.loo_residuals.length, 3);
+  for (const [i, held] of rays.entries()) {
+    const rest = rays.filter((_, j) => j !== i);
+    const point = robustFix(rest, { settings: S }).position;
+    const direction = (r) => [Math.cos(r.azimuth_deg * Math.PI / 180), Math.sin(r.azimuth_deg * Math.PI / 180)];
+    const sigmaAt = (r) => {
+      const u = direction(r);
+      const range = (point[0] - r.origin[0]) * u[0] + (point[1] - r.origin[1]) * u[1];
+      return Math.max(range, 1) * Math.tan(r.sigma_deg * Math.PI / 180);
+    };
+    const u = direction(held), u1 = direction(rest[0]), u2 = direction(rest[1]);
+    const cross = (a, b) => a[0] * b[1] - a[1] * b[0];
+    const miss = Math.abs(cross([point[0] - held.origin[0], point[1] - held.origin[1]], u));
+    const predictionVariance = (sigmaAt(rest[0]) ** 2 * cross(u, u2) ** 2 +
+      sigmaAt(rest[1]) ** 2 * cross(u, u1) ** 2) / cross(u1, u2) ** 2;
+    const expected = miss / Math.sqrt(sigmaAt(held) ** 2 + predictionVariance);
+    assert.ok(Math.abs(fix.loo_residuals[i].predictive_residual_sigma - expected) < 1e-9);
+    assert.ok(Math.abs(fix.loo_residuals[i].residual_sigma - miss / sigmaAt(held)) < 1e-9);
+    assert.ok(expected < S.fix_inlier_gate_sigma);
+    if (i === 2) assert.ok(miss / sigmaAt(held) > S.fix_inlier_gate_sigma);
+  }
+  assert.ok(fix.suspect_reasons.includes('loo_residual'), 'own-sigma diagnostics remain conservative');
+});
+
+test('P3: predictive LOO does not use nearly parallel or singular remaining rays', () => {
+  const target = [0, 0, 1.5];
+  for (const offset of [0, 10]) {
+    const fix = robustFix([
+      ray('a', [-100, 0, 5], target),
+      ray('b', [-100, -offset, 5], target),
+      ray('c', [0, -50, 5], target)
+    ], { settings: { ...S, fix_min_crossing_deg: offset ? S.fix_min_crossing_deg : 0 } });
+    assert.deepEqual(fix.inlier_nodes, ['a', 'b', 'c']);
+    assert.equal(fix.loo_residuals.find((r) => r.node_id === 'c').predictive_residual_sigma, null);
+    assert.ok(fix.loo_residuals.every((r) => r.predictive_residual_sigma === null || Number.isFinite(r.predictive_residual_sigma)));
+    assert.ok(herr(fix, target) < 1e-9);
+  }
+});
+
 test('P4: conditioning uses the horizontal crossing angle and z is clamped for flat arrays', () => {
   const t = [30, 40, 1.5];
   const fix = robustFix([ray('a', [0, 0, 5], t, { el: -40 }), ray('b', [60, 0, 5], t, { el: -40 })], { settings: S, scenario: scn5 });

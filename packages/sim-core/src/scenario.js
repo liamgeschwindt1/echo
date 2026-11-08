@@ -99,7 +99,7 @@ export const ANALYSIS_THRESHOLDS = Object.freeze({
   picked_path_elevation_tol_deg: 'a picked path must agree in elevation within this when the array resolves elevation',
   fix_min_crossing_deg: 'minimum horizontal crossing angle of the rays in a fix (poorly conditioned below)',
   fix_inlier_gate_sigma: 'ray residual (in sigma of range x bearing sigma) above which a node is an outlier',
-  fix_loo_suspect_sigma: 'leave-one-out residual above which a fix is marked suspect (it includes the fit error of the other rays, so it sits above 2)',
+  fix_loo_suspect_sigma: 'own-sigma leave-one-out residual above which a fix is marked suspect; horizontal rejection separately includes prediction variance',
   fix_range_ratio_max: 'largest allowed ratio of the longest to the shortest ray range before a fix is suspect',
   fix_bounds_margin_m: 'margin around the nodes and buildings outside which a fix is suspect',
   source_height_prior_m: 'height z is clamped to when no node resolves elevation (ground-event prior)',

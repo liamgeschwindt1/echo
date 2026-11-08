@@ -48,10 +48,11 @@ function solve2(rays, weights) {
 
 const rangeAlong = (r, p) => (p[0] - r.o[0]) * r.u[0] + (p[1] - r.o[1]) * r.u[1];
 const perpDist = (r, p) => Math.abs((p[0] - r.o[0]) * r.u[1] - (p[1] - r.o[1]) * r.u[0]);
+const sigmaMetres = (r, p) => Math.max(rangeAlong(r, p), 1) * Math.tan(toRad(Math.min(r.sigma_deg, 60)));
 // Normalised residual: perpendicular miss over the miss one sigma of bearing implies at that range.
 const zScore = (r, p) => {
   const t = rangeAlong(r, p);
-  return t > 0 ? perpDist(r, p) / (Math.max(t, 1) * Math.tan(toRad(Math.min(r.sigma_deg, 60)))) : Infinity;
+  return t > 0 ? perpDist(r, p) / sigmaMetres(r, p) : Infinity;
 };
 
 // Weighted fit, re-weighted twice with the ranges of the previous solution.
@@ -67,11 +68,27 @@ function weightedFit(rays) {
 export { weightedFit as weightedRayFit2d };
 
 // Residual of r against the fit of the other rays, or null when they are too close to parallel to say.
-function looScore(r, set, settings) {
+function looScore(r, set, settings, predictive = false) {
   const rest = set.filter((x) => x !== r);
   if (maxCrossing(rest) < settings.fix_min_crossing_deg) return null;
   const p = weightedFit(rest);
-  return p ? zScore(r, p) : null;
+  if (!p) return null;
+  if (!predictive) return zScore(r, p);
+  if (rest.some((x) => !(rangeAlong(x, p) > 0))) return null;
+  if (!(rangeAlong(r, p) > 0)) return Infinity;
+  let a = 0, b = 0, d = 0;
+  for (const x of rest) {
+    const w = 1 / sigmaMetres(x, p) ** 2;
+    a += w * x.u[1] ** 2;
+    b -= w * x.u[0] * x.u[1];
+    d += w * x.u[0] ** 2;
+  }
+  const det = a * d - b * b;
+  if (!(det > 1e-12 * a * d)) return null;
+  const [nx, ny] = [-r.u[1], r.u[0]];
+  // Project the other rays' position covariance onto the held-out ray's normal.
+  const predictionVariance = Math.max(0, (d * nx ** 2 - 2 * b * nx * ny + a * ny ** 2) / det);
+  return perpDist(r, p) / Math.sqrt(sigmaMetres(r, p) ** 2 + predictionVariance);
 }
 
 function maxCrossing(rays) {
@@ -239,7 +256,7 @@ export function robustFix(rays, { settings, scenario, onConsensus }) {
     while (inliers.length >= 3) {
       let worst = null;
       for (const r of inliers) {
-        const z = looScore(r, inliers, settings);
+        const z = looScore(r, inliers, settings, true);
         if (z !== null && (!worst || z > worst.z)) worst = { r, z };
       }
       if (!worst || !(worst.z > gate)) break;
@@ -318,10 +335,14 @@ export function robustFix(rays, { settings, scenario, onConsensus }) {
   const poorly_conditioned = use3d ? cross3d < settings.fix_min_crossing_deg : negative_range || crossH < settings.fix_min_crossing_deg;
   const finalCrossH = maxCrossing(inliers);
 
-  // Leave-one-out residuals on the final inliers (only defined for three or more).
+  // Keep own-sigma residuals for conservative suspect checks; predictive residuals drive horizontal rejection.
   const loo = [];
   if (position && inliers.length >= 3) {
-    for (const r of inliers) loo.push({ node_id: r.node_id, residual_sigma: use3d ? looScore3(r, inliers, settings) : looScore(r, inliers, settings) });
+    for (const r of inliers) loo.push({
+      node_id: r.node_id,
+      residual_sigma: use3d ? looScore3(r, inliers, settings) : looScore(r, inliers, settings),
+      predictive_residual_sigma: use3d ? null : looScore(r, inliers, settings, true)
+    });
   }
   const looMax = loo.reduce((m, x) => (Number.isFinite(x.residual_sigma) ? Math.max(m, x.residual_sigma) : m), 0);
   const raw3d = trusted.length >= 2 ? weightedFit3(trusted) : null;
