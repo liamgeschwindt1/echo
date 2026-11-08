@@ -27,6 +27,7 @@ export const MEASURED_DEFAULTS = Object.freeze({
   gap_s: 0.3, // a track survives a gap this long
   min_track_windows: 3,
   bearing_sigma_deg: 2.5, // weight floor; stands in for the unknown per-node heading offset
+  heading_prior_sigma_deg: 0, // opt-in: install-profile heading tolerance for reported per-node bearing sigma; 0 keeps the fixed floor
   min_cross_deg: 12, // two bearings must cross at least this much to give a fix
   static_chi2: 4, // mean normalised squared bearing residual below which a source is called static
   max_onset_skew_s: 0.03,
@@ -51,8 +52,9 @@ export const MEASURED_DEFAULTS = Object.freeze({
 export function measuredOptionsFor(settings = {}) {
   const extended = settings.measured_fusion_mode === 'likelihood' ||
     (settings.measured_heading_self_calibration ?? 0) !== 0;
+  const priorSet = (settings.measured_heading_prior_sigma_deg ?? 0) !== 0;
   return Object.fromEntries(Object.entries(MEASURED_DEFAULTS)
-    .filter(([key]) => extended || (!key.startsWith('heading_self_calibration') && !key.startsWith('likelihood_')))
+    .filter(([key]) => (priorSet || key !== 'heading_prior_sigma_deg') && (extended || (!key.startsWith('heading_self_calibration') && !key.startsWith('likelihood_'))))
     .map(([key, value]) => [key, settings[`measured_${key}`] ?? value]));
 }
 
@@ -431,7 +433,11 @@ export function analyseMeasured(scenario, rendered, { c, options = {} } = {}) {
       ? calibration.node_offsets.map((entry) => ({ offset_deg: entry.offset_deg, sigma_deg: entry.sigma_deg }))
       : null;
     const withCalibration = { ...effective, calibration: cal };
-    if (effective.fusion_mode === 'joint') return fuseJointTracks(nodes, { c, options: withCalibration, calibration: cal });
+    if (effective.fusion_mode === 'joint') {
+      const joint = fuseJointTracks(nodes, { c, options: withCalibration, calibration: cal });
+      // Joint mode must not lose scene coverage: fall back when it yields no fix at all.
+      return joint.length ? joint : fuseTracks(nodes, { c, options: withCalibration });
+    }
     if (effective.fusion_mode === 'likelihood') return fuseLikelihoodTracks(nodes, { c, options: withCalibration, calibration: cal }).fixes;
     return fuseTracks(nodes, { c, options: withCalibration });
   };

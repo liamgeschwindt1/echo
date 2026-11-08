@@ -5,6 +5,13 @@ import { distance } from '../physics.js';
 const angleError = (a, b) => Math.abs(((a - b + 540) % 360) - 180);
 const deg = (r) => r * 180 / Math.PI;
 const median = (a) => a.length ? [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)] : null;
+const trackSpread = (trs) => {
+  const devs = trs.flatMap((tr) => {
+    const angles = tr.windows.map((w) => ((w.az_deg - tr.windows[0].az_deg + 540) % 360) - 180), m = median(angles);
+    return angles.map((a) => ((a - m + 540) % 360) - 180);
+  });
+  return devs.length ? Math.sqrt(devs.reduce((s, d) => s + d * d, 0) / devs.length) : 0;
+};
 export const SCORING_VERSION = 'episode-one-to-one-v3';
 export const DETECTION_BEARING_TOLERANCE_DEG = 10;
 
@@ -66,6 +73,7 @@ export function scoreMeasured(scenario, measured, { c, clip_durations = new Map(
       const [ni, ti] = key.split(':').map(Number), list = tracks.get(ni) ?? [];
       list.push(measured.nodes[ni].tracks[ti]); tracks.set(ni, list);
     }
+    const prior = measured.options.heading_prior_sigma_deg ?? 0;
     const nodes = scenario.nodes.map((node, ni) => {
       const errors = (tracks.get(ni) ?? []).flatMap((tr) => tr.windows).map((w) => {
         const truth = isMoving(src) ? emittedPosition(src, node.position, w.t_s, c) : sourcePosition(src);
@@ -74,7 +82,7 @@ export function scoreMeasured(scenario, measured, { c, clip_durations = new Map(
       return {
         node_id: node.id, range_m: distance(sourcePosition(src), node.position),
         az_error_deg: median(errors), el_error_deg: null,
-        sigma_deg: fix ? measured.nodes[ni].bearing_intervals ? measured.nodes[ni].bearing_intervals.sigma_deg : measured.options.bearing_sigma_deg : null,
+        sigma_deg: fix ? measured.nodes[ni].bearing_intervals ? measured.nodes[ni].bearing_intervals.sigma_deg : prior > 0 ? Math.hypot(prior, trackSpread(tracks.get(ni) ?? [])) : measured.options.bearing_sigma_deg : null,
         ...(measured.nodes[ni].bearing_intervals ? { two_sigma_deg: measured.nodes[ni].bearing_intervals.two_sigma_deg } : {}),
         detected: detectsSource(src, node, measured.nodes[ni]),
         detection_method: `tracked bearing within ${DETECTION_BEARING_TOLERANCE_DEG} degrees of source direction during source clip`,
