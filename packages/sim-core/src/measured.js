@@ -121,11 +121,18 @@ export function windowBearing(mics, positions, startSample, endSample, { fs, c, 
   const hx = (d * p - b * q) / det;
   const hy = (a * q - b * p) / det;
   let sq = 0;
-  for (const [dx, dy, r] of rows) sq += ((dx * hx + dy * hy - r) / c) ** 2;
+  for (const [dx, dy, r] of rows) sq += (dx * hx + dy * hy - r) ** 2;
+  const h2 = hx * hx + hy * hy;
+  const g0 = -hy / Math.max(h2, 1e-12);
+  const g1 = hx / Math.max(h2, 1e-12);
+  const residualVariance = sq / Math.max(1, rows.length - 2);
+  const azimuthVariance = residualVariance *
+    (d * g0 * g0 - 2 * b * g0 * g1 + a * g1 * g1) / det;
   return {
     az_deg: toDeg(Math.atan2(hy, hx)),
     h_mag: Math.hypot(hx, hy),
-    residual_s: Math.sqrt(sq / rows.length),
+    residual_s: Math.sqrt(sq / rows.length) / c,
+    fit_sigma_deg: Math.min(90, toDeg(Math.sqrt(Math.max(0, azimuthVariance)))),
     peak_min: Math.min(...t.map((x) => x.peak_normalized)),
     peak_mean: t.reduce((s, x) => s + x.peak_normalized, 0) / t.length
   };
@@ -140,6 +147,10 @@ const goodWindow = (w, o) => w && w.peak_min >= o.min_peak && w.residual_s * 1e6
  */
 export function nodeTracks(rn, node, { fs, c, band, options = {} }) {
   const o = { ...MEASURED_DEFAULTS, ...options };
+  const withSigma = (w) => ({
+    ...w,
+    sigma_deg: Math.hypot(Math.max(0.1, o.bearing_sigma_deg), w.fit_sigma_deg ?? 0)
+  });
   const frames = mixtureFrames(rn.mics[0], band, fs);
   const sorted = [...frames].sort((a, b) => a - b);
   const quiet = sorted[Math.floor(sorted.length * 0.2)] || 1e-30;
@@ -156,7 +167,7 @@ export function nodeTracks(rn, node, { fs, c, band, options = {} }) {
     for (let f = f0; f < f1; f++) e += frames[f];
     if (e / Math.max(1, f1 - f0) < 1.5 * quiet) continue;
     const w = windowBearing(rn.mics, positions, Math.round(t * fs), Math.round((t + winS) * fs), { fs, c, band });
-    if (goodWindow(w, o)) cand.push({ t_s: t + winS / 2, ...w });
+    if (goodWindow(w, o)) cand.push({ t_s: t + winS / 2, ...withSigma(w) });
   }
   // Neighbour agreement: keep windows with enough near-in-time windows at nearly the same bearing.
   const windows = cand.filter((w, i) => {
@@ -193,7 +204,7 @@ export function nodeTracks(rn, node, { fs, c, band, options = {} }) {
     if (!goodWindow(w, { ...o, min_peak: o.min_peak })) continue;
     const tr = kept.find((k) => k.windows.some((x) => x.t_s >= on.t_s && x.t_s <= on.t_s + 0.4 && Math.abs(wrapDeg(x.az_deg - w.az_deg)) <= o.link_deg));
     if (!tr) continue;
-    const entry = { ...on, ...w, t_s: on.t_s + o.onset_window_ms / 2000, onset: true };
+    const entry = { ...on, ...withSigma(w), t_s: on.t_s + o.onset_window_ms / 2000, onset: true };
     (tr.onsets ||= []).push(entry);
     onsets.push(entry);
   }
@@ -324,6 +335,7 @@ export function trackCandidates(nodeResults, { c, options = {} }) {
       if (!best) continue;
       const calA = calFor(A.ni);
       const calB = calFor(B.ni);
+      const sigmaWeight = (w) => (o.bearing_sigma_deg / Math.max(w.sigma_deg ?? o.bearing_sigma_deg, 0.1)) ** 2;
       const guess = intersect2(
         A.nr.node_position,
         calA.offset_deg === 0 ? best.wa.az_deg : wrapDeg(best.wa.az_deg + calA.offset_deg),
@@ -339,13 +351,13 @@ export function trackCandidates(nodeResults, { c, options = {} }) {
         for (const w of ws) obs.push({
           pos: F.nr.node_position,
           az_deg: cal.offset_deg === 0 ? w.az_deg : wrapDeg(w.az_deg + cal.offset_deg),
-          w: sigmaScale,
+          w: sigmaScale * sigmaWeight(w),
           t_a: w.t_s
         });
         for (const w of F.tr.onsets || []) obs.push({
           pos: F.nr.node_position,
           az_deg: cal.offset_deg === 0 ? w.az_deg : wrapDeg(w.az_deg + cal.offset_deg),
-          w: 2 * sigmaScale,
+          w: 2 * sigmaScale * sigmaWeight(w),
           t_a: w.t_s,
           onset: true
         });

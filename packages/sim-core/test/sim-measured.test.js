@@ -29,11 +29,23 @@ test('measured bearing quality accepts coherent mixture windows and rejects sile
   const options = { fs, c: 343, band: [200, 1600] };
   const bearing = windowBearing(positions.map(() => signal), positions, 0, signal.length, options);
   assert.ok(bearing.peak_min >= MEASURED_DEFAULTS.min_peak);
+  assert.ok(Number.isFinite(bearing.fit_sigma_deg));
+  assert.ok(bearing.fit_sigma_deg >= 0);
   const quiet = new Float32Array(signal.length);
   const silent = windowBearing(positions.map(() => quiet), positions, 0, quiet.length, options);
   assert.equal(silent.peak_min, 0);
   assert.equal(silent.peak_mean, 0);
   assert.throws(() => windowTdoas([signal, signal], 0, signal.length, { ...options, band: [30000, 31000], maxLagS: 0.001 }), /no usable FFT bins/);
+});
+
+test('measured fit uncertainty rises when pair delays disagree with a plane wave', () => {
+  const signal = noise(2400);
+  const shifted = new Float32Array(signal.length);
+  shifted.set(signal.subarray(0, signal.length - 8), 8);
+  const options = { fs, c: 343, band: [200, 1600] };
+  const coherent = windowBearing(positions.map(() => signal), positions, 0, signal.length, options);
+  const inconsistent = windowBearing([signal, signal, shifted, signal], positions, 0, signal.length, options);
+  assert.ok(inconsistent.fit_sigma_deg > coherent.fit_sigma_deg);
 });
 
 test('positive scalar microphone gains cancel in PHAT, not microphone phase or frequency errors', () => {
