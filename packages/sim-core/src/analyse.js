@@ -261,7 +261,7 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
         centreUsed = findPaths(nodeTruth, node.position, { settings, buildings, surfaces, c, graph });
         rendered.paths[ni].centre[si] = centreUsed;
       }
-      const report = timed(profile, 'path_report', () => pathReport({ centre: centreUsed, node, source: src, bearing, settings, sourcePos: nodeTruth }));
+      const report = timed(profile, 'path_report', () => pathReport({ centre: centreUsed, node, source: src, bearing, settings, sourcePos: nodeTruth, windowS: loc[1] - loc[0] }));
       const snr = toDb(meanPower(own.all, active[0], active[1]), noiseP);
       const snrDetection = own.detection ? toDb(meanPower(own.detection, active[0], active[1]), act.noise_detection_power) : null;
       const hasDirect = centreUsed.paths.some((p) => p.type === 'direct');
@@ -273,7 +273,7 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
       if (bearing) {
         const noise = noiseSigma(bearing, loc);
         const motion = moving ? angDiff(azAt(loc[0]), azAt(loc[1])) / 2 : 0;
-        const multipath = multipathSigmaDeg({ directToReflectedDb: report.direct_to_reflected_db, delaySpreadS: report.delay_spread_s, reflectionGapS: report.reflection_gap_s, windowS: loc[1] - loc[0], settings });
+        const multipath = multipathSigmaDeg({ directToReflectedDb: report.window_direct_to_reflected_db, reflectionGapS: report.window_reflection_gap_s, windowS: loc[1] - loc[0], settings });
         bearing.uncertainty_noise_deg = Math.min(90, Math.hypot(noise, motion));
         bearing.uncertainty_motion_deg = motion;
         bearing.uncertainty_multipath_deg = multipath;

@@ -4,6 +4,7 @@
 // track_iterations times. Fixes go through the robust solver and then a constant-velocity alpha-beta filter.
 import { distance } from './physics.js';
 import { estimateBearing } from './localise.js';
+import { windowReflectionEvidence } from './pathreport.js';
 import { azimuthUncertaintyDeg, multipathSigmaDeg, overlapSigmaDeg, reflectorSigmaDeg } from './uncertainty.js';
 import { robustFix } from './fix.js';
 import { emittedPosition, isMoving, positionAt } from './motion.js';
@@ -75,7 +76,8 @@ export function commonTimeTrack(ctx) {
         const rn = rendered.nodes[ni];
         const noise = azimuthUncertaintyDeg({ snrDb, windowS: W, band: settings.localisation_band_hz, positions: rn.mic_positions, azimuthDeg: bearing.azimuth_deg, elevationDeg: bearing.elevation_deg, c, fs });
         const nr = perNode[ni];
-        const multipath = multipathSigmaDeg({ directToReflectedDb: nr.direct_to_reflected_db, delaySpreadS: nr.delay_spread_s, reflectionGapS: nr.reflection_gap_s, windowS: W, settings });
+        const reflection = windowReflectionEvidence(nr.paths, W);
+        const multipath = multipathSigmaDeg({ directToReflectedDb: reflection.direct_to_reflected_db, reflectionGapS: reflection.reflection_gap_s, windowS: W, settings });
         // Other sources active in this window: overlap term from their level relative to this one.
         let theirs = 0;
         for (let oi = 0; oi < scenario.sources.length; oi++) if (oi !== si) theirs += ctx.meanPower(actN.per_source[oi].all, win[0], win[1]);

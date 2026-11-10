@@ -34,19 +34,12 @@ export function azimuthUncertaintyDeg({ snrDb, windowS, band, positions, azimuth
   return Math.min(90, (sigmaAz * 180) / Math.PI);
 }
 
-/**
- * Multipath floor (degrees) on a bearing: a reflection a = 10^(-D/R / 20) of the direct level pulls the bearing towards
- * it in proportion to its relative level, more so the longer the paths are spread (up to multipath_spread_ref_ms), and
- * only for the part of the window the reflection actually falls in: (T - gap) / T, gap = delay of the strongest
- * reflection after the first arrival. No direct path: the picked path is itself indirect, a = 1. All placeholders.
- */
-export function multipathSigmaDeg({ directToReflectedDb, delaySpreadS, reflectionGapS, windowS, settings }) {
-  if (delaySpreadS === null || delaySpreadS === undefined || delaySpreadS <= 0) return 0;
+/** Placeholder multipath term from the strongest reflected path that arrives inside the selected window. */
+export function multipathSigmaDeg({ directToReflectedDb, reflectionGapS, windowS, settings }) {
+  if (reflectionGapS === null || reflectionGapS === undefined || windowS <= 0 || reflectionGapS >= windowS) return 0;
   const a = directToReflectedDb === null || directToReflectedDb === undefined ? 1 : Math.min(1, 10 ** (-directToReflectedDb / 20));
-  const spread = Math.min(1, delaySpreadS / (settings.multipath_spread_ref_ms / 1000));
-  const gap = reflectionGapS ?? 0;
-  const inWindow = windowS > 0 ? Math.max(0, Math.min(1, (windowS - gap) / windowS)) : 1;
-  return settings.multipath_floor_deg * a * spread * inWindow;
+  const inWindow = Math.max(0, Math.min(1, (windowS - reflectionGapS) / windowS));
+  return settings.multipath_floor_deg * a * inWindow;
 }
 
 /** Extra sigma of an overlapped window: overlap_sigma_deg at 0 dB, scaled by 10^(level_diff/20) (others minus own, dB). */

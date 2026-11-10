@@ -97,6 +97,13 @@ so even perfectly coherent windows failed the gate. The threshold is unchanged
 and remains an uncalibrated placeholder. Raw peaks, TDOAs, rendered signals and
 truth-assisted bearings are unchanged.
 
+Measured-only bearing weights retain `bearing_sigma_deg` as a floor and add a
+per-window angular fit uncertainty estimated from the TDOA residual and array
+geometry. This is a quality-based heuristic, not a calibrated error interval.
+The truth-assisted multipath term uses the strongest reflected path that arrives
+within the selected window; global delay spread no longer inflates it. The
+`multipath_spread_ref_ms` setting remains accepted for compatibility but is unused.
+
 Integer seed counts reserve at least 30% held-out seeds (with two or more seeds);
 explicit seed lists retain their declared split. Single-seed pilots are not
 held-out validation. Resume checks exact job/custom-scene settings, scoring target,

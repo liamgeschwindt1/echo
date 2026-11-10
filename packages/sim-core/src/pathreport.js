@@ -15,6 +15,21 @@ const direction = (from, to) => {
 const speed = (p) => p.length / p.delay_s;
 const amplitude = (p) => pathPressure(p, 1000, speed(p));
 
+export function windowReflectionEvidence(paths, windowS) {
+  if (!(windowS > 0) || !paths?.length) return { direct_to_reflected_db: null, reflection_gap_s: null };
+  const firstDelay = Math.min(...paths.map((path) => path.delay_s));
+  const direct = paths.find((path) => path.type === 'direct');
+  const reflected = paths
+    .filter((path) => path.type !== 'direct' && path.delay_s - firstDelay < windowS)
+    .sort((a, b) => b.level_db_re_direct - a.level_db_re_direct)[0];
+  return {
+    direct_to_reflected_db: direct && reflected
+      ? direct.level_db_re_direct - reflected.level_db_re_direct
+      : null,
+    reflection_gap_s: reflected ? reflected.delay_s - firstDelay : null
+  };
+}
+
 // Diffraction loss at 1 kHz relative to a free-field spherical wave over the same unfolded length, and the coefficient phase.
 function diffractionDetail(p) {
   if (p.type !== 'diffracted') return { loss_db: null, phase_deg: null };
@@ -27,7 +42,7 @@ function diffractionDetail(p) {
  * Per node and source path diagnostics. centre = { paths, directBlocked } from the array centre.
  * Azimuth comparisons are horizontal, matching the wedge on the map.
  */
-export function pathReport({ centre, node, source, bearing, settings, sourcePos = source.keyframes[0].position }) {
+export function pathReport({ centre, node, source, bearing, settings, sourcePos = source.keyframes[0].position, windowS = null }) {
   const origin = node.position;
   const src = sourcePos;
   const direct = centre.paths.find((p) => p.type === 'direct');
@@ -73,6 +88,7 @@ export function pathReport({ centre, node, source, bearing, settings, sourcePos 
   const reflected = centre.paths.filter((p) => p.type !== 'direct');
   const bestReflected = reflected.reduce((a, p) => (!a || amplitude(p) > amplitude(a) ? p : a), null);
   const delays = centre.paths.map((p) => p.delay_s);
+  const windowEvidence = windowReflectionEvidence(paths, windowS);
   return {
     paths,
     direct_blocked: centre.directBlocked,
@@ -83,6 +99,8 @@ export function pathReport({ centre, node, source, bearing, settings, sourcePos 
     direct_to_reflected_db: direct && bestReflected ? 20 * Math.log10(amplitude(direct) / amplitude(bestReflected)) : null,
     delay_spread_s: delays.length ? Math.max(...delays) - Math.min(...delays) : 0,
     reflection_gap_s: bestReflected && delays.length ? bestReflected.delay_s - Math.min(...delays) : null,
+    window_direct_to_reflected_db: windowEvidence.direct_to_reflected_db,
+    window_reflection_gap_s: windowEvidence.reflection_gap_s,
     first_path_delay_s: delays.length ? Math.min(...delays) : null,
     direct_distance_m: distance(origin, src)
   };
