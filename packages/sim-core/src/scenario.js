@@ -94,7 +94,7 @@ export const ANALYSIS_THRESHOLDS = Object.freeze({
   reflector_sigma_deg: 'extra bearing sigma of a node right next to a wall; decays as exp(-d / reflector_scale_m)',
   reflector_scale_m: 'decay distance of the reflector term',
   multipath_floor_deg: 'multipath uncertainty floor at equal direct and in-window reflected level',
-  multipath_spread_ref_ms: 'legacy setting retained for compatibility; no longer used by windowed multipath uncertainty',
+  multipath_spread_ref_ms: 'delay-spread reference retained for the diffraction-only uncertainty fallback',
   picked_path_level_window_db: 'a picked path must be within this many dB of the strongest path',
   picked_path_elevation_tol_deg: 'a picked path must agree in elevation within this when the array resolves elevation',
   fix_min_crossing_deg: 'minimum horizontal crossing angle of the rays in a fix (poorly conditioned below)',

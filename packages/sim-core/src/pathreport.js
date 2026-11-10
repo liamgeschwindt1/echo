@@ -20,7 +20,7 @@ export function windowReflectionEvidence(paths, windowS) {
   const firstDelay = Math.min(...paths.map((path) => path.delay_s));
   const direct = paths.find((path) => path.type === 'direct');
   const reflected = paths
-    .filter((path) => path.type !== 'direct' && path.delay_s - firstDelay < windowS)
+    .filter((path) => (path.type === 'wall' || path.type === 'ground') && path.delay_s - firstDelay < windowS)
     .sort((a, b) => b.level_db_re_direct - a.level_db_re_direct)[0];
   return {
     direct_to_reflected_db: direct && reflected

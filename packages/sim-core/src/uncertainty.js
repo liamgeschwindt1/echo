@@ -42,6 +42,15 @@ export function multipathSigmaDeg({ directToReflectedDb, reflectionGapS, windowS
   return settings.multipath_floor_deg * a * inWindow;
 }
 
+/** Legacy path-spread proxy, retained only for diffraction-only scenes. */
+export function pathSpreadSigmaDeg({ directToReflectedDb, delaySpreadS, pathGapS, windowS, settings }) {
+  if (delaySpreadS === null || delaySpreadS === undefined || delaySpreadS <= 0) return 0;
+  const a = directToReflectedDb === null || directToReflectedDb === undefined ? 1 : Math.min(1, 10 ** (-directToReflectedDb / 20));
+  const spread = Math.min(1, delaySpreadS / (settings.multipath_spread_ref_ms / 1000));
+  const inWindow = windowS > 0 ? Math.max(0, Math.min(1, (windowS - (pathGapS ?? 0)) / windowS)) : 1;
+  return settings.multipath_floor_deg * a * spread * inWindow;
+}
+
 /** Extra sigma of an overlapped window: overlap_sigma_deg at 0 dB, scaled by 10^(level_diff/20) (others minus own, dB). */
 export const overlapSigmaDeg = (levelDiffDb, settings) => (levelDiffDb === null || levelDiffDb === undefined ? 0 : settings.overlap_sigma_deg * 10 ** (Math.min(levelDiffDb, 20) / 20));
 

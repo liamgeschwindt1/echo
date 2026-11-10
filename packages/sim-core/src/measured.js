@@ -454,13 +454,13 @@ export function analyseMeasured(scenario, rendered, { c, options = {} } = {}) {
     if (calibration.applied) fixes = applyFusion(calibration);
   }
   const useFusionExtensions = effective.fusion_mode !== 'legacy' || effective.heading_self_calibration > 0;
-  const bearingIntervals = calibration?.node_offsets
-    ? {
-      sigma_deg: median(calibration.node_offsets.map((entry) => entry.sigma_deg)),
-      two_sigma_deg: 2 * median(calibration.node_offsets.map((entry) => entry.sigma_deg))
-    }
-    : null;
   const nodesOut = nodes.map((node, ni) => {
+    const windowSigmas = node.tracks.flatMap((track) => track.windows.map((window) => window.sigma_deg)).filter(Number.isFinite);
+    const calibrationSigma = calibration?.node_offsets?.find((entry) => entry.node_index === ni)?.sigma_deg ?? null;
+    const sigma = windowSigmas.length
+      ? Math.hypot(median(windowSigmas), calibrationSigma ?? 0)
+      : calibrationSigma;
+    const bearingIntervals = sigma === null ? null : { sigma_deg: sigma, two_sigma_deg: 2 * sigma };
     const withIntervals = bearingIntervals ? { ...node, bearing_intervals: bearingIntervals } : node;
     if (!useFusionExtensions) return withIntervals;
     return {

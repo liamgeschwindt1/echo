@@ -101,8 +101,9 @@ Measured-only bearing weights retain `bearing_sigma_deg` as a floor and add a
 per-window angular fit uncertainty estimated from the TDOA residual and array
 geometry. This is a quality-based heuristic, not a calibrated error interval.
 The truth-assisted multipath term uses the strongest reflected path that arrives
-within the selected window; global delay spread no longer inflates it. The
-`multipath_spread_ref_ms` setting remains accepted for compatibility but is unused.
+within the selected window; global delay spread no longer inflates that term.
+Diffraction-only scenes retain their separate legacy path-spread uncertainty
+proxy, controlled by `multipath_spread_ref_ms`.
 
 Integer seed counts reserve at least 30% held-out seeds (with two or more seeds);
 explicit seed lists retain their declared split. Single-seed pilots are not

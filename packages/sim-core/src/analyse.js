@@ -3,7 +3,7 @@ import { estimateBearing, intersectRays } from './localise.js';
 import { backtraceCandidates, scoreAgainstTruth } from './backtrace.js';
 import { pathReport } from './pathreport.js';
 import { timed } from './profile.js';
-import { azimuthUncertaintyDeg, multipathSigmaDeg, overlapSigmaDeg, reflectorSigmaDeg } from './uncertainty.js';
+import { azimuthUncertaintyDeg, multipathSigmaDeg, overlapSigmaDeg, pathSpreadSigmaDeg, reflectorSigmaDeg } from './uncertainty.js';
 import { robustFix } from './fix.js';
 import { commonTimeTrack } from './track.js';
 import { FRAME_S } from './activity.js';
@@ -273,11 +273,16 @@ export function analyseScenario(scenario, rendered, clipDurations, { progressive
       if (bearing) {
         const noise = noiseSigma(bearing, loc);
         const motion = moving ? angDiff(azAt(loc[0]), azAt(loc[1])) / 2 : 0;
+        const hasSpecular = report.paths.some((path) => path.type === 'wall' || path.type === 'ground');
         const multipath = multipathSigmaDeg({ directToReflectedDb: report.window_direct_to_reflected_db, reflectionGapS: report.window_reflection_gap_s, windowS: loc[1] - loc[0], settings });
+        const diffraction = !hasSpecular && report.paths.some((path) => path.type === 'diffracted')
+          ? pathSpreadSigmaDeg({ directToReflectedDb: report.direct_to_reflected_db, delaySpreadS: report.delay_spread_s, pathGapS: report.reflection_gap_s, windowS: loc[1] - loc[0], settings })
+          : 0;
         bearing.uncertainty_noise_deg = Math.min(90, Math.hypot(noise, motion));
         bearing.uncertainty_motion_deg = motion;
         bearing.uncertainty_multipath_deg = multipath;
-        bearing.uncertainty_deg = Math.min(90, Math.hypot(noise, motion, multipath));
+        bearing.uncertainty_diffraction_deg = diffraction;
+        bearing.uncertainty_deg = Math.min(90, Math.hypot(noise, motion, multipath, diffraction));
         const overlapTerm = overlapped ? overlapSigmaDeg(levelDiff, settings) : 0;
         const reflectorTerm = reflectorSigmaDeg(reflectorM[ni], settings);
         const total = Math.min(90, Math.hypot(bearing.uncertainty_deg, overlapTerm, reflectorTerm));

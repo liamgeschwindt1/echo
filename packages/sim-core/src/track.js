@@ -5,7 +5,7 @@
 import { distance } from './physics.js';
 import { estimateBearing } from './localise.js';
 import { windowReflectionEvidence } from './pathreport.js';
-import { azimuthUncertaintyDeg, multipathSigmaDeg, overlapSigmaDeg, reflectorSigmaDeg } from './uncertainty.js';
+import { azimuthUncertaintyDeg, multipathSigmaDeg, overlapSigmaDeg, pathSpreadSigmaDeg, reflectorSigmaDeg } from './uncertainty.js';
 import { robustFix } from './fix.js';
 import { emittedPosition, isMoving, positionAt } from './motion.js';
 
@@ -76,8 +76,13 @@ export function commonTimeTrack(ctx) {
         const rn = rendered.nodes[ni];
         const noise = azimuthUncertaintyDeg({ snrDb, windowS: W, band: settings.localisation_band_hz, positions: rn.mic_positions, azimuthDeg: bearing.azimuth_deg, elevationDeg: bearing.elevation_deg, c, fs });
         const nr = perNode[ni];
-        const reflection = windowReflectionEvidence(nr.paths, W);
+        const paths = nr.paths || [];
+        const hasSpecular = paths.some((path) => path.type === 'wall' || path.type === 'ground');
+        const reflection = windowReflectionEvidence(paths, W);
         const multipath = multipathSigmaDeg({ directToReflectedDb: reflection.direct_to_reflected_db, reflectionGapS: reflection.reflection_gap_s, windowS: W, settings });
+        const diffraction = !hasSpecular && paths.some((path) => path.type === 'diffracted')
+          ? pathSpreadSigmaDeg({ directToReflectedDb: nr.direct_to_reflected_db, delaySpreadS: nr.delay_spread_s, pathGapS: nr.reflection_gap_s, windowS: W, settings })
+          : 0;
         // Other sources active in this window: overlap term from their level relative to this one.
         let theirs = 0;
         for (let oi = 0; oi < scenario.sources.length; oi++) if (oi !== si) theirs += ctx.meanPower(actN.per_source[oi].all, win[0], win[1]);
@@ -90,7 +95,7 @@ export function commonTimeTrack(ctx) {
           continue;
         }
         const ovTerm = levelDiff !== null && levelDiff > -30 ? overlapSigmaDeg(levelDiff, settings) : 0;
-        const sigma = Math.min(90, Math.hypot(noise, multipath));
+        const sigma = Math.min(90, Math.hypot(noise, multipath, diffraction));
         const total = Math.min(90, Math.hypot(sigma, ovTerm, reflectorSigmaDeg(reflectorM[ni], settings)));
         // P5 gate, bearing sigmas only (the overlap term would widen the gate exactly when another source takes over).
         // A trusted positive elevation makes the last accepted rolling bearing a truth-free reference before a fix

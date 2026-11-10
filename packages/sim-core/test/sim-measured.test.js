@@ -74,6 +74,8 @@ test('nonempty measured inference forms tracks without accessing simulator truth
   const result = analyseMeasured(scenario, rendered, { c: 343 });
   assert.ok(result.nodes[0].tracks.length > 0);
   assert.ok(result.nodes[0].windows.length > 0);
+  assert.ok(result.nodes[0].windows.every((window) => Number.isFinite(window.sigma_deg) && window.sigma_deg >= MEASURED_DEFAULTS.bearing_sigma_deg));
+  assert.ok(result.nodes[0].bearing_intervals.sigma_deg >= MEASURED_DEFAULTS.bearing_sigma_deg);
   const joint = analyseMeasured(scenario, rendered, { c: 343, options: { fusion_mode: 'joint' } });
   assert.ok(joint.nodes[0].tracks.length > 0);
   assert.deepEqual(joint.fixes, []);
